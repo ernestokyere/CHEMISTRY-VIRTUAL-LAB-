@@ -1,0 +1,897 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    height: 72px;
+    background: white;
+    border-bottom: 1px solid #e6eaf0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 5%;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.logo span {
+    margin-left: 5px;
+}
+
+nav {
+    display: flex;
+    gap: 8px;
+}
+
+nav button {
+    border: none;
+    background: transparent;
+    padding: 10px 14px;
+    cursor: pointer;
+    color: #475467;
+    font-size: 14px;
+}
+
+nav button:hover {
+    color: #155eef;
+}
+
+.ai-nav-btn {
+    border: none;
+    background: #155eef;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+/* =========================
+   PAGES
+========================= */
+
+.page {
+    display: none;
+    min-height: calc(100vh - 72px);
+    padding: 50px 6%;
+}
+
+.page.active {
+    display: block;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    max-width: 1200px;
+    margin: auto;
+
+    min-height: 520px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+}
+
+.hero-content {
+    max-width: 650px;
+}
+
+.badge {
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    background: #eaf2ff;
+    color: #155eef;
+
+    border-radius: 30px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: .5px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.05;
+    margin: 22px 0;
+}
+
+.hero h1 span {
+    color: #155eef;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #667085;
+    line-height: 1.7;
+    max-width: 600px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.primary-btn,
+.secondary-btn {
+    border: none;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.primary-btn {
+    background: #155eef;
+    color: white;
+}
+
+.secondary-btn {
+    background: white;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+}
+
+.hero-lab {
+    width: 350px;
+    height: 350px;
+
+    border-radius: 50%;
+
+    background: #eaf2ff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+}
+
+.flask {
+    font-size: 150px;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.section-title,
+.page-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 30px auto 50px;
+}
+
+.section-title span {
+    color: #155eef;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.section-title h2,
+.page-header h1 {
+    font-size: 38px;
+    margin: 12px 0;
+}
+
+.page-header p {
+    color: #667085;
+}
+
+
+/* =========================
+   FEATURE GRID
+========================= */
+
+.feature-grid {
+    max-width: 1200px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.feature-card {
+    background: white;
+    border: 1px solid #e6eaf0;
+    border-radius: 16px;
+    padding: 25px;
+}
+
+.feature-icon {
+    font-size: 35px;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    color: #667085;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   EXPERIMENTS
+========================= */
+
+.experiment-grid {
+    max-width: 1100px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.experiment-card {
+    background: white;
+    border: 1px solid #e4e7ec;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.experiment-image {
+    height: 180px;
+    background: #eef4ff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 75px;
+}
+
+.experiment-content {
+    padding: 22px;
+}
+
+.experiment-content h2 {
+    margin: 12px 0;
+}
+
+.experiment-content p {
+    color: #667085;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.level {
+    font-size: 11px;
+    font-weight: 800;
+    color: #155eef;
+}
+
+.locked {
+    opacity: .65;
+    cursor: default;
+}
+
+
+/* =========================
+   TITRATION LAB
+========================= */
+
+.lab-header {
+    max-width: 1300px;
+    margin: auto auto 30px;
+
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.lab-header h1 {
+    margin-top: 10px;
+}
+
+.back-btn {
+    background: white;
+    border: 1px solid #d0d5dd;
+    padding: 10px 15px;
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+.lab-layout {
+    max-width: 1300px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+}
+
+.laboratory {
+    background: white;
+    border: 1px solid #e4e7ec;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.lab-top {
+    padding: 20px;
+    border-bottom: 1px solid #eaecf0;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.lab-top p {
+    color: #667085;
+    margin-top: 5px;
+}
+
+.lab-status {
+    color: #12b76a;
+    font-size: 13px;
+}
+
+.equipment-area {
+    min-height: 450px;
+    padding: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+
+    position: relative;
+}
+
+.burette {
+    text-align: center;
+}
+
+.burette-label {
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.burette-tube {
+    width: 35px;
+    height: 260px;
+
+    border: 2px solid #98a2b3;
+    background: #f8fafc;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+.liquid {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 80%;
+
+    background: #d9f0ff;
+
+    transition: height .3s;
+}
+
+.tap {
+    margin-top: 8px;
+}
+
+.flask-equipment {
+    text-align: center;
+}
+
+.flask-neck {
+    width: 55px;
+    height: 80px;
+
+    border: 3px solid #98a2b3;
+    border-bottom: none;
+
+    margin: auto;
+}
+
+.flask-body {
+    width: 190px;
+    height: 150px;
+
+    border: 3px solid #98a2b3;
+    border-radius: 15px 15px 60px 60px;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.flask-liquid {
+    position: absolute;
+    bottom: 0;
+
+    width: 100%;
+    height: 25%;
+
+    background: #d9f0ff;
+
+    transition: height .4s;
+}
+
+.flask-label {
+    margin-top: 10px;
+    font-weight: 700;
+}
+
+.lab-controls {
+    position: absolute;
+    right: 20px;
+    top: 30px;
+
+    width: 150px;
+}
+
+.lab-controls h3 {
+    margin-bottom: 15px;
+}
+
+.lab-controls label {
+    display: block;
+    color: #667085;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.control-btn,
+.reset-btn {
+    width: 100%;
+    padding: 9px;
+    margin-bottom: 8px;
+
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+
+    background: white;
+    cursor: pointer;
+}
+
+.reset-btn {
+    color: #d92d20;
+}
+
+
+/* =========================
+   MEASUREMENTS
+========================= */
+
+.measurements {
+    border-top: 1px solid #eaecf0;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.measurement {
+    padding: 20px;
+    text-align: center;
+}
+
+.measurement span {
+    display: block;
+    color: #667085;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+
+/* =========================
+   AI PANEL
+========================= */
+
+.ai-panel {
+    background: white;
+
+    border: 1px solid #e4e7ec;
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 650px;
+}
+
+.ai-header {
+    padding: 18px;
+
+    display: flex;
+    gap: 12px;
+
+    border-bottom: 1px solid #eaecf0;
+}
+
+.ai-avatar {
+    width: 42px;
+    height: 42px;
+
+    background: #eaf2ff;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ai-header span {
+    color: #667085;
+    font-size: 12px;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 18px;
+    overflow-y: auto;
+}
+
+.ai-message {
+    background: #f2f4f7;
+    padding: 12px 14px;
+
+    border-radius: 12px;
+
+    line-height: 1.5;
+
+    margin-bottom: 12px;
+}
+
+.user-message {
+    background: #155eef;
+    color: white;
+
+    padding: 12px 14px;
+
+    border-radius: 12px;
+
+    margin-bottom: 12px;
+
+    margin-left: 30px;
+}
+
+.quick-questions {
+    padding: 10px 15px;
+}
+
+.quick-questions button {
+    display: block;
+
+    width: 100%;
+
+    text-align: left;
+
+    background: white;
+
+    border: 1px solid #d0d5dd;
+
+    padding: 8px;
+
+    margin-bottom: 7px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.chat-input,
+.main-chat-input {
+    padding: 12px;
+
+    border-top: 1px solid #eaecf0;
+
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input input,
+.main-chat-input input {
+    flex: 1;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 8px;
+
+    padding: 10px;
+
+    outline: none;
+}
+
+.chat-input button {
+    width: 45px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #155eef;
+
+    color: white;
+}
+
+
+/* =========================
+   LARGE AI
+========================= */
+
+.large-ai-chat {
+    max-width: 850px;
+    height: 600px;
+
+    margin: auto;
+
+    background: white;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.main-chat {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.main-chat-input input {
+    padding: 14px;
+}
+
+.main-chat-input button {
+    background: #155eef;
+    color: white;
+
+    border: none;
+
+    padding: 0 20px;
+
+    border-radius: 8px;
+}
+
+
+/* =========================
+   QUIZ
+========================= */
+
+.quiz-card {
+    max-width: 750px;
+
+    margin: auto;
+
+    background: white;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 16px;
+
+    padding: 35px;
+}
+
+.quiz-progress {
+    color: #155eef;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.quiz-options {
+    display: grid;
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+.quiz-options button {
+    text-align: left;
+
+    padding: 15px;
+
+    background: white;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+.quiz-options button:hover {
+    border-color: #155eef;
+}
+
+#quizFeedback {
+    margin-top: 20px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-grid {
+    max-width: 900px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+.progress-card {
+    background: white;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 15px;
+
+    padding: 30px;
+
+    text-align: center;
+}
+
+.progress-card span {
+    color: #667085;
+}
+
+.progress-card strong {
+    display: block;
+
+    font-size: 40px;
+
+    margin-top: 10px;
+}
+
+.level-card {
+    max-width: 900px;
+
+    margin: 25px auto;
+
+    background: white;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 15px;
+
+    padding: 30px;
+}
+
+.level-card p {
+    color: #667085;
+
+    margin: 10px 0 20px;
+}
+
+.progress-bar {
+    height: 12px;
+
+    background: #eaecf0;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+
+    width: 0%;
+
+    background: #155eef;
+
+    transition: width .4s;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    nav {
+        display: none;
+    }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 50px;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .feature-grid,
+    .experiment-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .lab-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .equipment-area {
+        gap: 40px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .page {
+        padding: 30px 18px;
+    }
+
+    .feature-grid,
+    .experiment-grid,
+    .progress-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-lab {
+        width: 250px;
+        height: 250px;
+    }
+
+    .equipment-area {
+        flex-direction: column;
+        padding-bottom: 250px;
+    }
+
+    .lab-controls {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        width: auto;
+    }
+
+    .measurements {
+        grid-template-columns: 1fr;
+    }
+
+}
