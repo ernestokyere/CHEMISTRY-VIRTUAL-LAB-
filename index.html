@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ChemLab — Virtual Chemistry Laboratory</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            🧪 <span>ChemLab</span>
+        </div>
+
+        <nav>
+            <button onclick="showPage('home')">Home</button>
+            <button onclick="showPage('lab')">Virtual Lab</button>
+            <button onclick="showPage('quiz')">Quizzes</button>
+            <button onclick="showPage('progress')">Progress</button>
+        </nav>
+
+        <button class="ai-nav-btn" onclick="showPage('ai')">
+            🤖 AI Assistant
+        </button>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN APPLICATION
+    ========================== -->
+
+    <main>
+
+
+        <!-- =========================
+             HOME
+        ========================== -->
+
+        <section id="home" class="page active">
+
+            <div class="hero">
+
+                <div class="hero-content">
+
+                    <span class="badge">
+                        🔬 Interactive Chemistry Learning
+                    </span>
+
+                    <h1>
+                        Learn Chemistry.
+                        <br>
+                        <span>Experiment Without Limits.</span>
+                    </h1>
+
+                    <p>
+                        Explore interactive chemistry experiments,
+                        ask an AI chemistry tutor questions,
+                        and test your knowledge with quizzes.
+                    </p>
+
+                    <div class="hero-buttons">
+
+                        <button
+                            class="primary-btn"
+                            onclick="showPage('lab')">
+                            🔬 Enter Virtual Lab
+                        </button>
+
+                        <button
+                            class="secondary-btn"
+                            onclick="showPage('ai')">
+                            🤖 Ask AI Tutor
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-lab">
+
+                    <div class="flask">
+                        ⚗️
+                    </div>
+
+                    <div class="bubble bubble1"></div>
+                    <div class="bubble bubble2"></div>
+                    <div class="bubble bubble3"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FEATURES -->
+
+            <div class="section-title">
+
+                <span>WHAT YOU CAN DO</span>
+
+                <h2>One Chemistry Platform</h2>
+
+            </div>
+
+
+            <div class="feature-grid">
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">🔬</div>
+
+                    <h3>Virtual Laboratory</h3>
+
+                    <p>
+                        Perform interactive chemistry experiments
+                        in a safe virtual environment.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">🤖</div>
+
+                    <h3>AI Chemistry Tutor</h3>
+
+                    <p>
+                        Ask chemistry questions and receive
+                        explanations designed for students.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">📝</div>
+
+                    <h3>Smart Quizzes</h3>
+
+                    <p>
+                        Test your understanding after learning
+                        each chemistry topic.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">🏆</div>
+
+                    <h3>Track Progress</h3>
+
+                    <p>
+                        Earn XP, complete experiments and
+                        monitor your chemistry progress.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             VIRTUAL LAB
+        ========================== -->
+
+        <section id="lab" class="page">
+
+            <div class="page-header">
+
+                <span class="badge">
+                    🔬 VIRTUAL LAB
+                </span>
+
+                <h1>Choose an Experiment</h1>
+
+                <p>
+                    Select an experiment to enter the virtual laboratory.
+                </p>
+
+            </div>
+
+
+            <div class="experiment-grid">
+
+                <div
+                    class="experiment-card"
+                    onclick="openExperiment('titration')">
+
+                    <div class="experiment-image">
+                        ⚗️
+                    </div>
+
+                    <div class="experiment-content">
+
+                        <span class="level beginner">
+                            BEGINNER
+                        </span>
+
+                        <h2>Acid–Base Titration</h2>
+
+                        <p>
+                            Determine the concentration of an
+                            unknown solution using titration.
+                        </p>
+
+                        <button class="primary-btn">
+                            Start Experiment →
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="experiment-card locked">
+
+                    <div class="experiment-image">
+                        🔒
+                    </div>
+
+                    <div class="experiment-content">
+
+                        <span class="level intermediate">
+                            COMING SOON
+                        </span>
+
+                        <h2>Rates of Reaction</h2>
+
+                        <p>
+                            Investigate how different factors
+                            affect reaction rate.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="experiment-card locked">
+
+                    <div class="experiment-image">
+                        🔒
+                    </div>
+
+                    <div class="experiment-content">
+
+                        <span class="level intermediate">
+                            COMING SOON
+                        </span>
+
+                        <h2>Electrolysis</h2>
+
+                        <p>
+                            Explore chemical reactions caused
+                            by electric current.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             TITRATION LAB
+        ========================== -->
+
+        <section id="titration" class="page">
+
+            <div class="lab-header">
+
+                <button
+                    class="back-btn"
+                    onclick="showPage('lab')">
+                    ← Experiments
+                </button>
+
+                <div>
+
+                    <span class="badge">
+                        EXPERIMENT 01
+                    </span>
+
+                    <h1>Acid–Base Titration</h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="lab-layout">
+
+
+                <!-- EXPERIMENT AREA -->
+
+                <div class="laboratory">
+
+                    <div class="lab-top">
+
+                        <div>
+                            <h2>Virtual Laboratory</h2>
+
+                            <p>
+                                Perform the titration carefully.
+                            </p>
+                        </div>
+
+                        <div class="lab-status">
+                            ● Experiment Active
+                        </div>
+
+                    </div>
+
+
+                    <div class="equipment-area">
+
+
+                        <!-- BURETTE -->
+
+                        <div class="equipment burette">
+
+                            <div class="burette-label">
+                                Burette
+                            </div>
+
+                            <div class="burette-tube">
+
+                                <div
+                                    id="buretteLiquid"
+                                    class="liquid">
+                                </div>
+
+                            </div>
+
+                            <div class="tap">
+                                ⚙️
+                            </div>
+
+                        </div>
+
+
+                        <!-- FLASK -->
+
+                        <div class="equipment flask-equipment">
+
+                            <div class="flask-neck"></div>
+
+                            <div class="flask-body">
+
+                                <div
+                                    id="flaskLiquid"
+                                    class="flask-liquid">
+                                </div>
+
+                            </div>
+
+                            <div class="flask-label">
+                                Conical Flask
+                            </div>
+
+                        </div>
+
+
+                        <!-- CONTROLS -->
+
+                        <div class="lab-controls">
+
+                            <h3>Controls</h3>
+
+                            <label>
+                                Add titrant
+                            </label>
+
+                            <button
+                                class="control-btn"
+                                onclick="addTitrant()">
+                                + Add 1 mL
+                            </button>
+
+                            <button
+                                class="control-btn"
+                                onclick="addTitrant()">
+                                + Add 5 mL
+                            </button>
+
+                            <button
+                                class="reset-btn"
+                                onclick="resetExperiment()">
+                                Reset Experiment
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MEASUREMENTS -->
+
+                    <div class="measurements">
+
+                        <div class="measurement">
+
+                            <span>Titrant Added</span>
+
+                            <strong id="volume">
+                                0.00 mL
+                            </strong>
+
+                        </div>
+
+
+                        <div class="measurement">
+
+                            <span>pH</span>
+
+                            <strong id="ph">
+                                2.00
+                            </strong>
+
+                        </div>
+
+
+                        <div class="measurement">
+
+                            <span>Indicator</span>
+
+                            <strong id="indicator">
+                                Colourless
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- AI PANEL -->
+
+                <aside class="ai-panel">
+
+                    <div class="ai-header">
+
+                        <div class="ai-avatar">
+                            🤖
+                        </div>
+
+                        <div>
+
+                            <h3>ChemLab AI</h3>
+
+                            <span>
+                                Your Chemistry Tutor
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="chatMessages" class="chat-messages">
+
+                        <div class="ai-message">
+
+                            👋 Hi! I'm your Chemistry Tutor.
+
+                            <br><br>
+
+                            I'm here to help you understand
+                            the titration experiment.
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quick-questions">
+
+                        <button onclick="askAI('What is titration?')">
+                            What is titration?
+                        </button>
+
+                        <button onclick="askAI('Why do we use an indicator?')">
+                            Why use an indicator?
+                        </button>
+
+                        <button onclick="askAI('What is the endpoint?')">
+                            What is the endpoint?
+                        </button>
+
+                    </div>
+
+
+                    <div class="chat-input">
+
+                        <input
+                            id="questionInput"
+                            type="text"
+                            placeholder="Ask a chemistry question...">
+
+                        <button onclick="sendQuestion()">
+                            ➤
+                        </button>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+
+            <!-- QUIZ BUTTON -->
+
+            <div class="experiment-complete">
+
+                <button
+                    class="primary-btn"
+                    onclick="showPage('quiz')">
+
+                    📝 Take Experiment Quiz
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             AI PAGE
+        ========================== -->
+
+        <section id="ai" class="page">
+
+            <div class="page-header">
+
+                <span class="badge">
+                    🤖 AI CHEMISTRY TUTOR
+                </span>
+
+                <h1>Ask Anything About Chemistry</h1>
+
+                <p>
+                    Your AI tutor will help you understand
+                    chemistry concepts step by step.
+                </p>
+
+            </div>
+
+
+            <div class="large-ai-chat">
+
+                <div id="mainChat" class="main-chat">
+
+                    <div class="ai-message">
+
+                        👋 Welcome to ChemLab AI.
+
+                        <br><br>
+
+                        What chemistry topic would you
+                        like to learn today?
+
+                    </div>
+
+                </div>
+
+
+                <div class="main-chat-input">
+
+                    <input
+                        id="mainQuestion"
+                        type="text"
+                        placeholder="Ask your chemistry question...">
+
+                    <button onclick="mainAIQuestion()">
+                        Ask AI
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             QUIZ
+        ========================== -->
+
+        <section id="quiz" class="page">
+
+            <div class="page-header">
+
+                <span class="badge">
+                    📝 CHEMISTRY QUIZ
+                </span>
+
+                <h1>Test Your Knowledge</h1>
+
+                <p>
+                    Let's see what you learned from the laboratory.
+                </p>
+
+            </div>
+
+
+            <div class="quiz-card">
+
+                <div class="quiz-progress">
+                    Question <span id="questionNumber">1</span> of 5
+                </div>
+
+                <h2 id="quizQuestion">
+                    What is the main purpose of titration?
+                </h2>
+
+
+                <div id="quizOptions" class="quiz-options">
+
+                    <button onclick="answerQuiz(0)">
+                        A. To measure temperature
+                    </button>
+
+                    <button onclick="answerQuiz(1)">
+                        B. To determine concentration
+                    </button>
+
+                    <button onclick="answerQuiz(2)">
+                        C. To measure mass
+                    </button>
+
+                    <button onclick="answerQuiz(3)">
+                        D. To produce electricity
+                    </button>
+
+                </div>
+
+
+                <div id="quizFeedback"></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             PROGRESS
+        ========================== -->
+
+        <section id="progress" class="page">
+
+            <div class="page-header">
+
+                <span class="badge">
+                    🏆 YOUR PROGRESS
+                </span>
+
+                <h1>Chemistry Progress</h1>
+
+            </div>
+
+
+            <div class="progress-grid">
+
+                <div class="progress-card">
+
+                    <span>XP</span>
+
+                    <strong id="xp">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-card">
+
+                    <span>Experiments</span>
+
+                    <strong>
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-card">
+
+                    <span>Quiz Score</span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="level-card">
+
+                <h2>🧪 Chemistry Beginner</h2>
+
+                <p>
+                    Complete experiments and quizzes
+                    to level up.
+                </p>
+
+                <div class="progress-bar">
+
+                    <div
+                        id="xpBar"
+                        class="progress-fill">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>
