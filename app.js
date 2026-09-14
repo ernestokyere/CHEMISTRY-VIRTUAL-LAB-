@@ -1,24 +1,23 @@
 /* =========================================
-   CHEMLAB APPLICATION
+   CHEMLAB — STAGE 2
+   REAL-RULE-BASED TITRATION ENGINE
 ========================================= */
 
 
 /* =========================================
-   PAGE NAVIGATION
+   APPLICATION NAVIGATION
 ========================================= */
 
 function showPage(pageId) {
 
-    const pages = document.querySelectorAll(".page");
-
-    pages.forEach(page => {
+    document.querySelectorAll(".page").forEach(page => {
         page.classList.remove("active");
     });
 
-    const selectedPage = document.getElementById(pageId);
+    const page = document.getElementById(pageId);
 
-    if (selectedPage) {
-        selectedPage.classList.add("active");
+    if (page) {
+        page.classList.add("active");
     }
 
     window.scrollTo({
@@ -28,51 +27,247 @@ function showPage(pageId) {
 }
 
 
-/* =========================================
-   EXPERIMENT NAVIGATION
-========================================= */
-
 function openExperiment(experiment) {
 
     if (experiment === "titration") {
-
         showPage("titration");
-
         resetExperiment();
-
     }
+}
+
+
+/* =========================================
+   TITRATION CONFIGURATION
+=========================================
+
+   Experiment:
+
+   HCl + NaOH → NaCl + H₂O
+
+   HCl concentration:
+   0.100 mol/L
+
+   Initial HCl volume:
+   25.00 mL
+
+   NaOH concentration:
+   0.100 mol/L
+
+   Therefore:
+
+   n(HCl) = C × V
+          = 0.100 × 0.025
+          = 0.00250 mol
+
+   Equivalence occurs when:
+
+   n(NaOH) = 0.00250 mol
+
+   At 0.100 mol/L NaOH:
+
+   V = n / C
+     = 0.025 L
+     = 25.00 mL
+
+========================================= */
+
+const titration = {
+
+    acid: {
+        name: "HCl",
+        concentration: 0.100,
+        initialVolume: 25.00
+    },
+
+    base: {
+        name: "NaOH",
+        concentration: 0.100
+    },
+
+    titrantVolume: 0,
+
+    indicator: "phenolphthalein"
+
+};
+
+
+/* =========================================
+   CONSTANTS
+========================================= */
+
+const PHENOLPHTHALEIN_ENDPOINT = 8.20;
+
+
+/* =========================================
+   ADD TITRANT
+========================================= */
+
+function addTitrant(amount = 1) {
+
+    titration.titrantVolume += amount;
+
+    /*
+       Prevent unrealistic volume.
+    */
+
+    if (titration.titrantVolume > 50) {
+        titration.titrantVolume = 50;
+    }
+
+    calculateTitration();
 
 }
 
 
 /* =========================================
-   TITRATION SIMULATION
+   CALCULATE TITRATION
 ========================================= */
 
-let titrantVolume = 0;
+function calculateTitration() {
+
+    const acidConcentration =
+        titration.acid.concentration;
+
+    const acidVolumeL =
+        titration.acid.initialVolume / 1000;
+
+    const baseConcentration =
+        titration.base.concentration;
+
+    const baseVolumeL =
+        titration.titrantVolume / 1000;
 
 
-/*
-   Simplified educational model.
+    /*
+       MOLES OF HCl
+    */
 
-   Later we will replace this with
-   a proper chemistry simulation engine.
-*/
+    const acidMoles =
+        acidConcentration * acidVolumeL;
 
-function addTitrant(amount = 1) {
 
-    titrantVolume += amount;
+    /*
+       MOLES OF NaOH
+    */
 
-    if (titrantVolume > 50) {
-        titrantVolume = 50;
+    const baseMoles =
+        baseConcentration * baseVolumeL;
+
+
+    /*
+       TOTAL SOLUTION VOLUME
+    */
+
+    const totalVolumeL =
+        acidVolumeL + baseVolumeL;
+
+
+    /*
+       Determine pH
+    */
+
+    let pH;
+
+    let state;
+
+
+    /*
+       BEFORE EQUIVALENCE
+
+       HCl is in excess.
+    */
+
+    if (acidMoles > baseMoles) {
+
+        const remainingHPlus =
+            acidMoles - baseMoles;
+
+        const concentrationHPlus =
+            remainingHPlus / totalVolumeL;
+
+        pH =
+            -Math.log10(concentrationHPlus);
+
+        state =
+            "Acidic";
+
+
+    /*
+       AT EQUIVALENCE
+
+       Strong acid + strong base.
+
+       Idealized pH ≈ 7.
+    */
+
+    } else if (
+        Math.abs(acidMoles - baseMoles)
+        < 0.0000001
+    ) {
+
+        pH = 7.00;
+
+        state =
+            "Neutral";
+
+
+    /*
+       AFTER EQUIVALENCE
+
+       OH⁻ is in excess.
+    */
+
+    } else {
+
+        const remainingOH =
+            baseMoles - acidMoles;
+
+        const concentrationOH =
+            remainingOH / totalVolumeL;
+
+        const pOH =
+            -Math.log10(concentrationOH);
+
+        pH =
+            14 - pOH;
+
+        state =
+            "Basic";
     }
 
-    updateTitrationDisplay();
+
+    /*
+       Keep pH within normal scale.
+    */
+
+    pH =
+        Math.max(0, Math.min(14, pH));
+
+
+    /*
+       Update the interface.
+    */
+
+    updateTitrationDisplay(
+        pH,
+        state,
+        acidMoles,
+        baseMoles
+    );
 
 }
 
 
-function updateTitrationDisplay() {
+/* =========================================
+   UPDATE DISPLAY
+========================================= */
+
+function updateTitrationDisplay(
+    pH,
+    state,
+    acidMoles,
+    baseMoles
+) {
 
     const volumeElement =
         document.getElementById("volume");
@@ -90,160 +285,366 @@ function updateTitrationDisplay() {
         document.getElementById("flaskLiquid");
 
 
-    volumeElement.textContent =
-        titrantVolume.toFixed(2) + " mL";
-
-
-    /*
-       Educational demonstration of
-       pH movement toward the endpoint.
-    */
-
-    let ph;
-
-    if (titrantVolume < 20) {
-
-        ph = 2 + titrantVolume * 0.15;
-
-    } else if (titrantVolume < 25) {
-
-        ph = 5 + (titrantVolume - 20) * 1.5;
-
-    } else {
-
-        ph = 12;
+    if (!volumeElement) {
+        return;
     }
 
 
-    ph = Math.min(ph, 12);
+    /*
+       Volume
+    */
 
-    phElement.textContent =
-        ph.toFixed(2);
+    volumeElement.textContent =
+        titration.titrantVolume.toFixed(2)
+        + " mL";
 
 
     /*
-       Indicator state
+       pH
     */
 
-    if (ph < 8.2) {
+    phElement.textContent =
+        pH.toFixed(2);
 
-        indicatorElement.textContent =
-            "Colourless";
 
-    } else {
+    /*
+       Indicator
+
+       Phenolphthalein is colourless
+       below its transition range and
+       becomes pink in the basic range.
+    */
+
+    if (pH >= PHENOLPHTHALEIN_ENDPOINT) {
 
         indicatorElement.textContent =
             "Pink";
+
+    } else {
+
+        indicatorElement.textContent =
+            "Colourless";
     }
 
 
     /*
-       Visual liquid movement
+       Burette visual.
+
+       More titrant delivered means
+       less liquid remaining in burette.
     */
 
-    const buretteHeight =
-        Math.max(10, 80 - titrantVolume * 1.5);
+    const remainingBurette =
+        Math.max(
+            10,
+            90 -
+            (titration.titrantVolume / 50) * 80
+        );
 
     buretteLiquid.style.height =
-        buretteHeight + "%";
+        remainingBurette + "%";
 
 
-    const flaskHeight =
-        Math.min(80, 25 + titrantVolume);
+    /*
+       Flask liquid rises as titrant
+       is added.
+    */
+
+    const flaskLevel =
+        Math.min(
+            80,
+            25 +
+            (titration.titrantVolume / 50) * 55
+        );
 
     flaskLiquid.style.height =
-        flaskHeight + "%";
+        flaskLevel + "%";
+
+
+    /*
+       Change the flask appearance
+       when solution becomes basic.
+    */
+
+    if (pH >= PHENOLPHTHALEIN_ENDPOINT) {
+
+        flaskLiquid.style.background =
+            "#f7a8c4";
+
+    } else {
+
+        flaskLiquid.style.background =
+            "#d9f0ff";
+    }
+
+
+    /*
+       Detect endpoint.
+    */
+
+    updateEndpointMessage(
+        pH,
+        acidMoles,
+        baseMoles
+    );
+}
+
+
+/* =========================================
+   ENDPOINT MESSAGE
+========================================= */
+
+function updateEndpointMessage(
+    pH,
+    acidMoles,
+    baseMoles
+) {
+
+    let message =
+        document.getElementById(
+            "endpointMessage"
+        );
+
+
+    /*
+       Create the message element
+       if it doesn't exist yet.
+    */
+
+    if (!message) {
+
+        message =
+            document.createElement("div");
+
+        message.id =
+            "endpointMessage";
+
+        message.style.marginTop =
+            "15px";
+
+        message.style.padding =
+            "12px";
+
+        message.style.borderRadius =
+            "8px";
+
+        const laboratory =
+            document.querySelector(
+                ".laboratory"
+            );
+
+        if (laboratory) {
+            laboratory.appendChild(message);
+        }
+    }
+
+
+    /*
+       Near equivalence.
+    */
+
+    const difference =
+        Math.abs(
+            acidMoles - baseMoles
+        );
+
+
+    if (
+        difference < 0.00015 &&
+        pH >= 7 &&
+        pH < PHENOLPHTHALEIN_ENDPOINT
+    ) {
+
+        message.textContent =
+            "⚠️ You are approaching the equivalence point.";
+
+    }
+
+
+    /*
+       Indicator endpoint reached.
+    */
+
+    else if (
+        pH >= PHENOLPHTHALEIN_ENDPOINT
+    ) {
+
+        message.textContent =
+            "🎯 Phenolphthalein endpoint reached.";
+
+    }
+
+
+    /*
+       Still acidic.
+    */
+
+    else {
+
+        message.textContent =
+            "🔬 The solution is still acidic. Continue adding titrant.";
+
+    }
 
 }
 
 
 /* =========================================
-   RESET EXPERIMENT
+   RESET
 ========================================= */
 
 function resetExperiment() {
 
-    titrantVolume = 0;
+    titration.titrantVolume = 0;
 
-    updateTitrationDisplay();
+    calculateTitration();
 
 }
 
 
 /* =========================================
-   AI DEMO
+   AI TUTOR — TEMPORARY STAGE 2 VERSION
 ========================================= */
 
 function askAI(question) {
 
     const chat =
-        document.getElementById("chatMessages");
+        document.getElementById(
+            "chatMessages"
+        );
 
-    chat.innerHTML += `
-        <div class="user-message">
-            ${question}
-        </div>
-    `;
+    if (!chat) {
+        return;
+    }
+
+
+    addChatMessage(
+        chat,
+        question,
+        "user"
+    );
 
 
     let answer =
-        "That's a great chemistry question. " +
-        "The full AI tutor will be connected in the next stage.";
-
-
-    if (question === "What is titration?") {
-
-        answer =
-            "Titration is a laboratory technique used " +
-            "to determine the concentration of a solution " +
-            "by reacting it with a solution of known concentration.";
-
-    }
-
-
-    if (question === "Why do we use an indicator?") {
-
-        answer =
-            "An indicator helps us identify when a chemical " +
-            "reaction has reached a particular point, such as " +
-            "the endpoint of an acid–base titration.";
-
-    }
-
-
-    if (question === "What is the endpoint?") {
-
-        answer =
-            "The endpoint is the point during a titration " +
-            "where the indicator shows that the reaction has " +
-            "reached the desired stage.";
-
-    }
+        chemistryAnswer(question);
 
 
     setTimeout(() => {
 
-        chat.innerHTML += `
-            <div class="ai-message">
-                🤖 ${answer}
-            </div>
-        `;
+        addChatMessage(
+            chat,
+            answer,
+            "ai"
+        );
 
-        chat.scrollTop = chat.scrollHeight;
+        chat.scrollTop =
+            chat.scrollHeight;
 
-    }, 400);
+    }, 300);
 
 }
 
 
+function chemistryAnswer(question) {
+
+    const q =
+        question.toLowerCase();
+
+
+    if (q.includes("titration")) {
+
+        return `
+            Titration is a technique used to determine
+            the concentration of an unknown solution by
+            reacting it with a solution whose concentration
+            is known.
+        `;
+    }
+
+
+    if (
+        q.includes("indicator") ||
+        q.includes("phenolphthalein")
+    ) {
+
+        return `
+            Phenolphthalein is an acid-base indicator.
+            It is colourless in acidic solution and becomes
+            pink as the solution becomes sufficiently basic.
+            In this experiment, the colour change helps us
+            identify the endpoint.
+        `;
+    }
+
+
+    if (
+        q.includes("endpoint") ||
+        q.includes("equivalence")
+    ) {
+
+        return `
+            The equivalence point is where the reacting
+            amounts of acid and base are chemically equivalent.
+            The endpoint is the observable point indicated by
+            the indicator's colour change.
+        `;
+    }
+
+
+    if (q.includes("ph")) {
+
+        return `
+            pH describes how acidic or basic a solution is.
+            A lower pH means more acidic, while a higher pH
+            means more basic.
+        `;
+    }
+
+
+    return `
+        Good question! The full AI Chemistry Tutor will be
+        connected in Stage 3. For now, ask me about titration,
+        pH, indicators, or the equivalence point.
+    `;
+}
+
+
+function addChatMessage(
+    container,
+    message,
+    type
+) {
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        type === "user"
+            ? "user-message"
+            : "ai-message";
+
+    div.innerHTML =
+        message;
+
+    container.appendChild(div);
+}
+
+
 /* =========================================
-   SEND AI QUESTION
+   SEND QUESTION
 ========================================= */
 
 function sendQuestion() {
 
     const input =
-        document.getElementById("questionInput");
+        document.getElementById(
+            "questionInput"
+        );
+
+    if (!input) {
+        return;
+    }
+
 
     const question =
         input.value.trim();
@@ -257,7 +658,6 @@ function sendQuestion() {
     askAI(question);
 
     input.value = "";
-
 }
 
 
@@ -268,7 +668,20 @@ function sendQuestion() {
 function mainAIQuestion() {
 
     const input =
-        document.getElementById("mainQuestion");
+        document.getElementById(
+            "mainQuestion"
+        );
+
+    const chat =
+        document.getElementById(
+            "mainChat"
+        );
+
+
+    if (!input || !chat) {
+        return;
+    }
+
 
     const question =
         input.value.trim();
@@ -279,46 +692,33 @@ function mainAIQuestion() {
     }
 
 
-    const chat =
-        document.getElementById("mainChat");
-
-
-    chat.innerHTML += `
-        <div class="user-message">
-            ${question}
-        </div>
-    `;
+    addChatMessage(
+        chat,
+        question,
+        "user"
+    );
 
 
     setTimeout(() => {
 
-        chat.innerHTML += `
-            <div class="ai-message">
-
-                🤖 I'm your ChemLab AI Tutor.
-
-                <br><br>
-
-                In the next stage, I'll be connected
-                to a real AI model so I can answer
-                chemistry questions intelligently.
-
-            </div>
-        `;
+        addChatMessage(
+            chat,
+            chemistryAnswer(question),
+            "ai"
+        );
 
         chat.scrollTop =
             chat.scrollHeight;
 
-    }, 400);
+    }, 300);
 
 
     input.value = "";
-
 }
 
 
 /* =========================================
-   QUIZ
+   QUIZ ENGINE
 ========================================= */
 
 const quizQuestions = [
@@ -340,13 +740,13 @@ const quizQuestions = [
 
     {
         question:
-            "What is used to show the endpoint of an acid-base titration?",
+            "What is the purpose of an indicator?",
 
         options: [
-            "A thermometer",
-            "An indicator",
-            "A balance",
-            "A stopwatch"
+            "To measure mass",
+            "To show a chemical change such as the endpoint",
+            "To increase concentration",
+            "To measure temperature"
         ],
 
         correct: 1
@@ -355,43 +755,43 @@ const quizQuestions = [
 
     {
         question:
-            "What type of reaction occurs between an acid and a base?",
+            "What is the pH of an ideal strong acid-strong base equivalence point?",
 
         options: [
-            "Neutralization",
-            "Combustion",
-            "Decomposition",
-            "Polymerization"
+            "2",
+            "5",
+            "7",
+            "12"
         ],
 
-        correct: 0
+        correct: 2
     },
 
 
     {
         question:
-            "What does pH measure?",
-
-        options: [
-            "Acidity or alkalinity",
-            "Mass",
-            "Temperature",
-            "Volume"
-        ],
-
-        correct: 0
-    },
-
-
-    {
-        question:
-            "Which piece of equipment commonly delivers the titrant?",
+            "Which equipment normally delivers the titrant?",
 
         options: [
             "Burette",
-            "Beaker",
+            "Balance",
             "Thermometer",
-            "Balance"
+            "Evaporating dish"
+        ],
+
+        correct: 0
+    },
+
+
+    {
+        question:
+            "In this simulation, which reaction is being studied?",
+
+        options: [
+            "HCl + NaOH",
+            "O₂ + H₂",
+            "NaCl + H₂O",
+            "CO₂ + O₂"
         ],
 
         correct: 0
@@ -409,9 +809,10 @@ function answerQuiz(answer) {
     const question =
         quizQuestions[currentQuestion];
 
-
     const feedback =
-        document.getElementById("quizFeedback");
+        document.getElementById(
+            "quizFeedback"
+        );
 
 
     if (answer === question.correct) {
@@ -424,7 +825,7 @@ function answerQuiz(answer) {
     } else {
 
         feedback.textContent =
-            "❌ Not quite. Review the concept and try the next question.";
+            "❌ Incorrect. Keep learning!";
 
     }
 
@@ -433,17 +834,19 @@ function answerQuiz(answer) {
 
         currentQuestion++;
 
-        if (currentQuestion >= quizQuestions.length) {
+        if (
+            currentQuestion >=
+            quizQuestions.length
+        ) {
 
             finishQuiz();
 
         } else {
 
             loadQuizQuestion();
-
         }
 
-    }, 900);
+    }, 800);
 
 }
 
@@ -454,43 +857,56 @@ function loadQuizQuestion() {
         quizQuestions[currentQuestion];
 
 
-    document.getElementById("questionNumber")
-        .textContent =
+    document.getElementById(
+        "questionNumber"
+    ).textContent =
         currentQuestion + 1;
 
 
-    document.getElementById("quizQuestion")
-        .textContent =
+    document.getElementById(
+        "quizQuestion"
+    ).textContent =
         question.question;
 
 
     const options =
-        document.getElementById("quizOptions");
+        document.getElementById(
+            "quizOptions"
+        );
 
 
     options.innerHTML = "";
 
 
-    question.options.forEach((option, index) => {
+    question.options.forEach(
+        (option, index) => {
 
-        const button =
-            document.createElement("button");
+            const button =
+                document.createElement(
+                    "button"
+                );
 
-        button.textContent =
-            String.fromCharCode(65 + index) +
-            ". " +
-            option;
-
-        button.onclick = () =>
-            answerQuiz(index);
-
-        options.appendChild(button);
-
-    });
+            button.textContent =
+                String.fromCharCode(
+                    65 + index
+                )
+                + ". "
+                + option;
 
 
-    document.getElementById("quizFeedback")
-        .textContent = "";
+            button.onclick = () =>
+                answerQuiz(index);
+
+
+            options.appendChild(button);
+
+        }
+    );
+
+
+    document.getElementById(
+        "quizFeedback"
+    ).textContent = "";
 
 }
 
@@ -499,33 +915,38 @@ function finishQuiz() {
 
     const percentage =
         Math.round(
-            (quizScore / quizQuestions.length) * 100
+            quizScore /
+            quizQuestions.length *
+            100
         );
 
 
-    document.getElementById("quizQuestion")
-        .textContent =
-        `Quiz Complete! You scored ${percentage}%`;
+    document.getElementById(
+        "quizQuestion"
+    ).textContent =
+        `Quiz Complete — ${percentage}%`;
 
 
-    document.getElementById("quizOptions")
-        .innerHTML = `
-            <button onclick="restartQuiz()">
-                🔄 Try Again
-            </button>
-        `;
+    document.getElementById(
+        "quizOptions"
+    ).innerHTML = `
+        <button onclick="restartQuiz()">
+            🔄 Try Again
+        </button>
+    `;
 
 
-    document.getElementById("quizFeedback")
-        .textContent =
-        "🏆 Great work! Keep learning chemistry.";
-
+    document.getElementById(
+        "quizFeedback"
+    ).textContent =
+        `You answered ${quizScore} out of ${quizQuestions.length} correctly.`;
 }
 
 
 function restartQuiz() {
 
     currentQuestion = 0;
+
     quizScore = 0;
 
     loadQuizQuestion();
@@ -541,9 +962,9 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        loadQuizQuestion();
-
         resetExperiment();
+
+        loadQuizQuestion();
 
     }
 );
