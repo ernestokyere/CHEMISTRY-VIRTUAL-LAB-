@@ -503,20 +503,25 @@ function resetExperiment() {
 
 
 /* =========================================
-   AI TUTOR — TEMPORARY STAGE 2 VERSION
+   CHEMLAB AI — REAL AI ASSISTANT
 ========================================= */
 
-function askAI(question) {
+async function askAI(question) {
 
     const chat =
-        document.getElementById(
-            "chatMessages"
-        );
+        document.getElementById("chatMessages");
 
     if (!chat) {
+        console.error(
+            "ChemLab AI: chatMessages element not found."
+        );
         return;
     }
 
+
+    /* =========================================
+       SHOW STUDENT QUESTION
+    ========================================= */
 
     addChatMessage(
         chat,
@@ -525,89 +530,220 @@ function askAI(question) {
     );
 
 
-    let answer =
-        chemistryAnswer(question);
+    /* =========================================
+       SHOW AI LOADING MESSAGE
+    ========================================= */
+
+    const loading =
+        document.createElement("div");
+
+    loading.className =
+        "ai-message";
+
+    loading.textContent =
+        "🤖 ChemLab AI is thinking...";
+
+    chat.appendChild(loading);
+
+    chat.scrollTop =
+        chat.scrollHeight;
 
 
-    setTimeout(() => {
+    try {
+
+        /* =========================================
+           GET CURRENT EXPERIMENT STATE
+        ========================================= */
+
+        let experiment = {};
+
+        if (
+            typeof getExperimentState ===
+            "function"
+        ) {
+
+            experiment =
+                getExperimentState();
+
+        } else {
+
+            /*
+             * Fallback if the experiment-state
+             * function has not loaded.
+             */
+
+            experiment = {
+
+                titrantVolume:
+                    typeof titration !== "undefined"
+                        ? titration.titrantVolume.toFixed(2)
+                        : "0.00",
+
+                pH:
+                    "Unknown",
+
+                indicator:
+                    "Unknown",
+
+                state:
+                    "Unknown"
+
+            };
+
+        }
+
+
+        /* =========================================
+           SEND QUESTION TO SUPABASE AI
+        ========================================= */
+
+        const response =
+            await fetch(
+                "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/chemistry-ai",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        /*
+                         * IMPORTANT:
+                         * Replace the text below with
+                         * your Supabase PUBLISHABLE KEY.
+                         *
+                         * Do NOT use your OpenAI API key.
+                         */
+
+                        "apikey":
+                            "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            question:
+                                question,
+
+                            experiment:
+                                experiment
+
+                        })
+
+                }
+            );
+
+
+        /* =========================================
+           READ SERVER RESPONSE
+        ========================================= */
+
+        const data =
+            await response.json();
+
+
+        /* =========================================
+           REMOVE LOADING MESSAGE
+        ========================================= */
+
+        loading.remove();
+
+
+        /* =========================================
+           HANDLE ERROR
+        ========================================= */
+
+        if (!response.ok) {
+
+            console.error(
+                "ChemLab AI error:",
+                data
+            );
+
+
+            addChatMessage(
+                chat,
+
+                "⚠️ ChemLab AI couldn't answer right now. Please try again.",
+
+                "ai"
+            );
+
+            return;
+
+        }
+
+
+        /* =========================================
+           CHECK AI ANSWER
+        ========================================= */
+
+        if (
+            !data.answer ||
+            typeof data.answer !== "string"
+        ) {
+
+            console.error(
+                "Invalid AI response:",
+                data
+            );
+
+
+            addChatMessage(
+                chat,
+
+                "⚠️ The AI returned an unexpected response.",
+
+                "ai"
+            );
+
+            return;
+
+        }
+
+
+        /* =========================================
+           DISPLAY REAL AI ANSWER
+        ========================================= */
 
         addChatMessage(
             chat,
-            answer,
+
+            data.answer,
+
             "ai"
         );
+
 
         chat.scrollTop =
             chat.scrollHeight;
 
-    }, 300);
+
+    } catch (error) {
+
+        /* =========================================
+           CONNECTION ERROR
+        ========================================= */
+
+        console.error(
+            "ChemLab AI connection error:",
+            error
+        );
+
+
+        loading.textContent =
+            "⚠️ I couldn't connect to ChemLab AI. Please try again.";
+
+    }
 
 }
 
 
-function chemistryAnswer(question) {
-
-    const q =
-        question.toLowerCase();
-
-
-    if (q.includes("titration")) {
-
-        return `
-            Titration is a technique used to determine
-            the concentration of an unknown solution by
-            reacting it with a solution whose concentration
-            is known.
-        `;
-    }
-
-
-    if (
-        q.includes("indicator") ||
-        q.includes("phenolphthalein")
-    ) {
-
-        return `
-            Phenolphthalein is an acid-base indicator.
-            It is colourless in acidic solution and becomes
-            pink as the solution becomes sufficiently basic.
-            In this experiment, the colour change helps us
-            identify the endpoint.
-        `;
-    }
-
-
-    if (
-        q.includes("endpoint") ||
-        q.includes("equivalence")
-    ) {
-
-        return `
-            The equivalence point is where the reacting
-            amounts of acid and base are chemically equivalent.
-            The endpoint is the observable point indicated by
-            the indicator's colour change.
-        `;
-    }
-
-
-    if (q.includes("ph")) {
-
-        return `
-            pH describes how acidic or basic a solution is.
-            A lower pH means more acidic, while a higher pH
-            means more basic.
-        `;
-    }
-
-
-    return `
-        Good question! The full AI Chemistry Tutor will be
-        connected in Stage 3. For now, ask me about titration,
-        pH, indicators, or the equivalence point.
-    `;
-}
-
+/* =========================================
+   DISPLAY CHAT MESSAGE
+========================================= */
 
 function addChatMessage(
     container,
@@ -618,17 +754,26 @@ function addChatMessage(
     const div =
         document.createElement("div");
 
+
     div.className =
         type === "user"
             ? "user-message"
             : "ai-message";
 
-    div.innerHTML =
+
+    /*
+     * Use textContent instead of innerHTML
+     * so AI/user text cannot inject HTML
+     * into the page.
+     */
+
+    div.textContent =
         message;
 
-    container.appendChild(div);
-}
 
+    container.appendChild(div);
+
+}
 
 /* =========================================
    SEND QUESTION
