@@ -772,3 +772,159 @@ document.addEventListener(
 
     }
 );
+
+/* =========================================
+   PREMIUM ACCESS UI
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        const unlockButton =
+            document.getElementById(
+                "premiumUnlockButton"
+            );
+
+        const experimentButtons =
+            document.querySelectorAll(
+                ".premium-experiment-button"
+            );
+
+
+        async function checkPremium() {
+
+            const status =
+                await getPremiumStatus();
+
+
+            if (
+                status.loggedIn &&
+                status.premium
+            ) {
+
+                unlockButton.textContent =
+                    "👑 Premium Active";
+
+
+                experimentButtons.forEach(
+                    (button) => {
+
+                        button.textContent =
+                            "🧪 Open Experiment";
+
+                    }
+                );
+
+            }
+
+        }
+
+
+        await checkPremium();
+
+
+        /* =====================================
+           UNLOCK BUTTON
+        ===================================== */
+
+        if (unlockButton) {
+
+            unlockButton.addEventListener(
+                "click",
+                async () => {
+
+                    const status =
+                        await getPremiumStatus();
+
+
+                    if (!status.loggedIn) {
+
+                        alert(
+                            "Please sign in or create an account first."
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (status.premium) {
+
+                        alert(
+                            "Your Premium access is already active."
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * Payment will be connected
+                     * here in the next step.
+                     */
+
+                    alert(
+                        "Premium payment will be available soon."
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           PREMIUM EXPERIMENT BUTTONS
+        ===================================== */
+
+        experimentButtons.forEach(
+            (button) => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        const status =
+                            await getPremiumStatus();
+
+
+                        if (
+                            !status.loggedIn
+                        ) {
+
+                            alert(
+                                "Please sign in to access this experiment."
+                            );
+
+                            return;
+
+                        }
+
+
+                        if (
+                            !status.premium
+                        ) {
+
+                            alert(
+                                "🔒 This experiment requires ChemLab Premium."
+                            );
+
+                            return;
+
+                        }
+
+
+                        alert(
+                            "Premium experiment unlocked!"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
