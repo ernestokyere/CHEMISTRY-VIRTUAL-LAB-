@@ -1271,3 +1271,529 @@ nav button:hover {
     }
 
 }
+
+/* =========================================
+   CHEMLAB PREMIUM MODAL
+========================================= */
+
+.premium-modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 20000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(3, 7, 18, 0.78);
+
+    backdrop-filter:
+        blur(10px);
+
+    overflow-y: auto;
+}
+
+
+.premium-modal.active {
+    display: flex;
+}
+
+
+.premium-modal-card {
+    position: relative;
+
+    width: min(900px, 100%);
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    border-radius: 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #111827,
+            #1e293b
+        );
+
+    color: white;
+
+    box-shadow:
+        0 30px 100px
+        rgba(0, 0, 0, 0.45);
+}
+
+
+.premium-modal-close {
+    position: absolute;
+
+    top: 18px;
+
+    right: 20px;
+
+    z-index: 2;
+
+    width: 40px;
+
+    height: 40px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.12);
+
+    color: white;
+
+    font-size: 26px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   PREMIUM HERO
+========================================= */
+
+.premium-hero {
+
+    padding:
+        45px
+        45px
+        30px;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(245,158,11,0.22),
+            transparent 55%
+        );
+}
+
+
+.premium-crown {
+
+    font-size: 55px;
+
+    margin-bottom: 8px;
+}
+
+
+.premium-label {
+
+    display: inline-block;
+
+    padding:
+        7px
+        13px;
+
+    border-radius: 30px;
+
+    background:
+        #f59e0b;
+
+    color:
+        #111827;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+
+.premium-hero h2 {
+
+    margin:
+        18px
+        0
+        10px;
+
+    font-size:
+        clamp(
+            30px,
+            5vw,
+            48px
+        );
+
+    line-height: 1.1;
+}
+
+
+.premium-hero h2 span {
+
+    display: block;
+
+    color:
+        #fbbf24;
+}
+
+
+.premium-hero p {
+
+    max-width: 650px;
+
+    margin:
+        0 auto;
+
+    line-height: 1.7;
+
+    opacity: 0.78;
+}
+
+
+/* =========================================
+   FEATURES
+========================================= */
+
+.premium-features {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            1fr
+        );
+
+    gap: 15px;
+
+    padding:
+        25px
+        40px;
+}
+
+
+.premium-feature {
+
+    display: flex;
+
+    gap: 15px;
+
+    padding: 18px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.09);
+
+    border-radius: 16px;
+
+    background:
+        rgba(255,255,255,0.045);
+}
+
+
+.premium-feature-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 48px;
+
+    height: 48px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(245,158,11,0.14);
+
+    font-size: 24px;
+}
+
+
+.premium-feature h3 {
+
+    margin:
+        0 0 6px;
+
+    font-size: 16px;
+}
+
+
+.premium-feature p {
+
+    margin: 0;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    opacity: 0.68;
+}
+
+
+/* =========================================
+   PREMIUM LABS
+========================================= */
+
+.premium-labs {
+
+    padding:
+        10px
+        40px
+        30px;
+}
+
+
+.premium-labs > h3 {
+
+    margin-bottom: 18px;
+
+    font-size: 20px;
+}
+
+
+.premium-lab-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            1fr
+        );
+
+    gap: 12px;
+}
+
+
+.premium-lab-card {
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255,255,255,0.055);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+}
+
+
+.premium-lab-card > span {
+
+    font-size: 30px;
+}
+
+
+.premium-lab-card h4 {
+
+    margin:
+        10px
+        0
+        5px;
+
+    font-size: 15px;
+}
+
+
+.premium-lab-card p {
+
+    min-height: 55px;
+
+    margin: 0;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    opacity: 0.65;
+}
+
+
+.locked-label {
+
+    margin-top: 12px;
+
+    padding: 7px;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    background:
+        rgba(245,158,11,0.12);
+
+    color:
+        #fbbf24;
+}
+
+
+/* =========================================
+   PREMIUM CTA
+========================================= */
+
+.premium-cta {
+
+    margin:
+        0 40px
+        40px;
+
+    padding:
+        30px;
+
+    border-radius: 20px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(245,158,11,0.15),
+            rgba(251,191,36,0.06)
+        );
+
+    border:
+        1px solid
+        rgba(245,158,11,0.25);
+}
+
+
+.premium-cta h3 {
+
+    margin:
+        0 0 8px;
+
+    font-size: 23px;
+}
+
+
+.premium-cta p {
+
+    margin:
+        0 0 20px;
+
+    opacity: 0.7;
+}
+
+
+.premium-main-button {
+
+    padding:
+        14px
+        28px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    font-weight: 900;
+
+    background:
+        #f59e0b;
+
+    color:
+        #111827;
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.premium-main-button:hover {
+
+    transform:
+        translateY(-2px);
+}
+
+
+.premium-cta small {
+
+    display: block;
+
+    margin-top: 12px;
+
+    font-size: 11px;
+
+    opacity: 0.5;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .premium-features {
+
+        grid-template-columns:
+            1fr;
+
+        padding:
+            20px;
+    }
+
+
+    .premium-labs {
+
+        padding:
+            10px
+            20px
+            25px;
+    }
+
+
+    .premium-lab-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                1fr
+            );
+    }
+
+
+    .premium-cta {
+
+        margin:
+            0 20px
+            25px;
+    }
+
+
+    .premium-hero {
+
+        padding:
+            35px
+            25px
+            25px;
+    }
+
+}
+
+
+@media (max-width: 420px) {
+
+    .premium-lab-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
