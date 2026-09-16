@@ -1106,3 +1106,102 @@ document.addEventListener(
 
     }
 );
+
+/* =========================================
+   PREMIUM PLAN SELECTION
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const planButtons =
+            document.querySelectorAll(
+                ".premium-plan-button"
+            );
+
+
+        planButtons.forEach(
+            (button) => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        const selectedPlan =
+                            button.dataset.plan;
+
+
+                        const status =
+                            await getPremiumStatus();
+
+
+                        /*
+                         * Student must have an account.
+                         */
+
+                        if (
+                            !status.loggedIn
+                        ) {
+
+                            alert(
+                                "Please create a ChemLab account or sign in first."
+                            );
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * Already Premium.
+                         */
+
+                        if (
+                            status.premium
+                        ) {
+
+                            alert(
+                                "👑 Your ChemLab Premium access is already active."
+                            );
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * Payment will be connected here.
+                         */
+
+                        if (
+                            selectedPlan ===
+                            "monthly"
+                        ) {
+
+                            alert(
+                                "Monthly Premium selected. Secure payment will be available soon."
+                            );
+
+                        }
+
+
+                        if (
+                            selectedPlan ===
+                            "yearly"
+                        ) {
+
+                            alert(
+                                "Yearly Premium selected. Secure payment will be available soon."
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
