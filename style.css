@@ -1797,3 +1797,203 @@ nav button:hover {
     }
 
 }
+
+/* =========================================
+   PREMIUM PLANS
+========================================= */
+
+.premium-plans {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-top: 28px;
+
+    text-align: left;
+}
+
+
+.premium-plan {
+
+    position: relative;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,0.06);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.12);
+}
+
+
+.premium-plan-featured {
+
+    border:
+        1px solid
+        rgba(245,158,11,0.55);
+
+    background:
+        rgba(245,158,11,0.08);
+}
+
+
+.featured-label {
+
+    position: absolute;
+
+    top: 14px;
+
+    right: 14px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(245,158,11,0.18);
+
+    color:
+        #fbbf24;
+
+    font-size: 10px;
+
+    font-weight: 900;
+}
+
+
+.plan-icon {
+
+    font-size: 32px;
+
+    margin-bottom: 8px;
+}
+
+
+.plan-label {
+
+    display: inline-block;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    opacity: 0.6;
+}
+
+
+.premium-plan h4 {
+
+    margin:
+        8px
+        0;
+
+    font-size: 20px;
+}
+
+
+.plan-price {
+
+    margin:
+        15px
+        0;
+
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 5px;
+}
+
+
+.price-placeholder {
+
+    font-size: 30px;
+
+    font-weight: 900;
+}
+
+
+.plan-price small {
+
+    opacity: 0.6;
+
+    font-size: 13px;
+}
+
+
+.premium-plan ul {
+
+    list-style: none;
+
+    padding: 0;
+
+    margin:
+        20px
+        0;
+}
+
+
+.premium-plan li {
+
+    padding:
+        7px
+        0;
+
+    font-size: 13px;
+
+    opacity: 0.8;
+}
+
+
+.premium-plan-button {
+
+    width: 100%;
+
+    padding:
+        12px
+        15px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: 800;
+
+    font-size: 14px;
+}
+
+
+.premium-payment-note {
+
+    margin-top: 18px;
+
+    opacity: 0.5;
+
+    font-size: 11px;
+}
+
+
+@media (max-width: 650px) {
+
+    .premium-plans {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
