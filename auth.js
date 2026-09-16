@@ -412,3 +412,363 @@ chemLabSupabase.auth
 
         }
     );
+
+/* =========================================
+   AUTH UI
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const loginButton =
+            document.getElementById(
+                "loginButton"
+            );
+
+        const authModal =
+            document.getElementById(
+                "authModal"
+            );
+
+        const closeAuthModal =
+            document.getElementById(
+                "closeAuthModal"
+            );
+
+        const authTitle =
+            document.getElementById(
+                "authTitle"
+            );
+
+        const authSubtitle =
+            document.getElementById(
+                "authSubtitle"
+            );
+
+        const nameField =
+            document.getElementById(
+                "nameField"
+            );
+
+        const authName =
+            document.getElementById(
+                "authName"
+            );
+
+        const authEmail =
+            document.getElementById(
+                "authEmail"
+            );
+
+        const authPassword =
+            document.getElementById(
+                "authPassword"
+            );
+
+        const authMessage =
+            document.getElementById(
+                "authMessage"
+            );
+
+        const authSubmit =
+            document.getElementById(
+                "authSubmit"
+            );
+
+        const authSwitch =
+            document.getElementById(
+                "authSwitch"
+            );
+
+        const authSwitchText =
+            document.getElementById(
+                "authSwitchText"
+            );
+
+
+        let signUpMode = false;
+
+
+        /* =====================================
+           OPEN MODAL
+        ===================================== */
+
+        loginButton.addEventListener(
+            "click",
+            () => {
+
+                authModal.classList.add(
+                    "active"
+                );
+
+                authModal.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+            }
+        );
+
+
+        /* =====================================
+           CLOSE MODAL
+        ===================================== */
+
+        closeAuthModal.addEventListener(
+            "click",
+            closeModal
+        );
+
+
+        authModal.addEventListener(
+            "click",
+            (event) => {
+
+                if (
+                    event.target ===
+                    authModal
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        function closeModal() {
+
+            authModal.classList.remove(
+                "active"
+            );
+
+            authModal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+
+        /* =====================================
+           SWITCH LOGIN / SIGN UP
+        ===================================== */
+
+        authSwitch.addEventListener(
+            "click",
+            () => {
+
+                signUpMode =
+                    !signUpMode;
+
+
+                authMessage.textContent =
+                    "";
+
+
+                if (signUpMode) {
+
+                    authTitle.textContent =
+                        "Create your ChemLab account";
+
+                    authSubtitle.textContent =
+                        "Join ChemLab and start learning.";
+
+                    nameField.classList.remove(
+                        "hidden"
+                    );
+
+                    authSubmit.textContent =
+                        "Create Account";
+
+                    authSwitchText.textContent =
+                        "Already have an account?";
+
+                    authSwitch.textContent =
+                        "Sign in";
+
+                } else {
+
+                    authTitle.textContent =
+                        "Welcome to ChemLab";
+
+                    authSubtitle.textContent =
+                        "Sign in to continue learning.";
+
+                    nameField.classList.add(
+                        "hidden"
+                    );
+
+                    authSubmit.textContent =
+                        "Sign In";
+
+                    authSwitchText.textContent =
+                        "Don't have an account?";
+
+                    authSwitch.textContent =
+                        "Create account";
+
+                }
+
+            }
+        );
+
+
+        /* =====================================
+           SUBMIT
+        ===================================== */
+
+        authSubmit.addEventListener(
+            "click",
+            async () => {
+
+                const email =
+                    authEmail.value.trim();
+
+                const password =
+                    authPassword.value;
+
+                const fullName =
+                    authName.value.trim();
+
+
+                authMessage.textContent =
+                    "";
+
+
+                if (!email || !password) {
+
+                    authMessage.textContent =
+                        "Please enter your email and password.";
+
+                    return;
+
+                }
+
+
+                if (
+                    signUpMode &&
+                    !fullName
+                ) {
+
+                    authMessage.textContent =
+                        "Please enter your name.";
+
+                    return;
+
+                }
+
+
+                authSubmit.disabled =
+                    true;
+
+                authSubmit.textContent =
+                    signUpMode
+                        ? "Creating account..."
+                        : "Signing in...";
+
+
+                try {
+
+                    let result;
+
+
+                    if (signUpMode) {
+
+                        result =
+                            await signUpStudent(
+                                email,
+                                password,
+                                fullName
+                            );
+
+                    } else {
+
+                        result =
+                            await loginStudent(
+                                email,
+                                password
+                            );
+
+                    }
+
+
+                    authMessage.textContent =
+                        result.message;
+
+
+                    if (result.success) {
+
+                        if (!signUpMode) {
+
+                            setTimeout(
+                                () => {
+
+                                    closeModal();
+
+                                },
+                                800
+                            );
+
+                        }
+
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+                    authMessage.textContent =
+                        "Something went wrong. Please try again.";
+
+                }
+
+
+                authSubmit.disabled =
+                    false;
+
+                authSubmit.textContent =
+                    signUpMode
+                        ? "Create Account"
+                        : "Sign In";
+
+            }
+        );
+
+
+        /* =====================================
+           UPDATE ACCOUNT BUTTON
+        ===================================== */
+
+        chemLabSupabase.auth
+            .onAuthStateChange(
+                async (
+                    event,
+                    session
+                ) => {
+
+                    if (
+                        session &&
+                        session.user
+                    ) {
+
+                        loginButton.textContent =
+                            "👤 Account";
+
+                    } else {
+
+                        loginButton.textContent =
+                            "👤 Sign In";
+
+                    }
+
+                }
+            );
+
+    }
+);
