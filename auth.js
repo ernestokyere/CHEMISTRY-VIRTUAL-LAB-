@@ -928,3 +928,181 @@ document.addEventListener(
 
     }
 );
+
+/* =========================================
+   PREMIUM PAGE
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const premiumModal =
+            document.getElementById(
+                "premiumModal"
+            );
+
+        const closePremiumModal =
+            document.getElementById(
+                "closePremiumModal"
+            );
+
+        const premiumUnlockButton =
+            document.getElementById(
+                "premiumUnlockButton"
+            );
+
+        const startPremiumButton =
+            document.getElementById(
+                "startPremiumButton"
+            );
+
+
+        /* =====================================
+           OPEN PREMIUM
+        ===================================== */
+
+        function openPremium() {
+
+            if (!premiumModal) {
+                return;
+            }
+
+            premiumModal.classList.add(
+                "active"
+            );
+
+            premiumModal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+        }
+
+
+        /* =====================================
+           CLOSE PREMIUM
+        ===================================== */
+
+        function closePremium() {
+
+            if (!premiumModal) {
+                return;
+            }
+
+            premiumModal.classList.remove(
+                "active"
+            );
+
+            premiumModal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+
+        /* =====================================
+           PREMIUM BUTTON
+        ===================================== */
+
+        if (premiumUnlockButton) {
+
+            premiumUnlockButton.addEventListener(
+                "click",
+                openPremium
+            );
+
+        }
+
+
+        /* =====================================
+           CLOSE
+        ===================================== */
+
+        if (closePremiumModal) {
+
+            closePremiumModal.addEventListener(
+                "click",
+                closePremium
+            );
+
+        }
+
+
+        /* =====================================
+           CLICK OUTSIDE
+        ===================================== */
+
+        if (premiumModal) {
+
+            premiumModal.addEventListener(
+                "click",
+                (event) => {
+
+                    if (
+                        event.target ===
+                        premiumModal
+                    ) {
+
+                        closePremium();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           PAYMENT PLACEHOLDER
+        ===================================== */
+
+        if (startPremiumButton) {
+
+            startPremiumButton.addEventListener(
+                "click",
+                async () => {
+
+                    const status =
+                        await getPremiumStatus();
+
+
+                    if (
+                        !status.loggedIn
+                    ) {
+
+                        alert(
+                            "Please create a ChemLab account or sign in first."
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        status.premium
+                    ) {
+
+                        alert(
+                            "👑 Your ChemLab Premium access is already active."
+                        );
+
+                        return;
+
+                    }
+
+
+                    alert(
+                        "Premium payment will be available soon."
+                    );
+
+                }
+            );
+
+        }
+
+    }
+);
