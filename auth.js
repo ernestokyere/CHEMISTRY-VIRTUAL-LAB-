@@ -1205,3 +1205,354 @@ document.addEventListener(
 
     }
 );
+
+/* =========================================
+   CHEMLAB ACCOUNT DASHBOARD
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const loginButton =
+            document.getElementById(
+                "loginButton"
+            );
+
+        const accountModal =
+            document.getElementById(
+                "accountModal"
+            );
+
+        const closeAccountModal =
+            document.getElementById(
+                "closeAccountModal"
+            );
+
+        const accountName =
+            document.getElementById(
+                "accountName"
+            );
+
+        const accountEmail =
+            document.getElementById(
+                "accountEmail"
+            );
+
+        const membershipStatus =
+            document.getElementById(
+                "membershipStatus"
+            );
+
+        const membershipIcon =
+            document.getElementById(
+                "membershipIcon"
+            );
+
+        const premiumAccountStatus =
+            document.getElementById(
+                "premiumAccountStatus"
+            );
+
+        const premiumDetails =
+            document.getElementById(
+                "premiumDetails"
+            );
+
+        const accountPlan =
+            document.getElementById(
+                "accountPlan"
+            );
+
+        const accountExpiry =
+            document.getElementById(
+                "accountExpiry"
+            );
+
+        const accountPremiumButton =
+            document.getElementById(
+                "accountPremiumButton"
+            );
+
+        const logoutButton =
+            document.getElementById(
+                "logoutButton"
+            );
+
+
+        /* =====================================
+           OPEN ACCOUNT
+        ===================================== */
+
+        async function openAccount() {
+
+            const user =
+                await getCurrentStudent();
+
+
+            if (!user) {
+
+                return;
+
+            }
+
+
+            accountName.textContent =
+                user.user_metadata?.full_name ||
+                "Student";
+
+
+            accountEmail.textContent =
+                user.email ||
+                "—";
+
+
+            const status =
+                await getPremiumStatus();
+
+
+            if (
+                status.premium
+            ) {
+
+                membershipStatus.textContent =
+                    "PREMIUM";
+
+                membershipIcon.textContent =
+                    "👑";
+
+
+                premiumAccountStatus.innerHTML =
+                    `
+                    <strong>
+                        🟢 Premium Active
+                    </strong>
+
+                    <span>
+                        Your advanced ChemLab features are unlocked.
+                    </span>
+                    `;
+
+
+                premiumDetails.classList.remove(
+                    "hidden"
+                );
+
+
+                accountPlan.textContent =
+                    "Premium";
+
+
+                accountExpiry.textContent =
+                    status.expiresAt
+                        ? new Date(
+                            status.expiresAt
+                          ).toLocaleDateString()
+                        : "Active";
+
+
+                accountPremiumButton.textContent =
+                    "🧪 Open Premium Labs";
+
+            } else {
+
+                membershipStatus.textContent =
+                    "FREE";
+
+                membershipIcon.textContent =
+                    "🔒";
+
+
+                premiumAccountStatus.innerHTML =
+                    `
+                    <strong>
+                        🔒 Not Active
+                    </strong>
+
+                    <span>
+                        Unlock advanced ChemLab features.
+                    </span>
+                    `;
+
+
+                premiumDetails.classList.add(
+                    "hidden"
+                );
+
+
+                accountPremiumButton.textContent =
+                    "👑 Explore Premium";
+
+            }
+
+
+            accountModal.classList.add(
+                "active"
+            );
+
+            accountModal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+        }
+
+
+        /* =====================================
+           CLOSE ACCOUNT
+        ===================================== */
+
+        function closeAccount() {
+
+            accountModal.classList.remove(
+                "active"
+            );
+
+            accountModal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+
+        if (loginButton) {
+
+            loginButton.addEventListener(
+                "click",
+                async () => {
+
+                    const user =
+                        await getCurrentStudent();
+
+
+                    if (user) {
+
+                        await openAccount();
+
+                    } else {
+
+                        const authModal =
+                            document.getElementById(
+                                "authModal"
+                            );
+
+                        if (authModal) {
+
+                            authModal.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        if (closeAccountModal) {
+
+            closeAccountModal.addEventListener(
+                "click",
+                closeAccount
+            );
+
+        }
+
+
+        if (accountModal) {
+
+            accountModal.addEventListener(
+                "click",
+                (event) => {
+
+                    if (
+                        event.target ===
+                        accountModal
+                    ) {
+
+                        closeAccount();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           PREMIUM BUTTON
+        ===================================== */
+
+        if (accountPremiumButton) {
+
+            accountPremiumButton.addEventListener(
+                "click",
+                () => {
+
+                    closeAccount();
+
+
+                    const premiumModal =
+                        document.getElementById(
+                            "premiumModal"
+                        );
+
+
+                    if (premiumModal) {
+
+                        premiumModal.classList.add(
+                            "active"
+                        );
+
+                        premiumModal.setAttribute(
+                            "aria-hidden",
+                            "false"
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           LOGOUT
+        ===================================== */
+
+        if (logoutButton) {
+
+            logoutButton.addEventListener(
+                "click",
+                async () => {
+
+                    const success =
+                        await logoutStudent();
+
+
+                    if (success) {
+
+                        closeAccount();
+
+                        loginButton.textContent =
+                            "👤 Sign In";
+
+                        alert(
+                            "You have been signed out."
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);
