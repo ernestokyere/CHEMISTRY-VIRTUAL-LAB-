@@ -787,92 +787,143 @@ document.addEventListener(
             );
 
         const experimentButtons =
-            document.querySelectorAll(
-                ".premium-experiment-button"
-            );
+           document.querySelectorAll(".premium-plan-button").forEach(button => {
+    button.addEventListener("click", async () => {
+        try {
+            const user = await getCurrentStudent();
 
-
-        async function checkPremium() {
-
-            const status =
-                await getPremiumStatus();
-
-
-            if (
-                status.loggedIn &&
-                status.premium
-            ) {
-
-                unlockButton.textContent =
-                    "👑 Premium Active";
-
-
-                experimentButtons.forEach(
-                    (button) => {
-
-                        button.textContent =
-                            "🧪 Open Experiment";
-
-                    }
-                );
-
+            if (!user) {
+                alert("Please sign in first.");
+                return;
             }
 
-        }
+            const premium = await getPremiumStatus();
 
+            if (premium) {
+                alert("You already have an active Premium subscription.");
+                return;
+            }
 
-        await checkPremium();
+            const planCard = button.closest(".premium-plan");
+            const plan = planCard?.dataset.plan;
 
+            if (plan !== "monthly" && plan !== "yearly") {
+                alert("Invalid Premium plan.");
+                return;
+            }
 
-        /* =====================================
-           UNLOCK BUTTON
-        ===================================== */
+            const { data: sessionData, error: sessionError } =
+                await chemLabSupabase.auth.getSession();
 
-        if (unlockButton) {
+            if (sessionError || !sessionData.session) {
+                alert("Your session has expired. Please sign in again.");
+                return;
+            }
 
-            unlockButton.addEventListener(
-                "click",
-                async () => {
-
-                    const status =
-                        await getPremiumStatus();
-
-
-                    if (!status.loggedIn) {
-
-                        alert(
-                            "Please sign in or create an account first."
-                        );
-
-                        return;
-
-                    }
-
-
-                    if (status.premium) {
-
-                        alert(
-                            "Your Premium access is already active."
-                        );
-
-                        return;
-
-                    }
-
-
-                    /*
-                     * Payment will be connected
-                     * here in the next step.
-                     */
-
-                    alert(
-                        "Premium payment will be available soon."
-                    );
-
+            const response = await fetch(
+                `${SUPABASE_URL}/functions/v1/activate-premium`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": SUPABASE_PUBLISHABLE_KEY,
+                        "Authorization":
+                            `Bearer ${sessionData.session.access_token}`
+                    },
+                    body: JSON.stringify({
+                        plan: plan
+                    })
                 }
             );
 
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error("Premium activation error:", result);
+                alert(result.error || "Could not start Premium.");
+                return;
+            }
+
+            alert(
+                `Your ${plan === "monthly" ? "Monthly" : "Yearly"} Premium request has been created.\n\n` +
+                `Amount: GHS ${result.amount}\n\n` +
+                `Payment will be connected next.`
+            );
+
+        } catch (error) {
+            console.error("Premium request error:", error);
+            alert("Something went wrong. Please try again.");
         }
+    });
+});document.querySelectorAll(".premium-plan-button").forEach(button => {
+    button.addEventListener("click", async () => {
+        try {
+            const user = await getCurrentStudent();
+
+            if (!user) {
+                alert("Please sign in first.");
+                return;
+            }
+
+            const premium = await getPremiumStatus();
+
+            if (premium) {
+                alert("You already have an active Premium subscription.");
+                return;
+            }
+
+            const planCard = button.closest(".premium-plan");
+            const plan = planCard?.dataset.plan;
+
+            if (plan !== "monthly" && plan !== "yearly") {
+                alert("Invalid Premium plan.");
+                return;
+            }
+
+            const { data: sessionData, error: sessionError } =
+                await chemLabSupabase.auth.getSession();
+
+            if (sessionError || !sessionData.session) {
+                alert("Your session has expired. Please sign in again.");
+                return;
+            }
+
+            const response = await fetch(
+                `${SUPABASE_URL}/functions/v1/activate-premium`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": SUPABASE_PUBLISHABLE_KEY,
+                        "Authorization":
+                            `Bearer ${sessionData.session.access_token}`
+                    },
+                    body: JSON.stringify({
+                        plan: plan
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error("Premium activation error:", result);
+                alert(result.error || "Could not start Premium.");
+                return;
+            }
+
+            alert(
+                `Your ${plan === "monthly" ? "Monthly" : "Yearly"} Premium request has been created.\n\n` +
+                `Amount: GHS ${result.amount}\n\n` +
+                `Payment will be connected next.`
+            );
+
+        } catch (error) {
+            console.error("Premium request error:", error);
+            alert("Something went wrong. Please try again.");
+        }
+    });
+});
 
 
         /* =====================================
