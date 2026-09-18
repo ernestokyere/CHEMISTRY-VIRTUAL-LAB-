@@ -994,7 +994,7 @@ function closePremiumModal() {
 
 
 /* =========================================================
-   PREMIUM PLAN REQUEST
+   PAYSTACK PREMIUM PAYMENT
    ========================================================= */
 
 async function requestPremiumPlan(plan) {
@@ -1004,19 +1004,20 @@ async function requestPremiumPlan(plan) {
 
     if (!user) {
 
+        closePremiumModal();
+
         openAuthModal("login");
 
         return;
     }
 
+
+    /* =========================================
+       CHECK PREMIUM STATUS
+    ========================================= */
+
     const status =
         await getPremiumStatus();
-
-    /*
-       IMPORTANT:
-       status is an OBJECT.
-       We check status.premium, not status itself.
-    */
 
     if (status.premium) {
 
@@ -1026,6 +1027,11 @@ async function requestPremiumPlan(plan) {
 
         return;
     }
+
+
+    /* =========================================
+       VALIDATE PLAN
+    ========================================= */
 
     if (
         plan !== "monthly" &&
@@ -1039,6 +1045,11 @@ async function requestPremiumPlan(plan) {
         return;
     }
 
+
+    /* =========================================
+       GET CURRENT SESSION
+    ========================================= */
+
     const {
         data: sessionData,
         error: sessionError
@@ -1051,16 +1062,24 @@ async function requestPremiumPlan(plan) {
     ) {
 
         alert(
-            "Your session has expired. Please sign in again."
+            "Your login session has expired. Please sign in again."
         );
+
+        closePremiumModal();
 
         openAuthModal("login");
 
         return;
     }
 
+
     const accessToken =
         sessionData.session.access_token;
+
+
+    /* =========================================
+       FIND SELECTED PLAN BUTTON
+    ========================================= */
 
     const button =
         document.querySelector(
@@ -1071,15 +1090,21 @@ async function requestPremiumPlan(plan) {
         button?.textContent ||
         "Continue";
 
+
     if (button) {
 
         button.disabled = true;
 
         button.textContent =
-            "Preparing...";
+            "Connecting to Paystack...";
     }
 
+
     try {
+
+        /* =====================================
+           CALL SUPABASE EDGE FUNCTION
+        ===================================== */
 
         const response =
             await fetch(
@@ -1105,52 +1130,105 @@ async function requestPremiumPlan(plan) {
                 }
             );
 
-        const result =
-            await response.json();
+
+        let result;
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch {
+
+            result = null;
+        }
+
 
         console.log(
-            "Premium request:",
+            "Paystack initialization response:",
             result
         );
+
+
+        /* =====================================
+           EDGE FUNCTION ERROR
+        ===================================== */
 
         if (!response.ok) {
 
             throw new Error(
                 result?.error ||
                 result?.message ||
-                "Unable to start Premium request."
+                "Could not start Paystack payment."
             );
         }
 
-        /*
-           The Edge Function currently creates
-           a PENDING subscription request.
 
-           It does NOT activate Premium.
-        */
+        /* =====================================
+           CHECK PAYMENT URL
+        ===================================== */
 
-        alert(
-            `Premium ${plan} plan request created successfully.\n\n` +
-            `Amount: GHS ${result.amount || (
-                plan === "monthly"
-                    ? 35
-                    : 420
-            )}\n\n` +
-            `Payment processing will be connected when the payment system is ready.`
-        );
+        if (
+            !result?.authorization_url
+        ) {
+
+            throw new Error(
+                "Paystack did not return a payment URL."
+            );
+        }
+
+
+        /* =====================================
+           SAVE REFERENCE
+        ===================================== */
+
+        if (
+            result.reference
+        ) {
+
+            sessionStorage.setItem(
+                "chemlab_paystack_reference",
+                result.reference
+            );
+        }
+
+
+        if (
+            result.subscription_id
+        ) {
+
+            sessionStorage.setItem(
+                "chemlab_subscription_id",
+                result.subscription_id
+            );
+        }
+
+
+        /* =====================================
+           CLOSE PREMIUM MODAL
+        ===================================== */
 
         closePremiumModal();
+
+
+        /* =====================================
+           OPEN PAYSTACK CHECKOUT
+        ===================================== */
+
+        window.location.href =
+            result.authorization_url;
+
 
     } catch (error) {
 
         console.error(
-            "Premium request error:",
+            "Paystack payment error:",
             error
         );
 
         alert(
             error.message ||
-            "Unable to start Premium request."
+            "Unable to start payment."
         );
 
     } finally {
@@ -1164,7 +1242,6 @@ async function requestPremiumPlan(plan) {
         }
     }
 }
-
 
 /* =========================================================
    PREMIUM EXPERIMENT ACCESS
