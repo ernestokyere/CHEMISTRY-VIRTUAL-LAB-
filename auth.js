@@ -777,247 +777,276 @@ document.addEventListener(
    PREMIUM ACCESS UI
 ========================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-        const unlockButton =
-            document.getElementById(
-                "premiumUnlockButton"
-            );
+    /* -----------------------------------------
+       PREMIUM UNLOCK BUTTON
+    ----------------------------------------- */
 
-        /*
-         * Premium unlock button
-         */
-        if (unlockButton) {
+    const unlockButton =
+        document.getElementById("premiumUnlockButton");
 
-            unlockButton.addEventListener(
-                "click",
-                async () => {
+    if (unlockButton) {
 
-                    const user =
-                        await getCurrentStudent();
+        unlockButton.addEventListener("click", async () => {
 
-                    if (!user) {
+            try {
 
-                        document
-                            .getElementById("authModal")
-                            ?.classList.add("active");
+                const user = await getCurrentStudent();
 
-                        return;
+                if (!user) {
+
+                    const authModal =
+                        document.getElementById("authModal");
+
+                    if (authModal) {
+                        authModal.classList.add("active");
                     }
+
+                    return;
+                }
+
+                const premium =
+                    await getPremiumStatus();
+
+                if (!premium.premium) {
+
+                    const premiumModal =
+                        document.getElementById("premiumModal");
+
+                    if (premiumModal) {
+                        premiumModal.classList.add("active");
+                    }
+
+                    return;
+                }
+
+                alert(
+                    "You already have an active Premium subscription."
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Premium unlock error:",
+                    error
+                );
+
+            }
+
+        });
+
+    }
+
+
+    /* -----------------------------------------
+       PREMIUM EXPERIMENT BUTTONS
+    ----------------------------------------- */
+
+    const experimentButtons =
+        document.querySelectorAll(
+            ".premium-experiment-button"
+        );
+
+    experimentButtons.forEach(button => {
+
+        button.addEventListener("click", async () => {
+
+            try {
+
+                const user =
+                    await getCurrentStudent();
+
+                if (!user) {
+
+                    document
+                        .getElementById("authModal")
+                        ?.classList.add("active");
+
+                    return;
+                }
+
+                const premium =
+                    await getPremiumStatus();
+
+                if (!premium.premium) {
 
                     document
                         .getElementById("premiumModal")
                         ?.classList.add("active");
+
+                    return;
                 }
-            );
 
-        }
-
-
-        /*
-         * Premium experiment buttons
-         */
-        document
-            .querySelectorAll(".premium-experiment-button")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    async () => {
-
-                        const user =
-                            await getCurrentStudent();
-
-                        if (!user) {
-
-                            document
-                                .getElementById("authModal")
-                                ?.classList.add("active");
-
-                            return;
-                        }
-
-                        const premium =
-                            await getPremiumStatus();
-
-                        if (!premium.premium) {
-
-                            document
-                                .getElementById("premiumModal")
-                                ?.classList.add("active");
-
-                            return;
-                        }
-
-                        alert(
-                            "Premium experiment access is ready."
-                        );
-
-                    }
+                alert(
+                    "Premium experiment access is ready."
                 );
 
-            });
+            } catch (error) {
 
-
-        /*
-         * Premium plan buttons
-         */
-        document
-            .querySelectorAll(".premium-plan-button")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    async () => {
-
-                        try {
-
-                            const user =
-                                await getCurrentStudent();
-
-                            if (!user) {
-
-                                alert(
-                                    "Please sign in first."
-                                );
-
-                                return;
-                            }
-
-
-                            const premium =
-                                await getPremiumStatus();
-
-
-                            if (premium.premium) {
-
-                                alert(
-                                    "You already have an active Premium subscription."
-                                );
-
-                                return;
-                            }
-
-
-                            const planCard =
-                                button.closest(".premium-plan");
-
-
-                            const plan =
-                                planCard?.dataset.plan;
-
-
-                            if (
-                                plan !== "monthly" &&
-                                plan !== "yearly"
-                            ) {
-
-                                alert(
-                                    "Invalid Premium plan."
-                                );
-
-                                return;
-                            }
-
-
-                            const {
-                                data: sessionData,
-                                error: sessionError
-                            } =
-                                await chemLabSupabase.auth.getSession();
-
-
-                            if (
-                                sessionError ||
-                                !sessionData.session
-                            ) {
-
-                                alert(
-                                    "Your session has expired. Please sign in again."
-                                );
-
-                                return;
-                            }
-
-
-                            const response =
-                                await fetch(
-                                    `${SUPABASE_URL}/functions/v1/activate-premium`,
-                                    {
-                                        method: "POST",
-
-                                        headers: {
-                                            "Content-Type":
-                                                "application/json",
-
-                                            "apikey":
-                                                SUPABASE_PUBLISHABLE_KEY,
-
-                                            "Authorization":
-                                                `Bearer ${sessionData.session.access_token}`
-                                        },
-
-                                        body:
-                                            JSON.stringify({
-                                                plan: plan
-                                            })
-                                    }
-                                );
-
-
-                            const result =
-                                await response.json();
-
-
-                            if (!response.ok) {
-
-                                console.error(
-                                    "Premium activation error:",
-                                    result
-                                );
-
-                                alert(
-                                    result.error ||
-                                    "Could not start Premium."
-                                );
-
-                                return;
-                            }
-
-
-                            alert(
-                                `Your ${
-                                    plan === "monthly"
-                                        ? "Monthly"
-                                        : "Yearly"
-                                } Premium request has been created.\n\n` +
-                                `Amount: GHS ${result.amount}\n\n` +
-                                `Payment will be connected next.`
-                            );
-
-
-                        } catch (error) {
-
-                            console.error(
-                                "Premium request error:",
-                                error
-                            );
-
-                            alert(
-                                "Something went wrong. Please try again."
-                            );
-
-                        }
-
-                    }
+                console.error(
+                    "Premium experiment error:",
+                    error
                 );
 
-            });
+            }
 
-    }
-);
+        });
+
+    });
+
+
+    /* -----------------------------------------
+       PREMIUM PLAN BUTTONS
+    ----------------------------------------- */
+
+    const planButtons =
+        document.querySelectorAll(
+            ".premium-plan-button"
+        );
+
+    planButtons.forEach(button => {
+
+        button.addEventListener("click", async () => {
+
+            try {
+
+                const user =
+                    await getCurrentStudent();
+
+                if (!user) {
+
+                    document
+                        .getElementById("authModal")
+                        ?.classList.add("active");
+
+                    return;
+                }
+
+                const premium =
+                    await getPremiumStatus();
+
+                /*
+                 * IMPORTANT:
+                 * getPremiumStatus() returns an object.
+                 * Therefore we must check .premium
+                 */
+
+                if (premium.premium) {
+
+                    alert(
+                        "You already have an active Premium subscription."
+                    );
+
+                    return;
+                }
+
+                const planCard =
+                    button.closest(".premium-plan");
+
+                const plan =
+                    planCard?.dataset.plan;
+
+                if (
+                    plan !== "monthly" &&
+                    plan !== "yearly"
+                ) {
+
+                    alert(
+                        "Invalid Premium plan."
+                    );
+
+                    return;
+                }
+
+                const {
+                    data: sessionData,
+                    error: sessionError
+                } =
+                    await chemLabSupabase.auth.getSession();
+
+                if (
+                    sessionError ||
+                    !sessionData.session
+                ) {
+
+                    alert(
+                        "Your session has expired. Please sign in again."
+                    );
+
+                    return;
+                }
+
+                const response =
+                    await fetch(
+                        `${SUPABASE_URL}/functions/v1/activate-premium`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "apikey":
+                                    SUPABASE_PUBLISHABLE_KEY,
+
+                                "Authorization":
+                                    `Bearer ${sessionData.session.access_token}`
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    plan: plan
+                                })
+                        }
+                    );
+
+                const result =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    console.error(
+                        "Premium activation error:",
+                        result
+                    );
+
+                    alert(
+                        result.error ||
+                        "Could not start Premium."
+                    );
+
+                    return;
+                }
+
+                alert(
+                    `Your ${
+                        plan === "monthly"
+                            ? "Monthly"
+                            : "Yearly"
+                    } Premium request has been created.\n\n` +
+                    `Amount: GHS ${result.amount}\n\n` +
+                    `Payment will be connected next.`
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Premium request error:",
+                    error
+                );
+
+                alert(
+                    "Something went wrong. Please try again."
+                );
+
+            }
+
+        });
+
+    });
+
+});
         /* =====================================
            PREMIUM EXPERIMENT BUTTONS
         ===================================== */
