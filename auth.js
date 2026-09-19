@@ -998,18 +998,162 @@ function closePremiumModal() {
    ========================================================= */
 
 async function requestPremiumPlan(plan) {
-
-    const user =
-        await getCurrentStudent();
+    const user = await getCurrentStudent();
 
     if (!user) {
+        closePremiumModal();
+        openAuthModal("login");
+        return;
+    }
+
+    const status = await getPremiumStatus();
+
+    if (status.premium) {
+        alert("You already have an active Premium subscription.");
+        return;
+    }
+
+    if (plan !== "monthly" && plan !== "yearly") {
+        alert("Invalid Premium plan.");
+        return;
+    }
+
+    const {
+        data: sessionData,
+        error: sessionError
+    } = await chemLabSupabase.auth.getSession();
+
+    if (
+        sessionError ||
+        !sessionData?.session
+    ) {
+        alert(
+            "Your login session has expired. Please sign in again."
+        );
+
+        closePremiumModal();
+        openAuthModal("login");
+        return;
+    }
+
+    const accessToken =
+        sessionData.session.access_token;
+
+    const button = document.querySelector(
+        `.premium-plan-button[data-plan="${plan}"]`
+    );
+
+    const originalText =
+        button?.textContent || "Continue";
+
+    if (button) {
+        button.disabled = true;
+        button.textContent =
+            "Connecting to Paystack...";
+    }
+
+    try {
+
+        const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/activate-premium`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${accessToken}`,
+
+                    "apikey":
+                        SUPABASE_PUBLISHABLE_KEY
+                },
+
+                body: JSON.stringify({
+                    plan: plan
+                })
+            }
+        );
+
+        let result;
+
+        try {
+            result =
+                await response.json();
+        } catch {
+            result = null;
+        }
+
+        console.log(
+            "Paystack initialization response:",
+            result
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                result?.error ||
+                result?.message ||
+                "Could not start Paystack payment."
+            );
+        }
+
+        if (
+            !result?.authorization_url
+        ) {
+            throw new Error(
+                "Paystack did not return a payment URL."
+            );
+        }
+
+        // -----------------------------------------
+        // SAVE PAYMENT REFERENCE
+        // -----------------------------------------
+
+        if (result.reference) {
+            sessionStorage.setItem(
+                "chemlab_paystack_reference",
+                result.reference
+            );
+        }
+
+        if (result.subscription_id) {
+            sessionStorage.setItem(
+                "chemlab_subscription_id",
+                result.subscription_id
+            );
+        }
+
+        // -----------------------------------------
+        // REDIRECT TO PAYSTACK
+        // -----------------------------------------
 
         closePremiumModal();
 
-        openAuthModal("login");
+        window.location.href =
+            result.authorization_url;
 
-        return;
+    } catch (error) {
+
+        console.error(
+            "Paystack payment error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to start payment."
+        );
+
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+            button.textContent =
+                originalText;
+        }
     }
+}
 
 
     /* =========================================
@@ -1302,10 +1446,12 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        console.log(
-            "ChemLab authentication system loaded."
-        );
+        // existing ChemLab startup code
 
+        await handlePaystackReturn();
+
+    }
+);
 
         /* =================================================
            ELEMENTS
@@ -1840,3 +1986,695 @@ document.addEventListener(
         );
     }
 );
+
+async function handlePaystackReturn() {
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const paymentStatus =
+        urlParams.get("payment");
+
+    const referenceFromUrl =
+        urlParams.get("reference");
+
+    const savedReference =
+        sessionStorage.getItem(
+            "chemlab_paystack_reference"
+        );
+
+    const reference =
+        referenceFromUrl ||
+        savedReference;
+
+    // Nothing to verify
+    if (
+        paymentStatus !== "success" &&
+        !reference
+    ) {
+        return;
+    }
+
+    if (!reference) {
+        console.error(
+            "No Paystack reference found."
+        );
+
+        return;
+    }
+
+    const {
+        data: sessionData,
+        error: sessionError
+    } =
+        await chemLabSupabase.auth.getSession();
+
+    if (
+        sessionError ||
+        !sessionData?.session
+    ) {
+        console.error(
+            "No active session for payment verification."
+        );
+
+        return;
+    }
+
+    const accessToken =
+        sessionData.session.access_token;
+
+    // -----------------------------------------
+    // SHOW VERIFICATION MESSAGE
+    // -----------------------------------------
+
+    const verificationMessage =
+        document.createElement("div");
+
+    verificationMessage.id =
+        "paymentVerificationMessage";
+
+    verificationMessage.style.position =
+        "fixed";
+
+    verificationMessage.style.top =
+        "20px";
+
+    verificationMessage.style.left =
+        "50%";
+
+    verificationMessage.style.transform =
+        "translateX(-50%)";
+
+    verificationMessage.style.zIndex =
+        "10000";
+
+    verificationMessage.style.padding =
+        "16px 22px";
+
+    verificationMessage.style.borderRadius =
+        "12px";
+
+    verificationMessage.style.background =
+        "#111827";
+
+    verificationMessage.style.color =
+        "#ffffff";
+
+    verificationMessage.style.fontWeight =
+        "600";
+
+    verificationMessage.textContent =
+        "🔐 Verifying your Paystack payment...";
+
+    document.body.appendChild(
+        verificationMessage
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/functions/v1/verify-paystack-payment`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${accessToken}`,
+
+                        "apikey":
+                            SUPABASE_PUBLISHABLE_KEY
+                    },
+
+                    body: JSON.stringify({
+                        reference:
+                            reference
+                    })
+                }
+            );
+
+        let result;
+
+        try {
+            result =
+                await response.json();
+        } catch {
+            result = null;
+        }
+
+        console.log(
+            "Payment verification result:",
+            result
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                result?.error ||
+                "Payment verification failed."
+            );
+        }
+
+        // -----------------------------------------
+        // SUCCESS
+        // -----------------------------------------
+
+        if (
+            result?.success &&
+            result?.premium
+        ) {
+
+            sessionStorage.removeItem(
+                "chemlab_paystack_reference"
+            );
+
+            sessionStorage.removeItem(
+                "chemlab_subscription_id"
+            );
+
+            verificationMessage.textContent =
+                "🎉 Payment successful! ChemLab Premium is now active.";
+
+            verificationMessage.style.background =
+                "#166534";
+
+            // Remove payment parameters
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+            // Refresh account/premium UI
+            if (
+                typeof updateAuthUI ===
+                "function"
+            ) {
+                await updateAuthUI();
+            }
+
+            if (
+                typeof updateAccountDashboard ===
+                "function"
+            ) {
+                await updateAccountDashboard();
+            }
+
+            // Give the student time to see message
+            setTimeout(() => {
+                verificationMessage.remove();
+            }, 5000);
+
+            return;
+        }
+
+        throw new Error(
+            "Premium activation was not completed."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Payment verification error:",
+            error
+        );
+
+        verificationMessage.textContent =
+            "⚠️ " +
+            (
+                error.message ||
+                "Payment verification failed."
+            );
+
+        verificationMessage.style.background =
+            "#991b1b";
+
+        setTimeout(() => {
+            verificationMessage.remove();
+        }, 7000);
+    }
+}async function handlePaystackReturn() {
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const paymentStatus =
+        urlParams.get("payment");
+
+    const referenceFromUrl =
+        urlParams.get("reference");
+
+    const savedReference =
+        sessionStorage.getItem(
+            "chemlab_paystack_reference"
+        );
+
+    const reference =
+        referenceFromUrl ||
+        savedReference;
+
+    // Nothing to verify
+    if (
+        paymentStatus !== "success" &&
+        !reference
+    ) {
+        return;
+    }
+
+    if (!reference) {
+        console.error(
+            "No Paystack reference found."
+        );
+
+        return;
+    }
+
+    const {
+        data: sessionData,
+        error: sessionError
+    } =
+        await chemLabSupabase.auth.getSession();
+
+    if (
+        sessionError ||
+        !sessionData?.session
+    ) {
+        console.error(
+            "No active session for payment verification."
+        );
+
+        return;
+    }
+
+    const accessToken =
+        sessionData.session.access_token;
+
+    // -----------------------------------------
+    // SHOW VERIFICATION MESSAGE
+    // -----------------------------------------
+
+    const verificationMessage =
+        document.createElement("div");
+
+    verificationMessage.id =
+        "paymentVerificationMessage";
+
+    verificationMessage.style.position =
+        "fixed";
+
+    verificationMessage.style.top =
+        "20px";
+
+    verificationMessage.style.left =
+        "50%";
+
+    verificationMessage.style.transform =
+        "translateX(-50%)";
+
+    verificationMessage.style.zIndex =
+        "10000";
+
+    verificationMessage.style.padding =
+        "16px 22px";
+
+    verificationMessage.style.borderRadius =
+        "12px";
+
+    verificationMessage.style.background =
+        "#111827";
+
+    verificationMessage.style.color =
+        "#ffffff";
+
+    verificationMessage.style.fontWeight =
+        "600";
+
+    verificationMessage.textContent =
+        "🔐 Verifying your Paystack payment...";
+
+    document.body.appendChild(
+        verificationMessage
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/functions/v1/verify-paystack-payment`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${accessToken}`,
+
+                        "apikey":
+                            SUPABASE_PUBLISHABLE_KEY
+                    },
+
+                    body: JSON.stringify({
+                        reference:
+                            reference
+                    })
+                }
+            );
+
+        let result;
+
+        try {
+            result =
+                await response.json();
+        } catch {
+            result = null;
+        }
+
+        console.log(
+            "Payment verification result:",
+            result
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                result?.error ||
+                "Payment verification failed."
+            );
+        }
+
+        // -----------------------------------------
+        // SUCCESS
+        // -----------------------------------------
+
+        if (
+            result?.success &&
+            result?.premium
+        ) {
+
+            sessionStorage.removeItem(
+                "chemlab_paystack_reference"
+            );
+
+            sessionStorage.removeItem(
+                "chemlab_subscription_id"
+            );
+
+            verificationMessage.textContent =
+                "🎉 Payment successful! ChemLab Premium is now active.";
+
+            verificationMessage.style.background =
+                "#166534";
+
+            // Remove payment parameters
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+            // Refresh account/premium UI
+            if (
+                typeof updateAuthUI ===
+                "function"
+            ) {
+                await updateAuthUI();
+            }
+
+            if (
+                typeof updateAccountDashboard ===
+                "function"
+            ) {
+                await updateAccountDashboard();
+            }
+
+            // Give the student time to see message
+            setTimeout(() => {
+                verificationMessage.remove();
+            }, 5000);
+
+            return;
+        }
+
+        throw new Error(
+            "Premium activation was not completed."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Payment verification error:",
+            error
+        );
+
+        verificationMessage.textContent =
+            "⚠️ " +
+            (
+                error.message ||
+                "Payment verification failed."
+            );
+
+        verificationMessage.style.background =
+            "#991b1b";
+
+        setTimeout(() => {
+            verificationMessage.remove();
+        }, 7000);
+    }
+}async function handlePaystackReturn() {
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const paymentStatus =
+        urlParams.get("payment");
+
+    const referenceFromUrl =
+        urlParams.get("reference");
+
+    const savedReference =
+        sessionStorage.getItem(
+            "chemlab_paystack_reference"
+        );
+
+    const reference =
+        referenceFromUrl ||
+        savedReference;
+
+    // Nothing to verify
+    if (
+        paymentStatus !== "success" &&
+        !reference
+    ) {
+        return;
+    }
+
+    if (!reference) {
+        console.error(
+            "No Paystack reference found."
+        );
+
+        return;
+    }
+
+    const {
+        data: sessionData,
+        error: sessionError
+    } =
+        await chemLabSupabase.auth.getSession();
+
+    if (
+        sessionError ||
+        !sessionData?.session
+    ) {
+        console.error(
+            "No active session for payment verification."
+        );
+
+        return;
+    }
+
+    const accessToken =
+        sessionData.session.access_token;
+
+    // -----------------------------------------
+    // SHOW VERIFICATION MESSAGE
+    // -----------------------------------------
+
+    const verificationMessage =
+        document.createElement("div");
+
+    verificationMessage.id =
+        "paymentVerificationMessage";
+
+    verificationMessage.style.position =
+        "fixed";
+
+    verificationMessage.style.top =
+        "20px";
+
+    verificationMessage.style.left =
+        "50%";
+
+    verificationMessage.style.transform =
+        "translateX(-50%)";
+
+    verificationMessage.style.zIndex =
+        "10000";
+
+    verificationMessage.style.padding =
+        "16px 22px";
+
+    verificationMessage.style.borderRadius =
+        "12px";
+
+    verificationMessage.style.background =
+        "#111827";
+
+    verificationMessage.style.color =
+        "#ffffff";
+
+    verificationMessage.style.fontWeight =
+        "600";
+
+    verificationMessage.textContent =
+        "🔐 Verifying your Paystack payment...";
+
+    document.body.appendChild(
+        verificationMessage
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/functions/v1/verify-paystack-payment`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${accessToken}`,
+
+                        "apikey":
+                            SUPABASE_PUBLISHABLE_KEY
+                    },
+
+                    body: JSON.stringify({
+                        reference:
+                            reference
+                    })
+                }
+            );
+
+        let result;
+
+        try {
+            result =
+                await response.json();
+        } catch {
+            result = null;
+        }
+
+        console.log(
+            "Payment verification result:",
+            result
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                result?.error ||
+                "Payment verification failed."
+            );
+        }
+
+        // -----------------------------------------
+        // SUCCESS
+        // -----------------------------------------
+
+        if (
+            result?.success &&
+            result?.premium
+        ) {
+
+            sessionStorage.removeItem(
+                "chemlab_paystack_reference"
+            );
+
+            sessionStorage.removeItem(
+                "chemlab_subscription_id"
+            );
+
+            verificationMessage.textContent =
+                "🎉 Payment successful! ChemLab Premium is now active.";
+
+            verificationMessage.style.background =
+                "#166534";
+
+            // Remove payment parameters
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+            // Refresh account/premium UI
+            if (
+                typeof updateAuthUI ===
+                "function"
+            ) {
+                await updateAuthUI();
+            }
+
+            if (
+                typeof updateAccountDashboard ===
+                "function"
+            ) {
+                await updateAccountDashboard();
+            }
+
+            // Give the student time to see message
+            setTimeout(() => {
+                verificationMessage.remove();
+            }, 5000);
+
+            return;
+        }
+
+        throw new Error(
+            "Premium activation was not completed."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Payment verification error:",
+            error
+        );
+
+        verificationMessage.textContent =
+            "⚠️ " +
+            (
+                error.message ||
+                "Payment verification failed."
+            );
+
+        verificationMessage.style.background =
+            "#991b1b";
+
+        setTimeout(() => {
+            verificationMessage.remove();
+        }, 7000);
+    }
+}
