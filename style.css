@@ -2921,3 +2921,28 @@ nav button:hover {
     color: #6b7280;
     line-height: 1.5;
 }
+
+/* =========================================
+   DETAILED TITRATION RESULTS
+========================================= */
+
+.analysis-row strong {
+    max-width: 58%;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 500px) {
+
+    .analysis-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .analysis-row strong {
+        max-width: 100%;
+        text-align: left;
+    }
+
+}
