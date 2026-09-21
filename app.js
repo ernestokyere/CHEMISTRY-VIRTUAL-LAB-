@@ -1385,6 +1385,74 @@ if (equivalenceIndicator) {
                 0,
                 Math.min(14, ph)
             );
+           const progressBar =
+    document.getElementById(
+        "advancedProgressBar"
+    );
+
+const progressText =
+    document.getElementById(
+        "advancedProgressText"
+    );
+
+const observation =
+    document.getElementById(
+        "advancedObservation"
+    );
+
+const titrationProgress =
+    Math.min(
+        100,
+        (
+            addedVolumeMl /
+            equivalenceVolumeMl
+        ) * 100
+    );
+
+if (progressBar) {
+    progressBar.style.width =
+        titrationProgress + "%";
+}
+
+if (progressText) {
+    progressText.textContent =
+        Math.round(titrationProgress) + "%";
+}
+
+if (observation) {
+
+    if (addedVolumeMl === 0) {
+
+        observation.textContent =
+            "Begin adding NaOH to start the titration.";
+
+    } else if (
+        addedVolumeMl <
+        equivalenceVolumeMl - 0.10
+    ) {
+
+        observation.textContent =
+            "The solution is still acidic. " +
+            "HCl remains in excess.";
+
+    } else if (
+        Math.abs(
+            addedVolumeMl -
+            equivalenceVolumeMl
+        ) <= 0.10
+    ) {
+
+        observation.textContent =
+            "Equivalence point reached! " +
+            "The acid and base have been neutralized.";
+
+    } else {
+
+        observation.textContent =
+            "The solution is now basic. " +
+            "NaOH is in excess.";
+    }
+}
 
             /* Update display */
 
