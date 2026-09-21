@@ -1199,6 +1199,26 @@ document.addEventListener(
                     "advancedReactionStatus"
                 );
 
+           const hplusConcentrationDisplay =
+    document.getElementById(
+        "advancedHplusConcentration"
+    );
+
+const ohConcentrationDisplay =
+    document.getElementById(
+        "advancedOhConcentration"
+    );
+
+const totalVolumeDisplay =
+    document.getElementById(
+        "advancedTotalVolume"
+    );
+
+const neutralizationProgressDisplay =
+    document.getElementById(
+        "advancedNeutralizationProgress"
+    );
+
             const indicatorDisplay =
                 document.getElementById(
                     "advancedIndicatorStatus"
@@ -1268,6 +1288,18 @@ document.addEventListener(
                 sampleVolumeL +
                 addedVolumeL;
 
+           const neutralizationProgress =
+    Math.min(
+        100,
+        (
+            addedOhMoles /
+            initialHplusMoles
+        ) * 100
+    );
+
+let hplusConcentration = 0;
+let ohConcentration = 0;
+           
             /* Equivalence volume */
 
             const equivalenceVolumeMl =
@@ -1337,14 +1369,14 @@ if (equivalenceIndicator) {
                     initialHplusMoles -
                     addedOhMoles;
 
-                const hPlusConcentration =
-                    remainingHplus /
-                    totalVolumeL;
+               hplusConcentration =
+    remainingHplus /
+    totalVolumeL;
 
-                ph =
-                    -Math.log10(
-                        hPlusConcentration
-                    );
+ph =
+    -Math.log10(
+        hplusConcentration
+    );
 
                 status = "Acidic";
 
@@ -1361,23 +1393,24 @@ if (equivalenceIndicator) {
 
             } else {
 
-                remainingOh =
-                    addedOhMoles -
-                    initialHplusMoles;
+    remainingOh =
+        addedOhMoles -
+        initialHplusMoles;
 
-                const ohConcentration =
-                    remainingOh /
-                    totalVolumeL;
+    ohConcentration =
+        remainingOh /
+        totalVolumeL;
 
-                const poh =
-                    -Math.log10(
-                        ohConcentration
-                    );
+    const poh =
+        -Math.log10(
+            ohConcentration
+        );
 
-                ph = 14 - poh;
+    ph =
+        14 - poh;
 
-                status = "Basic";
-            }
+    status = "Basic";
+}
 
             /* Keep pH inside normal range */
 
@@ -1476,6 +1509,35 @@ if (observation) {
 
             statusDisplay.textContent =
                 status;
+           if (hplusConcentrationDisplay) {
+
+    hplusConcentrationDisplay.textContent =
+        hplusConcentration.toExponential(3) +
+        " mol/L";
+}
+
+if (ohConcentrationDisplay) {
+
+    ohConcentrationDisplay.textContent =
+        ohConcentration.toExponential(3) +
+        " mol/L";
+}
+
+if (totalVolumeDisplay) {
+
+    totalVolumeDisplay.textContent =
+        (
+            totalVolumeL * 1000
+        ).toFixed(2) +
+        " mL";
+}
+
+if (neutralizationProgressDisplay) {
+
+    neutralizationProgressDisplay.textContent =
+        neutralizationProgress.toFixed(2) +
+        "%";
+}
 
             /* Phenolphthalein */
 
