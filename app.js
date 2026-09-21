@@ -1275,6 +1275,51 @@ document.addEventListener(
                     initialHplusMoles /
                     naohConcentration
                 ) * 1000;
+           const equivalenceStatus =
+    document.getElementById(
+        "advancedEquivalenceStatus"
+    );
+
+const equivalenceIndicator =
+    document.querySelector(
+        ".equivalence-indicator"
+    );
+
+const isAtEquivalence =
+    Math.abs(
+        addedVolumeMl -
+        equivalenceVolumeMl
+    ) <= 0.10;
+
+if (equivalenceStatus) {
+
+    if (isAtEquivalence) {
+
+        equivalenceStatus.textContent =
+            "Reached — neutralization is complete";
+
+    } else if (
+        addedVolumeMl <
+        equivalenceVolumeMl
+    ) {
+
+        equivalenceStatus.textContent =
+            "Not reached — acid remains";
+
+    } else {
+
+        equivalenceStatus.textContent =
+            "Passed — base is in excess";
+    }
+}
+
+if (equivalenceIndicator) {
+
+    equivalenceIndicator.classList.toggle(
+        "reached",
+        isAtEquivalence
+    );
+}
 
             /* Remaining acid/base */
 
