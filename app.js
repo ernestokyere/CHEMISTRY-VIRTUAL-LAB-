@@ -1786,3 +1786,737 @@ if (neutralizationProgressDisplay) {
         };
 
 })();
+
+/* =========================================
+   ADVANCED TITRATION CURVE ENGINE
+========================================= */
+
+(function () {
+
+    let titrationChart = null;
+
+    function calculateCurvePH(
+        hclConcentration,
+        naohConcentration,
+        sampleVolumeMl,
+        naohVolumeMl
+    ) {
+
+        const sampleVolumeL =
+            sampleVolumeMl / 1000;
+
+        const addedVolumeL =
+            naohVolumeMl / 1000;
+
+        const initialHplusMoles =
+            hclConcentration *
+            sampleVolumeL;
+
+        const addedOhMoles =
+            naohConcentration *
+            addedVolumeL;
+
+        const totalVolumeL =
+            sampleVolumeL +
+            addedVolumeL;
+
+        const difference =
+            initialHplusMoles -
+            addedOhMoles;
+
+        let ph;
+
+        /*
+         * Before equivalence:
+         * H+ remains in excess.
+         */
+        if (difference > 0) {
+
+            const hplus =
+                difference /
+                totalVolumeL;
+
+            ph =
+                -Math.log10(hplus);
+
+        }
+
+        /*
+         * At equivalence:
+         * strong acid + strong base
+         */
+        else if (
+            Math.abs(difference) < 1e-12
+        ) {
+
+            ph = 7;
+
+        }
+
+        /*
+         * After equivalence:
+         * OH- is in excess.
+         */
+        else {
+
+            const ohMoles =
+                Math.abs(difference);
+
+            const oh =
+                ohMoles /
+                totalVolumeL;
+
+            const poh =
+                -Math.log10(oh);
+
+            ph =
+                14 - poh;
+        }
+
+        return Math.max(
+            0,
+            Math.min(14, ph)
+        );
+    }
+
+
+    function getCurveSettings() {
+
+        const hclInput =
+            document.getElementById(
+                "advancedHclConcentration"
+            );
+
+        const naohInput =
+            document.getElementById(
+                "advancedNaohConcentration"
+            );
+
+        const sampleInput =
+            document.getElementById(
+                "advancedSampleVolume"
+            );
+
+        const hcl =
+            parseFloat(
+                hclInput?.value
+            );
+
+        const naoh =
+            parseFloat(
+                naohInput?.value
+            );
+
+        const sampleVolume =
+            parseFloat(
+                sampleInput?.value
+            );
+
+        if (
+            !Number.isFinite(hcl) ||
+            !Number.isFinite(naoh) ||
+            !Number.isFinite(sampleVolume)
+        ) {
+            return null;
+        }
+
+        return {
+            hcl,
+            naoh,
+            sampleVolume
+        };
+    }
+
+
+    function calculateEquivalenceVolume(
+        hcl,
+        naoh,
+        sampleVolume
+    ) {
+
+        const sampleVolumeL =
+            sampleVolume / 1000;
+
+        const acidMoles =
+            hcl *
+            sampleVolumeL;
+
+        return (
+            acidMoles /
+            naoh
+        ) * 1000;
+    }
+
+
+    function drawTitrationCurve(
+        currentVolume = 0
+    ) {
+
+        const canvas =
+            document.getElementById(
+                "advancedTitrationChart"
+            );
+
+        if (!canvas) {
+            return;
+        }
+
+        const settings =
+            getCurveSettings();
+
+        if (!settings) {
+            return;
+        }
+
+        const {
+            hcl,
+            naoh,
+            sampleVolume
+        } = settings;
+
+        const equivalenceVolume =
+            calculateEquivalenceVolume(
+                hcl,
+                naoh,
+                sampleVolume
+            );
+
+        /*
+         * Show enough of the curve
+         * to include the region after
+         * equivalence.
+         */
+        const maxVolume =
+            Math.max(
+                equivalenceVolume * 2,
+                10
+            );
+
+        const width =
+            canvas.clientWidth || 600;
+
+        const height =
+            canvas.clientHeight || 330;
+
+        const devicePixelRatio =
+            window.devicePixelRatio || 1;
+
+        canvas.width =
+            width *
+            devicePixelRatio;
+
+        canvas.height =
+            height *
+            devicePixelRatio;
+
+        const ctx =
+            canvas.getContext("2d");
+
+        ctx.setTransform(
+            devicePixelRatio,
+            0,
+            0,
+            devicePixelRatio,
+            0,
+            0
+        );
+
+        ctx.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+        /*
+         * Graph margins
+         */
+        const marginLeft = 55;
+        const marginRight = 20;
+        const marginTop = 20;
+        const marginBottom = 45;
+
+        const graphWidth =
+            width -
+            marginLeft -
+            marginRight;
+
+        const graphHeight =
+            height -
+            marginTop -
+            marginBottom;
+
+
+        /*
+         * Background
+         */
+        ctx.fillStyle =
+            "#ffffff";
+
+        ctx.fillRect(
+            marginLeft,
+            marginTop,
+            graphWidth,
+            graphHeight
+        );
+
+
+        /*
+         * Coordinate conversion
+         */
+        function xPosition(volume) {
+
+            return (
+                marginLeft +
+                (
+                    volume /
+                    maxVolume
+                ) *
+                graphWidth
+            );
+        }
+
+        function yPosition(ph) {
+
+            return (
+                marginTop +
+                graphHeight -
+                (
+                    ph /
+                    14
+                ) *
+                graphHeight
+            );
+        }
+
+
+        /*
+         * Grid
+         */
+        ctx.strokeStyle =
+            "#e4e7ec";
+
+        ctx.lineWidth = 1;
+
+        for (
+            let ph = 0;
+            ph <= 14;
+            ph += 2
+        ) {
+
+            const y =
+                yPosition(ph);
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                marginLeft,
+                y
+            );
+
+            ctx.lineTo(
+                marginLeft +
+                graphWidth,
+                y
+            );
+
+            ctx.stroke();
+        }
+
+
+        const volumeStep =
+            maxVolume / 5;
+
+        for (
+            let i = 0;
+            i <= 5;
+            i++
+        ) {
+
+            const volume =
+                i *
+                volumeStep;
+
+            const x =
+                xPosition(volume);
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                x,
+                marginTop
+            );
+
+            ctx.lineTo(
+                x,
+                marginTop +
+                graphHeight
+            );
+
+            ctx.stroke();
+        }
+
+
+        /*
+         * Axes
+         */
+        ctx.strokeStyle =
+            "#344054";
+
+        ctx.lineWidth = 1.5;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            marginLeft,
+            marginTop
+        );
+
+        ctx.lineTo(
+            marginLeft,
+            marginTop +
+            graphHeight
+        );
+
+        ctx.lineTo(
+            marginLeft +
+            graphWidth,
+            marginTop +
+            graphHeight
+        );
+
+        ctx.stroke();
+
+
+        /*
+         * Y-axis labels
+         */
+        ctx.fillStyle =
+            "#475467";
+
+        ctx.font =
+            "12px Arial";
+
+        ctx.textAlign =
+            "right";
+
+        ctx.textBaseline =
+            "middle";
+
+        for (
+            let ph = 0;
+            ph <= 14;
+            ph += 2
+        ) {
+
+            ctx.fillText(
+                ph.toString(),
+                marginLeft - 10,
+                yPosition(ph)
+            );
+        }
+
+
+        /*
+         * X-axis labels
+         */
+        ctx.textAlign =
+            "center";
+
+        ctx.textBaseline =
+            "top";
+
+        for (
+            let i = 0;
+            i <= 5;
+            i++
+        ) {
+
+            const volume =
+                i *
+                volumeStep;
+
+            ctx.fillText(
+                volume.toFixed(1),
+                xPosition(volume),
+                marginTop +
+                graphHeight +
+                10
+            );
+        }
+
+
+        /*
+         * Draw titration curve
+         */
+        ctx.beginPath();
+
+        const points = 180;
+
+        for (
+            let i = 0;
+            i <= points;
+            i++
+        ) {
+
+            const volume =
+                (
+                    i /
+                    points
+                ) *
+                maxVolume;
+
+            const ph =
+                calculateCurvePH(
+                    hcl,
+                    naoh,
+                    sampleVolume,
+                    volume
+                );
+
+            const x =
+                xPosition(volume);
+
+            const y =
+                yPosition(ph);
+
+            if (i === 0) {
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            } else {
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+            }
+        }
+
+        ctx.strokeStyle =
+            "#3157d5";
+
+        ctx.lineWidth = 3;
+
+        ctx.lineJoin =
+            "round";
+
+        ctx.lineCap =
+            "round";
+
+        ctx.stroke();
+
+
+        /*
+         * Equivalence point
+         */
+        const equivalenceX =
+            xPosition(
+                equivalenceVolume
+            );
+
+        const equivalenceY =
+            yPosition(7);
+
+        ctx.setLineDash([
+            6,
+            5
+        ]);
+
+        ctx.strokeStyle =
+            "#12b76a";
+
+        ctx.lineWidth = 1.5;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            equivalenceX,
+            marginTop
+        );
+
+        ctx.lineTo(
+            equivalenceX,
+            marginTop +
+            graphHeight
+        );
+
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+
+
+        /*
+         * Equivalence label
+         */
+        ctx.fillStyle =
+            "#027a48";
+
+        ctx.font =
+            "bold 11px Arial";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.fillText(
+            "Equivalence",
+            equivalenceX,
+            marginTop + 8
+        );
+
+
+        /*
+         * Current experiment point
+         */
+        const safeCurrentVolume =
+            Math.max(
+                0,
+                Math.min(
+                    maxVolume,
+                    currentVolume
+                )
+            );
+
+        const currentPH =
+            calculateCurvePH(
+                hcl,
+                naoh,
+                sampleVolume,
+                safeCurrentVolume
+            );
+
+        const currentX =
+            xPosition(
+                safeCurrentVolume
+            );
+
+        const currentY =
+            yPosition(
+                currentPH
+            );
+
+        ctx.beginPath();
+
+        ctx.arc(
+            currentX,
+            currentY,
+            6,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            "#ffffff";
+
+        ctx.fill();
+
+        ctx.strokeStyle =
+            "#3157d5";
+
+        ctx.lineWidth = 3;
+
+        ctx.stroke();
+
+
+        /*
+         * Axis titles
+         */
+        ctx.fillStyle =
+            "#344054";
+
+        ctx.font =
+            "bold 12px Arial";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.textBaseline =
+            "alphabetic";
+
+        ctx.fillText(
+            "NaOH volume (mL)",
+            marginLeft +
+            graphWidth / 2,
+            height - 8
+        );
+
+        ctx.save();
+
+        ctx.translate(
+            15,
+            marginTop +
+            graphHeight / 2
+        );
+
+        ctx.rotate(
+            -Math.PI / 2
+        );
+
+        ctx.fillText(
+            "pH",
+            0,
+            0
+        );
+
+        ctx.restore();
+
+
+        /*
+         * Current point information
+         */
+        ctx.fillStyle =
+            "#344054";
+
+        ctx.font =
+            "bold 11px Arial";
+
+        ctx.textAlign =
+            "left";
+
+        ctx.textBaseline =
+            "top";
+
+        ctx.fillText(
+            `Current: ${safeCurrentVolume.toFixed(2)} mL | pH ${currentPH.toFixed(2)}`,
+            marginLeft + 10,
+            marginTop + 10
+        );
+    }
+
+
+    /*
+     * Make the graph available
+     * to the rest of ChemLab.
+     */
+    window.updateAdvancedTitrationChart =
+        function (currentVolume) {
+
+            drawTitrationCurve(
+                Number(currentVolume) || 0
+            );
+        };
+
+
+    /*
+     * Draw once the page is ready.
+     */
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            setTimeout(
+                function () {
+
+                    drawTitrationCurve(0);
+
+                },
+                100
+            );
+
+        }
+    );
+
+})();
