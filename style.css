@@ -2720,3 +2720,154 @@ nav button:hover {
     }
 
 }
+
+/* =========================================
+   PREMIUM EXPERIMENT GUIDE
+========================================= */
+
+.experiment-intro-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px;
+    margin-bottom: 18px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.experiment-intro-icon {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: #eff6ff;
+    font-size: 28px;
+}
+
+.experiment-intro-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #4f46e5;
+}
+
+.experiment-intro-card h2 {
+    margin: 5px 0 8px;
+    color: #111827;
+}
+
+.experiment-intro-card p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   EXPERIMENT STEPS
+========================================= */
+
+.experiment-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.experiment-step {
+    display: flex;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.experiment-step > span {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #3157d5;
+    color: white;
+    font-weight: 800;
+}
+
+.experiment-step strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #111827;
+}
+
+.experiment-step p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   EQUIVALENCE INDICATOR
+========================================= */
+
+.equivalence-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.equivalence-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #9ca3af;
+}
+
+.equivalence-indicator.reached {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+.equivalence-indicator.reached .equivalence-dot {
+    background: #10b981;
+}
+
+.equivalence-indicator strong {
+    display: block;
+    color: #111827;
+}
+
+.equivalence-indicator small {
+    color: #6b7280;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 800px) {
+
+    .experiment-intro-card {
+        align-items: flex-start;
+    }
+
+    .experiment-steps {
+        grid-template-columns: 1fr;
+    }
+
+}
