@@ -1192,46 +1192,71 @@ async function requestPremiumPlan(
    PREMIUM EXPERIMENT ACCESS
    ========================================================= */
 
-async function handlePremiumExperiment(
-    button
-) {
-    const user =
-        await getCurrentStudent();
+async function handlePremiumExperiment(button) {
+
+    const user = await getCurrentUser();
 
     if (!user) {
-        alert(
-            "Please sign in to access this experiment."
+        openAuthModal("login");
+        return;
+    }
+
+    const premiumStatus = await getPremiumStatus(user.id);
+
+    if (!premiumStatus || !premiumStatus.isPremium) {
+
+        showNotification(
+            "👑 Premium access required. Please unlock ChemLab Premium.",
+            "premium"
         );
 
-        openAuthModal(
-            "login"
-        );
+        const premiumSection =
+            document.getElementById("premiumSection");
+
+        if (premiumSection) {
+            premiumSection.scrollIntoView({
+                behavior: "smooth"
+            });
+        }
 
         return;
     }
 
-    const status =
-        await getPremiumStatus();
+    const experiment =
+        button.dataset.experiment;
 
-    if (!status.premium) {
-        alert(
-            "🔒 This experiment requires ChemLab Premium."
-        );
+    if (
+        experiment ===
+        "Advanced Acid-Base Titration"
+    ) {
 
-        openPremiumModal();
+        if (
+            typeof window.openAdvancedTitration ===
+            "function"
+        ) {
+
+            window.openAdvancedTitration();
+
+        } else {
+
+            console.error(
+                "Advanced Titration laboratory is not available."
+            );
+
+            showNotification(
+                "The Premium laboratory could not be opened. Please refresh the page.",
+                "error"
+            );
+        }
 
         return;
     }
 
-    const experimentName =
-        button.dataset.experiment ||
-        button.textContent.trim();
-
-    alert(
-        `👑 ${experimentName}\n\nPremium access confirmed.`
+    showNotification(
+        "👑 This Premium experiment is coming soon.",
+        "premium"
     );
 }
-
 
 /* =========================================================
    PAYSTACK RETURN + VERIFICATION
