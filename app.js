@@ -1113,3 +1113,501 @@ document.addEventListener(
 
     }
 );
+
+/* =========================================
+   CHEMLAB PREMIUM
+   ADVANCED ACID-BASE TITRATION
+========================================= */
+
+(function () {
+
+    let advancedTitrationInitialized = false;
+
+    function initializeAdvancedTitration() {
+
+        if (advancedTitrationInitialized) return;
+
+        const volumeSlider =
+            document.getElementById("advancedVolumeSlider");
+
+        const addButton =
+            document.getElementById("advancedAddNaohButton");
+
+        const resetButton =
+            document.getElementById("advancedResetButton");
+
+        const explainButton =
+            document.getElementById("advancedExplainButton");
+
+        const closeButton =
+            document.getElementById("closeAdvancedTitration");
+
+        if (
+            !volumeSlider ||
+            !addButton ||
+            !resetButton
+        ) {
+            return;
+        }
+
+        advancedTitrationInitialized = true;
+
+        function calculateTitration() {
+
+            const hclInput =
+                document.getElementById(
+                    "advancedHclConcentration"
+                );
+
+            const naohInput =
+                document.getElementById(
+                    "advancedNaohConcentration"
+                );
+
+            const sampleInput =
+                document.getElementById(
+                    "advancedSampleVolume"
+                );
+
+            const volumeDisplay =
+                document.getElementById(
+                    "advancedNaohVolume"
+                );
+
+            const phDisplay =
+                document.getElementById(
+                    "advancedPhValue"
+                );
+
+            const hplusDisplay =
+                document.getElementById(
+                    "advancedHplus"
+                );
+
+            const ohminusDisplay =
+                document.getElementById(
+                    "advancedOhminus"
+                );
+
+            const equivalenceDisplay =
+                document.getElementById(
+                    "advancedEquivalence"
+                );
+
+            const statusDisplay =
+                document.getElementById(
+                    "advancedReactionStatus"
+                );
+
+            const indicatorDisplay =
+                document.getElementById(
+                    "advancedIndicatorStatus"
+                );
+
+            const solution =
+                document.getElementById(
+                    "advancedSolution"
+                );
+
+            const buretteLiquid =
+                document.getElementById(
+                    "advancedBuretteLiquid"
+                );
+
+            if (
+                !hclInput ||
+                !naohInput ||
+                !sampleInput ||
+                !volumeDisplay ||
+                !phDisplay
+            ) {
+                return;
+            }
+
+            const hclConcentration =
+                Number(hclInput.value);
+
+            const naohConcentration =
+                Number(naohInput.value);
+
+            const sampleVolumeMl =
+                Number(sampleInput.value);
+
+            const addedVolumeMl =
+                Number(volumeSlider.value);
+
+            if (
+                hclConcentration <= 0 ||
+                naohConcentration <= 0 ||
+                sampleVolumeMl <= 0
+            ) {
+                return;
+            }
+
+            const sampleVolumeL =
+                sampleVolumeMl / 1000;
+
+            const addedVolumeL =
+                addedVolumeMl / 1000;
+
+            /* Initial H+ moles */
+
+            const initialHplusMoles =
+                hclConcentration *
+                sampleVolumeL;
+
+            /* Added OH- moles */
+
+            const addedOhMoles =
+                naohConcentration *
+                addedVolumeL;
+
+            /* Total solution volume */
+
+            const totalVolumeL =
+                sampleVolumeL +
+                addedVolumeL;
+
+            /* Equivalence volume */
+
+            const equivalenceVolumeMl =
+                (
+                    initialHplusMoles /
+                    naohConcentration
+                ) * 1000;
+
+            /* Remaining acid/base */
+
+            let ph;
+            let remainingHplus = 0;
+            let remainingOh = 0;
+            let status = "Acidic";
+
+            if (
+                addedOhMoles <
+                initialHplusMoles
+            ) {
+
+                remainingHplus =
+                    initialHplusMoles -
+                    addedOhMoles;
+
+                const hPlusConcentration =
+                    remainingHplus /
+                    totalVolumeL;
+
+                ph =
+                    -Math.log10(
+                        hPlusConcentration
+                    );
+
+                status = "Acidic";
+
+            } else if (
+                Math.abs(
+                    addedOhMoles -
+                    initialHplusMoles
+                ) < 1e-12
+            ) {
+
+                ph = 7;
+
+                status = "Neutral";
+
+            } else {
+
+                remainingOh =
+                    addedOhMoles -
+                    initialHplusMoles;
+
+                const ohConcentration =
+                    remainingOh /
+                    totalVolumeL;
+
+                const poh =
+                    -Math.log10(
+                        ohConcentration
+                    );
+
+                ph = 14 - poh;
+
+                status = "Basic";
+            }
+
+            /* Keep pH inside normal range */
+
+            ph = Math.max(
+                0,
+                Math.min(14, ph)
+            );
+
+            /* Update display */
+
+            volumeDisplay.textContent =
+                addedVolumeMl.toFixed(2);
+
+            phDisplay.textContent =
+                ph.toFixed(2);
+
+            hplusDisplay.textContent =
+                remainingHplus.toFixed(5) +
+                " mol";
+
+            ohminusDisplay.textContent =
+                remainingOh.toFixed(5) +
+                " mol";
+
+            equivalenceDisplay.textContent =
+                equivalenceVolumeMl.toFixed(2) +
+                " mL";
+
+            statusDisplay.textContent =
+                status;
+
+            /* Phenolphthalein */
+
+            if (ph >= 8.2) {
+
+                indicatorDisplay.textContent =
+                    "Pink";
+
+            } else {
+
+                indicatorDisplay.textContent =
+                    "Colorless";
+            }
+
+            /* Update liquid level */
+
+            if (buretteLiquid) {
+
+                const percentage =
+                    Math.min(
+                        100,
+                        (addedVolumeMl / 60) * 100
+                    );
+
+                buretteLiquid.style.height =
+                    percentage + "%";
+            }
+
+            /* Update solution appearance */
+
+            if (solution) {
+
+                if (ph >= 8.2) {
+
+                    solution.classList.add(
+                        "phenolphthalein-pink"
+                    );
+
+                } else {
+
+                    solution.classList.remove(
+                        "phenolphthalein-pink"
+                    );
+                }
+            }
+        }
+
+        /* Slider */
+
+        volumeSlider.addEventListener(
+            "input",
+            calculateTitration
+        );
+
+        /* Add NaOH */
+
+        addButton.addEventListener(
+            "click",
+            function () {
+
+                let currentVolume =
+                    Number(volumeSlider.value);
+
+                currentVolume += 1;
+
+                if (currentVolume > 60) {
+                    currentVolume = 60;
+                }
+
+                volumeSlider.value =
+                    currentVolume;
+
+                calculateTitration();
+            }
+        );
+
+        /* Reset */
+
+        resetButton.addEventListener(
+            "click",
+            function () {
+
+                volumeSlider.value = 0;
+
+                calculateTitration();
+
+                const explanation =
+                    document.getElementById(
+                        "advancedExplanation"
+                    );
+
+                if (explanation) {
+                    explanation.style.display =
+                        "none";
+                }
+            }
+        );
+
+        /* Explain result */
+
+        if (explainButton) {
+
+            explainButton.addEventListener(
+                "click",
+                function () {
+
+                    const ph =
+                        document.getElementById(
+                            "advancedPhValue"
+                        );
+
+                    const volume =
+                        document.getElementById(
+                            "advancedNaohVolume"
+                        );
+
+                    const status =
+                        document.getElementById(
+                            "advancedReactionStatus"
+                        );
+
+                    const explanation =
+                        document.getElementById(
+                            "advancedExplanation"
+                        );
+
+                    const explanationText =
+                        document.getElementById(
+                            "advancedExplanationText"
+                        );
+
+                    if (
+                        !ph ||
+                        !volume ||
+                        !status ||
+                        !explanation ||
+                        !explanationText
+                    ) {
+                        return;
+                    }
+
+                    explanationText.textContent =
+                        "At " +
+                        volume.textContent +
+                        " mL of NaOH added, the solution is " +
+                        status.textContent.toLowerCase() +
+                        " with a pH of " +
+                        ph.textContent +
+                        ". " +
+                        "During the titration, NaOH reacts with HCl " +
+                        "in a 1:1 neutralization reaction: " +
+                        "HCl + NaOH → NaCl + H₂O. " +
+                        "The equivalence point occurs when the " +
+                        "moles of NaOH added equal the original " +
+                        "moles of HCl.";
+
+                    explanation.style.display =
+                        "block";
+                }
+            );
+        }
+
+        /* Back to Premium */
+
+        if (closeButton) {
+
+            closeButton.addEventListener(
+                "click",
+                function () {
+
+                    const experiment =
+                        document.getElementById(
+                            "advancedTitrationPage"
+                        );
+
+                    if (experiment) {
+                        experiment.style.display =
+                            "none";
+                    }
+
+                    const premiumSection =
+                        document.getElementById(
+                            "premiumSection"
+                        );
+
+                    if (premiumSection) {
+                        premiumSection.style.display =
+                            "block";
+                    }
+                }
+            );
+        }
+
+        /* Initial calculation */
+
+        calculateTitration();
+    }
+
+
+    /*
+       Initialize after the page has loaded.
+    */
+
+    if (document.readyState === "loading") {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initializeAdvancedTitration
+        );
+
+    } else {
+
+        initializeAdvancedTitration();
+    }
+
+
+    /*
+       Allow auth.js to initialize the
+       Premium experiment when opened.
+    */
+
+    window.openAdvancedTitration =
+        function () {
+
+            initializeAdvancedTitration();
+
+            const premiumSection =
+                document.getElementById(
+                    "premiumSection"
+                );
+
+            const experiment =
+                document.getElementById(
+                    "advancedTitrationPage"
+                );
+
+            if (premiumSection) {
+                premiumSection.style.display =
+                    "none";
+            }
+
+            if (experiment) {
+                experiment.style.display =
+                    "block";
+            }
+        };
+
+})();
