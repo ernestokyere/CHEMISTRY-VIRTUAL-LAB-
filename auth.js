@@ -897,26 +897,29 @@ function openPremiumPage() {
     closePremiumModal();
     closeAccountModal();
 
-    if (typeof window.showPage === "function") {
-        window.showPage("premiumSection");
+    const premiumSection =
+        document.getElementById("premiumSection");
+
+    if (!premiumSection) {
+        console.error(
+            "ChemLab: premiumSection was not found."
+        );
+        return;
     }
 
-    setTimeout(() => {
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+        page.style.display = "";
+    });
 
-        const section =
-            getElement("premiumSection");
+    premiumSection.classList.add("active");
+    premiumSection.style.display = "";
 
-        if (section) {
-            section.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
-
-    }, 100);
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
-
-
 /* =========================================================
    14. PREMIUM MODAL
    ========================================================= */
