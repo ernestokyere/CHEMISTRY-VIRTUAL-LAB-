@@ -1898,92 +1898,56 @@ document.addEventListener(
            ================================================= */
 
         const loginButton =
-            document.getElementById(
-                "loginButton"
-            );
+            document.getElementById("loginButton");
 
         const closeAuthButton =
-            document.getElementById(
-                "closeAuthModal"
-            );
+            document.getElementById("closeAuthModal");
 
         const authSubmit =
-            document.getElementById(
-                "authSubmit"
-            );
+            document.getElementById("authSubmit");
 
         const authSwitch =
-            document.getElementById(
-                "authSwitch"
-            );
+            document.getElementById("authSwitch");
 
         const authModal =
-            document.getElementById(
-                "authModal"
-            );
+            document.getElementById("authModal");
 
         const accountModal =
-            document.getElementById(
-                "accountModal"
-            );
+            document.getElementById("accountModal");
 
         const closeAccountButton =
-            document.getElementById(
-                "closeAccountModal"
-            );
+            document.getElementById("closeAccountModal");
 
         const logoutButton =
-            document.getElementById(
-                "logoutButton"
-            );
+            document.getElementById("logoutButton");
 
         const accountPremiumButton =
-            document.getElementById(
-                "accountPremiumButton"
-            );
+            document.getElementById("accountPremiumButton");
 
         const premiumModal =
-            document.getElementById(
-                "premiumModal"
-            );
+            document.getElementById("premiumModal");
 
         const closePremiumButton =
-            document.getElementById(
-                "closePremiumModal"
-            );
+            document.getElementById("closePremiumModal");
 
         const premiumUnlockButton =
-            document.getElementById(
-                "premiumUnlockButton"
-            );
+            document.getElementById("premiumUnlockButton");
 
         const startPremiumButton =
-            document.getElementById(
-                "startPremiumButton"
-            );
+            document.getElementById("startPremiumButton");
 
 
         /* =================================================
-           INITIAL AUTH STATE
+           IMPORTANT:
+           DO NOT STOP INITIALIZATION IF SUPABASE IS NOT READY
            ================================================= */
 
         if (!supabaseReady()) {
 
-            console.error(
-                "Supabase is not ready. Check script order in index.html."
+            console.warn(
+                "Supabase is not ready. Authentication UI will still be available."
             );
-
-            return;
         }
-
-
-        const initialUser =
-            await getCurrentUser();
-
-
-        updateAuthButton(
-            initialUser
-        );
 
 
         /* =================================================
@@ -1994,7 +1958,19 @@ document.addEventListener(
 
             loginButton.addEventListener(
                 "click",
-                async () => {
+                async (event) => {
+
+                    event.preventDefault();
+
+                    console.log(
+                        "Sign In button clicked."
+                    );
+
+
+                    /*
+                       If the user is already logged in,
+                       open the account dashboard.
+                    */
 
                     const user =
                         await getCurrentUser();
@@ -2006,11 +1982,39 @@ document.addEventListener(
 
                     } else {
 
-                        openAuthModal(
-                            "login"
-                        );
+                        /*
+                           Otherwise open login modal.
+                        */
+
+                        openAuthModal("login");
                     }
                 }
+            );
+
+        } else {
+
+            console.error(
+                "ERROR: loginButton was not found in index.html."
+            );
+        }
+
+
+        /* =================================================
+           INITIAL AUTH STATE
+           ================================================= */
+
+        if (supabaseReady()) {
+
+            const initialUser =
+                await getCurrentUser();
+
+            updateAuthButton(
+                initialUser
+            );
+        } else {
+
+            updateAuthButton(
+                null
             );
         }
 
@@ -2023,7 +2027,12 @@ document.addEventListener(
 
             closeAuthButton.addEventListener(
                 "click",
-                closeAuthModal
+                (event) => {
+
+                    event.preventDefault();
+
+                    closeAuthModal();
+                }
             );
         }
 
@@ -2036,18 +2045,18 @@ document.addEventListener(
 
             authSwitch.addEventListener(
                 "click",
-                () => {
+                (event) => {
 
-                    const modal =
+                    event.preventDefault();
+
+                    const currentModal =
                         document.getElementById(
                             "authModal"
                         );
 
-
                     const currentMode =
-                        modal?.dataset?.mode ||
+                        currentModal?.dataset?.mode ||
                         "login";
-
 
                     openAuthModal(
                         currentMode === "login"
@@ -2067,7 +2076,12 @@ document.addEventListener(
 
             authSubmit.addEventListener(
                 "click",
-                handleAuthSubmit
+                async (event) => {
+
+                    event.preventDefault();
+
+                    await handleAuthSubmit();
+                }
             );
         }
 
@@ -2081,7 +2095,6 @@ document.addEventListener(
                 "authPassword"
             );
 
-
         if (passwordInput) {
 
             passwordInput.addEventListener(
@@ -2089,8 +2102,7 @@ document.addEventListener(
                 (event) => {
 
                     if (
-                        event.key ===
-                        "Enter"
+                        event.key === "Enter"
                     ) {
 
                         event.preventDefault();
@@ -2103,7 +2115,7 @@ document.addEventListener(
 
 
         /* =================================================
-           AUTH BACKDROP
+           AUTH MODAL BACKDROP
            ================================================= */
 
         if (authModal) {
@@ -2125,14 +2137,19 @@ document.addEventListener(
 
 
         /* =================================================
-           ACCOUNT CLOSE
+           CLOSE ACCOUNT
            ================================================= */
 
         if (closeAccountButton) {
 
             closeAccountButton.addEventListener(
                 "click",
-                closeAccount
+                (event) => {
+
+                    event.preventDefault();
+
+                    closeAccount();
+                }
             );
         }
 
@@ -2167,13 +2184,17 @@ document.addEventListener(
 
             accountPremiumButton.addEventListener(
                 "click",
-                async () => {
+                async (event) => {
+
+                    event.preventDefault();
 
                     const status =
                         await getPremiumStatus();
 
-
-                    if (status.isPremium) {
+                    if (
+                        status &&
+                        status.isPremium
+                    ) {
 
                         alert(
                             "Your Premium membership is already active."
@@ -2181,7 +2202,6 @@ document.addEventListener(
 
                         return;
                     }
-
 
                     closeAccount();
 
@@ -2199,11 +2219,12 @@ document.addEventListener(
 
             logoutButton.addEventListener(
                 "click",
-                async () => {
+                async (event) => {
+
+                    event.preventDefault();
 
                     const result =
                         await logoutStudent();
-
 
                     if (!result.success) {
 
@@ -2214,7 +2235,6 @@ document.addEventListener(
                         return;
                     }
 
-
                     closeAccount();
 
                     closePremiumModal();
@@ -2222,7 +2242,6 @@ document.addEventListener(
                     updateAuthButton(
                         null
                     );
-
 
                     alert(
                         "You have been signed out."
@@ -2240,11 +2259,12 @@ document.addEventListener(
 
             premiumUnlockButton.addEventListener(
                 "click",
-                async () => {
+                async (event) => {
+
+                    event.preventDefault();
 
                     const user =
                         await getCurrentUser();
-
 
                     if (!user) {
 
@@ -2255,12 +2275,13 @@ document.addEventListener(
                         return;
                     }
 
-
                     const status =
                         await getPremiumStatus();
 
-
-                    if (status.isPremium) {
+                    if (
+                        status &&
+                        status.isPremium
+                    ) {
 
                         alert(
                             "👑 Your Premium membership is already active."
@@ -2269,7 +2290,6 @@ document.addEventListener(
                         return;
                     }
 
-
                     openPremiumModal();
                 }
             );
@@ -2277,20 +2297,25 @@ document.addEventListener(
 
 
         /* =================================================
-           PREMIUM MODAL CLOSE
+           CLOSE PREMIUM MODAL
            ================================================= */
 
         if (closePremiumButton) {
 
             closePremiumButton.addEventListener(
                 "click",
-                closePremiumModal
+                (event) => {
+
+                    event.preventDefault();
+
+                    closePremiumModal();
+                }
             );
         }
 
 
         /* =================================================
-           PREMIUM BACKDROP
+           PREMIUM MODAL BACKDROP
            ================================================= */
 
         if (premiumModal) {
@@ -2319,11 +2344,12 @@ document.addEventListener(
 
             startPremiumButton.addEventListener(
                 "click",
-                async () => {
+                async (event) => {
+
+                    event.preventDefault();
 
                     const user =
                         await getCurrentUser();
-
 
                     if (!user) {
 
@@ -2336,12 +2362,13 @@ document.addEventListener(
                         return;
                     }
 
-
                     const status =
                         await getPremiumStatus();
 
-
-                    if (status.isPremium) {
+                    if (
+                        status &&
+                        status.isPremium
+                    ) {
 
                         alert(
                             "Your Premium membership is already active."
@@ -2349,7 +2376,6 @@ document.addEventListener(
 
                         return;
                     }
-
 
                     alert(
                         "Please select a Premium plan below."
@@ -2367,7 +2393,6 @@ document.addEventListener(
             document.querySelectorAll(
                 ".premium-plan-button"
             );
-
 
         console.log(
             "Premium plan buttons found:",
@@ -2387,12 +2412,10 @@ document.addEventListener(
                         const plan =
                             button.dataset.plan;
 
-
                         console.log(
                             "Premium plan selected:",
                             plan
                         );
-
 
                         await requestPremiumPlan(
                             plan
@@ -2411,6 +2434,11 @@ document.addEventListener(
             document.querySelectorAll(
                 ".premium-experiment-button"
             );
+
+        console.log(
+            "Premium experiment buttons found:",
+            experimentButtons.length
+        );
 
 
         experimentButtons.forEach(
@@ -2432,47 +2460,54 @@ document.addEventListener(
 
 
         /* =================================================
-           AUTH STATE CHANGES
+           SUPABASE AUTH STATE CHANGES
            ================================================= */
 
-        chemLabSupabase.auth.onAuthStateChange(
-            (
-                event,
-                session
-            ) => {
+        if (supabaseReady()) {
 
-                console.log(
-                    "ChemLab Auth State:",
-                    event
-                );
+            chemLabSupabase.auth.onAuthStateChange(
+                (
+                    event,
+                    session
+                ) => {
 
+                    console.log(
+                        "ChemLab Auth State:",
+                        event
+                    );
 
-                const user =
-                    session?.user ||
-                    null;
+                    const user =
+                        session?.user ||
+                        null;
 
+                    updateAuthButton(
+                        user
+                    );
 
-                updateAuthButton(
-                    user
-                );
+                    if (!user) {
 
+                        closeAccount();
 
-                if (!user) {
-
-                    closeAccount();
-
-                    closePremiumModal();
+                        closePremiumModal();
+                    }
                 }
-            }
-        );
+            );
+        }
 
 
         /* =================================================
            CHECK PAYSTACK RETURN
            ================================================= */
 
-        await handlePaystackReturn();
+        if (supabaseReady()) {
 
+            await handlePaystackReturn();
+        }
+
+
+        /* =================================================
+           READY
+           ================================================= */
 
         console.log(
             "ChemLab authentication system ready."
