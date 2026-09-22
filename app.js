@@ -1,59 +1,46 @@
-/* =========================================
-   CHEMLAB — APP.JS
-   STAGE 2 → STAGE 14D
-   TITRATION + AI + QUIZ + PREMIUM LAB
-========================================= */
+/* =========================================================
+   CHEMLAB — MAIN APPLICATION
+   Complete replacement app.js
+   ========================================================= */
 
 
-/* =========================================
-   APPLICATION NAVIGATION
-========================================= */
+/* =========================================================
+   GLOBAL CONFIGURATION
+   ========================================================= */
 
-function showPage(pageId) {
+const CHEMLAB_CONFIG = {
+    supabaseUrl:
+        "https://zscbgeaieiqwknhjxpnt.supabase.co",
 
-    document.querySelectorAll(".page").forEach(page => {
-        page.classList.remove("active");
-    });
-
-    const page = document.getElementById(pageId);
-
-    if (page) {
-        page.classList.add("active");
-    }
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
+    chemistryAIEndpoint:
+        "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/chemistry-ai"
+};
 
 
-function openExperiment(experiment) {
+/* =========================================================
+   GLOBAL STATE
+   ========================================================= */
 
-    if (experiment === "titration") {
-        showPage("titration");
-        resetExperiment();
-    }
-}
+let chemLabState = {
+    currentPage: "home",
+
+    currentExperiment: null,
+
+    xp: 0,
+
+    experimentsCompleted: 0,
+
+    quizScore: 0,
+
+    currentQuestion: 0,
+
+    quizAnswered: false
+};
 
 
-/* =========================================
-   BASIC TITRATION CONFIGURATION
-=========================================
-
-   HCl + NaOH → NaCl + H₂O
-
-   HCl:
-   0.100 mol/L
-   25.00 mL
-
-   NaOH:
-   0.100 mol/L
-
-   Equivalence:
-   25.00 mL NaOH
-
-========================================= */
+/* =========================================================
+   BASIC TITRATION STATE
+   ========================================================= */
 
 const titration = {
 
@@ -71,295 +58,645 @@ const titration = {
     titrantVolume: 0,
 
     indicator: "phenolphthalein"
-
 };
 
-
-/* =========================================
-   CONSTANTS
-========================================= */
 
 const PHENOLPHTHALEIN_ENDPOINT = 8.20;
 
 
-/* =========================================
-   ADD TITRANT
-========================================= */
+/* =========================================================
+   QUIZ DATA
+   ========================================================= */
 
-function addTitrant(amount = 1) {
+const quizQuestions = [
 
-    titration.titrantVolume += Number(amount) || 0;
+    {
+        question:
+            "What is the main purpose of an acid-base titration?",
 
-    titration.titrantVolume =
-        Math.max(
-            0,
-            Math.min(
-                50,
-                titration.titrantVolume
-            )
-        );
+        options: [
+            "To determine the concentration of a solution",
+            "To measure temperature",
+            "To identify a metal",
+            "To measure density"
+        ],
 
-    calculateTitration();
+        answer: 0,
+
+        explanation:
+            "Titration is commonly used to determine the concentration of an unknown solution."
+    },
+
+    {
+        question:
+            "What is the purpose of an indicator in an acid-base titration?",
+
+        options: [
+            "To increase the temperature",
+            "To show a color change near the endpoint",
+            "To increase the volume",
+            "To produce oxygen"
+        ],
+
+        answer: 1,
+
+        explanation:
+            "An indicator changes color over a particular pH range and helps identify the endpoint."
+    },
+
+    {
+        question:
+            "What is the approximate pH at the equivalence point of a strong acid–strong base titration?",
+
+        options: [
+            "1",
+            "5",
+            "7",
+            "14"
+        ],
+
+        answer: 2,
+
+        explanation:
+            "For a strong acid reacting with a strong base, the equivalence point is approximately pH 7 at 25°C."
+    },
+
+    {
+        question:
+            "Which piece of equipment is normally used to deliver the titrant accurately?",
+
+        options: [
+            "Beaker",
+            "Burette",
+            "Thermometer",
+            "Evaporating dish"
+        ],
+
+        answer: 1,
+
+        explanation:
+            "A burette allows the titrant volume to be measured accurately."
+    },
+
+    {
+        question:
+            "What is the balanced reaction between HCl and NaOH?",
+
+        options: [
+            "HCl + NaOH → NaCl + H₂O",
+            "HCl + NaOH → H₂ + Cl₂",
+            "HCl + NaOH → NaOH₂",
+            "HCl + NaOH → HCl₂ + Na"
+        ],
+
+        answer: 0,
+
+        explanation:
+            "Hydrochloric acid reacts with sodium hydroxide to form sodium chloride and water."
+    }
+
+];
+
+
+/* =========================================================
+   UTILITY FUNCTIONS
+   ========================================================= */
+
+function $(id) {
+    return document.getElementById(id);
 }
 
 
-/* =========================================
-   CALCULATE BASIC TITRATION
-========================================= */
+function safeText(element, value) {
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent =
+        value === undefined ||
+        value === null
+            ? ""
+            : String(value);
+}
+
+
+function clamp(value, min, max) {
+
+    return Math.min(
+        Math.max(value, min),
+        max
+    );
+}
+
+
+function round(value, decimals = 2) {
+
+    const factor =
+        Math.pow(10, decimals);
+
+    return Math.round(
+        value * factor
+    ) / factor;
+}
+
+
+function showNotification(
+    message,
+    type = "info"
+) {
+
+    const existing =
+        document.querySelector(
+            ".eduvora-notification"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const notification =
+        document.createElement("div");
+
+    notification.className =
+        "eduvora-notification";
+
+    notification.setAttribute(
+        "role",
+        "status"
+    );
+
+    notification.textContent =
+        message;
+
+    if (type === "error") {
+        notification.style.background =
+            "#991b1b";
+    } else if (type === "success") {
+        notification.style.background =
+            "#166534";
+    } else if (type === "premium") {
+        notification.style.background =
+            "#7c3aed";
+    }
+
+    document.body.appendChild(
+        notification
+    );
+
+    setTimeout(() => {
+
+        if (notification.parentNode) {
+            notification.remove();
+        }
+
+    }, 4000);
+}
+
+
+window.showNotification =
+    showNotification;
+
+
+/* =========================================================
+   PAGE NAVIGATION
+   ========================================================= */
+
+function showPage(pageId) {
+
+    const pages =
+        document.querySelectorAll(
+            ".page"
+        );
+
+    pages.forEach(page => {
+
+        page.classList.remove(
+            "active"
+        );
+    });
+
+
+    const requestedPage =
+        document.getElementById(
+            pageId
+        );
+
+
+    if (!requestedPage) {
+
+        console.warn(
+            `Page "${pageId}" was not found.`
+        );
+
+        return;
+    }
+
+
+    requestedPage.classList.add(
+        "active"
+    );
+
+
+    chemLabState.currentPage =
+        pageId;
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+window.showPage =
+    showPage;
+
+
+/* =========================================================
+   OPEN EXPERIMENT
+   ========================================================= */
+
+function openExperiment(
+    experiment
+) {
+
+    if (
+        experiment ===
+        "titration"
+    ) {
+
+        chemLabState.currentExperiment =
+            "titration";
+
+        showPage(
+            "titration"
+        );
+
+        resetExperiment();
+
+        return;
+    }
+
+
+    console.warn(
+        "Unknown experiment:",
+        experiment
+    );
+}
+
+
+window.openExperiment =
+    openExperiment;
+
+
+/* =========================================================
+   BASIC TITRATION CALCULATION
+   ========================================================= */
 
 function calculateTitration() {
 
-    const acidConcentration =
-        titration.acid.concentration;
-
-    const acidVolumeL =
-        titration.acid.initialVolume / 1000;
-
-    const baseConcentration =
-        titration.base.concentration;
-
-    const baseVolumeL =
-        titration.titrantVolume / 1000;
-
-
     const acidMoles =
-        acidConcentration *
-        acidVolumeL;
+        titration.acid.concentration *
+        (
+            titration.acid.initialVolume /
+            1000
+        );
 
 
     const baseMoles =
-        baseConcentration *
-        baseVolumeL;
+        titration.base.concentration *
+        (
+            titration.titrantVolume /
+            1000
+        );
 
 
-    const totalVolumeL =
-        acidVolumeL +
-        baseVolumeL;
+    const totalVolume =
+        (
+            titration.acid.initialVolume +
+            titration.titrantVolume
+        ) / 1000;
+
+
+    const difference =
+        acidMoles -
+        baseMoles;
 
 
     let pH;
+
     let state;
 
 
-    /* BEFORE EQUIVALENCE */
+    if (
+        Math.abs(difference) <
+        0.000000001
+    ) {
 
-    if (acidMoles > baseMoles) {
+        pH = 7;
 
-        const remainingHPlus =
-            acidMoles -
-            baseMoles;
+        state =
+            "equivalence";
 
-        const concentrationHPlus =
-            remainingHPlus /
-            totalVolumeL;
+    } else if (
+        difference > 0
+    ) {
+
+        const hPlus =
+            difference /
+            totalVolume;
 
         pH =
             -Math.log10(
-                concentrationHPlus
+                Math.max(
+                    hPlus,
+                    0.000000000001
+                )
             );
 
-        state = "Acidic";
-
-
-    /* AT EQUIVALENCE */
-
-    } else if (
-        Math.abs(
-            acidMoles -
-            baseMoles
-        ) < 0.0000001
-    ) {
-
-        pH = 7.00;
-
-        state = "Neutral";
-
-
-    /* AFTER EQUIVALENCE */
+        state =
+            "acidic";
 
     } else {
 
-        const remainingOH =
-            baseMoles -
-            acidMoles;
-
-        const concentrationOH =
-            remainingOH /
-            totalVolumeL;
+        const ohMinus =
+            Math.abs(difference) /
+            totalVolume;
 
         const pOH =
             -Math.log10(
-                concentrationOH
+                Math.max(
+                    ohMinus,
+                    0.000000000001
+                )
             );
 
         pH =
             14 -
             pOH;
 
-        state = "Basic";
+        state =
+            "basic";
     }
 
 
     pH =
-        Math.max(
+        clamp(
+            pH,
             0,
-            Math.min(
-                14,
-                pH
-            )
+            14
         );
 
 
-    updateTitrationDisplay(
+    return {
+
         pH,
         state,
+
         acidMoles,
-        baseMoles
+
+        baseMoles,
+
+        totalVolume,
+
+        difference,
+
+        equivalenceVolume:
+            (
+                acidMoles /
+                titration.base.concentration
+            ) * 1000
+    };
+}
+
+
+/* =========================================================
+   ADD TITRANT
+   ========================================================= */
+
+function addTitrant(
+    amount = 1
+) {
+
+    let volume =
+        Number(amount);
+
+
+    if (
+        !Number.isFinite(volume) ||
+        volume <= 0
+    ) {
+
+        volume = 1;
+    }
+
+
+    titration.titrantVolume =
+        clamp(
+            titration.titrantVolume +
+            volume,
+            0,
+            50
+        );
+
+
+    calculateTitration();
+
+
+    updateTitrationDisplay();
+}
+
+
+window.addTitrant =
+    addTitrant;
+
+
+/* =========================================================
+   BASIC TITRATION DISPLAY
+   ========================================================= */
+
+function updateTitrationDisplay() {
+
+    const result =
+        calculateTitration();
+
+
+    safeText(
+        $("titrantVolume"),
+        `${titration.titrantVolume.toFixed(1)} mL`
+    );
+
+
+    safeText(
+        $("phValue"),
+        result.pH.toFixed(2)
+    );
+
+
+    safeText(
+        $("pHValue"),
+        result.pH.toFixed(2)
+    );
+
+
+    safeText(
+        $("titrationPH"),
+        result.pH.toFixed(2)
+    );
+
+
+    safeText(
+        $("indicatorStatus"),
+        getIndicatorStatus(
+            result.pH
+        )
+    );
+
+
+    updateBurette(
+        titration.titrantVolume
+    );
+
+
+    updateFlask(
+        result
+    );
+
+
+    updateEndpointMessage(
+        result
     );
 }
 
 
-/* =========================================
-   UPDATE BASIC TITRATION DISPLAY
-========================================= */
+/* =========================================================
+   INDICATOR STATUS
+   ========================================================= */
 
-function updateTitrationDisplay(
-    pH,
-    state,
-    acidMoles,
-    baseMoles
+function getIndicatorStatus(
+    pH
 ) {
 
-    const volumeElement =
-        document.getElementById("volume");
+    if (
+        pH >= 8.2 &&
+        pH <= 10
+    ) {
 
-    const phElement =
-        document.getElementById("ph");
-
-    const indicatorElement =
-        document.getElementById("indicator");
-
-    const buretteLiquid =
-        document.getElementById("buretteLiquid");
-
-    const flaskLiquid =
-        document.getElementById("flaskLiquid");
+        return "🌸 Pink — endpoint range";
+    }
 
 
-    if (!volumeElement) {
+    if (pH > 10) {
+
+        return "🌸 Strong pink — basic";
+    }
+
+
+    return "⚪ Colorless — acidic";
+}
+
+
+/* =========================================================
+   BASIC BURETTE
+   ========================================================= */
+
+function updateBurette(
+    volume
+) {
+
+    const liquid =
+        $("buretteLiquid");
+
+    if (!liquid) {
         return;
     }
 
 
-    /* Volume */
-
-    volumeElement.textContent =
-        titration.titrantVolume.toFixed(2) +
-        " mL";
-
-
-    /* pH */
-
-    if (phElement) {
-
-        phElement.textContent =
-            pH.toFixed(2);
-    }
+    const percentage =
+        clamp(
+            (volume / 50) * 100,
+            0,
+            100
+        );
 
 
-    /* Indicator */
-
-    if (indicatorElement) {
-
-        indicatorElement.textContent =
-            pH >= PHENOLPHTHALEIN_ENDPOINT
-                ? "Pink"
-                : "Colourless";
-    }
+    liquid.style.height =
+        `${percentage}%`;
+}
 
 
-    /* Burette */
+/* =========================================================
+   BASIC FLASK
+   ========================================================= */
 
-    if (buretteLiquid) {
+function updateFlask(
+    result
+) {
 
-        const remainingBurette =
-            Math.max(
-                10,
-                90 -
-                (
-                    titration.titrantVolume /
-                    50
-                ) *
-                80
-            );
+    const flask =
+        $("flask");
 
-        buretteLiquid.style.height =
-            remainingBurette +
-            "%";
-    }
+    const solution =
+        $("solution");
 
 
-    /* Flask */
-
-    if (flaskLiquid) {
-
-        const flaskLevel =
-            Math.min(
-                80,
-                25 +
-                (
-                    titration.titrantVolume /
-                    50
-                ) *
-                55
-            );
-
-        flaskLiquid.style.height =
-            flaskLevel +
-            "%";
-
+    if (solution) {
 
         if (
-            pH >=
-            PHENOLPHTHALEIN_ENDPOINT
+            result.state ===
+            "equivalence"
         ) {
 
-            flaskLiquid.style.background =
-                "#f7a8c4";
+            solution.style.background =
+                "rgba(255, 192, 203, 0.65)";
+
+        } else if (
+            result.state ===
+            "basic"
+        ) {
+
+            solution.style.background =
+                "rgba(255, 105, 180, 0.70)";
 
         } else {
 
-            flaskLiquid.style.background =
-                "#d9f0ff";
+            solution.style.background =
+                "rgba(255, 255, 255, 0.18)";
         }
     }
 
 
-    updateEndpointMessage(
-        pH,
-        acidMoles,
-        baseMoles
-    );
+    if (flask) {
+
+        flask.dataset.state =
+            result.state;
+    }
 }
 
 
-/* =========================================
-   BASIC ENDPOINT MESSAGE
-========================================= */
+/* =========================================================
+   ENDPOINT MESSAGE
+   ========================================================= */
 
 function updateEndpointMessage(
-    pH,
-    acidMoles,
-    baseMoles
+    result
 ) {
 
     let message =
-        document.getElementById(
-            "endpointMessage"
-        );
+        $("endpointMessage");
 
 
     if (!message) {
+
+        const container =
+            $("titrationLab") ||
+            $("titration");
+
+        if (!container) {
+            return;
+        }
+
 
         message =
             document.createElement(
@@ -376,265 +713,188 @@ function updateEndpointMessage(
             "12px";
 
         message.style.borderRadius =
-            "8px";
+            "10px";
 
-        const laboratory =
-            document.querySelector(
-                ".laboratory"
-            );
+        message.style.fontWeight =
+            "600";
 
-        if (laboratory) {
-
-            laboratory.appendChild(
-                message
-            );
-        }
-    }
-
-
-    if (!message) {
-        return;
-    }
-
-
-    const difference =
-        Math.abs(
-            acidMoles -
-            baseMoles
+        container.appendChild(
+            message
         );
+    }
 
 
     if (
-        difference < 0.00015 &&
-        pH >= 7 &&
-        pH < PHENOLPHTHALEIN_ENDPOINT
+        result.state ===
+        "equivalence"
     ) {
 
         message.textContent =
-            "⚠️ You are approaching the equivalence point.";
+            "🎯 Equivalence point reached! The acid and base have reacted in stoichiometric amounts.";
+
+        message.style.background =
+            "#dcfce7";
+
+        message.style.color =
+            "#166534";
 
     } else if (
-        pH >=
-        PHENOLPHTHALEIN_ENDPOINT
+        result.state ===
+        "basic"
     ) {
 
         message.textContent =
-            "🎯 Phenolphthalein endpoint reached.";
+            "🧪 The solution is now basic because NaOH is in excess.";
+
+        message.style.background =
+            "#fce7f3";
+
+        message.style.color =
+            "#9d174d";
 
     } else {
 
         message.textContent =
-            "🔬 The solution is still acidic. Continue adding titrant.";
+            "🧪 The solution remains acidic because HCl is still in excess.";
+
+        message.style.background =
+            "#fee2e2";
+
+        message.style.color =
+            "#991b1b";
     }
 }
 
 
-/* =========================================
+/* =========================================================
    RESET BASIC EXPERIMENT
-========================================= */
+   ========================================================= */
 
 function resetExperiment() {
 
-    titration.titrantVolume = 0;
+    titration.titrantVolume =
+        0;
 
-    calculateTitration();
+
+    updateTitrationDisplay();
+
+
+    const questionInput =
+        $("experimentAIQuestion");
+
+    if (questionInput) {
+        questionInput.value =
+            "";
+    }
+
+
+    const answer =
+        $("experimentAIAnswer");
+
+    if (answer) {
+        answer.textContent =
+            "";
+    }
 }
 
 
-/* =========================================
+window.resetExperiment =
+    resetExperiment;
+
+
+/* =========================================================
    EXPERIMENT STATE
-========================================= */
+   ========================================================= */
 
 function getExperimentState() {
 
-    const acidMoles =
-        titration.acid.concentration *
-        (
-            titration.acid.initialVolume /
-            1000
-        );
-
-    const baseMoles =
-        titration.base.concentration *
-        (
-            titration.titrantVolume /
-            1000
-        );
-
-    const totalVolume =
-        (
-            titration.acid.initialVolume +
-            titration.titrantVolume
-        ) / 1000;
-
-
-    let pH = 7;
-    let state = "Neutral";
-
-
-    if (acidMoles > baseMoles) {
-
-        const hplus =
-            (
-                acidMoles -
-                baseMoles
-            ) /
-            totalVolume;
-
-        pH =
-            -Math.log10(hplus);
-
-        state =
-            "Acidic";
-
-    } else if (
-        baseMoles >
-        acidMoles
-    ) {
-
-        const oh =
-            (
-                baseMoles -
-                acidMoles
-            ) /
-            totalVolume;
-
-        const pOH =
-            -Math.log10(oh);
-
-        pH =
-            14 -
-            pOH;
-
-        state =
-            "Basic";
-    }
+    const result =
+        calculateTitration();
 
 
     return {
 
         experiment:
-            "HCl + NaOH titration",
+            "Acid-Base Titration",
+
+        acid:
+            titration.acid.name,
+
+        acidConcentration:
+            titration.acid.concentration,
+
+        acidVolume:
+            titration.acid.initialVolume,
+
+        base:
+            titration.base.name,
+
+        baseConcentration:
+            titration.base.concentration,
 
         titrantVolume:
-            titration.titrantVolume.toFixed(2),
+            titration.titrantVolume,
 
         pH:
-            pH.toFixed(2),
-
-        indicator:
-            pH >=
-            PHENOLPHTHALEIN_ENDPOINT
-                ? "Pink"
-                : "Colourless",
+            result.pH,
 
         state:
-            state
+            result.state,
+
+        indicator:
+            titration.indicator
     };
 }
 
 
-/* =========================================
-   CHEMLAB AI
-========================================= */
-
-async function askAI(question) {
-
-    const chat =
-        document.getElementById(
-            "chatMessages"
-        );
+window.getExperimentState =
+    getExperimentState;
 
 
-    if (!chat) {
+/* =========================================================
+   CHEMISTRY AI
+   ========================================================= */
 
-        console.error(
-            "ChemLab AI: chatMessages element not found."
-        );
+async function askAI(
+    question
+) {
 
-        return;
+    const cleanQuestion =
+        String(question || "")
+            .trim();
+
+
+    if (!cleanQuestion) {
+
+        return {
+            success: false,
+            answer:
+                "Please enter a chemistry question."
+        };
     }
 
 
-    addChatMessage(
-        chat,
-        question,
-        "user"
-    );
-
-
-    const loading =
-        document.createElement(
-            "div"
-        );
-
-    loading.className =
-        "ai-message";
-
-    loading.textContent =
-        "🤖 ChemLab AI is thinking...";
-
-    chat.appendChild(
-        loading
-    );
-
-    chat.scrollTop =
-        chat.scrollHeight;
+    const experiment =
+        getExperimentState();
 
 
     try {
 
-        let experiment = {};
-
-
-        if (
-            typeof getExperimentState ===
-            "function"
-        ) {
-
-            experiment =
-                getExperimentState();
-
-        } else {
-
-            experiment = {
-
-                titrantVolume:
-                    titration.titrantVolume.toFixed(2),
-
-                pH:
-                    "Unknown",
-
-                indicator:
-                    "Unknown",
-
-                state:
-                    "Unknown"
-            };
-        }
-
-
         const response =
             await fetch(
-                "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/chemistry-ai",
+                CHEMLAB_CONFIG.chemistryAIEndpoint,
                 {
-
                     method: "POST",
 
                     headers: {
-
                         "Content-Type":
-                            "application/json",
-
-                        "apikey":
-                            "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy"
+                            "application/json"
                     },
 
                     body:
                         JSON.stringify({
-
                             question:
-                                question,
+                                cleanQuestion,
 
                             experiment:
                                 experiment
@@ -643,132 +903,91 @@ async function askAI(question) {
             );
 
 
-        let data = {};
+        let data = null;
+
 
         try {
 
             data =
                 await response.json();
 
-        } catch {
+        } catch (jsonError) {
 
-            data = {};
+            console.error(
+                "AI response parsing error:",
+                jsonError
+            );
         }
-
-
-        loading.remove();
 
 
         if (!response.ok) {
 
-            console.error(
-                "ChemLab AI error:",
-                data
+            throw new Error(
+                data?.error ||
+                data?.message ||
+                "The AI service returned an error."
             );
-
-            addChatMessage(
-                chat,
-                "⚠️ ChemLab AI couldn't answer right now. Please try again.",
-                "ai"
-            );
-
-            return;
         }
 
 
-        if (
-            !data.answer ||
-            typeof data.answer !==
-            "string"
-        ) {
+        const answer =
+            data?.answer ||
+            data?.response ||
+            data?.message ||
+            data?.result;
 
-            console.error(
-                "Invalid AI response:",
-                data
+
+        if (!answer) {
+
+            throw new Error(
+                "The AI returned an empty response."
             );
-
-            addChatMessage(
-                chat,
-                "⚠️ The AI returned an unexpected response.",
-                "ai"
-            );
-
-            return;
         }
 
 
-        addChatMessage(
-            chat,
-            data.answer,
-            "ai"
-        );
+        return {
 
+            success: true,
 
-        chat.scrollTop =
-            chat.scrollHeight;
+            answer: String(answer)
+        };
 
 
     } catch (error) {
 
         console.error(
-            "ChemLab AI connection error:",
+            "Chemistry AI error:",
             error
         );
 
 
-        loading.textContent =
-            "⚠️ I couldn't connect to ChemLab AI. Please try again.";
+        return {
+
+            success: false,
+
+            answer:
+                "The Chemistry AI could not respond right now. Please check your connection and try again."
+        };
     }
 }
 
 
-/* =========================================
-   DISPLAY CHAT MESSAGE
-========================================= */
-
-function addChatMessage(
-    container,
-    message,
-    type
-) {
-
-    if (!container) {
-        return;
-    }
+window.askAI =
+    askAI;
 
 
-    const div =
-        document.createElement(
-            "div"
-        );
+/* =========================================================
+   EXPERIMENT AI
+   ========================================================= */
 
-
-    div.className =
-        type === "user"
-            ? "user-message"
-            : "ai-message";
-
-
-    div.textContent =
-        String(message ?? "");
-
-
-    container.appendChild(
-        div
-    );
-}
-
-
-/* =========================================
-   SEND QUESTION
-========================================= */
-
-function sendQuestion() {
+async function askExperimentAI() {
 
     const input =
-        document.getElementById(
-            "questionInput"
-        );
+        $("experimentAIQuestion");
+
+
+    const output =
+        $("experimentAIAnswer");
 
 
     if (!input) {
@@ -781,34 +1000,63 @@ function sendQuestion() {
 
 
     if (!question) {
+
+        if (output) {
+            output.textContent =
+                "Please enter a question.";
+        }
+
         return;
     }
 
 
-    askAI(question);
+    if (output) {
 
-    input.value = "";
+        output.textContent =
+            "🧠 Chemistry AI is thinking...";
+    }
+
+
+    const result =
+        await askAI(
+            question
+        );
+
+
+    if (output) {
+
+        output.textContent =
+            result.answer;
+    }
 }
 
 
-/* =========================================
-   MAIN AI QUESTION
-========================================= */
+window.askExperimentAI =
+    askExperimentAI;
 
-function mainAIQuestion() {
+
+/* =========================================================
+   MAIN AI CHAT
+   ========================================================= */
+
+async function mainAIQuestion() {
 
     const input =
-        document.getElementById(
-            "mainQuestion"
+        $("mainAIInput") ||
+        $("aiQuestion");
+
+
+    const output =
+        $("mainAIAnswer") ||
+        $("aiAnswer");
+
+
+    if (!input) {
+
+        console.warn(
+            "Main AI input was not found."
         );
 
-    const chat =
-        document.getElementById(
-            "mainChat"
-        );
-
-
-    if (!input || !chat) {
         return;
     }
 
@@ -818,263 +1066,117 @@ function mainAIQuestion() {
 
 
     if (!question) {
-        return;
-    }
 
-
-    addChatMessage(
-        chat,
-        question,
-        "user"
-    );
-
-
-    setTimeout(() => {
-
-        if (
-            typeof chemistryAnswer ===
-            "function"
-        ) {
-
-            addChatMessage(
-                chat,
-                chemistryAnswer(question),
-                "ai"
-            );
-
-        } else {
-
-            addChatMessage(
-                chat,
-                "🤖 Please use the ChemLab AI assistant to ask your chemistry question.",
-                "ai"
-            );
+        if (output) {
+            output.textContent =
+                "Please enter a chemistry question.";
         }
 
-
-        chat.scrollTop =
-            chat.scrollHeight;
-
-    }, 300);
-
-
-    input.value = "";
-}
-
-
-/* =========================================
-   QUIZ ENGINE
-========================================= */
-
-const quizQuestions = [
-
-    {
-        question:
-            "What is the main purpose of titration?",
-
-        options: [
-            "To measure temperature",
-            "To determine concentration",
-            "To measure mass",
-            "To produce electricity"
-        ],
-
-        correct: 1
-    },
-
-    {
-        question:
-            "What is the purpose of an indicator?",
-
-        options: [
-            "To measure mass",
-            "To show a chemical change such as the endpoint",
-            "To increase concentration",
-            "To measure temperature"
-        ],
-
-        correct: 1
-    },
-
-    {
-        question:
-            "What is the pH of an ideal strong acid-strong base equivalence point?",
-
-        options: [
-            "2",
-            "5",
-            "7",
-            "12"
-        ],
-
-        correct: 2
-    },
-
-    {
-        question:
-            "Which equipment normally delivers the titrant?",
-
-        options: [
-            "Burette",
-            "Balance",
-            "Thermometer",
-            "Evaporating dish"
-        ],
-
-        correct: 0
-    },
-
-    {
-        question:
-            "In this simulation, which reaction is being studied?",
-
-        options: [
-            "HCl + NaOH",
-            "O₂ + H₂",
-            "NaCl + H₂O",
-            "CO₂ + O₂"
-        ],
-
-        correct: 0
-    }
-
-];
-
-
-let currentQuestion = 0;
-let quizScore = 0;
-let quizAnswered = false;
-
-
-/* =========================================
-   ANSWER QUIZ
-========================================= */
-
-function answerQuiz(answer) {
-
-    if (
-        quizAnswered ||
-        !quizQuestions[currentQuestion]
-    ) {
         return;
     }
 
 
-    quizAnswered = true;
+    if (output) {
+
+        output.textContent =
+            "🧠 Chemistry AI is thinking...";
+    }
 
 
-    const question =
-        quizQuestions[currentQuestion];
-
-    const feedback =
-        document.getElementById(
-            "quizFeedback"
+    const result =
+        await askAI(
+            question
         );
 
 
-    if (
-        Number(answer) ===
-        question.correct
-    ) {
+    if (output) {
 
-        quizScore++;
-
-        if (feedback) {
-
-            feedback.textContent =
-                "✅ Correct!";
-        }
-
-    } else {
-
-        if (feedback) {
-
-            feedback.textContent =
-                "❌ Incorrect. Keep learning!";
-        }
+        output.textContent =
+            result.answer;
     }
-
-
-    setTimeout(() => {
-
-        currentQuestion++;
-
-        quizAnswered = false;
-
-
-        if (
-            currentQuestion >=
-            quizQuestions.length
-        ) {
-
-            finishQuiz();
-
-        } else {
-
-            loadQuizQuestion();
-        }
-
-    }, 800);
 }
 
 
-/* =========================================
-   LOAD QUIZ QUESTION
-========================================= */
+window.mainAIQuestion =
+    mainAIQuestion;
+
+
+/* =========================================================
+   QUIZ
+   ========================================================= */
 
 function loadQuizQuestion() {
 
-    const question =
-        quizQuestions[currentQuestion];
+    const questionData =
+        quizQuestions[
+            chemLabState.currentQuestion
+        ];
 
 
-    if (!question) {
+    if (!questionData) {
+        finishQuiz();
         return;
     }
 
 
-    const numberElement =
-        document.getElementById(
-            "questionNumber"
-        );
+    chemLabState.quizAnswered =
+        false;
+
 
     const questionElement =
-        document.getElementById(
-            "quizQuestion"
-        );
+        $("quizQuestion");
 
-    const options =
-        document.getElementById(
-            "quizOptions"
-        );
+
+    const optionsContainer =
+        $("quizOptions");
+
+
+    const questionNumber =
+        $("quizQuestionNumber");
+
 
     const feedback =
-        document.getElementById(
-            "quizFeedback"
-        );
+        $("quizFeedback");
 
 
-    if (
-        !numberElement ||
-        !questionElement ||
-        !options
-    ) {
+    if (questionElement) {
+
+        questionElement.textContent =
+            questionData.question;
+    }
+
+
+    if (questionNumber) {
+
+        questionNumber.textContent =
+            `Question ${
+                chemLabState.currentQuestion + 1
+            } of ${
+                quizQuestions.length
+            }`;
+    }
+
+
+    if (feedback) {
+
+        feedback.textContent =
+            "";
+
+        feedback.style.display =
+            "none";
+    }
+
+
+    if (!optionsContainer) {
         return;
     }
 
 
-    numberElement.textContent =
-        currentQuestion + 1;
+    optionsContainer.innerHTML =
+        "";
 
 
-    questionElement.textContent =
-        question.question;
-
-
-    options.innerHTML = "";
-
-
-    question.options.forEach(
+    questionData.options.forEach(
         (option, index) => {
 
             const button =
@@ -1082,1763 +1184,2109 @@ function loadQuizQuestion() {
                     "button"
                 );
 
+
             button.type =
                 "button";
 
+
+            button.className =
+                "quiz-option";
+
+
             button.textContent =
-                String.fromCharCode(
-                    65 + index
-                ) +
-                ". " +
                 option;
 
 
             button.addEventListener(
                 "click",
-                () => answerQuiz(index)
+                () => {
+
+                    answerQuiz(
+                        index
+                    );
+                }
             );
 
 
-            options.appendChild(
+            optionsContainer.appendChild(
                 button
             );
         }
     );
+}
+
+
+window.loadQuizQuestion =
+    loadQuizQuestion;
+
+
+/* =========================================================
+   ANSWER QUIZ
+   ========================================================= */
+
+function answerQuiz(
+    selectedIndex
+) {
+
+    if (
+        chemLabState.quizAnswered
+    ) {
+        return;
+    }
+
+
+    const questionData =
+        quizQuestions[
+            chemLabState.currentQuestion
+        ];
+
+
+    if (!questionData) {
+        return;
+    }
+
+
+    chemLabState.quizAnswered =
+        true;
+
+
+    const isCorrect =
+        selectedIndex ===
+        questionData.answer;
+
+
+    if (isCorrect) {
+
+        chemLabState.quizScore++;
+
+        addXP(20);
+    }
+
+
+    const options =
+        document.querySelectorAll(
+            ".quiz-option"
+        );
+
+
+    options.forEach(
+        (button, index) => {
+
+            button.disabled =
+                true;
+
+
+            if (
+                index ===
+                questionData.answer
+            ) {
+
+                button.classList.add(
+                    "correct"
+                );
+            }
+
+
+            if (
+                index === selectedIndex &&
+                !isCorrect
+            ) {
+
+                button.classList.add(
+                    "incorrect"
+                );
+            }
+        }
+    );
+
+
+    const feedback =
+        $("quizFeedback");
 
 
     if (feedback) {
 
+        feedback.style.display =
+            "block";
+
+
         feedback.textContent =
-            "";
+            isCorrect
+                ? `✅ Correct! ${questionData.explanation}`
+                : `❌ Not quite. ${questionData.explanation}`;
     }
+
+
+    setTimeout(
+        () => {
+
+            chemLabState.currentQuestion++;
+
+
+            if (
+                chemLabState.currentQuestion >=
+                quizQuestions.length
+            ) {
+
+                finishQuiz();
+
+            } else {
+
+                loadQuizQuestion();
+            }
+
+        },
+        1200
+    );
 }
 
 
-/* =========================================
+window.answerQuiz =
+    answerQuiz;
+
+
+/* =========================================================
    FINISH QUIZ
-========================================= */
+   ========================================================= */
 
 function finishQuiz() {
 
+    const total =
+        quizQuestions.length;
+
+
+    const score =
+        chemLabState.quizScore;
+
+
     const percentage =
         Math.round(
-            (
-                quizScore /
-                quizQuestions.length
-            ) *
+            (score / total) *
             100
         );
 
 
     const questionElement =
-        document.getElementById(
-            "quizQuestion"
-        );
+        $("quizQuestion");
 
-    const options =
-        document.getElementById(
-            "quizOptions"
-        );
+
+    const optionsContainer =
+        $("quizOptions");
+
+
+    const questionNumber =
+        $("quizQuestionNumber");
+
 
     const feedback =
-        document.getElementById(
-            "quizFeedback"
-        );
+        $("quizFeedback");
+
+
+    if (questionNumber) {
+
+        questionNumber.textContent =
+            "Quiz Complete";
+    }
 
 
     if (questionElement) {
 
         questionElement.textContent =
-            `Quiz Complete — ${percentage}%`;
+            `You scored ${score}/${total} (${percentage}%).`;
     }
 
 
-    if (options) {
+    if (optionsContainer) {
 
-        options.innerHTML = "";
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-        button.type =
-            "button";
-
-        button.textContent =
-            "🔄 Try Again";
-
-        button.addEventListener(
-            "click",
-            restartQuiz
-        );
-
-        options.appendChild(
-            button
-        );
+        optionsContainer.innerHTML =
+            "";
     }
 
 
     if (feedback) {
 
+        feedback.style.display =
+            "block";
+
+
         feedback.textContent =
-            `You answered ${quizScore} out of ${quizQuestions.length} correctly.`;
+            percentage >= 80
+                ? "🎉 Excellent chemistry work!"
+                : percentage >= 60
+                    ? "👏 Good work. Keep practicing!"
+                    : "📚 Keep learning and try again!";
     }
+
+
+    updateProgressDisplay();
 }
 
 
-/* =========================================
+window.finishQuiz =
+    finishQuiz;
+
+
+/* =========================================================
    RESTART QUIZ
-========================================= */
+   ========================================================= */
 
 function restartQuiz() {
 
-    currentQuestion = 0;
+    chemLabState.currentQuestion =
+        0;
 
-    quizScore = 0;
 
-    quizAnswered = false;
+    chemLabState.quizScore =
+        0;
+
+
+    chemLabState.quizAnswered =
+        false;
+
 
     loadQuizQuestion();
 }
 
 
-/* =========================================
-   ADVANCED PREMIUM TITRATION
-========================================= */
+window.restartQuiz =
+    restartQuiz;
 
-(function () {
 
-    let advancedTitrationInitialized =
-        false;
+/* =========================================================
+   XP SYSTEM
+   ========================================================= */
 
+function addXP(
+    amount
+) {
 
-    function initializeAdvancedTitration() {
+    const value =
+        Number(amount);
 
-        if (
-            advancedTitrationInitialized
-        ) {
-            return;
-        }
 
+    if (
+        !Number.isFinite(value) ||
+        value <= 0
+    ) {
+        return;
+    }
 
-        const volumeSlider =
-            document.getElementById(
-                "advancedVolumeSlider"
-            );
 
-        const addButton =
-            document.getElementById(
-                "advancedAddNaohButton"
-            );
+    chemLabState.xp +=
+        Math.round(value);
 
-        const resetButton =
-            document.getElementById(
-                "advancedResetButton"
-            );
 
-        const explainButton =
-            document.getElementById(
-                "advancedExplainButton"
-            );
+    updateProgressDisplay();
+}
 
-        const closeButton =
-            document.getElementById(
-                "closeAdvancedTitration"
-            );
 
+window.addXP =
+    addXP;
 
-        if (
-            !volumeSlider ||
-            !addButton ||
-            !resetButton
-        ) {
 
-            return;
-        }
+/* =========================================================
+   PROGRESS DISPLAY
+   ========================================================= */
 
+function updateProgressDisplay() {
 
-        advancedTitrationInitialized =
-            true;
+    const xp =
+        chemLabState.xp;
 
 
-        function calculateAdvancedTitration() {
+    const level =
+        Math.max(
+            1,
+            Math.floor(xp / 100) + 1
+        );
 
-            const hclInput =
-                document.getElementById(
-                    "advancedHclConcentration"
-                );
 
-            const naohInput =
-                document.getElementById(
-                    "advancedNaohConcentration"
-                );
+    const levelXP =
+        xp % 100;
 
-            const sampleInput =
-                document.getElementById(
-                    "advancedSampleVolume"
-                );
 
+    const progressPercent =
+        levelXP;
 
-            const volumeDisplay =
-                document.getElementById(
-                    "advancedNaohVolume"
-                );
 
-            const phDisplay =
-                document.getElementById(
-                    "advancedPhValue"
-                );
+    safeText(
+        $("xpValue"),
+        xp
+    );
 
-            const hplusDisplay =
-                document.getElementById(
-                    "advancedHplus"
-                );
 
-            const ohminusDisplay =
-                document.getElementById(
-                    "advancedOhminus"
-                );
+    safeText(
+        $("xpDisplay"),
+        xp
+    );
 
-            const equivalenceDisplay =
-                document.getElementById(
-                    "advancedEquivalence"
-                );
 
-            const statusDisplay =
-                document.getElementById(
-                    "advancedReactionStatus"
-                );
+    safeText(
+        $("levelValue"),
+        level
+    );
 
 
-            const hplusConcentrationDisplay =
-                document.getElementById(
-                    "advancedHplusConcentration"
-                );
+    safeText(
+        $("levelDisplay"),
+        level
+    );
 
-            const ohConcentrationDisplay =
-                document.getElementById(
-                    "advancedOhConcentration"
-                );
 
-            const totalVolumeDisplay =
-                document.getElementById(
-                    "advancedTotalVolume"
-                );
+    safeText(
+        $("experimentsCompleted"),
+        chemLabState.experimentsCompleted
+    );
 
-            const neutralizationProgressDisplay =
-                document.getElementById(
-                    "advancedNeutralizationProgress"
-                );
 
+    safeText(
+        $("quizScore"),
+        chemLabState.quizScore
+    );
 
-            const indicatorDisplay =
-                document.getElementById(
-                    "advancedIndicatorStatus"
-                );
 
-            const solution =
-                document.getElementById(
-                    "advancedSolution"
-                );
+    const progressBar =
+        $("progressBar");
 
-            const buretteLiquid =
-                document.getElementById(
-                    "advancedBuretteLiquid"
-                );
 
+    if (progressBar) {
 
-            if (
-                !hclInput ||
-                !naohInput ||
-                !sampleInput ||
-                !volumeDisplay ||
-                !phDisplay
-            ) {
+        progressBar.style.width =
+            `${progressPercent}%`;
+    }
 
-                return;
-            }
 
+    const progressText =
+        $("progressText");
 
-            const hclConcentration =
-                Number(
-                    hclInput.value
-                );
 
-            const naohConcentration =
-                Number(
-                    naohInput.value
-                );
+    if (progressText) {
 
-            const sampleVolumeMl =
-                Number(
-                    sampleInput.value
-                );
+        progressText.textContent =
+            `${levelXP}/100 XP to Level ${
+                level + 1
+            }`;
+    }
+}
 
-            const addedVolumeMl =
-                Number(
-                    volumeSlider.value
-                );
 
+window.updateProgressDisplay =
+    updateProgressDisplay;
 
-            if (
-                hclConcentration <= 0 ||
-                naohConcentration <= 0 ||
-                sampleVolumeMl <= 0
-            ) {
 
-                return;
-            }
+/* =========================================================
+   COMPLETE EXPERIMENT
+   ========================================================= */
 
+function completeExperiment() {
 
-            const sampleVolumeL =
-                sampleVolumeMl /
-                1000;
+    chemLabState.experimentsCompleted++;
 
-            const addedVolumeL =
-                addedVolumeMl /
-                1000;
 
+    addXP(50);
 
-            /* Initial H+ moles */
 
-            const initialHplusMoles =
-                hclConcentration *
-                sampleVolumeL;
+    showNotification(
+        "🎉 Experiment completed! +50 XP",
+        "success"
+    );
+}
 
 
-            /* Added OH- moles */
+window.completeExperiment =
+    completeExperiment;
 
-            const addedOhMoles =
-                naohConcentration *
-                addedVolumeL;
 
+/* =========================================================
+   ADVANCED TITRATION STATE
+   ========================================================= */
 
-            /* Total volume */
+const advancedTitration = {
 
-            const totalVolumeL =
-                sampleVolumeL +
-                addedVolumeL;
+    initialized: false,
 
+    hclConcentration: 0.100,
 
-            /* Equivalence volume */
+    naohConcentration: 0.100,
 
-            const equivalenceVolumeMl =
-                (
-                    initialHplusMoles /
-                    naohConcentration
-                ) *
-                1000;
+    sampleVolume: 25,
 
+    addedVolume: 0,
 
-            /* Neutralization */
+    maxVolume: 60
+};
 
-            const neutralizationProgress =
-                Math.min(
-                    100,
-                    (
-                        addedOhMoles /
-                        initialHplusMoles
-                    ) *
-                    100
-                );
 
+/* =========================================================
+   ADVANCED TITRATION CALCULATION
+   ========================================================= */
 
-            /* Equivalence state */
+function calculateAdvancedTitration(
+    addedVolume
+) {
 
-            const equivalenceStatus =
-                document.getElementById(
-                    "advancedEquivalenceStatus"
-                );
+    const hcl =
+        advancedTitration.hclConcentration;
 
-            const equivalenceIndicator =
-                document.querySelector(
-                    ".equivalence-indicator"
-                );
 
+    const naoh =
+        advancedTitration.naohConcentration;
 
-            const isAtEquivalence =
-                Math.abs(
-                    addedVolumeMl -
-                    equivalenceVolumeMl
-                ) <= 0.10;
 
+    const sampleVolume =
+        advancedTitration.sampleVolume;
 
-            if (equivalenceStatus) {
 
-                if (
-                    isAtEquivalence
-                ) {
+    const volume =
+        clamp(
+            Number(addedVolume) || 0,
+            0,
+            advancedTitration.maxVolume
+        );
 
-                    equivalenceStatus.textContent =
-                        "Reached — neutralization is complete";
 
-                } else if (
-                    addedVolumeMl <
-                    equivalenceVolumeMl
-                ) {
+    const hclMoles =
+        hcl *
+        (
+            sampleVolume /
+            1000
+        );
 
-                    equivalenceStatus.textContent =
-                        "Not reached — acid remains";
 
-                } else {
+    const naohMoles =
+        naoh *
+        (
+            volume /
+            1000
+        );
 
-                    equivalenceStatus.textContent =
-                        "Passed — base is in excess";
-                }
-            }
 
+    const totalVolume =
+        (
+            sampleVolume +
+            volume
+        ) / 1000;
 
-            if (equivalenceIndicator) {
 
-                equivalenceIndicator.classList.toggle(
-                    "reached",
-                    isAtEquivalence
-                );
-            }
+    const equivalenceVolume =
+        (
+            hclMoles /
+            naoh
+        ) * 1000;
 
 
-            /* =================================
-               CALCULATE pH
-            ================================= */
+    let pH;
 
-            let ph;
+    let state;
 
-            let remainingHplus = 0;
 
-            let remainingOh = 0;
+    const difference =
+        hclMoles -
+        naohMoles;
 
-            let hplusConcentration = 0;
 
-            let ohConcentration = 0;
+    if (
+        Math.abs(difference) <
+        0.000000001
+    ) {
 
-            let status = "Acidic";
+        pH = 7;
 
+        state =
+            "equivalence";
 
-            /* ACID EXCESS */
+    } else if (
+        difference > 0
+    ) {
 
-            if (
-                addedOhMoles <
-                initialHplusMoles
-            ) {
+        const hPlus =
+            difference /
+            totalVolume;
 
-                remainingHplus =
-                    initialHplusMoles -
-                    addedOhMoles;
 
-
-                hplusConcentration =
-                    remainingHplus /
-                    totalVolumeL;
-
-
-                ph =
-                    -Math.log10(
-                        hplusConcentration
-                    );
-
-
-                status =
-                    "Acidic";
-
-
-            /* EXACT EQUIVALENCE */
-
-            } else if (
-                Math.abs(
-                    addedOhMoles -
-                    initialHplusMoles
-                ) <
-                1e-12
-            ) {
-
-                ph = 7;
-
-                status =
-                    "Neutral";
-
-
-            /* BASE EXCESS */
-
-            } else {
-
-                remainingOh =
-                    addedOhMoles -
-                    initialHplusMoles;
-
-
-                ohConcentration =
-                    remainingOh /
-                    totalVolumeL;
-
-
-                const pOH =
-                    -Math.log10(
-                        ohConcentration
-                    );
-
-
-                ph =
-                    14 -
-                    pOH;
-
-
-                status =
-                    "Basic";
-            }
-
-
-            ph =
+        pH =
+            -Math.log10(
                 Math.max(
-                    0,
-                    Math.min(
-                        14,
-                        ph
-                    )
-                );
+                    hPlus,
+                    0.000000000001
+                )
+            );
 
 
-            /* =================================
-               PROGRESS
-            ================================= */
+        state =
+            "acidic";
 
-            const progressBar =
-                document.getElementById(
-                    "advancedProgressBar"
-                );
+    } else {
 
-            const progressText =
-                document.getElementById(
-                    "advancedProgressText"
-                );
-
-            const observation =
-                document.getElementById(
-                    "advancedObservation"
-                );
+        const ohMinus =
+            Math.abs(difference) /
+            totalVolume;
 
 
-            const titrationProgress =
-                Math.min(
-                    100,
-                    (
-                        addedVolumeMl /
-                        equivalenceVolumeMl
-                    ) *
-                    100
-                );
+        const pOH =
+            -Math.log10(
+                Math.max(
+                    ohMinus,
+                    0.000000000001
+                )
+            );
 
 
-            if (progressBar) {
+        pH =
+            14 -
+            pOH;
 
-                progressBar.style.width =
-                    titrationProgress +
-                    "%";
+
+        state =
+            "basic";
+    }
+
+
+    pH =
+        clamp(
+            pH,
+            0,
+            14
+        );
+
+
+    const hPlusConcentration =
+        Math.pow(
+            10,
+            -pH
+        );
+
+
+    const ohMinusConcentration =
+        Math.pow(
+            10,
+            -(14 - pH)
+        );
+
+
+    const neutralizationProgress =
+        clamp(
+            (
+                naohMoles /
+                hclMoles
+            ) * 100,
+            0,
+            100
+        );
+
+
+    return {
+
+        pH,
+
+        state,
+
+        hclMoles,
+
+        naohMoles,
+
+        totalVolume,
+
+        equivalenceVolume,
+
+        neutralizationProgress,
+
+        hPlusConcentration,
+
+        ohMinusConcentration,
+
+        addedVolume: volume
+    };
+}
+
+
+/* =========================================================
+   INITIALIZE ADVANCED TITRATION
+   ========================================================= */
+
+function initializeAdvancedTitration() {
+
+    const slider =
+        $("advancedVolumeSlider");
+
+
+    const addButton =
+        $("advancedAddNaohButton");
+
+
+    const resetButton =
+        $("advancedResetButton");
+
+
+    const hclInput =
+        $("advancedHclConcentration");
+
+
+    const naohInput =
+        $("advancedNaohConcentration");
+
+
+    const sampleInput =
+        $("advancedSampleVolume");
+
+
+    if (
+        !slider ||
+        !addButton ||
+        !resetButton
+    ) {
+
+        console.warn(
+            "Advanced titration controls were not found."
+        );
+
+        return;
+    }
+
+
+    if (
+        advancedTitration.initialized
+    ) {
+        return;
+    }
+
+
+    advancedTitration.initialized =
+        true;
+
+
+    if (hclInput) {
+
+        advancedTitration.hclConcentration =
+            Number(hclInput.value) ||
+            0.100;
+
+
+        hclInput.addEventListener(
+            "input",
+            () => {
+
+                advancedTitration.hclConcentration =
+                    clamp(
+                        Number(
+                            hclInput.value
+                        ) || 0.100,
+                        0.001,
+                        5
+                    );
+
+
+                updateAdvancedTitration();
             }
+        );
+    }
 
 
-            if (progressText) {
+    if (naohInput) {
 
-                progressText.textContent =
-                    Math.round(
-                        titrationProgress
-                    ) +
-                    "%";
+        advancedTitration.naohConcentration =
+            Number(naohInput.value) ||
+            0.100;
+
+
+        naohInput.addEventListener(
+            "input",
+            () => {
+
+                advancedTitration.naohConcentration =
+                    clamp(
+                        Number(
+                            naohInput.value
+                        ) || 0.100,
+                        0.001,
+                        5
+                    );
+
+
+                updateAdvancedTitration();
             }
+        );
+    }
 
 
-            if (observation) {
+    if (sampleInput) {
 
-                if (
-                    addedVolumeMl === 0
-                ) {
-
-                    observation.textContent =
-                        "Begin adding NaOH to start the titration.";
-
-                } else if (
-                    addedVolumeMl <
-                    equivalenceVolumeMl -
-                    0.10
-                ) {
-
-                    observation.textContent =
-                        "The solution is still acidic. HCl remains in excess.";
-
-                } else if (
-                    Math.abs(
-                        addedVolumeMl -
-                        equivalenceVolumeMl
-                    ) <= 0.10
-                ) {
-
-                    observation.textContent =
-                        "Equivalence point reached! The acid and base have been neutralized.";
-
-                } else {
-
-                    observation.textContent =
-                        "The solution is now basic. NaOH is in excess.";
-                }
-            }
+        advancedTitration.sampleVolume =
+            Number(sampleInput.value) ||
+            25;
 
 
-            /* =================================
-               UPDATE TEXT
-            ================================= */
+        sampleInput.addEventListener(
+            "input",
+            () => {
 
-            volumeDisplay.textContent =
-                addedVolumeMl.toFixed(2);
-
-
-            phDisplay.textContent =
-                ph.toFixed(2);
-
-
-            hplusDisplay.textContent =
-                remainingHplus.toFixed(5) +
-                " mol";
-
-
-            ohminusDisplay.textContent =
-                remainingOh.toFixed(5) +
-                " mol";
-
-
-            equivalenceDisplay.textContent =
-                equivalenceVolumeMl.toFixed(2) +
-                " mL";
-
-
-            statusDisplay.textContent =
-                status;
-
-
-            if (
-                hplusConcentrationDisplay
-            ) {
-
-                hplusConcentrationDisplay.textContent =
-                    hplusConcentration.toExponential(
-                        3
-                    ) +
-                    " mol/L";
-            }
-
-
-            if (
-                ohConcentrationDisplay
-            ) {
-
-                ohConcentrationDisplay.textContent =
-                    ohConcentration.toExponential(
-                        3
-                    ) +
-                    " mol/L";
-            }
-
-
-            if (
-                totalVolumeDisplay
-            ) {
-
-                totalVolumeDisplay.textContent =
-                    (
-                        totalVolumeL *
-                        1000
-                    ).toFixed(2) +
-                    " mL";
-            }
-
-
-            if (
-                neutralizationProgressDisplay
-            ) {
-
-                neutralizationProgressDisplay.textContent =
-                    neutralizationProgress.toFixed(
-                        2
-                    ) +
-                    "%";
-            }
-
-
-            /* =================================
-               PHENOLPHTHALEIN
-            ================================= */
-
-            if (
-                indicatorDisplay
-            ) {
-
-                indicatorDisplay.textContent =
-                    ph >=
-                    PHENOLPHTHALEIN_ENDPOINT
-                        ? "Pink"
-                        : "Colorless";
-            }
-
-
-            /* =================================
-               BURETTE
-            ================================= */
-
-            if (
-                buretteLiquid
-            ) {
-
-                const percentage =
-                    Math.min(
-                        100,
-                        (
-                            addedVolumeMl /
-                            60
-                        ) *
+                advancedTitration.sampleVolume =
+                    clamp(
+                        Number(
+                            sampleInput.value
+                        ) || 25,
+                        1,
                         100
                     );
 
 
-                buretteLiquid.style.height =
-                    percentage +
-                    "%";
-            }
-
-
-            /* =================================
-               FLASK
-            ================================= */
-
-            if (solution) {
-
-                solution.classList.toggle(
-                    "phenolphthalein-pink",
-                    ph >=
-                    PHENOLPHTHALEIN_ENDPOINT
-                );
-            }
-
-
-            /* =================================
-               UPDATE GRAPH
-            ================================= */
-
-            if (
-                typeof window.updateAdvancedTitrationChart ===
-                "function"
-            ) {
-
-                window.updateAdvancedTitrationChart(
-                    addedVolumeMl
-                );
-            }
-        }
-
-
-        /* =====================================
-           SLIDER
-        ===================================== */
-
-        volumeSlider.addEventListener(
-            "input",
-            calculateAdvancedTitration
-        );
-
-
-        /* =====================================
-           ADD NaOH
-        ===================================== */
-
-        addButton.addEventListener(
-            "click",
-            function () {
-
-                let currentVolume =
-                    Number(
-                        volumeSlider.value
-                    );
-
-
-                currentVolume += 1;
-
-
-                if (
-                    currentVolume > 60
-                ) {
-
-                    currentVolume = 60;
-                }
-
-
-                volumeSlider.value =
-                    currentVolume;
-
-
-                calculateAdvancedTitration();
+                updateAdvancedTitration();
             }
         );
-
-
-        /* =====================================
-           RESET
-        ===================================== */
-
-        resetButton.addEventListener(
-            "click",
-            function () {
-
-                volumeSlider.value = 0;
-
-
-                calculateAdvancedTitration();
-
-
-                const explanation =
-                    document.getElementById(
-                        "advancedExplanation"
-                    );
-
-
-                if (explanation) {
-
-                    explanation.style.display =
-                        "none";
-                }
-            }
-        );
-
-
-        /* =====================================
-           EXPLAIN RESULT
-        ===================================== */
-
-        if (explainButton) {
-
-            explainButton.addEventListener(
-                "click",
-                function () {
-
-                    const ph =
-                        document.getElementById(
-                            "advancedPhValue"
-                        );
-
-                    const volume =
-                        document.getElementById(
-                            "advancedNaohVolume"
-                        );
-
-                    const status =
-                        document.getElementById(
-                            "advancedReactionStatus"
-                        );
-
-                    const explanation =
-                        document.getElementById(
-                            "advancedExplanation"
-                        );
-
-                    const explanationText =
-                        document.getElementById(
-                            "advancedExplanationText"
-                        );
-
-
-                    if (
-                        !ph ||
-                        !volume ||
-                        !status ||
-                        !explanation ||
-                        !explanationText
-                    ) {
-
-                        return;
-                    }
-
-
-                    explanationText.textContent =
-                        "At " +
-                        volume.textContent +
-                        " mL of NaOH added, the solution is " +
-                        status.textContent.toLowerCase() +
-                        " with a pH of " +
-                        ph.textContent +
-                        ". During the titration, NaOH reacts with HCl in a 1:1 neutralization reaction: HCl + NaOH → NaCl + H₂O. The equivalence point occurs when the moles of NaOH added equal the original moles of HCl.";
-
-
-                    explanation.style.display =
-                        "block";
-                }
-            );
-        }
-
-
-        /* =====================================
-           CLOSE ADVANCED LAB
-        ===================================== */
-
-        if (closeButton) {
-
-            closeButton.addEventListener(
-                "click",
-                function () {
-
-                    const experiment =
-                        document.getElementById(
-                            "advancedTitrationPage"
-                        );
-
-
-                    if (experiment) {
-
-                        experiment.style.display =
-                            "none";
-                    }
-
-
-                    const premiumSection =
-                        document.getElementById(
-                            "premiumSection"
-                        );
-
-
-                    if (premiumSection) {
-
-                        premiumSection.style.display =
-                            "block";
-                    }
-
-
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
-                }
-            );
-        }
-
-
-        /* =====================================
-           INITIAL CALCULATION
-        ===================================== */
-
-        calculateAdvancedTitration();
     }
 
 
-    /* =========================================
-       INITIALIZE
-    ========================================= */
+    slider.addEventListener(
+        "input",
+        () => {
 
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeAdvancedTitration
-        );
-
-    } else {
-
-        initializeAdvancedTitration();
-    }
-
-
-    /* =========================================
-       OPEN ADVANCED TITRATION
-    ========================================= */
-
-    window.openAdvancedTitration =
-        function () {
-
-            initializeAdvancedTitration();
-
-
-            const premiumSection =
-                document.getElementById(
-                    "premiumSection"
-                );
-
-            const experiment =
-                document.getElementById(
-                    "advancedTitrationPage"
+            advancedTitration.addedVolume =
+                clamp(
+                    Number(slider.value) || 0,
+                    0,
+                    advancedTitration.maxVolume
                 );
 
 
-            if (premiumSection) {
+            updateAdvancedTitration();
+        }
+    );
 
-                premiumSection.style.display =
+
+    addButton.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+
+            const current =
+                Number(
+                    slider.value
+                ) || 0;
+
+
+            slider.value =
+                Math.min(
+                    current + 1,
+                    advancedTitration.maxVolume
+                );
+
+
+            advancedTitration.addedVolume =
+                Number(
+                    slider.value
+                );
+
+
+            updateAdvancedTitration();
+        }
+    );
+
+
+    resetButton.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+
+            slider.value =
+                0;
+
+
+            advancedTitration.addedVolume =
+                0;
+
+
+            updateAdvancedTitration();
+
+
+            const explanation =
+                $("advancedExplanation");
+
+
+            if (explanation) {
+
+                explanation.style.display =
                     "none";
             }
+        }
+    );
 
 
-            if (experiment) {
-
-                experiment.style.display =
-                    "block";
-            }
+    updateAdvancedTitration();
+}
 
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+/* =========================================================
+   UPDATE ADVANCED TITRATION
+   ========================================================= */
+
+function updateAdvancedTitration() {
+
+    const slider =
+        $("advancedVolumeSlider");
 
 
-            /*
-             * Give the browser time to display
-             * the canvas before drawing.
-             */
+    if (slider) {
 
-            setTimeout(
-                function () {
+        advancedTitration.addedVolume =
+            Number(
+                slider.value
+            ) || 0;
+    }
 
-                    if (
-                        typeof window.updateAdvancedTitrationChart ===
-                        "function"
-                    ) {
 
-                        const slider =
-                            document.getElementById(
-                                "advancedVolumeSlider"
-                            );
+    const result =
+        calculateAdvancedTitration(
+            advancedTitration.addedVolume
+        );
 
-                        window.updateAdvancedTitrationChart(
-                            Number(
-                                slider?.value
-                            ) || 0
-                        );
-                    }
 
-                },
+    /* -----------------------------------------------------
+       BURETTE
+       ----------------------------------------------------- */
+
+    const buretteLiquid =
+        $("advancedBuretteLiquid");
+
+
+    if (buretteLiquid) {
+
+        const percentage =
+            clamp(
+                (
+                    result.addedVolume /
+                    advancedTitration.maxVolume
+                ) * 100,
+                0,
                 100
             );
-        };
-
-})();
 
 
-/* =========================================
-   ADVANCED TITRATION CURVE ENGINE
-========================================= */
-
-(function () {
-
-    function calculateCurvePH(
-        hclConcentration,
-        naohConcentration,
-        sampleVolumeMl,
-        naohVolumeMl
-    ) {
-
-        const sampleVolumeL =
-            sampleVolumeMl /
-            1000;
-
-        const addedVolumeL =
-            naohVolumeMl /
-            1000;
+        buretteLiquid.style.height =
+            `${percentage}%`;
+    }
 
 
-        const initialHplusMoles =
-            hclConcentration *
-            sampleVolumeL;
+    safeText(
+        $("advancedNaohVolume"),
+        `${result.addedVolume.toFixed(1)} mL`
+    );
 
 
-        const addedOhMoles =
-            naohConcentration *
-            addedVolumeL;
+    /* -----------------------------------------------------
+       PH
+       ----------------------------------------------------- */
+
+    safeText(
+        $("advancedPhValue"),
+        result.pH.toFixed(2)
+    );
 
 
-        const totalVolumeL =
-            sampleVolumeL +
-            addedVolumeL;
+    safeText(
+        $("advancedProgressText"),
+        `${result.neutralizationProgress.toFixed(1)}% neutralized`
+    );
 
 
-        const difference =
-            initialHplusMoles -
-            addedOhMoles;
+    const progressBar =
+        $("advancedProgressBar");
 
 
-        let ph;
+    if (progressBar) {
+
+        progressBar.style.width =
+            `${result.neutralizationProgress}%`;
+    }
 
 
-        /* BEFORE EQUIVALENCE */
+    /* -----------------------------------------------------
+       FLASK
+       ----------------------------------------------------- */
+
+    const solution =
+        $("advancedSolution");
+
+
+    if (solution) {
 
         if (
-            difference > 0
+            result.state ===
+            "equivalence"
         ) {
 
-            const hplus =
-                difference /
-                totalVolumeL;
-
-
-            ph =
-                -Math.log10(
-                    hplus
-                );
-
-
-        /* AT EQUIVALENCE */
+            solution.style.background =
+                "rgba(255, 192, 203, 0.65)";
 
         } else if (
-            Math.abs(
-                difference
-            ) <
-            1e-12
+            result.state ===
+            "basic"
         ) {
 
-            ph = 7;
-
-
-        /* AFTER EQUIVALENCE */
+            solution.style.background =
+                "rgba(255, 105, 180, 0.70)";
 
         } else {
 
-            const ohMoles =
-                Math.abs(
-                    difference
-                );
-
-
-            const oh =
-                ohMoles /
-                totalVolumeL;
-
-
-            const poh =
-                -Math.log10(
-                    oh
-                );
-
-
-            ph =
-                14 -
-                poh;
+            solution.style.background =
+                "rgba(255, 255, 255, 0.18)";
         }
+    }
 
 
-        return Math.max(
+    /* -----------------------------------------------------
+       EQUIVALENCE
+       ----------------------------------------------------- */
+
+    safeText(
+        $("advancedEquivalence"),
+        `${result.equivalenceVolume.toFixed(2)} mL`
+    );
+
+
+    const equivalenceStatus =
+        $("advancedEquivalenceStatus");
+
+
+    if (equivalenceStatus) {
+
+        if (
+            result.state ===
+            "equivalence"
+        ) {
+
+            equivalenceStatus.textContent =
+                "🎯 Equivalence point reached";
+
+            equivalenceStatus.style.color =
+                "#16a34a";
+
+        } else if (
+            result.addedVolume <
+            result.equivalenceVolume
+        ) {
+
+            equivalenceStatus.textContent =
+                "Acid is still in excess";
+
+            equivalenceStatus.style.color =
+                "#dc2626";
+
+        } else {
+
+            equivalenceStatus.textContent =
+                "Base is in excess";
+
+            equivalenceStatus.style.color =
+                "#be185d";
+        }
+    }
+
+
+    /* -----------------------------------------------------
+       INDICATOR
+       ----------------------------------------------------- */
+
+    safeText(
+        $("advancedIndicatorStatus"),
+        result.pH >= 8.2
+            ? "🌸 Pink"
+            : "⚪ Colorless"
+    );
+
+
+    /* -----------------------------------------------------
+       CHEMICAL VALUES
+       ----------------------------------------------------- */
+
+    safeText(
+        $("advancedHplus"),
+        result.hPlusConcentration
+            .toExponential(3)
+    );
+
+
+    safeText(
+        $("advancedOhminus"),
+        result.ohMinusConcentration
+            .toExponential(3)
+    );
+
+
+    safeText(
+        $("advancedReactionStatus"),
+        result.state === "equivalence"
+            ? "Neutralization complete"
+            : result.state === "acidic"
+                ? "HCl in excess"
+                : "NaOH in excess"
+    );
+
+
+    safeText(
+        $("advancedHplusConcentration"),
+        result.hPlusConcentration
+            .toExponential(3)
+    );
+
+
+    safeText(
+        $("advancedOhConcentration"),
+        result.ohMinusConcentration
+            .toExponential(3)
+    );
+
+
+    safeText(
+        $("advancedTotalVolume"),
+        `${(
+            advancedTitration.sampleVolume +
+            result.addedVolume
+        ).toFixed(1)} mL`
+    );
+
+
+    safeText(
+        $("advancedNeutralizationProgress"),
+        `${result.neutralizationProgress.toFixed(1)}%`
+    );
+
+
+    safeText(
+        $("advancedObservation"),
+        getAdvancedObservation(
+            result
+        )
+    );
+
+
+    /* -----------------------------------------------------
+       CHART
+       ----------------------------------------------------- */
+
+    drawAdvancedTitrationChart();
+}
+
+
+window.updateAdvancedTitration =
+    updateAdvancedTitration;
+
+
+/* =========================================================
+   ADVANCED OBSERVATION
+   ========================================================= */
+
+function getAdvancedObservation(
+    result
+) {
+
+    if (
+        result.state ===
+        "equivalence"
+    ) {
+
+        return "The acid and base have reacted in stoichiometric amounts.";
+    }
+
+
+    if (
+        result.state ===
+        "acidic"
+    ) {
+
+        return "Hydrochloric acid remains in excess, so the solution is acidic.";
+    }
+
+
+    return "Sodium hydroxide is in excess, so the solution is basic.";
+}
+
+
+/* =========================================================
+   ADVANCED EXPLANATION
+   ========================================================= */
+
+function explainAdvancedTitration() {
+
+    const result =
+        calculateAdvancedTitration(
+            advancedTitration.addedVolume
+        );
+
+
+    const explanationBox =
+        $("advancedExplanation");
+
+
+    const explanationText =
+        $("advancedExplanationText");
+
+
+    if (!explanationBox) {
+        return;
+    }
+
+
+    let explanation;
+
+
+    if (
+        result.state ===
+        "equivalence"
+    ) {
+
+        explanation =
+            `At ${result.addedVolume.toFixed(1)} mL of NaOH, the titration is at the equivalence point. The amount of NaOH added is stoichiometrically equal to the amount of HCl originally present. For this strong acid–strong base reaction, the pH is approximately 7 at 25°C.`;
+
+    } else if (
+        result.state ===
+        "acidic"
+    ) {
+
+        explanation =
+            `At ${result.addedVolume.toFixed(1)} mL of NaOH, HCl is still in excess. The remaining H⁺ ions determine the acidic pH of the solution. The calculated pH is approximately ${result.pH.toFixed(2)}.`;
+
+    } else {
+
+        explanation =
+            `At ${result.addedVolume.toFixed(1)} mL of NaOH, the base is in excess. The remaining OH⁻ ions determine the basic pH. The calculated pH is approximately ${result.pH.toFixed(2)}.`;
+    }
+
+
+    if (explanationText) {
+
+        explanationText.textContent =
+            explanation;
+    }
+
+
+    explanationBox.style.display =
+        "block";
+}
+
+
+window.explainAdvancedTitration =
+    explainAdvancedTitration;
+
+
+/* =========================================================
+   OPEN ADVANCED TITRATION
+   ========================================================= */
+
+function openAdvancedTitration() {
+
+    const premiumSection =
+        $("premiumSection");
+
+
+    const advancedPage =
+        $("advancedTitrationPage");
+
+
+    if (premiumSection) {
+
+        premiumSection.style.display =
+            "none";
+    }
+
+
+    if (advancedPage) {
+
+        document
+            .querySelectorAll(".page")
+            .forEach(page => {
+
+                page.classList.remove(
+                    "active"
+                );
+            });
+
+
+        advancedPage.classList.add(
+            "active"
+        );
+
+
+        advancedPage.style.display =
+            "block";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    initializeAdvancedTitration();
+
+
+    setTimeout(
+        () => {
+
+            updateAdvancedTitration();
+
+        },
+        100
+    );
+}
+
+
+window.openAdvancedTitration =
+    openAdvancedTitration;
+
+
+/* =========================================================
+   CLOSE ADVANCED TITRATION
+   ========================================================= */
+
+function closeAdvancedTitration() {
+
+    const advancedPage =
+        $("advancedTitrationPage");
+
+
+    const premiumSection =
+        $("premiumSection");
+
+
+    if (advancedPage) {
+
+        advancedPage.classList.remove(
+            "active"
+        );
+
+
+        advancedPage.style.display =
+            "none";
+    }
+
+
+    if (premiumSection) {
+
+        premiumSection.style.display =
+            "";
+    }
+
+
+    showPage(
+        "lab"
+    );
+}
+
+
+window.closeAdvancedTitration =
+    closeAdvancedTitration;
+
+
+/* =========================================================
+   ADVANCED TITRATION CHART
+   ========================================================= */
+
+function calculateCurvePH(
+    volume,
+    hcl,
+    naoh,
+    sampleVolume
+) {
+
+    const acidMoles =
+        hcl *
+        (
+            sampleVolume /
+            1000
+        );
+
+
+    const baseMoles =
+        naoh *
+        (
+            volume /
+            1000
+        );
+
+
+    const totalVolume =
+        (
+            sampleVolume +
+            volume
+        ) / 1000;
+
+
+    const difference =
+        acidMoles -
+        baseMoles;
+
+
+    if (
+        Math.abs(difference) <
+        0.000000001
+    ) {
+
+        return 7;
+    }
+
+
+    if (
+        difference > 0
+    ) {
+
+        const hPlus =
+            difference /
+            totalVolume;
+
+
+        return clamp(
+            -Math.log10(
+                Math.max(
+                    hPlus,
+                    0.000000000001
+                )
+            ),
             0,
-            Math.min(
-                14,
-                ph
-            )
+            14
         );
     }
 
 
-    function getCurveSettings() {
-
-        const hclInput =
-            document.getElementById(
-                "advancedHclConcentration"
-            );
-
-        const naohInput =
-            document.getElementById(
-                "advancedNaohConcentration"
-            );
-
-        const sampleInput =
-            document.getElementById(
-                "advancedSampleVolume"
-            );
+    const ohMinus =
+        Math.abs(difference) /
+        totalVolume;
 
 
-        const hcl =
-            parseFloat(
-                hclInput?.value
-            );
-
-        const naoh =
-            parseFloat(
-                naohInput?.value
-            );
-
-        const sampleVolume =
-            parseFloat(
-                sampleInput?.value
-            );
+    const pOH =
+        -Math.log10(
+            Math.max(
+                ohMinus,
+                0.000000000001
+            )
+        );
 
 
-        if (
-            !Number.isFinite(hcl) ||
-            !Number.isFinite(naoh) ||
-            !Number.isFinite(sampleVolume) ||
-            hcl <= 0 ||
-            naoh <= 0 ||
-            sampleVolume <= 0
-        ) {
-
-            return null;
-        }
+    return clamp(
+        14 - pOH,
+        0,
+        14
+    );
+}
 
 
-        return {
-            hcl,
-            naoh,
-            sampleVolume
-        };
+function drawAdvancedTitrationChart() {
+
+    const canvas =
+        $("advancedTitrationChart");
+
+
+    if (!canvas) {
+        return;
     }
 
 
-    function calculateEquivalenceVolume(
-        hcl,
-        naoh,
-        sampleVolume
-    ) {
-
-        const sampleVolumeL =
-            sampleVolume /
-            1000;
+    const context =
+        canvas.getContext("2d");
 
 
-        const acidMoles =
-            hcl *
-            sampleVolumeL;
-
-
-        return (
-            acidMoles /
-            naoh
-        ) *
-        1000;
+    if (!context) {
+        return;
     }
 
 
-    function drawTitrationCurve(
-        currentVolume = 0
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    const width =
+        Math.max(
+            canvas.clientWidth ||
+            rect.width ||
+            600,
+            300
+        );
+
+
+    const height =
+        Math.max(
+            canvas.clientHeight ||
+            rect.height ||
+            300,
+            200
+        );
+
+
+    const devicePixelRatio =
+        window.devicePixelRatio ||
+        1;
+
+
+    canvas.width =
+        width *
+        devicePixelRatio;
+
+
+    canvas.height =
+        height *
+        devicePixelRatio;
+
+
+    context.setTransform(
+        devicePixelRatio,
+        0,
+        0,
+        devicePixelRatio,
+        0,
+        0
+    );
+
+
+    context.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const padding = 45;
+
+
+    const graphWidth =
+        width -
+        padding -
+        20;
+
+
+    const graphHeight =
+        height -
+        padding -
+        30;
+
+
+    /* -----------------------------------------------------
+       BACKGROUND
+       ----------------------------------------------------- */
+
+    context.fillStyle =
+        "#ffffff";
+
+    context.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /* -----------------------------------------------------
+       GRID
+       ----------------------------------------------------- */
+
+    context.strokeStyle =
+        "#e5e7eb";
+
+    context.lineWidth =
+        1;
+
+
+    for (
+        let pH = 0;
+        pH <= 14;
+        pH += 2
     ) {
 
-        const canvas =
-            document.getElementById(
-                "advancedTitrationChart"
-            );
+        const y =
+            padding +
+            graphHeight -
+            (
+                pH / 14
+            ) *
+            graphHeight;
 
 
-        if (!canvas) {
-            return;
-        }
+        context.beginPath();
+
+        context.moveTo(
+            padding,
+            y
+        );
+
+        context.lineTo(
+            padding +
+            graphWidth,
+            y
+        );
+
+        context.stroke();
 
 
-        const settings =
-            getCurveSettings();
+        context.fillStyle =
+            "#4b5563";
+
+        context.font =
+            "11px Arial";
+
+        context.textAlign =
+            "right";
+
+        context.fillText(
+            String(pH),
+            padding - 7,
+            y + 4
+        );
+    }
 
 
-        if (!settings) {
-            return;
-        }
+    const maxVolume =
+        advancedTitration.maxVolume;
 
 
-        const {
-            hcl,
-            naoh,
-            sampleVolume
-        } = settings;
+    for (
+        let volume = 0;
+        volume <= maxVolume;
+        volume += 10
+    ) {
+
+        const x =
+            padding +
+            (
+                volume /
+                maxVolume
+            ) *
+            graphWidth;
 
 
-        const equivalenceVolume =
-            calculateEquivalenceVolume(
+        context.beginPath();
+
+        context.moveTo(
+            x,
+            padding
+        );
+
+        context.lineTo(
+            x,
+            padding +
+            graphHeight
+        );
+
+        context.stroke();
+
+
+        context.fillStyle =
+            "#4b5563";
+
+        context.font =
+            "11px Arial";
+
+        context.textAlign =
+            "center";
+
+        context.fillText(
+            String(volume),
+            x,
+            padding +
+            graphHeight +
+            17
+        );
+    }
+
+
+    /* -----------------------------------------------------
+       AXES
+       ----------------------------------------------------- */
+
+    context.strokeStyle =
+        "#111827";
+
+    context.lineWidth =
+        2;
+
+
+    context.beginPath();
+
+    context.moveTo(
+        padding,
+        padding
+    );
+
+    context.lineTo(
+        padding,
+        padding +
+        graphHeight
+    );
+
+    context.lineTo(
+        padding +
+        graphWidth,
+        padding +
+        graphHeight
+    );
+
+    context.stroke();
+
+
+    /* -----------------------------------------------------
+       CURVE
+       ----------------------------------------------------- */
+
+    const hcl =
+        advancedTitration.hclConcentration;
+
+
+    const naoh =
+        advancedTitration.naohConcentration;
+
+
+    const sampleVolume =
+        advancedTitration.sampleVolume;
+
+
+    context.beginPath();
+
+
+    let firstPoint =
+        true;
+
+
+    for (
+        let volume = 0;
+        volume <= maxVolume;
+        volume += 0.25
+    ) {
+
+        const pH =
+            calculateCurvePH(
+                volume,
                 hcl,
                 naoh,
                 sampleVolume
             );
 
 
-        const maxVolume =
-            Math.max(
-                equivalenceVolume * 2,
-                10
+        const x =
+            padding +
+            (
+                volume /
+                maxVolume
+            ) *
+            graphWidth;
+
+
+        const y =
+            padding +
+            graphHeight -
+            (
+                pH /
+                14
+            ) *
+            graphHeight;
+
+
+        if (firstPoint) {
+
+            context.moveTo(
+                x,
+                y
             );
 
+            firstPoint =
+                false;
 
-        const width =
-            canvas.clientWidth ||
-            600;
+        } else {
 
-
-        const height =
-            canvas.clientHeight ||
-            330;
-
-
-        const devicePixelRatio =
-            window.devicePixelRatio ||
-            1;
-
-
-        canvas.width =
-            Math.floor(
-                width *
-                devicePixelRatio
+            context.lineTo(
+                x,
+                y
             );
+        }
+    }
 
 
-        canvas.height =
-            Math.floor(
-                height *
-                devicePixelRatio
-            );
+    context.strokeStyle =
+        "#3157d5";
+
+    context.lineWidth =
+        3;
+
+    context.stroke();
 
 
-        const ctx =
-            canvas.getContext(
-                "2d"
-            );
+    /* -----------------------------------------------------
+       CURRENT POINT
+       ----------------------------------------------------- */
+
+    const currentVolume =
+        advancedTitration.addedVolume;
 
 
-        if (!ctx) {
+    const currentPH =
+        calculateCurvePH(
+            currentVolume,
+            hcl,
+            naoh,
+            sampleVolume
+        );
+
+
+    const currentX =
+        padding +
+        (
+            currentVolume /
+            maxVolume
+        ) *
+        graphWidth;
+
+
+    const currentY =
+        padding +
+        graphHeight -
+        (
+            currentPH /
+            14
+        ) *
+        graphHeight;
+
+
+    context.beginPath();
+
+    context.arc(
+        currentX,
+        currentY,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+
+    context.fillStyle =
+        "#dc2626";
+
+    context.fill();
+
+
+    /* -----------------------------------------------------
+       AXIS LABELS
+       ----------------------------------------------------- */
+
+    context.fillStyle =
+        "#111827";
+
+    context.font =
+        "bold 12px Arial";
+
+
+    context.textAlign =
+        "center";
+
+
+    context.fillText(
+        "NaOH added (mL)",
+        padding +
+        graphWidth / 2,
+        height - 5
+    );
+
+
+    context.save();
+
+
+    context.translate(
+        13,
+        padding +
+        graphHeight / 2
+    );
+
+
+    context.rotate(
+        -Math.PI / 2
+    );
+
+
+    context.fillText(
+        "pH",
+        0,
+        0
+    );
+
+
+    context.restore();
+}
+
+
+window.drawAdvancedTitrationChart =
+    drawAdvancedTitrationChart;
+
+
+window.updateAdvancedTitrationChart =
+    drawAdvancedTitrationChart;
+
+
+/* =========================================================
+   PREMIUM SECTION VISIBILITY
+   ========================================================= */
+
+function showPremiumSection() {
+
+    const premiumSection =
+        $("premiumSection");
+
+
+    if (!premiumSection) {
+        return;
+    }
+
+
+    premiumSection.style.display =
+        "";
+
+
+    premiumSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+
+window.showPremiumSection =
+    showPremiumSection;
+
+
+/* =========================================================
+   KEYBOARD SUPPORT
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key !==
+            "Escape"
+        ) {
             return;
         }
-
-
-        ctx.setTransform(
-            devicePixelRatio,
-            0,
-            0,
-            devicePixelRatio,
-            0,
-            0
-        );
-
-
-        ctx.clearRect(
-            0,
-            0,
-            width,
-            height
-        );
-
-
-        /* =================================
-           GRAPH MARGINS
-        ================================= */
-
-        const marginLeft = 55;
-        const marginRight = 20;
-        const marginTop = 20;
-        const marginBottom = 45;
-
-
-        const graphWidth =
-            width -
-            marginLeft -
-            marginRight;
-
-
-        const graphHeight =
-            height -
-            marginTop -
-            marginBottom;
 
 
         if (
-            graphWidth <= 0 ||
-            graphHeight <= 0
+            typeof closeAuthModal ===
+            "function"
         ) {
 
-            return;
+            closeAuthModal();
         }
 
 
-        /* =================================
-           BACKGROUND
-        ================================= */
+        if (
+            typeof closeAccount ===
+            "function"
+        ) {
 
-        ctx.fillStyle =
-            "#ffffff";
+            closeAccount();
+        }
 
 
-        ctx.fillRect(
-            marginLeft,
-            marginTop,
-            graphWidth,
-            graphHeight
+        if (
+            typeof closePremiumModal ===
+            "function"
+        ) {
+
+            closePremiumModal();
+        }
+    }
+);
+
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        console.log(
+            "🧪 ChemLab application starting..."
         );
 
 
-        /* =================================
-           COORDINATES
-        ================================= */
+        /* -------------------------------------------------
+           BASIC TITRATION
+           ------------------------------------------------- */
 
-        function xPosition(
-            volume
-        ) {
+        updateTitrationDisplay();
 
-            return (
-                marginLeft +
-                (
-                    volume /
-                    maxVolume
-                ) *
-                graphWidth
+
+        /* -------------------------------------------------
+           QUIZ
+           ------------------------------------------------- */
+
+        loadQuizQuestion();
+
+
+        /* -------------------------------------------------
+           PROGRESS
+           ------------------------------------------------- */
+
+        updateProgressDisplay();
+
+
+        /* -------------------------------------------------
+           ADVANCED TITRATION
+           ------------------------------------------------- */
+
+        initializeAdvancedTitration();
+
+
+        /* -------------------------------------------------
+           ADVANCED CLOSE BUTTON
+           ------------------------------------------------- */
+
+        const closeAdvanced =
+            $("closeAdvancedTitration");
+
+
+        if (closeAdvanced) {
+
+            closeAdvanced.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    closeAdvancedTitration();
+                }
             );
         }
 
 
-        function yPosition(
-            ph
-        ) {
+        /* -------------------------------------------------
+           ADVANCED EXPLAIN BUTTON
+           ------------------------------------------------- */
 
-            return (
-                marginTop +
-                graphHeight -
-                (
-                    ph /
-                    14
-                ) *
-                graphHeight
+        const explainButton =
+            $("advancedExplainButton");
+
+
+        if (explainButton) {
+
+            explainButton.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    explainAdvancedTitration();
+                }
             );
         }
 
 
-        /* =================================
-           GRID
-        ================================= */
+        /* -------------------------------------------------
+           AI ENTER KEY
+           ------------------------------------------------- */
 
-        ctx.strokeStyle =
-            "#e4e7ec";
-
-        ctx.lineWidth = 1;
-
-
-        for (
-            let ph = 0;
-            ph <= 14;
-            ph += 2
-        ) {
-
-            const y =
-                yPosition(ph);
+        const mainAIInput =
+            $("mainAIInput") ||
+            $("aiQuestion");
 
 
-            ctx.beginPath();
+        if (mainAIInput) {
 
+            mainAIInput.addEventListener(
+                "keydown",
+                event => {
 
-            ctx.moveTo(
-                marginLeft,
-                y
+                    if (
+                        event.key ===
+                        "Enter" &&
+                        !event.shiftKey
+                    ) {
+
+                        event.preventDefault();
+
+                        mainAIQuestion();
+                    }
+                }
             );
-
-
-            ctx.lineTo(
-                marginLeft +
-                graphWidth,
-                y
-            );
-
-
-            ctx.stroke();
         }
 
 
-        const volumeStep =
-            maxVolume /
-            5;
+        /* -------------------------------------------------
+           EXPERIMENT AI ENTER KEY
+           ------------------------------------------------- */
+
+        const experimentAIInput =
+            $("experimentAIQuestion");
 
 
-        for (
-            let i = 0;
-            i <= 5;
-            i++
-        ) {
+        if (experimentAIInput) {
 
-            const volume =
-                i *
-                volumeStep;
+            experimentAIInput.addEventListener(
+                "keydown",
+                event => {
 
+                    if (
+                        event.key ===
+                        "Enter" &&
+                        !event.shiftKey
+                    ) {
 
-            const x =
-                xPosition(
-                    volume
-                );
+                        event.preventDefault();
 
-
-            ctx.beginPath();
-
-
-            ctx.moveTo(
-                x,
-                marginTop
+                        askExperimentAI();
+                    }
+                }
             );
-
-
-            ctx.lineTo(
-                x,
-                marginTop +
-                graphHeight
-            );
-
-
-            ctx.stroke();
         }
 
 
-        /* =================================
-           AXES
-        ================================= */
+        /* -------------------------------------------------
+           +1 ML BUTTON
+           ------------------------------------------------- */
 
-        ctx.strokeStyle =
-            "#344054";
-
-        ctx.lineWidth =
-            1.5;
+        const addOne =
+            $("add1ml");
 
 
-        ctx.beginPath();
+        if (addOne) {
+
+            addOne.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    addTitrant(1);
+                }
+            );
+        }
 
 
-        ctx.moveTo(
-            marginLeft,
-            marginTop
+        /* -------------------------------------------------
+           +5 ML BUTTON
+           ------------------------------------------------- */
+
+        const addFive =
+            $("add5ml");
+
+
+        if (addFive) {
+
+            addFive.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    addTitrant(5);
+                }
+            );
+        }
+
+
+        console.log(
+            "🧪 ChemLab application ready."
         );
-
-
-        ctx.lineTo(
-            marginLeft,
-            marginTop +
-            graphHeight
-        );
-
-
-        ctx.lineTo(
-            marginLeft +
-            graphWidth,
-            marginTop +
-            graphHeight
-        );
-
-
-        ctx.stroke();
-
-
-        /* =================================
-           Y LABELS
-        ================================= */
-
-        ctx.fillStyle =
-            "#475467";
-
-        ctx.font =
-            "12px Arial";
-
-        ctx.textAlign =
-            "right";
-
-        ctx.textBaseline =
-            "middle";
-
-
-        for (
-            let ph = 0;
-            ph <= 14;
-            ph += 2
-        ) {
-
-            ctx.fillText(
-                String(ph),
-                marginLeft - 10,
-                yPosition(ph)
-            );
-        }
-
-
-        /* =================================
-           X LABELS
-        ================================= */
-
-        ctx.textAlign =
-            "center";
-
-        ctx.textBaseline =
-            "top";
-
-
-        for (
-            let i = 0;
-            i <= 5;
-            i++
-        ) {
-
-            const volume =
-                i *
-                volumeStep;
-
-
-            ctx.fillText(
-                volume.toFixed(1),
-                xPosition(volume),
-                marginTop +
-                graphHeight +
-                10
-            );
-        }
-
-
-        /* =================================
-           TITRATION CURVE
-        ================================= */
-
-        ctx.beginPath();
-
-
-        const points = 300;
-
-
-        for (
-            let i = 0;
-            i <= points;
-            i++
-        ) {
-
-            const volume =
-                (
-                    i /
-                    points
-                ) *
-                maxVolume;
-
-
-            const ph =
-                calculateCurvePH(
-                    hcl,
-                    naoh,
-                    sampleVolume,
-                    volume
-                );
-
-
-            const x =
-                xPosition(
-                    volume
-                );
-
-
-            const y =
-                yPosition(
-                    ph
-                );
-
-
-            if (i === 0) {
-
-                ctx.moveTo(
-                    x,
-                    y
-                );
-
-            } else {
-
-                ctx.lineTo(
-                    x,
-                    y
-                );
-            }
-        }
-
-
-        ctx.strokeStyle =
-            "#3157d5";
-
-        ctx.lineWidth = 3;
-
-        ctx.lineJoin =
-            "round";
-
-        ctx.lineCap =
-            "round";
-
-
-        ctx.stroke();
-
-
-        /* =================================
-           EQUIVALENCE POINT
-        ================================= */
-
-        const equivalenceX =
-            xPosition(
-                equivalenceVolume
-            );
-
-
-        ctx.setLineDash([
-            6,
-            5
-        ]);
-
-
-        ctx.strokeStyle =
-            "#12b76a";
-
-        ctx.lineWidth =
-            1.5;
-
-
-        ctx.beginPath();
-
-
-        ctx.moveTo(
-            equivalenceX,
-            marginTop
-        );
-
-
-        ctx.lineTo(
-            equivalenceX,
-            marginTop +
-            graphHeight
-        );
-
-
-        ctx.stroke();
-
-
-        ctx.setLineDash([]);
-
-
-        /* =================================
-           EQUIVALENCE LABEL
-        ================================= */
-
-        ctx.fillStyle =
-            "#027a48";
-
-        ctx.font =
-            "bold 11px Arial";
-
-        ctx.textAlign =
-            "center";
-
-        ctx.textBaseline =
-            "top";
-
-
-        ctx.fillText(
-            "Equivalence",
-            equivalenceX,
-            marginTop + 8
-        );
-
-
-        /* =================================
-           CURRENT POINT
-        ================================= */
-
-        const safeCurrentVolume =
-            Math.max(
-                0,
-                Math.min(
-                    maxVolume,
-                    Number(
-                        currentVolume
-                    ) || 0
-                )
-            );
-
-
-        const currentPH =
-           
+    }
+);
