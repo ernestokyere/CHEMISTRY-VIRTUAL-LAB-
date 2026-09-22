@@ -852,12 +852,65 @@ window.getExperimentState =
 
 
 /* =========================================================
-   CHEMISTRY AI
+   CHEMLAB AI TUTOR — SUPABASE
    ========================================================= */
 
-async function askAI(
-    question
-) {
+const CHEMLAB_AI_URL =
+    "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/chemistry-ai";
+
+const CHEMLAB_SUPABASE_KEY =
+    "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy";
+
+
+/* =========================================================
+   GET SUPABASE SESSION
+   ========================================================= */
+
+async function getAISessionToken() {
+
+    try {
+
+        if (
+            typeof supabase !== "undefined" &&
+            supabase &&
+            supabase.auth
+        ) {
+
+            const {
+                data,
+                error
+            } = await supabase.auth.getSession();
+
+
+            if (
+                !error &&
+                data &&
+                data.session &&
+                data.session.access_token
+            ) {
+
+                return data.session.access_token;
+            }
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Could not get AI session:",
+            error
+        );
+    }
+
+
+    return null;
+}
+
+
+/* =========================================================
+   ASK CHEMLAB AI
+   ========================================================= */
+
+async function askAI(question) {
 
     const cleanQuestion =
         String(question || "")
@@ -867,40 +920,119 @@ async function askAI(
     if (!cleanQuestion) {
 
         return {
+
             success: false,
+
             answer:
                 "Please enter a chemistry question."
         };
     }
 
 
-    const experiment =
-        getExperimentState();
+    let experiment = {};
+
+    try {
+
+        if (
+            typeof getExperimentState ===
+            "function"
+        ) {
+
+            experiment =
+                getExperimentState();
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Could not get experiment state:",
+            error
+        );
+    }
 
 
     try {
 
+        const accessToken =
+            await getAISessionToken();
+
+
+        const headers = {
+
+            "Content-Type":
+                "application/json",
+
+            "apikey":
+                CHEMLAB_SUPABASE_KEY
+        };
+
+
+        /*
+           Send the student's Supabase access token
+           when available.
+        */
+
+        if (accessToken) {
+
+            headers["Authorization"] =
+                `Bearer ${accessToken}`;
+        }
+
+
+        const requestBody = {
+
+            question:
+                cleanQuestion,
+
+            experiment:
+                experiment,
+
+            source:
+                "ChemLab",
+
+            student_mode:
+                true
+        };
+
+
+        console.log(
+            "ChemLab AI request:",
+            requestBody
+        );
+
+
         const response =
             await fetch(
-                CHEMLAB_CONFIG.chemistryAIEndpoint,
+                CHEMLAB_AI_URL,
                 {
-                    method: "POST",
+                    method:
+                        "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                    headers:
+                        headers,
 
                     body:
-                        JSON.stringify({
-                            question:
-                                cleanQuestion,
-
-                            experiment:
-                                experiment
-                        })
+                        JSON.stringify(
+                            requestBody
+                        )
                 }
             );
+
+
+        /*
+           Read the response as text first.
+           This helps us see the actual Supabase
+           response when something goes wrong.
+        */
+
+        const rawResponse =
+            await response.text();
+
+
+        console.log(
+            "ChemLab AI raw response:",
+            rawResponse
+        );
 
 
         let data = null;
@@ -909,35 +1041,92 @@ async function askAI(
         try {
 
             data =
-                await response.json();
+                rawResponse
+                    ? JSON.parse(
+                        rawResponse
+                    )
+                    : null;
 
         } catch (jsonError) {
 
             console.error(
-                "AI response parsing error:",
+                "AI JSON parsing error:",
                 jsonError
+            );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `AI service error (${response.status}).`
+                );
+            }
+
+
+            throw new Error(
+                "The AI service returned an invalid response."
             );
         }
 
+
+        /*
+           Handle HTTP errors.
+        */
 
         if (!response.ok) {
 
+            console.error(
+                "ChemLab AI HTTP error:",
+                response.status,
+                data
+            );
+
+
             throw new Error(
+
                 data?.error ||
+
                 data?.message ||
-                "The AI service returned an error."
+
+                data?.details ||
+
+                `AI service returned error ${response.status}.`
             );
         }
 
 
+        /*
+           Support different response formats.
+        */
+
         const answer =
+
             data?.answer ||
+
             data?.response ||
+
             data?.message ||
-            data?.result;
+
+            data?.result ||
+
+            data?.text ||
+
+            data?.content ||
+
+            data?.data?.answer ||
+
+            data?.data?.response ||
+
+            data?.data?.message;
 
 
         if (!answer) {
+
+            console.error(
+                "Unexpected AI response:",
+                data
+            );
+
 
             throw new Error(
                 "The AI returned an empty response."
@@ -949,7 +1138,8 @@ async function askAI(
 
             success: true,
 
-            answer: String(answer)
+            answer:
+                String(answer).trim()
         };
 
 
@@ -966,14 +1156,10 @@ async function askAI(
             success: false,
 
             answer:
-                "The Chemistry AI could not respond right now. Please check your connection and try again."
+                `The Chemistry AI could not respond right now.\n\n${error.message || "Please try again."}`
         };
     }
 }
-
-
-window.askAI =
-    askAI;
 
 
 /* =========================================================
@@ -991,6 +1177,11 @@ async function askExperimentAI() {
 
 
     if (!input) {
+
+        console.warn(
+            "Experiment AI input was not found."
+        );
+
         return;
     }
 
@@ -1002,8 +1193,9 @@ async function askExperimentAI() {
     if (!question) {
 
         if (output) {
+
             output.textContent =
-                "Please enter a question.";
+                "Please enter a chemistry question.";
         }
 
         return;
@@ -1068,6 +1260,7 @@ async function mainAIQuestion() {
     if (!question) {
 
         if (output) {
+
             output.textContent =
                 "Please enter a chemistry question.";
         }
@@ -1097,8 +1290,74 @@ async function mainAIQuestion() {
 }
 
 
+window.askAI =
+    askAI;
+
 window.mainAIQuestion =
     mainAIQuestion;
+
+
+/* =========================================================
+   AI ENTER KEY SUPPORT
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const inputs = [
+
+            $("mainAIInput"),
+
+            $("aiQuestion"),
+
+            $("experimentAIQuestion")
+        ];
+
+
+        inputs.forEach(
+            function (input) {
+
+                if (!input) {
+                    return;
+                }
+
+
+                input.addEventListener(
+                    "keydown",
+                    function (event) {
+
+                        if (
+                            event.key === "Enter" &&
+                            !event.shiftKey
+                        ) {
+
+                            event.preventDefault();
+
+
+                            if (
+                                input.id ===
+                                "experimentAIQuestion"
+                            ) {
+
+                                askExperimentAI();
+
+                            } else {
+
+                                mainAIQuestion();
+                            }
+                        }
+                    }
+                );
+            }
+        );
+
+
+        console.log(
+            "ChemLab AI Tutor initialized successfully."
+        );
+    }
+);
 
 
 /* =========================================================
