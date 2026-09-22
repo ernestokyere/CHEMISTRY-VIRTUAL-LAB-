@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3157d5">
+<meta name="description" content="ChemLab — Virtual Chemistry Laboratory">
+<title>ChemLab | Virtual Chemistry Laboratory</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand"><div class="brand-mark">⚗️</div><div><strong>ChemLab</strong><span>Virtual Chemistry Laboratory</span></div></div>
+  <nav class="main-nav" aria-label="Main navigation">
+    <button class="nav-button active" type="button" data-page="home">Home</button>
+    <button class="nav-button" type="button" data-page="lab">Lab</button>
+    <button class="nav-button" type="button" data-page="ai">AI Tutor</button>
+    <button class="nav-button" type="button" data-page="quiz">Quiz Arena</button>
+  </nav>
+  <div id="authArea" class="auth-area"><button id="loginButton" class="header-auth-button" type="button">Sign In</button></div>
+</header>
+<main>
+<section id="homePage" class="page active">
+  <div class="hero"><div class="hero-content"><span class="eyebrow">STUDENT CHEMISTRY LAB</span><h1>Learn Chemistry by <span>Doing.</span></h1><p>Explore chemistry through interactive experiments, guided explanations, practice quizzes and AI tutoring.</p><div class="hero-actions"><button class="primary-button" type="button" data-page-target="lab">🧪 Start Experiment</button><button class="secondary-button" type="button" data-page-target="ai">🤖 Ask AI Tutor</button></div></div><div class="hero-lab-card"><div class="hero-flask">⚗️</div><div><strong>Interactive Chemistry</strong><span>Experiment • Observe • Understand</span></div></div></div>
+  <div class="feature-grid">
+    <article class="feature-card"><div class="feature-icon">🧪</div><h3>Virtual Experiments</h3><p>Practice chemistry experiments in a safe digital environment.</p></article>
+    <article class="feature-card"><div class="feature-icon">🤖</div><h3>AI Chemistry Tutor</h3><p>Ask chemistry questions and receive guided explanations.</p></article>
+    <article class="feature-card"><div class="feature-icon">🏆</div><h3>Quiz Arena</h3><p>Test your understanding with chemistry practice questions.</p></article>
+    <article class="feature-card"><div class="feature-icon">👑</div><h3>ChemLab Premium</h3><p>Unlock advanced experiments and enhanced learning tools.</p></article>
+  </div>
+
+  <section id="premiumSection" class="premium-section">
+    <div class="premium-header"><span class="premium-badge">👑 PREMIUM</span><h2>Advanced Chemistry Lab</h2><p>Unlock advanced virtual experiments, detailed quizzes and enhanced AI tutoring.</p><button id="premiumUnlockButton" class="premium-main-button" type="button">👑 Unlock Premium</button></div>
+    <div class="premium-experiment-grid">
+      <article class="premium-experiment-card"><div class="premium-lock">🔒</div><span class="premium-card-label">ACID–BASE</span><h3>Advanced Acid-Base Titration</h3><p>Explore concentration, pH, equivalence point and titration curves.</p><button class="premium-experiment-button" data-premium="true" data-experiment="Advanced Acid-Base Titration" type="button">Open Experiment</button></article>
+      <article class="premium-experiment-card"><div class="premium-lock">🔒</div><span class="premium-card-label">KINETICS</span><h3>Reaction Rate Laboratory</h3><p>Investigate how conditions affect reaction rates.</p><button class="premium-experiment-button" data-premium="true" data-experiment="Reaction Rate Laboratory" type="button">Open Experiment</button></article>
+      <article class="premium-experiment-card"><div class="premium-lock">🔒</div><span class="premium-card-label">ORGANIC</span><h3>Organic Chemistry Lab</h3><p>Explore organic reactions and molecular structures.</p><button class="premium-experiment-button" data-premium="true" data-experiment="Organic Chemistry Lab" type="button">Open Experiment</button></article>
+      <article class="premium-experiment-card"><div class="premium-lock">🔒</div><span class="premium-card-label">MOLECULAR</span><h3>Molecular Chemistry</h3><p>Explore molecules, bonding and chemical structures.</p><button class="premium-experiment-button" data-premium="true" data-experiment="Molecular Chemistry" type="button">Open Experiment</button></article>
+    </div>
+    <div class="premium-cta"><h3>Choose your ChemLab Premium plan</h3><p>Select a plan below. Payments are securely processed through Paystack.</p>
+      <div class="premium-plans">
+        <div class="premium-plan"><span class="plan-label">MONTHLY</span><h3>GHS 35</h3><p>per month</p><ul><li>✓ Advanced experiments</li><li>✓ Premium learning tools</li><li>✓ Enhanced AI tutoring</li></ul><button class="premium-plan-button" data-plan="monthly" type="button">Choose Monthly</button></div>
+        <div class="premium-plan premium-plan-featured"><span class="recommended-plan">⭐ RECOMMENDED PLAN</span><span class="plan-label">YEARLY</span><h3>GHS 420</h3><p>per year</p><ul><li>✓ Advanced experiments</li><li>✓ Premium learning tools</li><li>✓ Enhanced AI tutoring</li></ul><button class="premium-plan-button" data-plan="yearly" type="button">Choose Yearly</button></div>
+      </div><small class="premium-payment-note">🔐 Secure payment powered by Paystack.</small>
+    </div>
+  </section>
+</section>
+
+<section id="labPage" class="page">
+  <div class="page-heading"><span class="eyebrow">VIRTUAL LABORATORY</span><h2>Acid–Base Titration</h2><p>HCl + NaOH → NaCl + H₂O</p></div>
+  <div class="lab-layout">
+    <div class="lab-card"><div class="card-header"><div><span class="card-label">EXPERIMENT</span><h3>HCl / NaOH Titration</h3></div><button id="resetButton" class="small-button" type="button">Reset</button></div>
+      <div class="experiment-controls"><div class="control-group"><label for="naohVolume">NaOH volume added (mL)</label><input id="naohVolume" type="range" min="0" max="50" step="0.1" value="0"><output id="volumeValue">0.0 mL</output></div><button id="addNaOHButton" class="primary-button" type="button">Add NaOH</button></div>
+      <div class="basic-lab-visual"><div class="burette"><div class="burette-label">0.100 M NaOH</div><div class="burette-tube"><div id="buretteLiquid" class="burette-liquid"></div></div><div class="burette-tap">▼</div></div><div class="flask"><div id="solution" class="solution"></div><div class="flask-neck"></div></div></div>
+    </div>
+    <div class="lab-card results-card"><span class="card-label">LIVE READINGS</span><div class="reading-grid"><div class="reading"><span>NaOH added</span><strong id="naohVolumeDisplay">0.00 mL</strong></div><div class="reading"><span>pH</span><strong id="phValue">1.00</strong></div><div class="reading"><span>Indicator</span><strong id="indicatorStatus">Colorless</strong></div><div class="reading"><span>Equivalence</span><strong id="equivalenceStatus">Not reached</strong></div></div><div class="reaction-status"><span>Reaction status</span><strong id="reactionStatus">Acidic solution</strong></div></div>
+  </div>
+</section>
+
+<section id="aiPage" class="page">
+  <div class="page-heading"><span class="eyebrow">AI CHEMISTRY TUTOR</span><h2>Ask ChemLab AI</h2><p>Ask questions about chemistry and get step-by-step help.</p></div>
+  <div class="ai-layout"><div id="aiChat" class="ai-chat"><div class="ai-message assistant"><div class="ai-avatar">🤖</div><div><strong>ChemLab AI</strong><p>Hello! Ask me a chemistry question and I’ll help you understand it step by step.</p></div></div></div><div class="ai-input-card"><label for="aiQuestion">Your chemistry question</label><textarea id="aiQuestion" rows="4" placeholder="Example: Explain why the pH changes rapidly near the equivalence point."></textarea><div class="ai-actions"><button id="askAIButton" class="primary-button" type="button">🤖 Ask ChemLab AI</button><button id="clearAIButton" class="secondary-button" type="button">Clear</button></div><p id="aiStatus" class="status-text"></p></div></div>
+</section>
+
+<section id="quizPage" class="page">
+  <div class="page-heading"><span class="eyebrow">QUIZ ARENA</span><h2>Test Your Chemistry</h2><p>Practice what you have learned from the laboratory.</p></div>
+  <div id="quizContainer" class="quiz-container"><div class="quiz-card"><div class="quiz-top"><span id="quizQuestionNumber">Question 1</span><span id="quizScore">Score: 0</span></div><h3 id="quizQuestion">Loading chemistry question...</h3><div id="quizOptions" class="quiz-options"></div><div class="quiz-actions"><button id="nextQuestionButton" class="primary-button" type="button">Next Question</button><button id="restartQuizButton" class="secondary-button" type="button">Restart Quiz</button></div><p id="quizFeedback" class="quiz-feedback"></p></div></div>
+</section>
+
+<section id="advancedTitrationPage" class="page premium-lab-page" hidden>
+  <div class="premium-lab-header"><div><span class="premium-badge">👑 PREMIUM LAB</span><h2>Advanced Acid-Base Titration</h2><p>Investigate concentration, neutralization, equivalence and the live titration curve.</p></div><button id="closeAdvancedTitration" class="small-button" type="button">← Back</button></div>
+  <div class="experiment-guide"><div><span>01</span><strong>Prepare</strong><small>Set concentrations and sample volume.</small></div><div><span>02</span><strong>Titrate</strong><small>Add NaOH using the burette controls.</small></div><div><span>03</span><strong>Observe</strong><small>Watch pH and the indicator change.</small></div><div><span>04</span><strong>Analyze</strong><small>Study the results and titration curve.</small></div></div>
+  <div class="advanced-lab-grid">
+    <div class="advanced-card"><div class="card-header"><div><span class="card-label">EXPERIMENT SETUP</span><h3>Solution Parameters</h3></div></div>
+      <div class="advanced-controls"><div class="control-group"><label for="advancedHclConcentration">HCl concentration (mol/L)</label><input id="advancedHclConcentration" type="number" min="0.001" step="0.001" value="0.100"></div><div class="control-group"><label for="advancedNaohConcentration">NaOH concentration (mol/L)</label><input id="advancedNaohConcentration" type="number" min="0.001" step="0.001" value="0.100"></div><div class="control-group"><label for="advancedSampleVolume">HCl sample volume (mL)</label><input id="advancedSampleVolume" type="number" min="1" step="0.1" value="25"></div></div>
+      <div class="advanced-burette-area"><div class="advanced-burette"><div class="burette-title">NaOH BURETTE</div><div class="advanced-burette-tube"><div id="advancedBuretteLiquid" class="advanced-burette-liquid"></div></div><div class="advanced-burette-volume"><strong id="advancedNaohVolume">0.00 mL</strong><span>NaOH added</span></div></div><div class="advanced-tap">▼</div><div class="advanced-add-controls"><label for="advancedVolumeSlider">Add NaOH</label><input id="advancedVolumeSlider" type="range" min="0" max="50" step="0.1" value="0"><button id="advancedAddNaohButton" class="primary-button" type="button">Add NaOH</button></div></div>
+      <div class="advanced-flask-stage"><div id="advancedFlask" class="advanced-flask"><div id="advancedSolution" class="advanced-solution"></div></div></div>
+    </div>
+    <div class="advanced-card"><div class="card-header"><div><span class="card-label">LIVE ANALYSIS</span><h3>Laboratory Readings</h3></div></div><div class="advanced-reading-main"><span>pH</span><strong id="advancedPhValue">1.00</strong></div><div class="advanced-reading-grid"><div class="advanced-reading"><span>Indicator</span><strong id="advancedIndicatorStatus">Colorless</strong></div><div class="advanced-reading"><span>H⁺</span><strong id="advancedHplus">0.10000 M</strong></div><div class="advanced-reading"><span>OH⁻</span><strong id="advancedOhminus">0.00000 M</strong></div><div class="advanced-reading"><span>Equivalence</span><strong id="advancedEquivalence">Not reached</strong></div></div><div class="reaction-status"><span>Reaction status</span><strong id="advancedReactionStatus">Acidic solution</strong></div>
+      <div class="equivalence-indicator"><span class="equivalence-dot"></span><div><strong>Equivalence Point</strong><small id="advancedEquivalenceStatus">Not reached</small></div></div>
+      <div class="titration-progress"><div class="titration-progress-header"><span>Titration Progress</span><strong id="advancedProgressText">0%</strong></div><div class="titration-progress-track"><div id="advancedProgressBar" class="titration-progress-bar"></div></div><small id="advancedObservation">Begin adding NaOH to start the titration.</small></div>
+      <div class="analysis-card"><div class="analysis-row"><span>H⁺ concentration</span><strong id="advancedHplusConcentration">0.10000 mol/L</strong></div><div class="analysis-row"><span>OH⁻ concentration</span><strong id="advancedOhConcentration">0.00000 mol/L</strong></div><div class="analysis-row"><span>Total solution volume</span><strong id="advancedTotalVolume">25.00 mL</strong></div><div class="analysis-row"><span>Neutralization progress</span><strong id="advancedNeutralizationProgress">0.00%</strong></div></div>
+      <div class="advanced-actions"><button id="advancedResetButton" class="secondary-button" type="button">Reset Experiment</button><button id="advancedExplainButton" class="primary-button" type="button">🤖 Explain Result</button></div><div id="advancedExplanation" class="advanced-explanation hidden"><h3>AI Explanation</h3><p id="advancedExplanationText"></p></div>
+    </div>
+  </div>
+  <div class="titration-curve-card"><div class="titration-curve-header"><div><span class="curve-label">TITRATION CURVE</span><h3>pH vs. NaOH Volume</h3><p>Observe how the solution pH changes as sodium hydroxide is added.</p></div><div class="curve-status"><span class="curve-status-dot"></span><span>Live</span></div></div><div class="titration-chart-wrapper"><canvas id="advancedTitrationChart" aria-label="Live titration curve showing pH against sodium hydroxide volume"></canvas></div><div class="curve-axis-info"><div><strong>X-axis</strong><span>NaOH volume (mL)</span></div><div><strong>Y-axis</strong><span>pH</span></div></div></div>
+</section>
+</main>
+
+<div id="authModal" class="modal" aria-hidden="true"><div class="modal-card auth-modal-card"><button id="closeAuthModal" class="modal-close" type="button" aria-label="Close">×</button><div class="modal-icon">🧪</div><span class="eyebrow">CHEMLAB ACCOUNT</span><h2 id="authTitle">Sign In</h2><p id="authSubtitle">Sign in to access your ChemLab account.</p><form id="authForm"><div id="nameField" class="form-field hidden"><label for="authName">Full name</label><input id="authName" type="text" autocomplete="name" placeholder="Your name"></div><div class="form-field"><label for="authEmail">Email</label><input id="authEmail" type="email" autocomplete="email" placeholder="student@example.com" required></div><div class="form-field"><label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Your password" required></div><p id="authMessage" class="auth-message"></p><button id="authSubmit" class="primary-button" type="submit">Sign In</button></form><p id="authSwitchText" class="auth-switch">Don't have an account? <button id="authSwitch" type="button">Create one</button></p></div></div>
+
+<div id="accountModal" class="account-modal" aria-hidden="true"><div class="account-card"><button id="closeAccountModal" class="account-close" type="button" aria-label="Close account">×</button><div class="account-header"><div class="account-avatar">👤</div><div><span class="account-label">CHEMLAB ACCOUNT</span><h2 id="accountName">Student</h2><p id="accountEmail">—</p></div></div><div class="membership-card"><div><span class="membership-title">Membership</span><h3 id="membershipStatus">FREE</h3></div><div id="membershipIcon" class="membership-icon">🔒</div></div><div class="account-section"><h3>Premium Access</h3><div id="premiumAccountStatus" class="premium-account-status"><strong>🔒 Not active</strong><span>Unlock advanced ChemLab features.</span></div></div><div id="premiumDetails" class="premium-details hidden"><div><span>Plan</span><strong id="accountPlan">—</strong></div><div><span>Expires</span><strong id="accountExpiry">—</strong></div></div><div class="account-actions"><button id="accountPremiumButton" class="account-premium-button" type="button">👑 Explore Premium</button><button id="logoutButton" class="account-logout-button" type="button">Sign Out</button></div></div></div>
+
+<div id="premiumModal" class="modal" aria-hidden="true"><div class="modal-card premium-modal-card"><button id="closePremiumModal" class="modal-close" type="button" aria-label="Close">×</button><div class="modal-icon">👑</div><span class="premium-badge">CHEMLAB PREMIUM</span><h2>Unlock Advanced Chemistry</h2><p>Get access to advanced virtual experiments, detailed learning tools and enhanced AI tutoring.</p><div class="premium-modal-benefits"><div>✓ Advanced Acid-Base Titration</div><div>✓ Reaction Rate Laboratory</div><div>✓ Organic Chemistry Lab</div><div>✓ Molecular Chemistry</div></div><button id="startPremiumButton" class="premium-main-button" type="button">👑 View Premium Plans</button><small class="premium-payment-note">Secure payment powered by Paystack.</small></div></div>
+
+<div id="notification" class="eduvora-notification" role="status" aria-live="polite" hidden></div>
+<footer class="site-footer"><div><strong>ChemLab</strong><span>Learn Chemistry. Practice Chemistry. Understand Chemistry.</span></div><span>© 2026 ChemLab</span></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
