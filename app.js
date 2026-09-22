@@ -1,6 +1,6 @@
 /* =========================================================
    CHEMLAB — MAIN APPLICATION
-   Complete replacement app.js
+   Clean replacement app.js
    ========================================================= */
 
 
@@ -13,7 +13,10 @@ const CHEMLAB_CONFIG = {
         "https://zscbgeaieiqwknhjxpnt.supabase.co",
 
     chemistryAIEndpoint:
-        "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/chemistry-ai"
+        "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/chemistry-ai",
+
+    supabasePublishableKey:
+        "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy"
 };
 
 
@@ -21,7 +24,8 @@ const CHEMLAB_CONFIG = {
    GLOBAL STATE
    ========================================================= */
 
-let chemLabState = {
+const chemLabState = {
+
     currentPage: "home",
 
     currentExperiment: null,
@@ -174,8 +178,7 @@ function safeText(element, value) {
     }
 
     element.textContent =
-        value === undefined ||
-        value === null
+        value === undefined || value === null
             ? ""
             : String(value);
 }
@@ -200,6 +203,10 @@ function round(value, decimals = 2) {
     ) / factor;
 }
 
+
+/* =========================================================
+   NOTIFICATIONS
+   ========================================================= */
 
 function showNotification(
     message,
@@ -227,15 +234,20 @@ function showNotification(
     );
 
     notification.textContent =
-        message;
+        String(message || "");
 
     if (type === "error") {
+
         notification.style.background =
             "#991b1b";
+
     } else if (type === "success") {
+
         notification.style.background =
             "#166534";
+
     } else if (type === "premium") {
+
         notification.style.background =
             "#7c3aed";
     }
@@ -264,38 +276,45 @@ window.showNotification =
 
 function showPage(pageId) {
 
+    const requestedPage =
+        $(pageId);
+
+    if (!requestedPage) {
+
+        console.warn(
+            `ChemLab: page "${pageId}" was not found.`
+        );
+
+        return false;
+    }
+
+
     const pages =
         document.querySelectorAll(
             ".page"
         );
+
 
     pages.forEach(page => {
 
         page.classList.remove(
             "active"
         );
+
+        /*
+         * Do not force display:none here.
+         * CSS should control normal page visibility.
+         */
     });
-
-
-    const requestedPage =
-        document.getElementById(
-            pageId
-        );
-
-
-    if (!requestedPage) {
-
-        console.warn(
-            `Page "${pageId}" was not found.`
-        );
-
-        return;
-    }
 
 
     requestedPage.classList.add(
         "active"
     );
+
+
+    requestedPage.style.display =
+        "";
 
 
     chemLabState.currentPage =
@@ -306,6 +325,9 @@ function showPage(pageId) {
         top: 0,
         behavior: "smooth"
     });
+
+
+    return true;
 }
 
 
@@ -340,7 +362,7 @@ function openExperiment(
 
 
     console.warn(
-        "Unknown experiment:",
+        "ChemLab: unknown experiment:",
         experiment
     );
 }
@@ -385,7 +407,6 @@ function calculateTitration() {
 
 
     let pH;
-
     let state;
 
 
@@ -452,6 +473,7 @@ function calculateTitration() {
     return {
 
         pH,
+
         state,
 
         acidMoles,
@@ -501,73 +523,12 @@ function addTitrant(
         );
 
 
-    calculateTitration();
-
-
     updateTitrationDisplay();
 }
 
 
 window.addTitrant =
     addTitrant;
-
-
-/* =========================================================
-   BASIC TITRATION DISPLAY
-   ========================================================= */
-
-function updateTitrationDisplay() {
-
-    const result =
-        calculateTitration();
-
-
-    safeText(
-        $("titrantVolume"),
-        `${titration.titrantVolume.toFixed(1)} mL`
-    );
-
-
-    safeText(
-        $("phValue"),
-        result.pH.toFixed(2)
-    );
-
-
-    safeText(
-        $("pHValue"),
-        result.pH.toFixed(2)
-    );
-
-
-    safeText(
-        $("titrationPH"),
-        result.pH.toFixed(2)
-    );
-
-
-    safeText(
-        $("indicatorStatus"),
-        getIndicatorStatus(
-            result.pH
-        )
-    );
-
-
-    updateBurette(
-        titration.titrantVolume
-    );
-
-
-    updateFlask(
-        result
-    );
-
-
-    updateEndpointMessage(
-        result
-    );
-}
 
 
 /* =========================================================
@@ -579,7 +540,7 @@ function getIndicatorStatus(
 ) {
 
     if (
-        pH >= 8.2 &&
+        pH >= PHENOLPHTHALEIN_ENDPOINT &&
         pH <= 10
     ) {
 
@@ -587,7 +548,9 @@ function getIndicatorStatus(
     }
 
 
-    if (pH > 10) {
+    if (
+        pH > 10
+    ) {
 
         return "🌸 Strong pink — basic";
     }
@@ -608,6 +571,7 @@ function updateBurette(
     const liquid =
         $("buretteLiquid");
 
+
     if (!liquid) {
         return;
     }
@@ -615,7 +579,10 @@ function updateBurette(
 
     const percentage =
         clamp(
-            (volume / 50) * 100,
+            (
+                volume /
+                50
+            ) * 100,
             0,
             100
         );
@@ -693,6 +660,7 @@ function updateEndpointMessage(
             $("titrationLab") ||
             $("titration");
 
+
         if (!container) {
             return;
         }
@@ -703,20 +671,26 @@ function updateEndpointMessage(
                 "div"
             );
 
+
         message.id =
             "endpointMessage";
+
 
         message.style.marginTop =
             "15px";
 
+
         message.style.padding =
             "12px";
+
 
         message.style.borderRadius =
             "10px";
 
+
         message.style.fontWeight =
             "600";
+
 
         container.appendChild(
             message
@@ -767,6 +741,64 @@ function updateEndpointMessage(
 
 
 /* =========================================================
+   BASIC TITRATION DISPLAY
+   ========================================================= */
+
+function updateTitrationDisplay() {
+
+    const result =
+        calculateTitration();
+
+
+    safeText(
+        $("titrantVolume"),
+        `${titration.titrantVolume.toFixed(1)} mL`
+    );
+
+
+    safeText(
+        $("phValue"),
+        result.pH.toFixed(2)
+    );
+
+
+    safeText(
+        $("pHValue"),
+        result.pH.toFixed(2)
+    );
+
+
+    safeText(
+        $("titrationPH"),
+        result.pH.toFixed(2)
+    );
+
+
+    safeText(
+        $("indicatorStatus"),
+        getIndicatorStatus(
+            result.pH
+        )
+    );
+
+
+    updateBurette(
+        titration.titrantVolume
+    );
+
+
+    updateFlask(
+        result
+    );
+
+
+    updateEndpointMessage(
+        result
+    );
+}
+
+
+/* =========================================================
    RESET BASIC EXPERIMENT
    ========================================================= */
 
@@ -782,6 +814,7 @@ function resetExperiment() {
     const questionInput =
         $("experimentAIQuestion");
 
+
     if (questionInput) {
         questionInput.value =
             "";
@@ -790,6 +823,7 @@ function resetExperiment() {
 
     const answer =
         $("experimentAIAnswer");
+
 
     if (answer) {
         answer.textContent =
@@ -852,14 +886,15 @@ window.getExperimentState =
 
 
 /* =========================================================
-   CHEMLAB AI TUTOR — SUPABASE
+   CHEMLAB AI
    ========================================================= */
 
 const CHEMLAB_AI_URL =
-    "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/chemistry-ai";
+    CHEMLAB_CONFIG.chemistryAIEndpoint;
+
 
 const CHEMLAB_SUPABASE_KEY =
-    "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy";
+    CHEMLAB_CONFIG.supabasePublishableKey;
 
 
 /* =========================================================
@@ -870,16 +905,31 @@ async function getAISessionToken() {
 
     try {
 
+        /*
+         * auth.js creates the Supabase client as
+         * supabaseClient. We support both names.
+         */
+
+        const client =
+            typeof supabaseClient !== "undefined"
+                ? supabaseClient
+                : typeof supabase !== "undefined"
+                    ? supabase
+                    : null;
+
+
         if (
-            typeof supabase !== "undefined" &&
-            supabase &&
-            supabase.auth
+            client &&
+            client.auth &&
+            typeof client.auth.getSession ===
+            "function"
         ) {
 
             const {
                 data,
                 error
-            } = await supabase.auth.getSession();
+            } =
+                await client.auth.getSession();
 
 
             if (
@@ -896,7 +946,7 @@ async function getAISessionToken() {
     } catch (error) {
 
         console.warn(
-            "Could not get AI session:",
+            "ChemLab: could not get AI session.",
             error
         );
     }
@@ -910,11 +960,14 @@ async function getAISessionToken() {
    ASK CHEMLAB AI
    ========================================================= */
 
-async function askAI(question) {
+async function askAI(
+    question
+) {
 
     const cleanQuestion =
-        String(question || "")
-            .trim();
+        String(
+            question || ""
+        ).trim();
 
 
     if (!cleanQuestion) {
@@ -931,21 +984,16 @@ async function askAI(question) {
 
     let experiment = {};
 
+
     try {
 
-        if (
-            typeof getExperimentState ===
-            "function"
-        ) {
-
-            experiment =
-                getExperimentState();
-        }
+        experiment =
+            getExperimentState();
 
     } catch (error) {
 
         console.warn(
-            "Could not get experiment state:",
+            "ChemLab: could not read experiment state.",
             error
         );
     }
@@ -967,14 +1015,9 @@ async function askAI(question) {
         };
 
 
-        /*
-           Send the student's Supabase access token
-           when available.
-        */
-
         if (accessToken) {
 
-            headers["Authorization"] =
+            headers.Authorization =
                 `Bearer ${accessToken}`;
         }
 
@@ -984,8 +1027,7 @@ async function askAI(question) {
             question:
                 cleanQuestion,
 
-            experiment:
-                experiment,
+            experiment,
 
             source:
                 "ChemLab",
@@ -995,12 +1037,6 @@ async function askAI(question) {
         };
 
 
-        console.log(
-            "ChemLab AI request:",
-            requestBody
-        );
-
-
         const response =
             await fetch(
                 CHEMLAB_AI_URL,
@@ -1008,8 +1044,7 @@ async function askAI(question) {
                     method:
                         "POST",
 
-                    headers:
-                        headers,
+                    headers,
 
                     body:
                         JSON.stringify(
@@ -1019,20 +1054,8 @@ async function askAI(question) {
             );
 
 
-        /*
-           Read the response as text first.
-           This helps us see the actual Supabase
-           response when something goes wrong.
-        */
-
         const rawResponse =
             await response.text();
-
-
-        console.log(
-            "ChemLab AI raw response:",
-            rawResponse
-        );
 
 
         let data = null;
@@ -1050,37 +1073,20 @@ async function askAI(question) {
         } catch (jsonError) {
 
             console.error(
-                "AI JSON parsing error:",
+                "ChemLab AI JSON error:",
                 jsonError
             );
 
 
-            if (!response.ok) {
-
-                throw new Error(
-                    `AI service error (${response.status}).`
-                );
-            }
-
-
             throw new Error(
-                "The AI service returned an invalid response."
+                response.ok
+                    ? "The AI service returned an invalid response."
+                    : `AI service error (${response.status}).`
             );
         }
 
 
-        /*
-           Handle HTTP errors.
-        */
-
         if (!response.ok) {
-
-            console.error(
-                "ChemLab AI HTTP error:",
-                response.status,
-                data
-            );
-
 
             throw new Error(
 
@@ -1094,10 +1100,6 @@ async function askAI(question) {
             );
         }
 
-
-        /*
-           Support different response formats.
-        */
 
         const answer =
 
@@ -1122,12 +1124,6 @@ async function askAI(question) {
 
         if (!answer) {
 
-            console.error(
-                "Unexpected AI response:",
-                data
-            );
-
-
             throw new Error(
                 "The AI returned an empty response."
             );
@@ -1139,7 +1135,9 @@ async function askAI(question) {
             success: true,
 
             answer:
-                String(answer).trim()
+                String(
+                    answer
+                ).trim()
         };
 
 
@@ -1156,10 +1154,17 @@ async function askAI(question) {
             success: false,
 
             answer:
-                `The Chemistry AI could not respond right now.\n\n${error.message || "Please try again."}`
+                `The Chemistry AI could not respond right now.\n\n${
+                    error?.message ||
+                    "Please try again."
+                }`
         };
     }
 }
+
+
+window.askAI =
+    askAI;
 
 
 /* =========================================================
@@ -1179,7 +1184,7 @@ async function askExperimentAI() {
     if (!input) {
 
         console.warn(
-            "Experiment AI input was not found."
+            "ChemLab: experiment AI input not found."
         );
 
         return;
@@ -1192,21 +1197,19 @@ async function askExperimentAI() {
 
     if (!question) {
 
-        if (output) {
-
-            output.textContent =
-                "Please enter a chemistry question.";
-        }
+        safeText(
+            output,
+            "Please enter a chemistry question."
+        );
 
         return;
     }
 
 
-    if (output) {
-
-        output.textContent =
-            "🧠 Chemistry AI is thinking...";
-    }
+    safeText(
+        output,
+        "🧠 Chemistry AI is thinking..."
+    );
 
 
     const result =
@@ -1215,11 +1218,10 @@ async function askExperimentAI() {
         );
 
 
-    if (output) {
-
-        output.textContent =
-            result.answer;
-    }
+    safeText(
+        output,
+        result.answer
+    );
 }
 
 
@@ -1228,7 +1230,7 @@ window.askExperimentAI =
 
 
 /* =========================================================
-   MAIN AI CHAT
+   MAIN AI
    ========================================================= */
 
 async function mainAIQuestion() {
@@ -1246,7 +1248,7 @@ async function mainAIQuestion() {
     if (!input) {
 
         console.warn(
-            "Main AI input was not found."
+            "ChemLab: main AI input not found."
         );
 
         return;
@@ -1259,21 +1261,19 @@ async function mainAIQuestion() {
 
     if (!question) {
 
-        if (output) {
-
-            output.textContent =
-                "Please enter a chemistry question.";
-        }
+        safeText(
+            output,
+            "Please enter a chemistry question."
+        );
 
         return;
     }
 
 
-    if (output) {
-
-        output.textContent =
-            "🧠 Chemistry AI is thinking...";
-    }
+    safeText(
+        output,
+        "🧠 Chemistry AI is thinking..."
+    );
 
 
     const result =
@@ -1282,82 +1282,15 @@ async function mainAIQuestion() {
         );
 
 
-    if (output) {
-
-        output.textContent =
-            result.answer;
-    }
+    safeText(
+        output,
+        result.answer
+    );
 }
 
 
-window.askAI =
-    askAI;
-
 window.mainAIQuestion =
     mainAIQuestion;
-
-
-/* =========================================================
-   AI ENTER KEY SUPPORT
-   ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const inputs = [
-
-            $("mainAIInput"),
-
-            $("aiQuestion"),
-
-            $("experimentAIQuestion")
-        ];
-
-
-        inputs.forEach(
-            function (input) {
-
-                if (!input) {
-                    return;
-                }
-
-
-                input.addEventListener(
-                    "keydown",
-                    function (event) {
-
-                        if (
-                            event.key === "Enter" &&
-                            !event.shiftKey
-                        ) {
-
-                            event.preventDefault();
-
-
-                            if (
-                                input.id ===
-                                "experimentAIQuestion"
-                            ) {
-
-                                askExperimentAI();
-
-                            } else {
-
-                                mainAIQuestion();
-                            }
-                        }
-                    }
-                );
-            }
-        );
-
-
-        console.log(
-            "ChemLab AI Tutor initialized successfully."
-        );
-    }
-);
 
 
 /* =========================================================
@@ -1373,7 +1306,9 @@ function loadQuizQuestion() {
 
 
     if (!questionData) {
+
         finishQuiz();
+
         return;
     }
 
@@ -1398,22 +1333,20 @@ function loadQuizQuestion() {
         $("quizFeedback");
 
 
-    if (questionElement) {
+    safeText(
+        questionElement,
+        questionData.question
+    );
 
-        questionElement.textContent =
-            questionData.question;
-    }
 
-
-    if (questionNumber) {
-
-        questionNumber.textContent =
-            `Question ${
-                chemLabState.currentQuestion + 1
-            } of ${
-                quizQuestions.length
-            }`;
-    }
+    safeText(
+        questionNumber,
+        `Question ${
+            chemLabState.currentQuestion + 1
+        } of ${
+            quizQuestions.length
+        }`
+    );
 
 
     if (feedback) {
@@ -1436,7 +1369,10 @@ function loadQuizQuestion() {
 
 
     questionData.options.forEach(
-        (option, index) => {
+        (
+            option,
+            index
+        ) => {
 
             const button =
                 document.createElement(
@@ -1529,7 +1465,10 @@ function answerQuiz(
 
 
     options.forEach(
-        (button, index) => {
+        (
+            button,
+            index
+        ) => {
 
             button.disabled =
                 true;
@@ -1619,47 +1558,40 @@ function finishQuiz() {
 
 
     const percentage =
-        Math.round(
-            (score / total) *
-            100
-        );
+        total > 0
+            ? Math.round(
+                (
+                    score /
+                    total
+                ) * 100
+            )
+            : 0;
 
 
-    const questionElement =
-        $("quizQuestion");
+    safeText(
+        $("quizQuestionNumber"),
+        "Quiz Complete"
+    );
+
+
+    safeText(
+        $("quizQuestion"),
+        `You scored ${score}/${total} (${percentage}%).`
+    );
 
 
     const optionsContainer =
         $("quizOptions");
 
 
-    const questionNumber =
-        $("quizQuestionNumber");
+    if (optionsContainer) {
+        optionsContainer.innerHTML =
+            "";
+    }
 
 
     const feedback =
         $("quizFeedback");
-
-
-    if (questionNumber) {
-
-        questionNumber.textContent =
-            "Quiz Complete";
-    }
-
-
-    if (questionElement) {
-
-        questionElement.textContent =
-            `You scored ${score}/${total} (${percentage}%).`;
-    }
-
-
-    if (optionsContainer) {
-
-        optionsContainer.innerHTML =
-            "";
-    }
 
 
     if (feedback) {
@@ -1744,7 +1676,7 @@ window.addXP =
 
 
 /* =========================================================
-   PROGRESS DISPLAY
+   PROGRESS
    ========================================================= */
 
 function updateProgressDisplay() {
@@ -1756,16 +1688,14 @@ function updateProgressDisplay() {
     const level =
         Math.max(
             1,
-            Math.floor(xp / 100) + 1
+            Math.floor(
+                xp / 100
+            ) + 1
         );
 
 
     const levelXP =
         xp % 100;
-
-
-    const progressPercent =
-        levelXP;
 
 
     safeText(
@@ -1811,21 +1741,14 @@ function updateProgressDisplay() {
     if (progressBar) {
 
         progressBar.style.width =
-            `${progressPercent}%`;
+            `${levelXP}%`;
     }
 
 
-    const progressText =
-        $("progressText");
-
-
-    if (progressText) {
-
-        progressText.textContent =
-            `${levelXP}/100 XP to Level ${
-                level + 1
-            }`;
-    }
+    safeText(
+        $("progressText"),
+        `${levelXP}/100 XP to Level ${level + 1}`
+    );
 }
 
 
@@ -1864,15 +1787,20 @@ const advancedTitration = {
 
     initialized: false,
 
-    hclConcentration: 0.100,
+    hclConcentration:
+        0.100,
 
-    naohConcentration: 0.100,
+    naohConcentration:
+        0.100,
 
-    sampleVolume: 25,
+    sampleVolume:
+        25,
 
-    addedVolume: 0,
+    addedVolume:
+        0,
 
-    maxVolume: 60
+    maxVolume:
+        60
 };
 
 
@@ -1898,7 +1826,9 @@ function calculateAdvancedTitration(
 
     const volume =
         clamp(
-            Number(addedVolume) || 0,
+            Number(
+                addedVolume
+            ) || 0,
             0,
             advancedTitration.maxVolume
         );
@@ -1928,20 +1858,21 @@ function calculateAdvancedTitration(
 
 
     const equivalenceVolume =
-        (
-            hclMoles /
-            naoh
-        ) * 1000;
-
-
-    let pH;
-
-    let state;
+        naoh > 0
+            ? (
+                hclMoles /
+                naoh
+            ) * 1000
+            : 0;
 
 
     const difference =
         hclMoles -
         naohMoles;
+
+
+    let pH;
+    let state;
 
 
     if (
@@ -2024,14 +1955,16 @@ function calculateAdvancedTitration(
 
 
     const neutralizationProgress =
-        clamp(
-            (
-                naohMoles /
-                hclMoles
-            ) * 100,
-            0,
-            100
-        );
+        hclMoles > 0
+            ? clamp(
+                (
+                    naohMoles /
+                    hclMoles
+                ) * 100,
+                0,
+                100
+            )
+            : 0;
 
 
     return {
@@ -2054,7 +1987,8 @@ function calculateAdvancedTitration(
 
         ohMinusConcentration,
 
-        addedVolume: volume
+        addedVolume:
+            volume
     };
 }
 
@@ -2095,10 +2029,6 @@ function initializeAdvancedTitration() {
         !resetButton
     ) {
 
-        console.warn(
-            "Advanced titration controls were not found."
-        );
-
         return;
     }
 
@@ -2117,7 +2047,9 @@ function initializeAdvancedTitration() {
     if (hclInput) {
 
         advancedTitration.hclConcentration =
-            Number(hclInput.value) ||
+            Number(
+                hclInput.value
+            ) ||
             0.100;
 
 
@@ -2129,7 +2061,8 @@ function initializeAdvancedTitration() {
                     clamp(
                         Number(
                             hclInput.value
-                        ) || 0.100,
+                        ) ||
+                        0.100,
                         0.001,
                         5
                     );
@@ -2144,7 +2077,9 @@ function initializeAdvancedTitration() {
     if (naohInput) {
 
         advancedTitration.naohConcentration =
-            Number(naohInput.value) ||
+            Number(
+                naohInput.value
+            ) ||
             0.100;
 
 
@@ -2156,7 +2091,8 @@ function initializeAdvancedTitration() {
                     clamp(
                         Number(
                             naohInput.value
-                        ) || 0.100,
+                        ) ||
+                        0.100,
                         0.001,
                         5
                     );
@@ -2171,7 +2107,9 @@ function initializeAdvancedTitration() {
     if (sampleInput) {
 
         advancedTitration.sampleVolume =
-            Number(sampleInput.value) ||
+            Number(
+                sampleInput.value
+            ) ||
             25;
 
 
@@ -2183,7 +2121,8 @@ function initializeAdvancedTitration() {
                     clamp(
                         Number(
                             sampleInput.value
-                        ) || 25,
+                        ) ||
+                        25,
                         1,
                         100
                     );
@@ -2201,7 +2140,9 @@ function initializeAdvancedTitration() {
 
             advancedTitration.addedVolume =
                 clamp(
-                    Number(slider.value) || 0,
+                    Number(
+                        slider.value
+                    ) || 0,
                     0,
                     advancedTitration.maxVolume
                 );
@@ -2279,7 +2220,7 @@ function initializeAdvancedTitration() {
 
 
 /* =========================================================
-   UPDATE ADVANCED TITRATION
+   ADVANCED TITRATION UPDATE
    ========================================================= */
 
 function updateAdvancedTitration() {
@@ -2303,9 +2244,7 @@ function updateAdvancedTitration() {
         );
 
 
-    /* -----------------------------------------------------
-       BURETTE
-       ----------------------------------------------------- */
+    /* BURETTE */
 
     const buretteLiquid =
         $("advancedBuretteLiquid");
@@ -2335,9 +2274,7 @@ function updateAdvancedTitration() {
     );
 
 
-    /* -----------------------------------------------------
-       PH
-       ----------------------------------------------------- */
+    /* PH */
 
     safeText(
         $("advancedPhValue"),
@@ -2362,9 +2299,7 @@ function updateAdvancedTitration() {
     }
 
 
-    /* -----------------------------------------------------
-       FLASK
-       ----------------------------------------------------- */
+    /* FLASK */
 
     const solution =
         $("advancedSolution");
@@ -2396,9 +2331,7 @@ function updateAdvancedTitration() {
     }
 
 
-    /* -----------------------------------------------------
-       EQUIVALENCE
-       ----------------------------------------------------- */
+    /* EQUIVALENCE */
 
     safeText(
         $("advancedEquivalence"),
@@ -2445,21 +2378,17 @@ function updateAdvancedTitration() {
     }
 
 
-    /* -----------------------------------------------------
-       INDICATOR
-       ----------------------------------------------------- */
+    /* INDICATOR */
 
     safeText(
         $("advancedIndicatorStatus"),
-        result.pH >= 8.2
+        result.pH >= PHENOLPHTHALEIN_ENDPOINT
             ? "🌸 Pink"
             : "⚪ Colorless"
     );
 
 
-    /* -----------------------------------------------------
-       CHEMICAL VALUES
-       ----------------------------------------------------- */
+    /* CHEMICAL VALUES */
 
     safeText(
         $("advancedHplus"),
@@ -2521,10 +2450,6 @@ function updateAdvancedTitration() {
         )
     );
 
-
-    /* -----------------------------------------------------
-       CHART
-       ----------------------------------------------------- */
 
     drawAdvancedTitrationChart();
 }
@@ -2615,11 +2540,10 @@ function explainAdvancedTitration() {
     }
 
 
-    if (explanationText) {
-
-        explanationText.textContent =
-            explanation;
-    }
+    safeText(
+        explanationText,
+        explanation
+    );
 
 
     explanationBox.style.display =
@@ -2645,39 +2569,57 @@ function openAdvancedTitration() {
         $("advancedTitrationPage");
 
 
+    if (!advancedPage) {
+
+        console.error(
+            "ChemLab: advancedTitrationPage was not found."
+        );
+
+        return;
+    }
+
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page => {
+
+            page.classList.remove(
+                "active"
+            );
+
+            page.style.display =
+                "";
+        });
+
+
     if (premiumSection) {
 
         premiumSection.style.display =
-            "none";
+            "";
     }
 
 
-    if (advancedPage) {
-
-        document
-            .querySelectorAll(".page")
-            .forEach(page => {
-
-                page.classList.remove(
-                    "active"
-                );
-            });
+    advancedPage.classList.add(
+        "active"
+    );
 
 
-        advancedPage.classList.add(
-            "active"
-        );
+    advancedPage.style.display =
+        "";
 
 
-        advancedPage.style.display =
-            "block";
+    chemLabState.currentPage =
+        "advancedTitrationPage";
 
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
+    chemLabState.currentExperiment =
+        "advanced-titration";
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 
 
     initializeAdvancedTitration();
@@ -2708,10 +2650,6 @@ function closeAdvancedTitration() {
         $("advancedTitrationPage");
 
 
-    const premiumSection =
-        $("premiumSection");
-
-
     if (advancedPage) {
 
         advancedPage.classList.remove(
@@ -2721,13 +2659,6 @@ function closeAdvancedTitration() {
 
         advancedPage.style.display =
             "none";
-    }
-
-
-    if (premiumSection) {
-
-        premiumSection.style.display =
-            "";
     }
 
 
@@ -2833,6 +2764,10 @@ function calculateCurvePH(
 }
 
 
+/* =========================================================
+   DRAW ADVANCED CHART
+   ========================================================= */
+
 function drawAdvancedTitrationChart() {
 
     const canvas =
@@ -2845,7 +2780,9 @@ function drawAdvancedTitrationChart() {
 
 
     const context =
-        canvas.getContext("2d");
+        canvas.getContext(
+            "2d"
+        );
 
 
     if (!context) {
@@ -2881,13 +2818,17 @@ function drawAdvancedTitrationChart() {
 
 
     canvas.width =
-        width *
-        devicePixelRatio;
+        Math.round(
+            width *
+            devicePixelRatio
+        );
 
 
     canvas.height =
-        height *
-        devicePixelRatio;
+        Math.round(
+            height *
+            devicePixelRatio
+        );
 
 
     context.setTransform(
@@ -2908,7 +2849,8 @@ function drawAdvancedTitrationChart() {
     );
 
 
-    const padding = 45;
+    const padding =
+        45;
 
 
     const graphWidth =
@@ -2923,12 +2865,11 @@ function drawAdvancedTitrationChart() {
         30;
 
 
-    /* -----------------------------------------------------
-       BACKGROUND
-       ----------------------------------------------------- */
+    /* BACKGROUND */
 
     context.fillStyle =
         "#ffffff";
+
 
     context.fillRect(
         0,
@@ -2938,12 +2879,11 @@ function drawAdvancedTitrationChart() {
     );
 
 
-    /* -----------------------------------------------------
-       GRID
-       ----------------------------------------------------- */
+    /* GRID */
 
     context.strokeStyle =
         "#e5e7eb";
+
 
     context.lineWidth =
         1;
@@ -2959,17 +2899,20 @@ function drawAdvancedTitrationChart() {
             padding +
             graphHeight -
             (
-                pH / 14
+                pH /
+                14
             ) *
             graphHeight;
 
 
         context.beginPath();
 
+
         context.moveTo(
             padding,
             y
         );
+
 
         context.lineTo(
             padding +
@@ -2977,17 +2920,21 @@ function drawAdvancedTitrationChart() {
             y
         );
 
+
         context.stroke();
 
 
         context.fillStyle =
             "#4b5563";
 
+
         context.font =
             "11px Arial";
 
+
         context.textAlign =
             "right";
+
 
         context.fillText(
             String(pH),
@@ -3018,10 +2965,12 @@ function drawAdvancedTitrationChart() {
 
         context.beginPath();
 
+
         context.moveTo(
             x,
             padding
         );
+
 
         context.lineTo(
             x,
@@ -3029,17 +2978,21 @@ function drawAdvancedTitrationChart() {
             graphHeight
         );
 
+
         context.stroke();
 
 
         context.fillStyle =
             "#4b5563";
 
+
         context.font =
             "11px Arial";
 
+
         context.textAlign =
             "center";
+
 
         context.fillText(
             String(volume),
@@ -3051,12 +3004,11 @@ function drawAdvancedTitrationChart() {
     }
 
 
-    /* -----------------------------------------------------
-       AXES
-       ----------------------------------------------------- */
+    /* AXES */
 
     context.strokeStyle =
         "#111827";
+
 
     context.lineWidth =
         2;
@@ -3064,16 +3016,19 @@ function drawAdvancedTitrationChart() {
 
     context.beginPath();
 
+
     context.moveTo(
         padding,
         padding
     );
+
 
     context.lineTo(
         padding,
         padding +
         graphHeight
     );
+
 
     context.lineTo(
         padding +
@@ -3082,12 +3037,11 @@ function drawAdvancedTitrationChart() {
         graphHeight
     );
 
+
     context.stroke();
 
 
-    /* -----------------------------------------------------
-       CURVE
-       ----------------------------------------------------- */
+    /* CURVE */
 
     const hcl =
         advancedTitration.hclConcentration;
@@ -3149,6 +3103,7 @@ function drawAdvancedTitrationChart() {
                 y
             );
 
+
             firstPoint =
                 false;
 
@@ -3165,15 +3120,15 @@ function drawAdvancedTitrationChart() {
     context.strokeStyle =
         "#3157d5";
 
+
     context.lineWidth =
         3;
+
 
     context.stroke();
 
 
-    /* -----------------------------------------------------
-       CURRENT POINT
-       ----------------------------------------------------- */
+    /* CURRENT POINT */
 
     const currentVolume =
         advancedTitration.addedVolume;
@@ -3209,6 +3164,7 @@ function drawAdvancedTitrationChart() {
 
     context.beginPath();
 
+
     context.arc(
         currentX,
         currentY,
@@ -3221,15 +3177,15 @@ function drawAdvancedTitrationChart() {
     context.fillStyle =
         "#dc2626";
 
+
     context.fill();
 
 
-    /* -----------------------------------------------------
-       AXIS LABELS
-       ----------------------------------------------------- */
+    /* AXIS LABELS */
 
     context.fillStyle =
         "#111827";
+
 
     context.font =
         "bold 12px Arial";
@@ -3282,29 +3238,50 @@ window.updateAdvancedTitrationChart =
 
 
 /* =========================================================
-   PREMIUM SECTION VISIBILITY
+   PREMIUM SECTION
    ========================================================= */
 
 function showPremiumSection() {
 
-    const premiumSection = $("premiumSection");
+    const premiumSection =
+        $("premiumSection");
+
 
     if (!premiumSection) {
-        console.error("ChemLab: premiumSection was not found.");
+
+        console.error(
+            "ChemLab: premiumSection was not found."
+        );
+
         return;
     }
 
-    // Hide every page
-    document.querySelectorAll(".page").forEach(page => {
-        page.classList.remove("active");
-        page.style.display = "";
-    });
 
-    // Show Premium as the active page
-    premiumSection.classList.add("active");
-    premiumSection.style.display = "";
+    document
+        .querySelectorAll(".page")
+        .forEach(page => {
 
-    chemLabState.currentPage = "premiumSection";
+            page.classList.remove(
+                "active"
+            );
+
+            page.style.display =
+                "";
+        });
+
+
+    premiumSection.classList.add(
+        "active"
+    );
+
+
+    premiumSection.style.display =
+        "";
+
+
+    chemLabState.currentPage =
+        "premiumSection";
+
 
     window.scrollTo({
         top: 0,
@@ -3312,11 +3289,198 @@ function showPremiumSection() {
     });
 }
 
-window.showPremiumSection = showPremiumSection;
+
+window.showPremiumSection =
+    showPremiumSection;
 
 
 /* =========================================================
-   KEYBOARD SUPPORT
+   INITIALIZE BUTTONS
+   ========================================================= */
+
+function initializeAppButtons() {
+
+    /* +1 mL */
+
+    const addOne =
+        $("add1ml");
+
+
+    if (
+        addOne &&
+        !addOne.dataset.chemlabBound
+    ) {
+
+        addOne.dataset.chemlabBound =
+            "true";
+
+
+        addOne.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                addTitrant(1);
+            }
+        );
+    }
+
+
+    /* +5 mL */
+
+    const addFive =
+        $("add5ml");
+
+
+    if (
+        addFive &&
+        !addFive.dataset.chemlabBound
+    ) {
+
+        addFive.dataset.chemlabBound =
+            "true";
+
+
+        addFive.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                addTitrant(5);
+            }
+        );
+    }
+
+
+    /* Advanced close */
+
+    const closeAdvanced =
+        $("closeAdvancedTitration");
+
+
+    if (
+        closeAdvanced &&
+        !closeAdvanced.dataset.chemlabBound
+    ) {
+
+        closeAdvanced.dataset.chemlabBound =
+            "true";
+
+
+        closeAdvanced.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                closeAdvancedTitration();
+            }
+        );
+    }
+
+
+    /* Advanced explain */
+
+    const explainButton =
+        $("advancedExplainButton");
+
+
+    if (
+        explainButton &&
+        !explainButton.dataset.chemlabBound
+    ) {
+
+        explainButton.dataset.chemlabBound =
+            "true";
+
+
+        explainButton.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                explainAdvancedTitration();
+            }
+        );
+    }
+}
+
+
+/* =========================================================
+   AI KEYBOARD SUPPORT
+   ========================================================= */
+
+function initializeAIKeyboard() {
+
+    const mainAIInput =
+        $("mainAIInput") ||
+        $("aiQuestion");
+
+
+    if (
+        mainAIInput &&
+        !mainAIInput.dataset.chemlabAIKey
+    ) {
+
+        mainAIInput.dataset.chemlabAIKey =
+            "true";
+
+
+        mainAIInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    mainAIQuestion();
+                }
+            }
+        );
+    }
+
+
+    const experimentAIInput =
+        $("experimentAIQuestion");
+
+
+    if (
+        experimentAIInput &&
+        !experimentAIInput.dataset.chemlabAIKey
+    ) {
+
+        experimentAIInput.dataset.chemlabAIKey =
+            "true";
+
+
+        experimentAIInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    askExperimentAI();
+                }
+            }
+        );
+    }
+}
+
+
+/* =========================================================
+   ESCAPE KEY
    ========================================================= */
 
 document.addEventListener(
@@ -3361,195 +3525,148 @@ document.addEventListener(
 
 
 /* =========================================================
-   INITIALIZATION
+   APPLICATION INITIALIZATION
    ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+function initializeChemLab() {
 
-        console.log(
-            "🧪 ChemLab application starting..."
-        );
+    console.log(
+        "🧪 ChemLab application starting..."
+    );
 
 
-        /* -------------------------------------------------
-           BASIC TITRATION
-           ------------------------------------------------- */
+    try {
 
         updateTitrationDisplay();
 
+    } catch (error) {
 
-        /* -------------------------------------------------
-           QUIZ
-           ------------------------------------------------- */
+        console.error(
+            "ChemLab: basic titration initialization failed.",
+            error
+        );
+    }
+
+
+    try {
 
         loadQuizQuestion();
 
+    } catch (error) {
 
-        /* -------------------------------------------------
-           PROGRESS
-           ------------------------------------------------- */
+        console.error(
+            "ChemLab: quiz initialization failed.",
+            error
+        );
+    }
+
+
+    try {
 
         updateProgressDisplay();
 
+    } catch (error) {
 
-        /* -------------------------------------------------
-           ADVANCED TITRATION
-           ------------------------------------------------- */
+        console.error(
+            "ChemLab: progress initialization failed.",
+            error
+        );
+    }
+
+
+    try {
 
         initializeAdvancedTitration();
 
+    } catch (error) {
 
-        /* -------------------------------------------------
-           ADVANCED CLOSE BUTTON
-           ------------------------------------------------- */
-
-        const closeAdvanced =
-            $("closeAdvancedTitration");
-
-
-        if (closeAdvanced) {
-
-            closeAdvanced.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    closeAdvancedTitration();
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           ADVANCED EXPLAIN BUTTON
-           ------------------------------------------------- */
-
-        const explainButton =
-            $("advancedExplainButton");
-
-
-        if (explainButton) {
-
-            explainButton.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    explainAdvancedTitration();
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           AI ENTER KEY
-           ------------------------------------------------- */
-
-        const mainAIInput =
-            $("mainAIInput") ||
-            $("aiQuestion");
-
-
-        if (mainAIInput) {
-
-            mainAIInput.addEventListener(
-                "keydown",
-                event => {
-
-                    if (
-                        event.key ===
-                        "Enter" &&
-                        !event.shiftKey
-                    ) {
-
-                        event.preventDefault();
-
-                        mainAIQuestion();
-                    }
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           EXPERIMENT AI ENTER KEY
-           ------------------------------------------------- */
-
-        const experimentAIInput =
-            $("experimentAIQuestion");
-
-
-        if (experimentAIInput) {
-
-            experimentAIInput.addEventListener(
-                "keydown",
-                event => {
-
-                    if (
-                        event.key ===
-                        "Enter" &&
-                        !event.shiftKey
-                    ) {
-
-                        event.preventDefault();
-
-                        askExperimentAI();
-                    }
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           +1 ML BUTTON
-           ------------------------------------------------- */
-
-        const addOne =
-            $("add1ml");
-
-
-        if (addOne) {
-
-            addOne.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    addTitrant(1);
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           +5 ML BUTTON
-           ------------------------------------------------- */
-
-        const addFive =
-            $("add5ml");
-
-
-        if (addFive) {
-
-            addFive.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    addTitrant(5);
-                }
-            );
-        }
-
-
-        console.log(
-            "🧪 ChemLab application ready."
+        console.error(
+            "ChemLab: advanced titration initialization failed.",
+            error
         );
     }
+
+
+    try {
+
+        initializeAppButtons();
+
+    } catch (error) {
+
+        console.error(
+            "ChemLab: button initialization failed.",
+            error
+        );
+    }
+
+
+    try {
+
+        initializeAIKeyboard();
+
+    } catch (error) {
+
+        console.error(
+            "ChemLab: AI keyboard initialization failed.",
+            error
+        );
+    }
+
+
+    console.log(
+        "🧪 ChemLab application ready."
+    );
+}
+
+
+/* =========================================================
+   DOM READY
+   ========================================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeChemLab,
+        {
+            once: true
+        }
+    );
+
+} else {
+
+    initializeChemLab();
+}
+
+
+/* =========================================================
+   GLOBAL EXPORTS
+   ========================================================= */
+
+window.chemLabState =
+    chemLabState;
+
+window.calculateTitration =
+    calculateTitration;
+
+window.updateTitrationDisplay =
+    updateTitrationDisplay;
+
+window.getIndicatorStatus =
+    getIndicatorStatus;
+
+window.initializeAdvancedTitration =
+    initializeAdvancedTitration;
+
+window.calculateAdvancedTitration =
+    calculateAdvancedTitration;
+
+window.calculateCurvePH =
+    calculateCurvePH;
+
+console.log(
+    "🧪 ChemLab app.js loaded successfully."
 );
