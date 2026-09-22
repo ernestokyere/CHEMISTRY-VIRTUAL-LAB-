@@ -1,54 +1,61 @@
 /* =========================================================
-   CHEMLAB — AUTHENTICATION + PREMIUM SYSTEM
-   Complete replacement auth.js
+   CHEMLAB AUTH + PREMIUM SYSTEM
    ========================================================= */
 
 
 /* =========================================================
    SUPABASE CONFIGURATION
-   ========================================================= */
+========================================================= */
 
 const SUPABASE_URL =
     "https://zscbgeaieiqwknhjxpnt.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
+const SUPABASE_KEY =
     "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy";
 
 
 /* =========================================================
    SUPABASE CLIENT
-   ========================================================= */
+========================================================= */
 
-let chemLabSupabase = null;
+let supabaseClient = null;
 
 
 function initializeSupabase() {
 
-    if (
-        window.supabase &&
-        typeof window.supabase.createClient ===
-            "function"
-    ) {
+    try {
 
-        chemLabSupabase =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLISHABLE_KEY
+        if (
+            typeof window.supabase === "undefined"
+        ) {
+
+            console.error(
+                "Supabase library was not loaded."
             );
 
-        console.log(
-            "✅ ChemLab Supabase initialized."
+            return null;
+        }
+
+
+        supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        return supabaseClient;
+
+
+    } catch (error) {
+
+        console.error(
+            "Supabase initialization error:",
+            error
         );
 
-        return true;
+        return null;
     }
-
-
-    console.error(
-        "❌ Supabase library was not loaded before auth.js."
-    );
-
-    return false;
 }
 
 
@@ -56,325 +63,20 @@ initializeSupabase();
 
 
 /* =========================================================
-   SUPABASE READY CHECK
-   ========================================================= */
+   SUPABASE READY
+========================================================= */
 
 function supabaseReady() {
 
-    return !!chemLabSupabase;
-}
-
-
-/* =========================================================
-   HELPER
-   ========================================================= */
-
-function getElement(id) {
-
-    return document.getElementById(id);
-}
-
-
-/* =========================================================
-   SIGN UP
-   ========================================================= */
-
-async function signUpStudent(
-    fullName,
-    email,
-    password
-) {
-
-    if (!supabaseReady()) {
-
-        return {
-            success: false,
-            message:
-                "ChemLab authentication is not ready. Please refresh the page."
-        };
-    }
-
-
-    const cleanName =
-        String(fullName || "")
-            .trim();
-
-
-    const cleanEmail =
-        String(email || "")
-            .trim()
-            .toLowerCase();
-
-
-    if (
-        !cleanName ||
-        !cleanEmail ||
-        !password
-    ) {
-
-        return {
-            success: false,
-            message:
-                "Please complete all fields."
-        };
-    }
-
-
-    if (password.length < 6) {
-
-        return {
-            success: false,
-            message:
-                "Password must contain at least 6 characters."
-        };
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await chemLabSupabase.auth.signUp({
-                email: cleanEmail,
-
-                password: password,
-
-                options: {
-                    data: {
-                        full_name:
-                            cleanName
-                    }
-                }
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Sign up error:",
-                error
-            );
-
-            return {
-                success: false,
-                message:
-                    error.message
-            };
-        }
-
-
-        return {
-
-            success: true,
-
-            user:
-                data?.user ||
-                null,
-
-            session:
-                data?.session ||
-                null,
-
-            message:
-                data?.session
-                    ? "Account created successfully!"
-                    : "Account created. Please check your email to confirm your account."
-        };
-
-
-    } catch (error) {
-
-        console.error(
-            "Unexpected sign up error:",
-            error
-        );
-
-
-        return {
-            success: false,
-            message:
-                "Unable to create the account right now."
-        };
-    }
-}
-
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
-
-async function loginStudent(
-    email,
-    password
-) {
-
-    if (!supabaseReady()) {
-
-        return {
-            success: false,
-            message:
-                "ChemLab authentication is not ready. Please refresh the page."
-        };
-    }
-
-
-    const cleanEmail =
-        String(email || "")
-            .trim()
-            .toLowerCase();
-
-
-    if (
-        !cleanEmail ||
-        !password
-    ) {
-
-        return {
-            success: false,
-            message:
-                "Please enter your email and password."
-        };
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await chemLabSupabase.auth
-                .signInWithPassword({
-                    email:
-                        cleanEmail,
-
-                    password:
-                        password
-                });
-
-
-        if (error) {
-
-            console.error(
-                "Login error:",
-                error
-            );
-
-
-            return {
-                success: false,
-                message:
-                    error.message
-            };
-        }
-
-
-        return {
-
-            success: true,
-
-            user:
-                data?.user ||
-                null,
-
-            session:
-                data?.session ||
-                null,
-
-            message:
-                "Login successful."
-        };
-
-
-    } catch (error) {
-
-        console.error(
-            "Unexpected login error:",
-            error
-        );
-
-
-        return {
-            success: false,
-            message:
-                "Unable to sign in right now."
-        };
-    }
-}
-
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
-
-async function logoutStudent() {
-
-    if (!supabaseReady()) {
-
-        return {
-            success: false,
-            message:
-                "Authentication system is unavailable."
-        };
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await chemLabSupabase.auth
-                .signOut();
-
-
-        if (error) {
-
-            console.error(
-                "Logout error:",
-                error
-            );
-
-
-            return {
-                success: false,
-                message:
-                    error.message
-            };
-        }
-
-
-        return {
-
-            success: true,
-
-            message:
-                "You have been signed out."
-        };
-
-
-    } catch (error) {
-
-        console.error(
-            "Unexpected logout error:",
-            error
-        );
-
-
-        return {
-            success: false,
-            message:
-                "Unable to sign out."
-        };
-    }
+    return (
+        supabaseClient !== null
+    );
 }
 
 
 /* =========================================================
    GET CURRENT USER
-   ========================================================= */
+========================================================= */
 
 async function getCurrentUser() {
 
@@ -388,24 +90,21 @@ async function getCurrentUser() {
         const {
             data,
             error
-        } =
-            await chemLabSupabase.auth
-                .getUser();
+        } = await supabaseClient.auth.getUser();
 
 
         if (error) {
 
-            /*
-               getUser() may return an error when there
-               is no authenticated user. That is normal.
-            */
+            console.warn(
+                "Could not get current user:",
+                error
+            );
 
             return null;
         }
 
 
-        return data?.user ||
-            null;
+        return data?.user || null;
 
 
     } catch (error) {
@@ -415,15 +114,18 @@ async function getCurrentUser() {
             error
         );
 
-
         return null;
     }
 }
 
 
+window.getCurrentUser =
+    getCurrentUser;
+
+
 /* =========================================================
-   COMPATIBILITY ALIAS
-   ========================================================= */
+   ALIAS
+========================================================= */
 
 async function getCurrentStudent() {
 
@@ -431,14 +133,126 @@ async function getCurrentStudent() {
 }
 
 
-/* =========================================================
-   GET CURRENT SESSION
-   ========================================================= */
+window.getCurrentStudent =
+    getCurrentStudent;
 
-async function getCurrentSession() {
+
+/* =========================================================
+   SIGN UP
+========================================================= */
+
+async function signUpStudent(
+    fullName,
+    email,
+    password
+) {
 
     if (!supabaseReady()) {
-        return null;
+
+        return {
+
+            success: false,
+
+            message:
+                "Authentication service is unavailable."
+        };
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.signUp({
+
+            email:
+                email.trim(),
+
+            password:
+                password,
+
+            options: {
+
+                data: {
+
+                    full_name:
+                        fullName.trim()
+                }
+            }
+        });
+
+
+        if (error) {
+
+            return {
+
+                success: false,
+
+                message:
+                    error.message
+            };
+        }
+
+
+        return {
+
+            success: true,
+
+            user:
+                data?.user || null,
+
+            session:
+                data?.session || null,
+
+            message:
+                data?.session
+                    ? "Account created successfully."
+                    : "Account created. Please check your email to verify your account."
+        };
+
+
+    } catch (error) {
+
+        console.error(
+            "Sign up error:",
+            error
+        );
+
+
+        return {
+
+            success: false,
+
+            message:
+                "Could not create your account."
+        };
+    }
+}
+
+
+window.signUpStudent =
+    signUpStudent;
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function loginStudent(
+    email,
+    password
+) {
+
+    if (!supabaseReady()) {
+
+        return {
+
+            success: false,
+
+            message:
+                "Authentication service is unavailable."
+        };
     }
 
 
@@ -448,40 +262,118 @@ async function getCurrentSession() {
             data,
             error
         } =
-            await chemLabSupabase.auth
-                .getSession();
+            await supabaseClient.auth.signInWithPassword({
+
+                email:
+                    email.trim(),
+
+                password:
+                    password
+            });
 
 
         if (error) {
 
-            console.error(
-                "Session error:",
-                error
-            );
+            return {
 
-            return null;
+                success: false,
+
+                message:
+                    error.message
+            };
         }
 
 
-        return data?.session ||
-            null;
+        return {
+
+            success: true,
+
+            user:
+                data?.user || null,
+
+            session:
+                data?.session || null,
+
+            message:
+                "Signed in successfully."
+        };
 
 
     } catch (error) {
 
         console.error(
-            "Unexpected session error:",
+            "Login error:",
             error
         );
 
-        return null;
+
+        return {
+
+            success: false,
+
+            message:
+                "Could not sign in."
+        };
     }
 }
 
 
+window.loginStudent =
+    loginStudent;
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logoutStudent() {
+
+    if (!supabaseReady()) {
+        return false;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient.auth.signOut();
+
+
+        if (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+            return false;
+        }
+
+
+        return true;
+
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+window.logoutStudent =
+    logoutStudent;
+
+
 /* =========================================================
    PREMIUM STATUS
-   ========================================================= */
+========================================================= */
 
 async function getPremiumStatus() {
 
@@ -526,10 +418,10 @@ async function getPremiumStatus() {
     try {
 
         const {
-            data,
+            data: profile,
             error
         } =
-            await chemLabSupabase
+            await supabaseClient
                 .from("profiles")
                 .select(
                     "is_premium, premium_expires_at"
@@ -543,11 +435,10 @@ async function getPremiumStatus() {
 
         if (error) {
 
-            console.error(
-                "Premium profile query error:",
+            console.warn(
+                "Premium profile lookup error:",
                 error
             );
-
 
             return {
 
@@ -564,107 +455,93 @@ async function getPremiumStatus() {
         }
 
 
-        let isPremium =
-            data?.is_premium === true;
+        const isPremiumFlag =
+            profile?.is_premium === true;
 
 
-        let expiresAt =
-            data?.premium_expires_at ||
+        const expiresAt =
+            profile?.premium_expires_at ||
             null;
 
 
+        let isPremium =
+            isPremiumFlag;
+
+
         /*
-           If there is an expiry date, make sure
-           Premium has not expired.
+           If an expiry date exists, make sure it
+           has not already passed.
         */
 
-        if (
-            isPremium &&
-            expiresAt
-        ) {
+        if (expiresAt) {
 
             const expiry =
-                new Date(
-                    expiresAt
-                );
+                new Date(expiresAt);
 
 
             if (
-                Number.isNaN(
+                !Number.isNaN(
                     expiry.getTime()
-                )
-            ) {
-
-                isPremium =
-                    false;
-
-            } else if (
+                ) &&
                 expiry <= new Date()
             ) {
 
-                isPremium =
-                    false;
+                isPremium = false;
             }
         }
 
 
+        let plan = null;
+
+
         /*
-           Find the active subscription.
+           Only look for subscription information
+           when the profile says the student is premium.
         */
-
-        let plan =
-            null;
-
 
         if (isPremium) {
 
-            const {
-                data:
-                    subscriptionData,
-                error:
-                    subscriptionError
-            } =
-                await chemLabSupabase
-                    .from("subscriptions")
-                    .select(
-                        "plan, expires_at, status, created_at"
-                    )
-                    .eq(
-                        "user_id",
-                        user.id
-                    )
-                    .eq(
-                        "status",
-                        "active"
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending:
-                                false
-                        }
-                    )
-                    .limit(1)
-                    .maybeSingle();
+            try {
+
+                const {
+                    data: subscription
+                } =
+                    await supabaseClient
+                        .from("subscriptions")
+                        .select(
+                            "plan, expires_at, status, created_at"
+                        )
+                        .eq(
+                            "user_id",
+                            user.id
+                        )
+                        .eq(
+                            "status",
+                            "active"
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        )
+                        .limit(1)
+                        .maybeSingle();
 
 
-            if (
-                !subscriptionError &&
-                subscriptionData
-            ) {
+                if (subscription) {
 
-                plan =
-                    subscriptionData.plan ||
-                    null;
-
-
-                if (
-                    subscriptionData.expires_at
-                ) {
-
-                    expiresAt =
-                        subscriptionData.expires_at;
+                    plan =
+                        subscription.plan ||
+                        null;
                 }
+
+            } catch (subscriptionError) {
+
+                console.warn(
+                    "Subscription lookup failed:",
+                    subscriptionError
+                );
             }
         }
 
@@ -673,24 +550,20 @@ async function getPremiumStatus() {
 
             loggedIn: true,
 
-            isPremium:
-                isPremium,
+            isPremium: isPremium,
 
-            premium:
-                isPremium,
+            premium: isPremium,
 
-            expiresAt:
-                expiresAt,
+            expiresAt: expiresAt,
 
-            plan:
-                plan
+            plan: plan
         };
 
 
     } catch (error) {
 
         console.error(
-            "Unexpected premium status error:",
+            "Premium status error:",
             error
         );
 
@@ -711,23 +584,23 @@ async function getPremiumStatus() {
 }
 
 
+window.getPremiumStatus =
+    getPremiumStatus;
+
+
 /* =========================================================
-   FORMAT DATE
-   ========================================================= */
+   FORMAT PREMIUM DATE
+========================================================= */
 
-function formatPremiumDate(
-    dateString
-) {
+function formatPremiumDate(dateValue) {
 
-    if (!dateString) {
+    if (!dateValue) {
         return "—";
     }
 
 
     const date =
-        new Date(
-            dateString
-        );
+        new Date(dateValue);
 
 
     if (
@@ -743,143 +616,100 @@ function formatPremiumDate(
     return date.toLocaleDateString(
         undefined,
         {
-            year:
-                "numeric",
-
-            month:
-                "long",
-
-            day:
-                "numeric"
+            year: "numeric",
+            month: "long",
+            day: "numeric"
         }
     );
 }
 
 
+window.formatPremiumDate =
+    formatPremiumDate;
+
+
 /* =========================================================
    AUTH MODAL
-   ========================================================= */
+========================================================= */
+
+let authMode =
+    "login";
+
 
 function openAuthModal(
     mode = "login"
 ) {
 
-    const modal =
-        getElement(
-            "authModal"
-        );
-
-
-    if (!modal) {
-
-        console.error(
-            "authModal was not found."
-        );
-
-        return;
-    }
-
-
-    const title =
-        getElement(
-            "authTitle"
-        );
-
-
-    const subtitle =
-        getElement(
-            "authSubtitle"
-        );
-
-
-    const nameField =
-        getElement(
-            "nameField"
-        );
-
-
-    const nameInput =
-        getElement(
-            "authName"
-        );
-
-
-    const emailInput =
-        getElement(
-            "authEmail"
-        );
-
-
-    const passwordInput =
-        getElement(
-            "authPassword"
-        );
-
-
-    const submitButton =
-        getElement(
-            "authSubmit"
-        );
-
-
-    const switchText =
-        getElement(
-            "authSwitchText"
-        );
-
-
-    const switchButton =
-        getElement(
-            "authSwitch"
-        );
-
-
-    const message =
-        getElement(
-            "authMessage"
-        );
-
-
-    const selectedMode =
+    authMode =
         mode === "signup"
             ? "signup"
             : "login";
 
 
-    modal.dataset.mode =
-        selectedMode;
+    const modal =
+        document.getElementById(
+            "authModal"
+        );
 
 
-    modal.classList.add(
-        "active"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    if (message) {
-        message.textContent =
-            "";
+    if (!modal) {
+        return;
     }
 
 
-    if (selectedMode === "signup") {
+    const title =
+        document.getElementById(
+            "authTitle"
+        );
+
+
+    const subtitle =
+        document.getElementById(
+            "authSubtitle"
+        );
+
+
+    const nameField =
+        document.getElementById(
+            "nameField"
+        );
+
+
+    const submit =
+        document.getElementById(
+            "authSubmit"
+        );
+
+
+    const switchText =
+        document.getElementById(
+            "authSwitchText"
+        );
+
+
+    const switchButton =
+        document.getElementById(
+            "authSwitch"
+        );
+
+
+    const message =
+        document.getElementById(
+            "authMessage"
+        );
+
+
+    if (authMode === "signup") {
 
         if (title) {
-
             title.textContent =
                 "Create Your Account";
         }
 
 
         if (subtitle) {
-
             subtitle.textContent =
-                "Start exploring ChemLab.";
+                "Create a ChemLab student account.";
         }
 
 
@@ -891,38 +721,32 @@ function openAuthModal(
         }
 
 
-        if (submitButton) {
-
-            submitButton.textContent =
+        if (submit) {
+            submit.textContent =
                 "Create Account";
         }
 
 
         if (switchText) {
-
             switchText.textContent =
                 "Already have an account?";
         }
 
 
         if (switchButton) {
-
             switchButton.textContent =
                 "Sign In";
         }
 
-
     } else {
 
         if (title) {
-
             title.textContent =
                 "Welcome Back";
         }
 
 
         if (subtitle) {
-
             subtitle.textContent =
                 "Sign in to continue learning.";
         }
@@ -936,43 +760,60 @@ function openAuthModal(
         }
 
 
-        if (submitButton) {
-
-            submitButton.textContent =
+        if (submit) {
+            submit.textContent =
                 "Sign In";
         }
 
 
         if (switchText) {
-
             switchText.textContent =
                 "Don't have an account?";
         }
 
 
         if (switchButton) {
-
             switchButton.textContent =
                 "Create Account";
         }
     }
 
 
-    /*
-       Clear password whenever the modal opens.
-    */
+    if (message) {
 
-    if (passwordInput) {
-
-        passwordInput.value =
+        message.textContent =
             "";
+
+        message.className =
+            "auth-message";
     }
 
 
-    if (emailInput) {
+    modal.classList.add(
+        "open"
+    );
 
-        emailInput.focus();
-    }
+    modal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    setTimeout(
+        function () {
+
+            const email =
+                document.getElementById(
+                    "authEmail"
+                );
+
+            if (email) {
+                email.focus();
+            }
+
+        },
+        100
+    );
 }
 
 
@@ -982,12 +823,12 @@ window.openAuthModal =
 
 /* =========================================================
    CLOSE AUTH MODAL
-   ========================================================= */
+========================================================= */
 
 function closeAuthModal() {
 
     const modal =
-        getElement(
+        document.getElementById(
             "authModal"
         );
 
@@ -998,7 +839,7 @@ function closeAuthModal() {
 
 
     modal.classList.remove(
-        "active"
+        "open"
     );
 
 
@@ -1014,42 +855,33 @@ window.closeAuthModal =
 
 
 /* =========================================================
-   UPDATE LOGIN BUTTON
-   ========================================================= */
+   AUTH BUTTON
+========================================================= */
 
 function updateAuthButton(
     user
 ) {
 
-    const loginButton =
-        getElement(
+    const button =
+        document.getElementById(
             "loginButton"
         );
 
 
-    if (!loginButton) {
+    if (!button) {
         return;
     }
 
 
     if (user) {
 
-        loginButton.textContent =
+        button.textContent =
             "👤 Account";
-
-
-        loginButton.dataset.loggedIn =
-            "true";
-
 
     } else {
 
-        loginButton.textContent =
+        button.textContent =
             "👤 Sign In";
-
-
-        loginButton.dataset.loggedIn =
-            "false";
     }
 }
 
@@ -1059,124 +891,105 @@ window.updateAuthButton =
 
 
 /* =========================================================
-   AUTH SUBMISSION
-   ========================================================= */
+   AUTH MESSAGE
+========================================================= */
 
-async function handleAuthSubmit() {
+function showAuthMessage(
+    message,
+    type = "error"
+) {
 
-    const modal =
-        getElement(
-            "authModal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    const nameInput =
-        getElement(
-            "authName"
-        );
-
-
-    const emailInput =
-        getElement(
-            "authEmail"
-        );
-
-
-    const passwordInput =
-        getElement(
-            "authPassword"
-        );
-
-
-    const message =
-        getElement(
+    const element =
+        document.getElementById(
             "authMessage"
         );
 
 
-    const submitButton =
-        getElement(
+    if (!element) {
+        return;
+    }
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        `auth-message ${type}`;
+}
+
+
+/* =========================================================
+   HANDLE AUTH SUBMIT
+========================================================= */
+
+async function handleAuthSubmit() {
+
+    const email =
+        document.getElementById(
+            "authEmail"
+        )?.value.trim();
+
+
+    const password =
+        document.getElementById(
+            "authPassword"
+        )?.value;
+
+
+    const name =
+        document.getElementById(
+            "authName"
+        )?.value.trim();
+
+
+    const submit =
+        document.getElementById(
             "authSubmit"
         );
 
 
-    const mode =
-        modal.dataset.mode ||
-        "login";
+    if (!email || !password) {
 
-
-    const name =
-        nameInput?.value.trim() ||
-        "";
-
-
-    const email =
-        emailInput?.value.trim() ||
-        "";
-
-
-    const password =
-        passwordInput?.value ||
-        "";
-
-
-    if (
-        !email ||
-        !password
-    ) {
-
-        if (message) {
-
-            message.textContent =
-                "Please enter your email and password.";
-        }
+        showAuthMessage(
+            "Please enter your email and password."
+        );
 
         return;
     }
 
 
     if (
-        mode === "signup" &&
+        authMode === "signup" &&
         !name
     ) {
 
-        if (message) {
-
-            message.textContent =
-                "Please enter your name.";
-        }
+        showAuthMessage(
+            "Please enter your full name."
+        );
 
         return;
     }
 
 
-    if (submitButton) {
+    if (submit) {
 
-        submitButton.disabled =
+        submit.disabled =
             true;
 
-
-        submitButton.textContent =
-            mode === "signup"
+        submit.textContent =
+            authMode === "signup"
                 ? "Creating Account..."
                 : "Signing In...";
     }
 
 
-    let result;
-
-
     try {
 
-        if (
-            mode ===
-            "signup"
-        ) {
+        let result;
+
+
+        if (authMode === "signup") {
 
             result =
                 await signUpStudent(
@@ -1195,92 +1008,92 @@ async function handleAuthSubmit() {
         }
 
 
+        if (!result.success) {
+
+            showAuthMessage(
+                result.message ||
+                "Authentication failed."
+            );
+
+            return;
+        }
+
+
+        if (authMode === "signup") {
+
+            showAuthMessage(
+                result.message,
+                "success"
+            );
+
+
+            if (result.session) {
+
+                setTimeout(
+                    closeAuthModal,
+                    700
+                );
+
+            } else {
+
+                /*
+                   Email confirmation may be enabled.
+                */
+
+                return;
+            }
+
+        } else {
+
+            closeAuthModal();
+
+
+            updateAuthButton(
+                result.user
+            );
+
+
+            showNotification(
+                "Welcome back to ChemLab!",
+                "success"
+            );
+
+
+            /*
+               Refresh account information.
+            */
+
+            await updateAccountUI();
+        }
+
+
     } catch (error) {
 
         console.error(
-            "Authentication error:",
+            "Authentication submit error:",
             error
         );
 
 
-        result = {
+        showAuthMessage(
+            error.message ||
+            "Something went wrong."
+        );
 
-            success: false,
+    } finally {
 
-            message:
-                "An unexpected authentication error occurred."
-        };
-    }
+        if (submit) {
 
-
-    if (submitButton) {
-
-        submitButton.disabled =
-            false;
+            submit.disabled =
+                false;
 
 
-        submitButton.textContent =
-            mode === "signup"
-                ? "Create Account"
-                : "Sign In";
-    }
-
-
-    if (
-        !result ||
-        !result.success
-    ) {
-
-        if (message) {
-
-            message.textContent =
-                result?.message ||
-                "Authentication failed.";
+            submit.textContent =
+                authMode === "signup"
+                    ? "Create Account"
+                    : "Sign In";
         }
-
-        return;
     }
-
-
-    if (message) {
-
-        message.textContent =
-            result.message;
-    }
-
-
-    /*
-       If email confirmation is required,
-       Supabase will return no session.
-    */
-
-    if (
-        mode === "signup" &&
-        !result.session
-    ) {
-
-        if (message) {
-
-            message.textContent =
-                "Account created. Please check your email and confirm your account before signing in.";
-        }
-
-        return;
-    }
-
-
-    closeAuthModal();
-
-
-    updateAuthButton(
-        result.user
-    );
-
-
-    showNotification(
-        "✅ Welcome to ChemLab!",
-        "success"
-    );
 }
 
 
@@ -1289,8 +1102,8 @@ window.handleAuthSubmit =
 
 
 /* =========================================================
-   ACCOUNT DASHBOARD
-   ========================================================= */
+   ACCOUNT MODAL
+========================================================= */
 
 async function openAccount() {
 
@@ -1309,88 +1122,162 @@ async function openAccount() {
 
 
     const modal =
-        getElement(
+        document.getElementById(
             "accountModal"
         );
 
 
-    const nameElement =
-        getElement(
+    if (!modal) {
+        return;
+    }
+
+
+    await updateAccountUI();
+
+
+    modal.classList.add(
+        "open"
+    );
+
+
+    modal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+}
+
+
+window.openAccount =
+    openAccount;
+
+
+/* =========================================================
+   CLOSE ACCOUNT
+========================================================= */
+
+function closeAccount() {
+
+    const modal =
+        document.getElementById(
+            "accountModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.remove(
+        "open"
+    );
+
+
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+}
+
+
+window.closeAccount =
+    closeAccount;
+
+
+/* =========================================================
+   UPDATE ACCOUNT UI
+========================================================= */
+
+async function updateAccountUI() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+        return;
+    }
+
+
+    const accountName =
+        document.getElementById(
             "accountName"
         );
 
 
-    const emailElement =
-        getElement(
+    const accountEmail =
+        document.getElementById(
             "accountEmail"
         );
 
 
-    const membershipStatus =
-        getElement(
-            "membershipStatus"
-        );
+    const metadata =
+        user.user_metadata ||
+        {};
 
 
-    const membershipIcon =
-        getElement(
-            "membershipIcon"
-        );
+    const name =
+        metadata.full_name ||
+        metadata.name ||
+        "Student";
 
 
-    const premiumAccountStatus =
-        getElement(
-            "premiumAccountStatus"
-        );
+    if (accountName) {
+
+        accountName.textContent =
+            name;
+    }
 
 
-    const premiumDetails =
-        getElement(
-            "premiumDetails"
-        );
+    if (accountEmail) {
 
-
-    const accountPlan =
-        getElement(
-            "accountPlan"
-        );
-
-
-    const accountExpiry =
-        getElement(
-            "accountExpiry"
-        );
-
-
-    const accountPremiumButton =
-        getElement(
-            "accountPremiumButton"
-        );
+        accountEmail.textContent =
+            user.email ||
+            "—";
+    }
 
 
     const status =
         await getPremiumStatus();
 
 
-    if (nameElement) {
-
-        nameElement.textContent =
-            user.user_metadata?.full_name ||
-            "Student";
-    }
+    const membershipStatus =
+        document.getElementById(
+            "membershipStatus"
+        );
 
 
-    if (emailElement) {
-
-        emailElement.textContent =
-            user.email ||
-            "—";
-    }
+    const membershipIcon =
+        document.getElementById(
+            "membershipIcon"
+        );
 
 
-    if (
-        status.isPremium
-    ) {
+    const premiumStatus =
+        document.getElementById(
+            "premiumAccountStatus"
+        );
+
+
+    const premiumDetails =
+        document.getElementById(
+            "premiumDetails"
+        );
+
+
+    const accountPlan =
+        document.getElementById(
+            "accountPlan"
+        );
+
+
+    const accountExpiry =
+        document.getElementById(
+            "accountExpiry"
+        );
+
+
+    if (status.isPremium) {
 
         if (membershipStatus) {
 
@@ -1406,13 +1293,10 @@ async function openAccount() {
         }
 
 
-        if (premiumAccountStatus) {
+        if (premiumStatus) {
 
-            premiumAccountStatus.innerHTML =
-                `
-                <strong>👑 Premium Active</strong>
-                <span>You have access to ChemLab Premium.</span>
-                `;
+            premiumStatus.innerHTML =
+                "<strong>👑 Premium Active</strong><span>Your ChemLab Premium access is active.</span>";
         }
 
 
@@ -1427,16 +1311,8 @@ async function openAccount() {
         if (accountPlan) {
 
             accountPlan.textContent =
-                status.plan
-                    ? String(
-                        status.plan
-                    )
-                        .charAt(0)
-                        .toUpperCase() +
-                      String(
-                        status.plan
-                    ).slice(1)
-                    : "Premium";
+                status.plan ||
+                "Premium";
         }
 
 
@@ -1447,14 +1323,6 @@ async function openAccount() {
                     status.expiresAt
                 );
         }
-
-
-        if (accountPremiumButton) {
-
-            accountPremiumButton.textContent =
-                "👑 Premium Active";
-        }
-
 
     } else {
 
@@ -1472,13 +1340,10 @@ async function openAccount() {
         }
 
 
-        if (premiumAccountStatus) {
+        if (premiumStatus) {
 
-            premiumAccountStatus.innerHTML =
-                `
-                <strong>🔒 Not Active</strong>
-                <span>Unlock advanced ChemLab features.</span>
-                `;
+            premiumStatus.innerHTML =
+                "<strong>🔒 Not Active</strong><span>Unlock advanced ChemLab features.</span>";
         }
 
 
@@ -1488,97 +1353,138 @@ async function openAccount() {
                 "hidden"
             );
         }
-
-
-        if (accountPremiumButton) {
-
-            accountPremiumButton.textContent =
-                "👑 Explore Premium";
-        }
-    }
-
-
-    if (modal) {
-
-        modal.classList.add(
-            "active"
-        );
-
-
-        modal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
     }
 }
 
 
-window.openAccount =
-    openAccount;
+window.updateAccountUI =
+    updateAccountUI;
 
 
 /* =========================================================
-   CLOSE ACCOUNT
-   ========================================================= */
+   OPEN PREMIUM PAGE
+========================================================= */
 
-function closeAccount() {
+async function openPremiumPage() {
 
-    const modal =
-        getElement(
-            "accountModal"
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        openAuthModal(
+            "login"
         );
 
-
-    if (!modal) {
         return;
     }
 
 
-    modal.classList.remove(
-        "active"
-    );
+    /*
+       This is the important fix:
+       Premium is a .page in your current index.html,
+       so we use showPage('premiumSection').
+    */
+
+    if (
+        typeof showPage ===
+        "function"
+    ) {
+
+        showPage(
+            "premiumSection"
+        );
+
+    } else {
+
+        const pages =
+            document.querySelectorAll(
+                ".page"
+            );
 
 
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
+        pages.forEach(
+            function (page) {
+
+                page.classList.remove(
+                    "active"
+                );
+
+                page.style.display =
+                    "none";
+            }
+        );
+
+
+        const premium =
+            document.getElementById(
+                "premiumSection"
+            );
+
+
+        if (premium) {
+
+            premium.classList.add(
+                "active"
+            );
+
+            premium.style.display =
+                "block";
+        }
+    }
+
+
+    /*
+       Scroll to the pricing section.
+    */
+
+    setTimeout(
+        function () {
+
+            const pricing =
+                document.querySelector(
+                    "#premiumSection .pricing-section"
+                );
+
+
+            if (pricing) {
+
+                pricing.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+
+        },
+        150
     );
 }
 
 
-window.closeAccount =
-    closeAccount;
+window.openPremiumPage =
+    openPremiumPage;
 
 
 /* =========================================================
    PREMIUM MODAL
-   ========================================================= */
+========================================================= */
 
 function openPremiumModal() {
 
     const modal =
-        getElement(
+        document.getElementById(
             "premiumModal"
         );
 
 
     if (!modal) {
-
-        console.error(
-            "premiumModal was not found in index.html."
-        );
-
-        showNotification(
-            "Premium window could not be opened.",
-            "error"
-        );
-
         return;
     }
 
 
     modal.classList.add(
-        "active"
+        "open"
     );
 
 
@@ -1595,12 +1501,12 @@ window.openPremiumModal =
 
 /* =========================================================
    CLOSE PREMIUM MODAL
-   ========================================================= */
+========================================================= */
 
 function closePremiumModal() {
 
     const modal =
-        getElement(
+        document.getElementById(
             "premiumModal"
         );
 
@@ -1611,7 +1517,7 @@ function closePremiumModal() {
 
 
     modal.classList.remove(
-        "active"
+        "open"
     );
 
 
@@ -1628,22 +1534,31 @@ window.closePremiumModal =
 
 /* =========================================================
    REQUEST PREMIUM PLAN
-   ========================================================= */
+========================================================= */
 
 async function requestPremiumPlan(
     plan
 ) {
 
-    const selectedPlan =
-        String(plan || "")
-            .toLowerCase();
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        closePremiumModal();
+
+        openAuthModal(
+            "login"
+        );
+
+        return;
+    }
 
 
     if (
-        selectedPlan !==
-            "monthly" &&
-        selectedPlan !==
-            "yearly"
+        plan !== "monthly" &&
+        plan !== "yearly"
     ) {
 
         showNotification(
@@ -1655,82 +1570,64 @@ async function requestPremiumPlan(
     }
 
 
-    const user =
-        await getCurrentUser();
-
-
-    if (!user) {
-
-        closePremiumModal();
-
-        openAuthModal(
-            "login"
-        );
-
-        return;
-    }
-
-
     const status =
         await getPremiumStatus();
 
 
-    if (
-        status.isPremium
-    ) {
-
-        showNotification(
-            "👑 Your Premium membership is already active.",
-            "premium"
-        );
-
-        return;
-    }
-
-
-    const session =
-        await getCurrentSession();
-
-
-    if (!session) {
+    if (status.isPremium) {
 
         closePremiumModal();
 
-        openAuthModal(
-            "login"
+        showNotification(
+            "Your Premium membership is already active.",
+            "success"
         );
+
 
         return;
     }
 
 
-    const button =
-        document.querySelector(
-            `.premium-plan-button[data-plan="${selectedPlan}"]`
+    if (!supabaseReady()) {
+
+        showNotification(
+            "Payment service is unavailable.",
+            "error"
         );
 
-
-    const originalText =
-        button?.textContent ||
-        "Continue";
-
-
-    if (button) {
-
-        button.disabled =
-            true;
-
-
-        button.textContent =
-            "Connecting to Paystack...";
+        return;
     }
 
 
     try {
 
-        console.log(
-            "Starting Premium payment:",
-            selectedPlan
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (
+            sessionError ||
+            !sessionData?.session
+        ) {
+
+            openAuthModal(
+                "login"
+            );
+
+            return;
+        }
+
+
+        const accessToken =
+            sessionData.session.access_token;
+
+
+        showNotification(
+            "Preparing your Paystack checkout...",
+            "success"
         );
 
 
@@ -1738,7 +1635,6 @@ async function requestPremiumPlan(
             await fetch(
                 `${SUPABASE_URL}/functions/v1/activate-premium`,
                 {
-
                     method:
                         "POST",
 
@@ -1748,29 +1644,34 @@ async function requestPremiumPlan(
                             "application/json",
 
                         "Authorization":
-                            `Bearer ${session.access_token}`,
+                            `Bearer ${accessToken}`,
 
                         "apikey":
-                            SUPABASE_PUBLISHABLE_KEY
+                            SUPABASE_KEY
                     },
 
                     body:
                         JSON.stringify({
                             plan:
-                                selectedPlan
+                                plan
                         })
                 }
             );
 
 
-        let result =
-            null;
+        const raw =
+            await response.text();
+
+
+        let data = null;
 
 
         try {
 
-            result =
-                await response.json();
+            data =
+                raw
+                    ? JSON.parse(raw)
+                    : null;
 
         } catch (error) {
 
@@ -1781,89 +1682,70 @@ async function requestPremiumPlan(
         }
 
 
-        console.log(
-            "Premium activation response:",
-            result
-        );
-
-
         if (!response.ok) {
 
             throw new Error(
-                result?.error ||
-                result?.message ||
+
+                data?.error ||
+
+                data?.message ||
+
                 `Payment initialization failed (${response.status}).`
             );
         }
 
 
-        const authorizationURL =
-            result?.authorization_url ||
-            result?.data?.authorization_url;
+        if (
+            !data?.authorization_url
+        ) {
 
+            console.error(
+                "Unexpected payment response:",
+                data
+            );
 
-        if (!authorizationURL) {
 
             throw new Error(
-                "Paystack did not return a payment URL."
+                "Paystack authorization link was not returned."
             );
         }
 
 
         /*
-           Save the reference so we can verify
-           the payment when the user returns.
+           Save reference so the return page can
+           verify the payment.
         */
 
-        const reference =
-            result?.reference ||
-            result?.data?.reference ||
-            null;
-
-
-        if (reference) {
+        if (data.reference) {
 
             sessionStorage.setItem(
-                "chemlab_paystack_reference",
-                reference
+                "chemlab_payment_reference",
+                data.reference
             );
         }
 
 
-        const subscriptionId =
-            result?.subscription_id ||
-            result?.data?.subscription_id ||
-            null;
-
-
-        if (subscriptionId) {
+        if (data.subscription_id) {
 
             sessionStorage.setItem(
                 "chemlab_subscription_id",
-                subscriptionId
+                data.subscription_id
             );
         }
 
 
-        /*
-           Save selected plan too.
-        */
-
         sessionStorage.setItem(
             "chemlab_selected_plan",
-            selectedPlan
+            plan
         );
 
 
-        closePremiumModal();
-
-
         /*
-           Redirect user to Paystack.
+           Redirect to Paystack.
         */
 
         window.location.href =
-            authorizationURL;
+            data.authorization_url;
 
 
     } catch (error) {
@@ -1875,23 +1757,10 @@ async function requestPremiumPlan(
 
 
         showNotification(
-            error?.message ||
-            "Unable to start Premium payment.",
+            error.message ||
+            "Could not start Premium payment.",
             "error"
         );
-
-
-    } finally {
-
-        if (button) {
-
-            button.disabled =
-                false;
-
-
-            button.textContent =
-                originalText;
-        }
     }
 }
 
@@ -1901,16 +1770,25 @@ window.requestPremiumPlan =
 
 
 /* =========================================================
-   PREMIUM EXPERIMENT ACCESS
-   ========================================================= */
+   HANDLE PREMIUM EXPERIMENT
+========================================================= */
 
 async function handlePremiumExperiment(
     button
 ) {
 
+    if (!button) {
+        return;
+    }
+
+
     const user =
         await getCurrentUser();
 
+
+    /*
+       Not logged in.
+    */
 
     if (!user) {
 
@@ -1926,56 +1804,25 @@ async function handlePremiumExperiment(
         await getPremiumStatus();
 
 
-    if (
-        !status.isPremium
-    ) {
+    /*
+       Student is logged in but not Premium.
+    */
 
-        showNotification(
-            "👑 Premium access is required for this experiment.",
-            "premium"
-        );
+    if (!status.isPremium) {
 
-
-        const premiumSection =
-            getElement(
-                "premiumSection"
-            );
-
-
-        if (premiumSection) {
-
-            premiumSection.scrollIntoView({
-                behavior:
-                    "smooth",
-
-                block:
-                    "start"
-            });
-        }
-
+        openPremiumPage();
 
         return;
     }
 
 
     const experiment =
-        button?.dataset?.experiment ||
-        "";
-
-
-    const normalized =
-        experiment
-            .toLowerCase()
-            .trim();
+        button.dataset.experiment;
 
 
     if (
-        normalized.includes(
-            "advanced acid-base titration"
-        ) ||
-        normalized.includes(
-            "advanced titration"
-        )
+        experiment ===
+        "Advanced Acid-Base Titration"
     ) {
 
         if (
@@ -1988,19 +1835,18 @@ async function handlePremiumExperiment(
         } else {
 
             showNotification(
-                "The Advanced Titration laboratory is not available. Please refresh the page.",
+                "Advanced Chemistry Lab is loading. Please try again.",
                 "error"
             );
         }
-
 
         return;
     }
 
 
     showNotification(
-        "👑 This Premium experiment is coming soon.",
-        "premium"
+        "This Premium experiment is not available yet.",
+        "error"
     );
 }
 
@@ -2011,14 +1857,9 @@ window.handlePremiumExperiment =
 
 /* =========================================================
    PAYSTACK RETURN
-   ========================================================= */
+========================================================= */
 
 async function handlePaystackReturn() {
-
-    if (!supabaseReady()) {
-        return;
-    }
-
 
     const params =
         new URLSearchParams(
@@ -2026,36 +1867,23 @@ async function handlePaystackReturn() {
         );
 
 
-    const paymentStatus =
+    const payment =
         params.get(
             "payment"
         );
 
 
-    const referenceFromURL =
+    const reference =
         params.get(
             "reference"
-        );
-
-
-    const savedReference =
+        ) ||
         sessionStorage.getItem(
-            "chemlab_paystack_reference"
+            "chemlab_payment_reference"
         );
 
-
-    const reference =
-        referenceFromURL ||
-        savedReference;
-
-
-    /*
-       If this doesn't look like a Paystack return,
-       don't do anything.
-    */
 
     if (
-        paymentStatus !== "success" &&
+        payment !== "success" &&
         !reference
     ) {
 
@@ -2063,104 +1891,42 @@ async function handlePaystackReturn() {
     }
 
 
-    if (!reference) {
+    const user =
+        await getCurrentUser();
 
-        console.warn(
-            "Paystack return detected, but no reference was found."
-        );
 
+    if (!user) {
         return;
     }
 
 
-    const session =
-        await getCurrentSession();
+    const {
+        data: sessionData
+    } =
+        await supabaseClient.auth.getSession();
 
 
-    if (!session) {
+    const accessToken =
+        sessionData?.session?.access_token;
 
-        console.warn(
-            "No active session for payment verification."
-        );
 
+    if (!accessToken) {
         return;
     }
-
-
-    const message =
-        document.createElement(
-            "div"
-        );
-
-
-    message.id =
-        "paymentVerificationMessage";
-
-
-    message.style.position =
-        "fixed";
-
-
-    message.style.top =
-        "20px";
-
-
-    message.style.left =
-        "50%";
-
-
-    message.style.transform =
-        "translateX(-50%)";
-
-
-    message.style.zIndex =
-        "99999";
-
-
-    message.style.padding =
-        "15px 22px";
-
-
-    message.style.borderRadius =
-        "12px";
-
-
-    message.style.background =
-        "#111827";
-
-
-    message.style.color =
-        "#ffffff";
-
-
-    message.style.fontWeight =
-        "600";
-
-
-    message.style.maxWidth =
-        "calc(100% - 30px)";
-
-
-    message.style.textAlign =
-        "center";
-
-
-    message.textContent =
-        "🔐 Verifying your Paystack payment...";
-
-
-    document.body.appendChild(
-        message
-    );
 
 
     try {
+
+        showNotification(
+            "Verifying your Premium payment...",
+            "success"
+        );
+
 
         const response =
             await fetch(
                 `${SUPABASE_URL}/functions/v1/verify-paystack-payment`,
                 {
-
                     method:
                         "POST",
 
@@ -2170,10 +1936,10 @@ async function handlePaystackReturn() {
                             "application/json",
 
                         "Authorization":
-                            `Bearer ${session.access_token}`,
+                            `Bearer ${accessToken}`,
 
                         "apikey":
-                            SUPABASE_PUBLISHABLE_KEY
+                            SUPABASE_KEY
                     },
 
                     body:
@@ -2185,47 +1951,27 @@ async function handlePaystackReturn() {
             );
 
 
-        let result =
-            null;
-
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (error) {
-
-            console.error(
-                "Verification JSON error:",
-                error
-            );
-        }
-
-
-        console.log(
-            "Payment verification result:",
-            result
-        );
+        const data =
+            await response.json();
 
 
         if (!response.ok) {
 
             throw new Error(
-                result?.error ||
-                result?.message ||
-                `Payment verification failed (${response.status}).`
+                data?.error ||
+                data?.message ||
+                "Payment verification failed."
             );
         }
 
 
         if (
-            result?.success &&
-            result?.premium
+            data?.success &&
+            data?.premium
         ) {
 
             sessionStorage.removeItem(
-                "chemlab_paystack_reference"
+                "chemlab_payment_reference"
             );
 
 
@@ -2239,16 +1985,14 @@ async function handlePaystackReturn() {
             );
 
 
-            message.textContent =
-                "🎉 Payment successful! ChemLab Premium is now active.";
-
-
-            message.style.background =
-                "#166534";
+            showNotification(
+                "🎉 ChemLab Premium is now active!",
+                "success"
+            );
 
 
             /*
-               Remove query parameters from URL.
+               Remove payment parameters from URL.
             */
 
             window.history.replaceState(
@@ -2258,87 +2002,32 @@ async function handlePaystackReturn() {
             );
 
 
-            const user =
-                await getCurrentUser();
+            await updateAccountUI();
 
-
-            updateAuthButton(
-                user
-            );
-
-
-            /*
-               Give the database a moment to settle
-               before refreshing Premium status.
-            */
 
             setTimeout(
-                async () => {
+                function () {
 
-                    const status =
-                        await getPremiumStatus();
-
-
-                    console.log(
-                        "Updated Premium status:",
-                        status
-                    );
-
-
-                    if (
-                        message.parentNode
-                    ) {
-
-                        message.remove();
-                    }
+                    openPremiumPage();
 
                 },
-                3000
+                800
             );
-
-
-            return;
         }
-
-
-        throw new Error(
-            result?.message ||
-            "Premium activation was not completed."
-        );
 
 
     } catch (error) {
 
         console.error(
-            "Payment verification error:",
+            "Paystack verification error:",
             error
         );
 
 
-        message.textContent =
-            "⚠️ " +
-            (
-                error?.message ||
-                "Payment verification failed."
-            );
-
-
-        message.style.background =
-            "#991b1b";
-
-
-        setTimeout(
-            () => {
-
-                if (
-                    message.parentNode
-                ) {
-
-                    message.remove();
-                }
-
-            },
-            7000
+        showNotification(
+            error.message ||
+            "Could not verify your payment.",
+            "error"
         );
     }
 }
@@ -2349,156 +2038,32 @@ window.handlePaystackReturn =
 
 
 /* =========================================================
-   AUTH STATE
-   ========================================================= */
-
-function setupAuthStateListener() {
-
-    if (!supabaseReady()) {
-        return;
-    }
-
-
-    chemLabSupabase.auth.onAuthStateChange(
-        (
-            event,
-            session
-        ) => {
-
-            console.log(
-                "ChemLab Auth State:",
-                event
-            );
-
-
-            const user =
-                session?.user ||
-                null;
-
-
-            updateAuthButton(
-                user
-            );
-
-
-            if (!user) {
-
-                closeAccount();
-
-                closePremiumModal();
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   DOM INITIALIZATION
-   ========================================================= */
+   DOM READY
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    async () => {
+    async function () {
 
         console.log(
-            "🧪 ChemLab authentication system starting..."
+            "ChemLab authentication system initialized."
         );
 
 
         /* -------------------------------------------------
-           ELEMENTS
-           ------------------------------------------------- */
+           LOGIN / ACCOUNT BUTTON
+        ------------------------------------------------- */
 
         const loginButton =
-            getElement(
+            document.getElementById(
                 "loginButton"
             );
 
 
-        const closeAuthButton =
-            getElement(
-                "closeAuthModal"
-            );
-
-
-        const authSubmit =
-            getElement(
-                "authSubmit"
-            );
-
-
-        const authSwitch =
-            getElement(
-                "authSwitch"
-            );
-
-
-        const authModal =
-            getElement(
-                "authModal"
-            );
-
-
-        const accountModal =
-            getElement(
-                "accountModal"
-            );
-
-
-        const closeAccountButton =
-            getElement(
-                "closeAccountModal"
-            );
-
-
-        const logoutButton =
-            getElement(
-                "logoutButton"
-            );
-
-
-        const accountPremiumButton =
-            getElement(
-                "accountPremiumButton"
-            );
-
-
-        const premiumModal =
-            getElement(
-                "premiumModal"
-            );
-
-
-        const closePremiumButton =
-            getElement(
-                "closePremiumModal"
-            );
-
-
-        const premiumUnlockButton =
-            getElement(
-                "premiumUnlockButton"
-            );
-
-
-        const startPremiumButton =
-            getElement(
-                "startPremiumButton"
-            );
-
-
-        /* -------------------------------------------------
-           LOGIN / ACCOUNT
-           ------------------------------------------------- */
-
         if (loginButton) {
 
-            loginButton.addEventListener(
-                "click",
-                async event => {
-
-                    event.preventDefault();
-
+            loginButton.onclick =
+                async function () {
 
                     const user =
                         await getCurrentUser();
@@ -2506,7 +2071,7 @@ document.addEventListener(
 
                     if (user) {
 
-                        await openAccount();
+                        openAccount();
 
                     } else {
 
@@ -2514,144 +2079,287 @@ document.addEventListener(
                             "login"
                         );
                     }
-                }
-            );
-
-        } else {
-
-            console.error(
-                "❌ loginButton was not found."
-            );
+                };
         }
 
 
         /* -------------------------------------------------
-           INITIAL AUTH STATE
-           ------------------------------------------------- */
+           AUTH MODAL CLOSE
+        ------------------------------------------------- */
 
-        if (
-            supabaseReady()
-        ) {
-
-            const user =
-                await getCurrentUser();
-
-
-            updateAuthButton(
-                user
+        const closeAuth =
+            document.getElementById(
+                "closeAuthModal"
             );
 
-        } else {
 
-            updateAuthButton(
-                null
-            );
+        if (closeAuth) {
+
+            closeAuth.onclick =
+                closeAuthModal;
         }
 
 
         /* -------------------------------------------------
-           CLOSE AUTH
-           ------------------------------------------------- */
+           AUTH SWITCH
+        ------------------------------------------------- */
 
-        if (closeAuthButton) {
-
-            closeAuthButton.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    closeAuthModal();
-                }
+        const authSwitch =
+            document.getElementById(
+                "authSwitch"
             );
-        }
 
-
-        /* -------------------------------------------------
-           SWITCH LOGIN / SIGNUP
-           ------------------------------------------------- */
 
         if (authSwitch) {
 
-            authSwitch.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-
-                    const mode =
-                        authModal?.dataset?.mode ||
-                        "login";
-
+            authSwitch.onclick =
+                function () {
 
                     openAuthModal(
-                        mode === "login"
+                        authMode === "login"
                             ? "signup"
                             : "login"
                     );
-                }
-            );
+                };
         }
 
 
         /* -------------------------------------------------
            AUTH SUBMIT
-           ------------------------------------------------- */
+        ------------------------------------------------- */
+
+        const authSubmit =
+            document.getElementById(
+                "authSubmit"
+            );
+
 
         if (authSubmit) {
 
-            authSubmit.addEventListener(
-                "click",
-                async event => {
-
-                    event.preventDefault();
-
-                    await handleAuthSubmit();
-                }
-            );
+            authSubmit.onclick =
+                handleAuthSubmit;
         }
 
 
         /* -------------------------------------------------
-           ENTER KEY
-           ------------------------------------------------- */
+           AUTH ENTER KEY
+        ------------------------------------------------- */
 
-        const passwordInput =
-            getElement(
-                "authPassword"
+        const authInputs =
+            document.querySelectorAll(
+                "#authModal input"
             );
 
 
-        if (passwordInput) {
+        authInputs.forEach(
+            function (input) {
 
-            passwordInput.addEventListener(
-                "keydown",
-                event => {
+                input.addEventListener(
+                    "keydown",
+                    function (event) {
 
-                    if (
-                        event.key ===
-                        "Enter"
-                    ) {
+                        if (
+                            event.key ===
+                            "Enter"
+                        ) {
+
+                            event.preventDefault();
+
+                            handleAuthSubmit();
+                        }
+                    }
+                );
+            }
+        );
+
+
+        /* -------------------------------------------------
+           ACCOUNT CLOSE
+        ------------------------------------------------- */
+
+        const closeAccountButton =
+            document.getElementById(
+                "closeAccountModal"
+            );
+
+
+        if (closeAccountButton) {
+
+            closeAccountButton.onclick =
+                closeAccount;
+        }
+
+
+        /* -------------------------------------------------
+           ACCOUNT PREMIUM BUTTON
+        ------------------------------------------------- */
+
+        const accountPremiumButton =
+            document.getElementById(
+                "accountPremiumButton"
+            );
+
+
+        if (accountPremiumButton) {
+
+            accountPremiumButton.onclick =
+                async function () {
+
+                    closeAccount();
+
+                    await openPremiumPage();
+                };
+        }
+
+
+        /* -------------------------------------------------
+           LOGOUT
+        ------------------------------------------------- */
+
+        const logoutButton =
+            document.getElementById(
+                "logoutButton"
+            );
+
+
+        if (logoutButton) {
+
+            logoutButton.onclick =
+                async function () {
+
+                    const success =
+                        await logoutStudent();
+
+
+                    if (success) {
+
+                        closeAccount();
+
+                        updateAuthButton(
+                            null
+                        );
+
+
+                        showNotification(
+                            "You have been signed out.",
+                            "success"
+                        );
+                    }
+                };
+        }
+
+
+        /* -------------------------------------------------
+           PREMIUM EXPERIMENT BUTTONS
+        ------------------------------------------------- */
+
+        const premiumExperimentButtons =
+            document.querySelectorAll(
+                ".premium-experiment-button"
+            );
+
+
+        premiumExperimentButtons.forEach(
+            function (button) {
+
+                button.onclick =
+                    function (event) {
 
                         event.preventDefault();
 
-                        handleAuthSubmit();
-                    }
-                }
+                        event.stopPropagation();
+
+                        handlePremiumExperiment(
+                            button
+                        );
+                    };
+            }
+        );
+
+
+        /* -------------------------------------------------
+           PREMIUM PLAN BUTTONS
+        ------------------------------------------------- */
+
+        const premiumPlanButtons =
+            document.querySelectorAll(
+                ".premium-plan-button"
             );
+
+
+        premiumPlanButtons.forEach(
+            function (button) {
+
+                button.onclick =
+                    function () {
+
+                        const plan =
+                            button.dataset.plan;
+
+
+                        requestPremiumPlan(
+                            plan
+                        );
+                    };
+            }
+        );
+
+
+        /* -------------------------------------------------
+           PREMIUM MODAL CLOSE
+        ------------------------------------------------- */
+
+        const closePremium =
+            document.getElementById(
+                "closePremiumModal"
+            );
+
+
+        if (closePremium) {
+
+            closePremium.onclick =
+                closePremiumModal;
         }
 
 
         /* -------------------------------------------------
-           AUTH BACKDROP
-           ------------------------------------------------- */
+           PREMIUM MODAL CONTINUE
+        ------------------------------------------------- */
+
+        const startPremiumButton =
+            document.getElementById(
+                "startPremiumButton"
+            );
+
+
+        if (startPremiumButton) {
+
+            startPremiumButton.onclick =
+                function () {
+
+                    showNotification(
+                        "Choose Monthly or Yearly to continue.",
+                        "success"
+                    );
+                };
+        }
+
+
+        /* -------------------------------------------------
+           BACKDROP CLOSE
+        ------------------------------------------------- */
+
+        const authModal =
+            document.getElementById(
+                "authModal"
+            );
+
 
         if (authModal) {
 
             authModal.addEventListener(
                 "click",
-                event => {
+                function (event) {
 
                     if (
                         event.target ===
@@ -2665,33 +2373,17 @@ document.addEventListener(
         }
 
 
-        /* -------------------------------------------------
-           CLOSE ACCOUNT
-           ------------------------------------------------- */
-
-        if (closeAccountButton) {
-
-            closeAccountButton.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    closeAccount();
-                }
+        const accountModal =
+            document.getElementById(
+                "accountModal"
             );
-        }
 
-
-        /* -------------------------------------------------
-           ACCOUNT BACKDROP
-           ------------------------------------------------- */
 
         if (accountModal) {
 
             accountModal.addEventListener(
                 "click",
-                event => {
+                function (event) {
 
                     if (
                         event.target ===
@@ -2705,170 +2397,17 @@ document.addEventListener(
         }
 
 
-        /* -------------------------------------------------
-           ACCOUNT PREMIUM
-           ------------------------------------------------- */
-
-        if (accountPremiumButton) {
-
-            accountPremiumButton.addEventListener(
-                "click",
-                async event => {
-
-                    event.preventDefault();
-
-
-                    const status =
-                        await getPremiumStatus();
-
-
-                    if (
-                        status.isPremium
-                    ) {
-
-                        showNotification(
-                            "👑 Your Premium membership is already active.",
-                            "premium"
-                        );
-
-                        return;
-                    }
-
-
-                    closeAccount();
-
-
-                    openPremiumModal();
-                }
+        const premiumModal =
+            document.getElementById(
+                "premiumModal"
             );
-        }
 
-
-        /* -------------------------------------------------
-           LOGOUT
-           ------------------------------------------------- */
-
-        if (logoutButton) {
-
-            logoutButton.addEventListener(
-                "click",
-                async event => {
-
-                    event.preventDefault();
-
-
-                    const result =
-                        await logoutStudent();
-
-
-                    if (!result.success) {
-
-                        showNotification(
-                            result.message,
-                            "error"
-                        );
-
-                        return;
-                    }
-
-
-                    closeAccount();
-
-
-                    closePremiumModal();
-
-
-                    updateAuthButton(
-                        null
-                    );
-
-
-                    showNotification(
-                        "You have been signed out.",
-                        "success"
-                    );
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           PREMIUM UNLOCK
-           ------------------------------------------------- */
-
-        if (premiumUnlockButton) {
-
-            premiumUnlockButton.addEventListener(
-                "click",
-                async event => {
-
-                    event.preventDefault();
-
-
-                    const user =
-                        await getCurrentUser();
-
-
-                    if (!user) {
-
-                        openAuthModal(
-                            "login"
-                        );
-
-                        return;
-                    }
-
-
-                    const status =
-                        await getPremiumStatus();
-
-
-                    if (
-                        status.isPremium
-                    ) {
-
-                        showNotification(
-                            "👑 Your Premium membership is already active.",
-                            "premium"
-                        );
-
-                        return;
-                    }
-
-
-                    openPremiumModal();
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           CLOSE PREMIUM
-           ------------------------------------------------- */
-
-        if (closePremiumButton) {
-
-            closePremiumButton.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    closePremiumModal();
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           PREMIUM BACKDROP
-           ------------------------------------------------- */
 
         if (premiumModal) {
 
             premiumModal.addEventListener(
                 "click",
-                event => {
+                function (event) {
 
                     if (
                         event.target ===
@@ -2883,73 +2422,57 @@ document.addEventListener(
 
 
         /* -------------------------------------------------
-           START PREMIUM
-           ------------------------------------------------- */
+           INITIAL AUTH STATE
+        ------------------------------------------------- */
 
-        if (startPremiumButton) {
-
-            startPremiumButton.addEventListener(
-                "click",
-                async event => {
-
-                    event.preventDefault();
+        const user =
+            await getCurrentUser();
 
 
-                    const user =
-                        await getCurrentUser();
+        updateAuthButton(
+            user
+        );
 
 
-                    if (!user) {
+        if (user) {
 
-                        closePremiumModal();
-
-                        openAuthModal(
-                            "login"
-                        );
-
-                        return;
-                    }
+            await updateAccountUI();
+        }
 
 
-                    const status =
-                        await getPremiumStatus();
+        /* -------------------------------------------------
+           AUTH STATE CHANGES
+        ------------------------------------------------- */
+
+        if (supabaseReady()) {
+
+            supabaseClient.auth.onAuthStateChange(
+                async function (
+                    event,
+                    session
+                ) {
+
+                    console.log(
+                        "Auth event:",
+                        event
+                    );
+
+
+                    const currentUser =
+                        session?.user ||
+                        null;
+
+
+                    updateAuthButton(
+                        currentUser
+                    );
 
 
                     if (
-                        status.isPremium
+                        currentUser
                     ) {
 
-                        showNotification(
-                            "👑 Your Premium membership is already active.",
-                            "premium"
-                        );
-
-                        return;
-                    }
-
-
-                    const firstPlan =
-                        document.querySelector(
-                            ".premium-plan-button[data-plan='monthly']"
-                        );
-
-
-                    if (firstPlan) {
-
-                        firstPlan.scrollIntoView({
-                            behavior:
-                                "smooth",
-
-                            block:
-                                "center"
-                        });
-
-                    } else {
-
-                        showNotification(
-                            "Please select a Premium plan.",
-                            "premium"
-                        );
+                        await updateAccountUI();
                     }
                 }
             );
@@ -2957,99 +2480,36 @@ document.addEventListener(
 
 
         /* -------------------------------------------------
-           PREMIUM PLAN BUTTONS
-           ------------------------------------------------- */
-
-        const premiumPlanButtons =
-            document.querySelectorAll(
-                ".premium-plan-button"
-            );
-
-
-        console.log(
-            "Premium plan buttons:",
-            premiumPlanButtons.length
-        );
-
-
-        premiumPlanButtons.forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    async event => {
-
-                        event.preventDefault();
-
-
-                        const plan =
-                            button.dataset.plan;
-
-
-                        await requestPremiumPlan(
-                            plan
-                        );
-                    }
-                );
-            }
-        );
-
-
-        /* -------------------------------------------------
-           PREMIUM EXPERIMENT BUTTONS
-           ------------------------------------------------- */
-
-        const experimentButtons =
-            document.querySelectorAll(
-                ".premium-experiment-button"
-            );
-
-
-        console.log(
-            "Premium experiment buttons:",
-            experimentButtons.length
-        );
-
-
-        experimentButtons.forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    async event => {
-
-                        event.preventDefault();
-
-
-                        await handlePremiumExperiment(
-                            button
-                        );
-                    }
-                );
-            }
-        );
-
-
-        /* -------------------------------------------------
-           AUTH STATE LISTENER
-           ------------------------------------------------- */
-
-        setupAuthStateListener();
-
-
-        /* -------------------------------------------------
-           PAYSTACK RETURN
-           ------------------------------------------------- */
+           PAYMENT RETURN
+        ------------------------------------------------- */
 
         await handlePaystackReturn();
 
+    }
+);
 
-        /* -------------------------------------------------
-           READY
-           ------------------------------------------------- */
 
-        console.log(
-            "✅ ChemLab authentication system ready."
-        );
+/* =========================================================
+   ESCAPE KEY
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key !==
+            "Escape"
+        ) {
+
+            return;
+        }
+
+
+        closeAuthModal();
+
+        closeAccount();
+
+        closePremiumModal();
     }
 );
