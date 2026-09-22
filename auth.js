@@ -1,11 +1,13 @@
 /* =========================================================
-   CHEMLAB AUTH + PREMIUM SYSTEM
+   CHEMLAB AUTH + PREMIUM
+   Clean single-file version
    ========================================================= */
 
+"use strict";
 
 /* =========================================================
-   SUPABASE CONFIGURATION
-========================================================= */
+   1. CONFIGURATION
+   ========================================================= */
 
 const SUPABASE_URL =
     "https://zscbgeaieiqwknhjxpnt.supabase.co";
@@ -13,1082 +15,678 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy";
 
+const AUTH_FUNCTION_URL =
+    `${SUPABASE_URL}/functions/v1/activate-premium`;
+
+const VERIFY_FUNCTION_URL =
+    `${SUPABASE_URL}/functions/v1/verify-paystack-payment`;
+
+const CHEMLAB_CALLBACK_URL =
+    "https://ernestokyere.github.io/CHEMISTRY-VIRTUAL-LAB-/";
+
 
 /* =========================================================
-   SUPABASE CLIENT
-========================================================= */
+   2. SUPABASE CLIENT
+   ========================================================= */
 
 let supabaseClient = null;
-
+let authMode = "signin";
+let authListenerRegistered = false;
 
 function initializeSupabase() {
 
-    try {
-
-        if (
-            typeof window.supabase === "undefined"
-        ) {
-
-            console.error(
-                "Supabase library was not loaded."
-            );
-
-            return null;
-        }
-
-
-        supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-
+    if (supabaseClient) {
         return supabaseClient;
-
-
-    } catch (error) {
-
-        console.error(
-            "Supabase initialization error:",
-            error
-        );
-
-        return null;
     }
-}
 
-
-initializeSupabase();
-
-
-/* =========================================================
-   SUPABASE READY
-========================================================= */
-
-function supabaseReady() {
-
-    return (
-        supabaseClient !== null
-    );
-}
-
-
-/* =========================================================
-   GET CURRENT USER
-========================================================= */
-
-async function getCurrentUser() {
-
-    if (!supabaseReady()) {
+    if (!window.supabase || !window.supabase.createClient) {
+        console.error("Supabase library was not loaded.");
         return null;
     }
 
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.getUser();
-
-
-        if (error) {
-
-            console.warn(
-                "Could not get current user:",
-                error
-            );
-
-            return null;
-        }
-
-
-        return data?.user || null;
-
-
-    } catch (error) {
-
-        console.error(
-            "Current user error:",
-            error
-        );
-
-        return null;
-    }
-}
-
-
-window.getCurrentUser =
-    getCurrentUser;
-
-
-/* =========================================================
-   ALIAS
-========================================================= */
-
-async function getCurrentStudent() {
-
-    return await getCurrentUser();
-}
-
-
-window.getCurrentStudent =
-    getCurrentStudent;
-
-
-/* =========================================================
-   SIGN UP
-========================================================= */
-
-async function signUpStudent(
-    fullName,
-    email,
-    password
-) {
-
-    if (!supabaseReady()) {
-
-        return {
-
-            success: false,
-
-            message:
-                "Authentication service is unavailable."
-        };
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.signUp({
-
-            email:
-                email.trim(),
-
-            password:
-                password,
-
-            options: {
-
-                data: {
-
-                    full_name:
-                        fullName.trim()
-                }
-            }
-        });
-
-
-        if (error) {
-
-            return {
-
-                success: false,
-
-                message:
-                    error.message
-            };
-        }
-
-
-        return {
-
-            success: true,
-
-            user:
-                data?.user || null,
-
-            session:
-                data?.session || null,
-
-            message:
-                data?.session
-                    ? "Account created successfully."
-                    : "Account created. Please check your email to verify your account."
-        };
-
-
-    } catch (error) {
-
-        console.error(
-            "Sign up error:",
-            error
-        );
-
-
-        return {
-
-            success: false,
-
-            message:
-                "Could not create your account."
-        };
-    }
-}
-
-
-window.signUpStudent =
-    signUpStudent;
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-async function loginStudent(
-    email,
-    password
-) {
-
-    if (!supabaseReady()) {
-
-        return {
-
-            success: false,
-
-            message:
-                "Authentication service is unavailable."
-        };
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.signInWithPassword({
-
-                email:
-                    email.trim(),
-
-                password:
-                    password
-            });
-
-
-        if (error) {
-
-            return {
-
-                success: false,
-
-                message:
-                    error.message
-            };
-        }
-
-
-        return {
-
-            success: true,
-
-            user:
-                data?.user || null,
-
-            session:
-                data?.session || null,
-
-            message:
-                "Signed in successfully."
-        };
-
-
-    } catch (error) {
-
-        console.error(
-            "Login error:",
-            error
-        );
-
-
-        return {
-
-            success: false,
-
-            message:
-                "Could not sign in."
-        };
-    }
-}
-
-
-window.loginStudent =
-    loginStudent;
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logoutStudent() {
-
-    if (!supabaseReady()) {
-        return false;
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient.auth.signOut();
-
-
-        if (error) {
-
-            console.error(
-                "Logout error:",
-                error
-            );
-
-            return false;
-        }
-
-
-        return true;
-
-
-    } catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-        return false;
-    }
-}
-
-
-window.logoutStudent =
-    logoutStudent;
-
-
-/* =========================================================
-   PREMIUM STATUS
-========================================================= */
-
-async function getPremiumStatus() {
-
-    const user =
-        await getCurrentUser();
-
-
-    if (!user) {
-
-        return {
-
-            loggedIn: false,
-
-            isPremium: false,
-
-            premium: false,
-
-            expiresAt: null,
-
-            plan: null
-        };
-    }
-
-
-    if (!supabaseReady()) {
-
-        return {
-
-            loggedIn: true,
-
-            isPremium: false,
-
-            premium: false,
-
-            expiresAt: null,
-
-            plan: null
-        };
-    }
-
-
-    try {
-
-        const {
-            data: profile,
-            error
-        } =
-            await supabaseClient
-                .from("profiles")
-                .select(
-                    "is_premium, premium_expires_at"
-                )
-                .eq(
-                    "id",
-                    user.id
-                )
-                .maybeSingle();
-
-
-        if (error) {
-
-            console.warn(
-                "Premium profile lookup error:",
-                error
-            );
-
-            return {
-
-                loggedIn: true,
-
-                isPremium: false,
-
-                premium: false,
-
-                expiresAt: null,
-
-                plan: null
-            };
-        }
-
-
-        const isPremiumFlag =
-            profile?.is_premium === true;
-
-
-        const expiresAt =
-            profile?.premium_expires_at ||
-            null;
-
-
-        let isPremium =
-            isPremiumFlag;
-
-
-        /*
-           If an expiry date exists, make sure it
-           has not already passed.
-        */
-
-        if (expiresAt) {
-
-            const expiry =
-                new Date(expiresAt);
-
-
-            if (
-                !Number.isNaN(
-                    expiry.getTime()
-                ) &&
-                expiry <= new Date()
-            ) {
-
-                isPremium = false;
-            }
-        }
-
-
-        let plan = null;
-
-
-        /*
-           Only look for subscription information
-           when the profile says the student is premium.
-        */
-
-        if (isPremium) {
-
-            try {
-
-                const {
-                    data: subscription
-                } =
-                    await supabaseClient
-                        .from("subscriptions")
-                        .select(
-                            "plan, expires_at, status, created_at"
-                        )
-                        .eq(
-                            "user_id",
-                            user.id
-                        )
-                        .eq(
-                            "status",
-                            "active"
-                        )
-                        .order(
-                            "created_at",
-                            {
-                                ascending: false
-                            }
-                        )
-                        .limit(1)
-                        .maybeSingle();
-
-
-                if (subscription) {
-
-                    plan =
-                        subscription.plan ||
-                        null;
-                }
-
-            } catch (subscriptionError) {
-
-                console.warn(
-                    "Subscription lookup failed:",
-                    subscriptionError
-                );
-            }
-        }
-
-
-        return {
-
-            loggedIn: true,
-
-            isPremium: isPremium,
-
-            premium: isPremium,
-
-            expiresAt: expiresAt,
-
-            plan: plan
-        };
-
-
-    } catch (error) {
-
-        console.error(
-            "Premium status error:",
-            error
-        );
-
-
-        return {
-
-            loggedIn: true,
-
-            isPremium: false,
-
-            premium: false,
-
-            expiresAt: null,
-
-            plan: null
-        };
-    }
-}
-
-
-window.getPremiumStatus =
-    getPremiumStatus;
-
-
-/* =========================================================
-   FORMAT PREMIUM DATE
-========================================================= */
-
-function formatPremiumDate(dateValue) {
-
-    if (!dateValue) {
-        return "—";
-    }
-
-
-    const date =
-        new Date(dateValue);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "—";
-    }
-
-
-    return date.toLocaleDateString(
-        undefined,
-        {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-        }
-    );
-}
-
-
-window.formatPremiumDate =
-    formatPremiumDate;
-
-
-/* =========================================================
-   AUTH MODAL
-========================================================= */
-
-let authMode =
-    "login";
-
-
-function openAuthModal(
-    mode = "login"
-) {
-
-    authMode =
-        mode === "signup"
-            ? "signup"
-            : "login";
-
-
-    const modal =
-        document.getElementById(
-            "authModal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    const title =
-        document.getElementById(
-            "authTitle"
-        );
-
-
-    const subtitle =
-        document.getElementById(
-            "authSubtitle"
-        );
-
-
-    const nameField =
-        document.getElementById(
-            "nameField"
-        );
-
-
-    const submit =
-        document.getElementById(
-            "authSubmit"
-        );
-
-
-    const switchText =
-        document.getElementById(
-            "authSwitchText"
-        );
-
-
-    const switchButton =
-        document.getElementById(
-            "authSwitch"
-        );
-
-
-    const message =
-        document.getElementById(
-            "authMessage"
-        );
-
-
-    if (authMode === "signup") {
-
-        if (title) {
-            title.textContent =
-                "Create Your Account";
-        }
-
-
-        if (subtitle) {
-            subtitle.textContent =
-                "Create a ChemLab student account.";
-        }
-
-
-        if (nameField) {
-
-            nameField.classList.remove(
-                "hidden"
-            );
-        }
-
-
-        if (submit) {
-            submit.textContent =
-                "Create Account";
-        }
-
-
-        if (switchText) {
-            switchText.textContent =
-                "Already have an account?";
-        }
-
-
-        if (switchButton) {
-            switchButton.textContent =
-                "Sign In";
-        }
-
-    } else {
-
-        if (title) {
-            title.textContent =
-                "Welcome Back";
-        }
-
-
-        if (subtitle) {
-            subtitle.textContent =
-                "Sign in to continue learning.";
-        }
-
-
-        if (nameField) {
-
-            nameField.classList.add(
-                "hidden"
-            );
-        }
-
-
-        if (submit) {
-            submit.textContent =
-                "Sign In";
-        }
-
-
-        if (switchText) {
-            switchText.textContent =
-                "Don't have an account?";
-        }
-
-
-        if (switchButton) {
-            switchButton.textContent =
-                "Create Account";
-        }
-    }
-
-
-    if (message) {
-
-        message.textContent =
-            "";
-
-        message.className =
-            "auth-message";
-    }
-
-
-    modal.classList.add(
-        "open"
+    supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
 
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    setTimeout(
-        function () {
-
-            const email =
-                document.getElementById(
-                    "authEmail"
-                );
-
-            if (email) {
-                email.focus();
-            }
-
-        },
-        100
-    );
+    return supabaseClient;
 }
 
 
-window.openAuthModal =
-    openAuthModal;
-
-
 /* =========================================================
-   CLOSE AUTH MODAL
-========================================================= */
+   3. BASIC HELPERS
+   ========================================================= */
 
-function closeAuthModal() {
-
-    const modal =
-        document.getElementById(
-            "authModal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    modal.classList.remove(
-        "open"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+function getElement(id) {
+    return document.getElementById(id);
 }
 
+function showAuthMessage(message, type = "info") {
 
-window.closeAuthModal =
-    closeAuthModal;
-
-
-/* =========================================================
-   AUTH BUTTON
-========================================================= */
-
-function updateAuthButton(
-    user
-) {
-
-    const button =
-        document.getElementById(
-            "loginButton"
-        );
-
-
-    if (!button) {
-        return;
-    }
-
-
-    if (user) {
-
-        button.textContent =
-            "👤 Account";
-
-    } else {
-
-        button.textContent =
-            "👤 Sign In";
-    }
-}
-
-
-window.updateAuthButton =
-    updateAuthButton;
-
-
-/* =========================================================
-   AUTH MESSAGE
-========================================================= */
-
-function showAuthMessage(
-    message,
-    type = "error"
-) {
-
-    const element =
-        document.getElementById(
-            "authMessage"
-        );
-
+    const element = getElement("authMessage");
 
     if (!element) {
         return;
     }
 
+    element.textContent = message;
+    element.className = "auth-message";
 
-    element.textContent =
-        message;
+    if (type === "error") {
+        element.classList.add("error");
+    }
 
+    if (type === "success") {
+        element.classList.add("success");
+    }
+}
 
-    element.className =
-        `auth-message ${type}`;
+function showAuthNotification(message, type = "info") {
+
+    if (typeof window.showNotification === "function") {
+        window.showNotification(message, type);
+        return;
+    }
+
+    const notification = getElement("notification");
+
+    if (!notification) {
+        console.log(message);
+        return;
+    }
+
+    notification.textContent = message;
+    notification.hidden = false;
+
+    clearTimeout(window.__chemLabNotificationTimer);
+
+    window.__chemLabNotificationTimer = setTimeout(() => {
+        notification.hidden = true;
+    }, 4000);
+}
+
+function formatDate(dateValue) {
+
+    if (!dateValue) {
+        return "—";
+    }
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+        return "—";
+    }
+
+    return date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
 }
 
 
 /* =========================================================
-   HANDLE AUTH SUBMIT
-========================================================= */
+   4. CURRENT USER
+   ========================================================= */
 
-async function handleAuthSubmit() {
+async function getCurrentUser() {
 
-    const email =
-        document.getElementById(
-            "authEmail"
-        )?.value.trim();
+    const client = initializeSupabase();
 
-
-    const password =
-        document.getElementById(
-            "authPassword"
-        )?.value;
-
-
-    const name =
-        document.getElementById(
-            "authName"
-        )?.value.trim();
-
-
-    const submit =
-        document.getElementById(
-            "authSubmit"
-        );
-
-
-    if (!email || !password) {
-
-        showAuthMessage(
-            "Please enter your email and password."
-        );
-
-        return;
+    if (!client) {
+        return null;
     }
-
-
-    if (
-        authMode === "signup" &&
-        !name
-    ) {
-
-        showAuthMessage(
-            "Please enter your full name."
-        );
-
-        return;
-    }
-
-
-    if (submit) {
-
-        submit.disabled =
-            true;
-
-        submit.textContent =
-            authMode === "signup"
-                ? "Creating Account..."
-                : "Signing In...";
-    }
-
 
     try {
 
-        let result;
+        const {
+            data,
+            error
+        } = await client.auth.getUser();
 
+        if (error) {
+            console.error("Could not get current user:", error);
+            return null;
+        }
+
+        return data?.user || null;
+
+    } catch (error) {
+
+        console.error("getCurrentUser error:", error);
+        return null;
+    }
+}
+
+async function getCurrentStudent() {
+    return await getCurrentUser();
+}
+
+
+/* =========================================================
+   5. SIGN UP
+   ========================================================= */
+
+async function signUpStudent(fullName, email, password) {
+
+    const client = initializeSupabase();
+
+    if (!client) {
+        return {
+            success: false,
+            error: "Supabase is not available."
+        };
+    }
+
+    const cleanName = String(fullName || "").trim();
+    const cleanEmail = String(email || "").trim().toLowerCase();
+
+    if (!cleanName) {
+        return {
+            success: false,
+            error: "Please enter your full name."
+        };
+    }
+
+    if (!cleanEmail) {
+        return {
+            success: false,
+            error: "Please enter your email."
+        };
+    }
+
+    if (!password || password.length < 6) {
+        return {
+            success: false,
+            error: "Password must be at least 6 characters."
+        };
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await client.auth.signUp({
+            email: cleanEmail,
+            password: password,
+            options: {
+                data: {
+                    full_name: cleanName
+                }
+            }
+        });
+
+        if (error) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+
+        return {
+            success: true,
+            user: data?.user || null,
+            session: data?.session || null
+        };
+
+    } catch (error) {
+
+        console.error("signUpStudent error:", error);
+
+        return {
+            success: false,
+            error: error.message || "Unable to create account."
+        };
+    }
+}
+
+
+/* =========================================================
+   6. LOGIN
+   ========================================================= */
+
+async function loginStudent(email, password) {
+
+    const client = initializeSupabase();
+
+    if (!client) {
+        return {
+            success: false,
+            error: "Supabase is not available."
+        };
+    }
+
+    const cleanEmail = String(email || "").trim().toLowerCase();
+
+    if (!cleanEmail || !password) {
+        return {
+            success: false,
+            error: "Please enter your email and password."
+        };
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await client.auth.signInWithPassword({
+            email: cleanEmail,
+            password: password
+        });
+
+        if (error) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+
+        return {
+            success: true,
+            user: data?.user || null,
+            session: data?.session || null
+        };
+
+    } catch (error) {
+
+        console.error("loginStudent error:", error);
+
+        return {
+            success: false,
+            error: error.message || "Unable to sign in."
+        };
+    }
+}
+
+
+/* =========================================================
+   7. LOGOUT
+   ========================================================= */
+
+async function logoutStudent() {
+
+    const client = initializeSupabase();
+
+    if (!client) {
+        return;
+    }
+
+    try {
+
+        const { error } = await client.auth.signOut();
+
+        if (error) {
+            console.error("Logout error:", error);
+            showAuthNotification(error.message, "error");
+            return;
+        }
+
+        closeAccountModal();
+
+        updateAuthUI(null);
+
+        showAuthNotification(
+            "You have been signed out.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error("logoutStudent error:", error);
+
+        showAuthNotification(
+            "Unable to sign out.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   8. PREMIUM STATUS
+   ========================================================= */
+
+async function getPremiumStatus() {
+
+    const client = initializeSupabase();
+
+    if (!client) {
+        return {
+            loggedIn: false,
+            isPremium: false,
+            premium: false,
+            expiresAt: null,
+            plan: null
+        };
+    }
+
+    try {
+
+        const user = await getCurrentUser();
+
+        if (!user) {
+
+            return {
+                loggedIn: false,
+                isPremium: false,
+                premium: false,
+                expiresAt: null,
+                plan: null
+            };
+        }
+
+        const {
+            data: profile,
+            error: profileError
+        } = await client
+            .from("profiles")
+            .select("is_premium, premium_expires_at")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (profileError) {
+            console.error(
+                "Premium profile lookup failed:",
+                profileError
+            );
+        }
+
+        const expiresAt =
+            profile?.premium_expires_at || null;
+
+        const expiryTime =
+            expiresAt
+                ? new Date(expiresAt).getTime()
+                : 0;
+
+        const notExpired =
+            !expiresAt ||
+            expiryTime > Date.now();
+
+        const isPremium =
+            profile?.is_premium === true &&
+            notExpired;
+
+        let plan = null;
+
+        if (isPremium) {
+
+            const {
+                data: subscription,
+                error: subscriptionError
+            } = await client
+                .from("subscriptions")
+                .select("plan, expires_at, created_at")
+                .eq("user_id", user.id)
+                .eq("status", "active")
+                .order("created_at", {
+                    ascending: false
+                })
+                .limit(1)
+                .maybeSingle();
+
+            if (subscriptionError) {
+
+                console.warn(
+                    "Subscription lookup failed:",
+                    subscriptionError
+                );
+
+            } else {
+
+                plan = subscription?.plan || null;
+            }
+        }
+
+        return {
+            loggedIn: true,
+            isPremium: isPremium,
+            premium: isPremium,
+            expiresAt: expiresAt,
+            plan: plan
+        };
+
+    } catch (error) {
+
+        console.error(
+            "getPremiumStatus error:",
+            error
+        );
+
+        return {
+            loggedIn: true,
+            isPremium: false,
+            premium: false,
+            expiresAt: null,
+            plan: null
+        };
+    }
+}
+
+
+/* =========================================================
+   9. AUTH MODAL
+   ========================================================= */
+
+function openAuthModal(mode = "signin") {
+
+    const modal = getElement("authModal");
+
+    if (!modal) {
+        return;
+    }
+
+    authMode =
+        mode === "signup"
+            ? "signup"
+            : "signin";
+
+    updateAuthModal();
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+
+    const email = getElement("authEmail");
+
+    if (email) {
+        setTimeout(() => email.focus(), 100);
+    }
+}
+
+function closeAuthModal() {
+
+    const modal = getElement("authModal");
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+
+    showAuthMessage("");
+}
+
+function updateAuthModal() {
+
+    const title = getElement("authTitle");
+    const subtitle = getElement("authSubtitle");
+    const nameField = getElement("nameField");
+    const submit = getElement("authSubmit");
+    const switchText = getElement("authSwitchText");
+    const switchButton = getElement("authSwitch");
+
+    const signup = authMode === "signup";
+
+    if (title) {
+        title.textContent =
+            signup
+                ? "Create Your ChemLab Account"
+                : "Welcome Back";
+    }
+
+    if (subtitle) {
+        subtitle.textContent =
+            signup
+                ? "Create your student account to continue."
+                : "Sign in to continue learning.";
+    }
+
+    if (nameField) {
+        nameField.style.display =
+            signup ? "block" : "none";
+    }
+
+    if (submit) {
+        submit.textContent =
+            signup
+                ? "Create Account"
+                : "Sign In";
+    }
+
+    if (switchText) {
+        switchText.textContent =
+            signup
+                ? "Already have an account?"
+                : "Don't have an account?";
+    }
+
+    if (switchButton) {
+        switchButton.textContent =
+            signup
+                ? "Sign In"
+                : "Create one";
+    }
+
+    showAuthMessage("");
+}
+
+function switchAuthMode() {
+
+    authMode =
+        authMode === "signin"
+            ? "signup"
+            : "signin";
+
+    updateAuthModal();
+}
+
+
+/* =========================================================
+   10. AUTH SUBMIT
+   ========================================================= */
+
+async function submitAuthForm() {
+
+    const submitButton = getElement("authSubmit");
+
+    const name =
+        getElement("authName")?.value.trim() || "";
+
+    const email =
+        getElement("authEmail")?.value.trim() || "";
+
+    const password =
+        getElement("authPassword")?.value || "";
+
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent =
+            authMode === "signup"
+                ? "Creating..."
+                : "Signing in...";
+    }
+
+    showAuthMessage("Please wait...");
+
+    try {
 
         if (authMode === "signup") {
 
-            result =
+            const result =
                 await signUpStudent(
                     name,
                     email,
                     password
                 );
 
-        } else {
+            if (!result.success) {
 
-            result =
-                await loginStudent(
-                    email,
-                    password
+                showAuthMessage(
+                    result.error,
+                    "error"
                 );
-        }
-
-
-        if (!result.success) {
-
-            showAuthMessage(
-                result.message ||
-                "Authentication failed."
-            );
-
-            return;
-        }
-
-
-        if (authMode === "signup") {
-
-            showAuthMessage(
-                result.message,
-                "success"
-            );
-
-
-            if (result.session) {
-
-                setTimeout(
-                    closeAuthModal,
-                    700
-                );
-
-            } else {
-
-                /*
-                   Email confirmation may be enabled.
-                */
 
                 return;
             }
 
+            if (!result.session) {
+
+                showAuthMessage(
+                    "Account created. Check your email to confirm your account.",
+                    "success"
+                );
+
+            } else {
+
+                showAuthMessage(
+                    "Account created successfully.",
+                    "success"
+                );
+
+                closeAuthModal();
+            }
+
         } else {
 
-            closeAuthModal();
+            const result =
+                await loginStudent(
+                    email,
+                    password
+                );
 
+            if (!result.success) {
 
-            updateAuthButton(
-                result.user
-            );
+                showAuthMessage(
+                    result.error,
+                    "error"
+                );
 
+                return;
+            }
 
-            showNotification(
+            showAuthNotification(
                 "Welcome back to ChemLab!",
                 "success"
             );
 
+            closeAuthModal();
 
-            /*
-               Refresh account information.
-            */
-
+            await updateAuthUI(result.user);
             await updateAccountUI();
         }
-
 
     } catch (error) {
 
         console.error(
-            "Authentication submit error:",
+            "submitAuthForm error:",
             error
         );
 
-
         showAuthMessage(
             error.message ||
-            "Something went wrong."
+            "Something went wrong.",
+            "error"
         );
 
     } finally {
 
-        if (submit) {
+        if (submitButton) {
+            submitButton.disabled = false;
 
-            submit.disabled =
-                false;
-
-
-            submit.textContent =
+            submitButton.textContent =
                 authMode === "signup"
                     ? "Create Account"
                     : "Sign In";
@@ -1097,549 +695,357 @@ async function handleAuthSubmit() {
 }
 
 
-window.handleAuthSubmit =
-    handleAuthSubmit;
-
-
 /* =========================================================
-   ACCOUNT MODAL
-========================================================= */
+   11. AUTH UI
+   ========================================================= */
 
-async function openAccount() {
+async function updateAuthUI(user = undefined) {
 
-    const user =
-        await getCurrentUser();
+    if (user === undefined) {
+        user = await getCurrentUser();
+    }
 
+    const loginButton =
+        getElement("loginButton");
+
+    if (!loginButton) {
+        return;
+    }
 
     if (!user) {
 
-        openAuthModal(
-            "login"
-        );
+        loginButton.textContent =
+            "Sign In";
+
+        loginButton.onclick = () =>
+            openAuthModal("signin");
 
         return;
     }
 
+    const name =
+        user.user_metadata?.full_name ||
+        user.email?.split("@")[0] ||
+        "Account";
+
+    loginButton.textContent =
+        `👤 ${name}`;
+
+    loginButton.onclick =
+        openAccountModal;
+}
+
+
+/* =========================================================
+   12. ACCOUNT MODAL
+   ========================================================= */
+
+function openAccountModal() {
 
     const modal =
-        document.getElementById(
-            "accountModal"
-        );
-
+        getElement("accountModal");
 
     if (!modal) {
         return;
     }
 
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
 
-    await updateAccountUI();
-
-
-    modal.classList.add(
-        "open"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+    updateAccountUI();
 }
 
-
-window.openAccount =
-    openAccount;
-
-
-/* =========================================================
-   CLOSE ACCOUNT
-========================================================= */
-
-function closeAccount() {
+function closeAccountModal() {
 
     const modal =
-        document.getElementById(
-            "accountModal"
-        );
-
+        getElement("accountModal");
 
     if (!modal) {
         return;
     }
 
-
-    modal.classList.remove(
-        "open"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
 }
-
-
-window.closeAccount =
-    closeAccount;
-
-
-/* =========================================================
-   UPDATE ACCOUNT UI
-========================================================= */
 
 async function updateAccountUI() {
 
     const user =
         await getCurrentUser();
 
-
     if (!user) {
         return;
     }
 
-
-    const accountName =
-        document.getElementById(
-            "accountName"
-        );
-
-
-    const accountEmail =
-        document.getElementById(
-            "accountEmail"
-        );
-
-
-    const metadata =
-        user.user_metadata ||
-        {};
-
-
     const name =
-        metadata.full_name ||
-        metadata.name ||
+        user.user_metadata?.full_name ||
+        user.email?.split("@")[0] ||
         "Student";
 
+    const accountName =
+        getElement("accountName");
+
+    const accountEmail =
+        getElement("accountEmail");
 
     if (accountName) {
-
-        accountName.textContent =
-            name;
+        accountName.textContent = name;
     }
-
 
     if (accountEmail) {
-
         accountEmail.textContent =
-            user.email ||
-            "—";
+            user.email || "—";
     }
-
 
     const status =
         await getPremiumStatus();
 
-
     const membershipStatus =
-        document.getElementById(
-            "membershipStatus"
-        );
-
+        getElement("membershipStatus");
 
     const membershipIcon =
-        document.getElementById(
-            "membershipIcon"
-        );
+        getElement("membershipIcon");
 
-
-    const premiumStatus =
-        document.getElementById(
-            "premiumAccountStatus"
-        );
-
+    const premiumAccountStatus =
+        getElement("premiumAccountStatus");
 
     const premiumDetails =
-        document.getElementById(
-            "premiumDetails"
-        );
-
+        getElement("premiumDetails");
 
     const accountPlan =
-        document.getElementById(
-            "accountPlan"
-        );
-
+        getElement("accountPlan");
 
     const accountExpiry =
-        document.getElementById(
-            "accountExpiry"
-        );
+        getElement("accountExpiry");
 
+    const accountPremiumButton =
+        getElement("accountPremiumButton");
 
     if (status.isPremium) {
 
         if (membershipStatus) {
-
             membershipStatus.textContent =
                 "PREMIUM";
         }
 
-
         if (membershipIcon) {
-
-            membershipIcon.textContent =
-                "👑";
+            membershipIcon.textContent = "👑";
         }
 
-
-        if (premiumStatus) {
-
-            premiumStatus.innerHTML =
-                "<strong>👑 Premium Active</strong><span>Your ChemLab Premium access is active.</span>";
+        if (premiumAccountStatus) {
+            premiumAccountStatus.innerHTML =
+                "<strong>👑 Premium Active</strong>" +
+                "<span>You have access to ChemLab Premium.</span>";
         }
-
 
         if (premiumDetails) {
-
-            premiumDetails.classList.remove(
-                "hidden"
-            );
+            premiumDetails.classList.remove("hidden");
         }
-
 
         if (accountPlan) {
-
             accountPlan.textContent =
-                status.plan ||
-                "Premium";
+                status.plan
+                    ? status.plan.toUpperCase()
+                    : "PREMIUM";
         }
 
-
         if (accountExpiry) {
-
             accountExpiry.textContent =
-                formatPremiumDate(
-                    status.expiresAt
-                );
+                formatDate(status.expiresAt);
+        }
+
+        if (accountPremiumButton) {
+            accountPremiumButton.textContent =
+                "👑 Premium Active";
         }
 
     } else {
 
         if (membershipStatus) {
-
             membershipStatus.textContent =
                 "FREE";
         }
 
-
         if (membershipIcon) {
-
-            membershipIcon.textContent =
-                "🔒";
+            membershipIcon.textContent = "🔒";
         }
 
-
-        if (premiumStatus) {
-
-            premiumStatus.innerHTML =
-                "<strong>🔒 Not Active</strong><span>Unlock advanced ChemLab features.</span>";
+        if (premiumAccountStatus) {
+            premiumAccountStatus.innerHTML =
+                "<strong>🔒 Not active</strong>" +
+                "<span>Unlock advanced ChemLab features.</span>";
         }
-
 
         if (premiumDetails) {
+            premiumDetails.classList.add("hidden");
+        }
 
-            premiumDetails.classList.add(
-                "hidden"
-            );
+        if (accountPremiumButton) {
+            accountPremiumButton.textContent =
+                "👑 Explore Premium";
         }
     }
 }
 
 
-window.updateAccountUI =
-    updateAccountUI;
-
-
 /* =========================================================
-   OPEN PREMIUM PAGE
-========================================================= */
+   13. PREMIUM PAGE
+   ========================================================= */
 
-async function openPremiumPage() {
+function openPremiumPage() {
 
-    const user =
-        await getCurrentUser();
+    closePremiumModal();
+    closeAccountModal();
 
-
-    if (!user) {
-
-        openAuthModal(
-            "login"
-        );
-
-        return;
+    if (typeof window.showPage === "function") {
+        window.showPage("premiumSection");
     }
 
+    setTimeout(() => {
 
-    /*
-       This is the important fix:
-       Premium is a .page in your current index.html,
-       so we use showPage('premiumSection').
-    */
+        const section =
+            getElement("premiumSection");
 
-    if (
-        typeof showPage ===
-        "function"
-    ) {
-
-        showPage(
-            "premiumSection"
-        );
-
-    } else {
-
-        const pages =
-            document.querySelectorAll(
-                ".page"
-            );
-
-
-        pages.forEach(
-            function (page) {
-
-                page.classList.remove(
-                    "active"
-                );
-
-                page.style.display =
-                    "none";
-            }
-        );
-
-
-        const premium =
-            document.getElementById(
-                "premiumSection"
-            );
-
-
-        if (premium) {
-
-            premium.classList.add(
-                "active"
-            );
-
-            premium.style.display =
-                "block";
+        if (section) {
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
         }
-    }
 
-
-    /*
-       Scroll to the pricing section.
-    */
-
-    setTimeout(
-        function () {
-
-            const pricing =
-                document.querySelector(
-                    "#premiumSection .pricing-section"
-                );
-
-
-            if (pricing) {
-
-                pricing.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }
-
-        },
-        150
-    );
+    }, 100);
 }
 
 
-window.openPremiumPage =
-    openPremiumPage;
-
-
 /* =========================================================
-   PREMIUM MODAL
-========================================================= */
+   14. PREMIUM MODAL
+   ========================================================= */
 
 function openPremiumModal() {
 
     const modal =
-        document.getElementById(
-            "premiumModal"
-        );
-
+        getElement("premiumModal");
 
     if (!modal) {
+        openPremiumPage();
         return;
     }
 
-
-    modal.classList.add(
-        "open"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
 }
-
-
-window.openPremiumModal =
-    openPremiumModal;
-
-
-/* =========================================================
-   CLOSE PREMIUM MODAL
-========================================================= */
 
 function closePremiumModal() {
 
     const modal =
-        document.getElementById(
-            "premiumModal"
-        );
-
+        getElement("premiumModal");
 
     if (!modal) {
         return;
     }
 
-
-    modal.classList.remove(
-        "open"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
 }
 
 
-window.closePremiumModal =
-    closePremiumModal;
-
-
 /* =========================================================
-   REQUEST PREMIUM PLAN
-========================================================= */
+   15. REQUEST PREMIUM PAYMENT
+   ========================================================= */
 
-async function requestPremiumPlan(
-    plan
-) {
+async function requestPremiumPlan(plan) {
+
+    const cleanPlan =
+        String(plan || "").toLowerCase();
+
+    if (
+        cleanPlan !== "monthly" &&
+        cleanPlan !== "yearly"
+    ) {
+        showAuthNotification(
+            "Invalid premium plan.",
+            "error"
+        );
+
+        return;
+    }
 
     const user =
         await getCurrentUser();
 
-
     if (!user) {
 
-        closePremiumModal();
-
-        openAuthModal(
-            "login"
-        );
-
-        return;
-    }
-
-
-    if (
-        plan !== "monthly" &&
-        plan !== "yearly"
-    ) {
-
-        showNotification(
-            "Please select a valid Premium plan.",
+        showAuthNotification(
+            "Please sign in before purchasing Premium.",
             "error"
         );
 
+        openAuthModal("signin");
         return;
     }
 
-
-    const status =
+    const premiumStatus =
         await getPremiumStatus();
 
+    if (premiumStatus.isPremium) {
 
-    if (status.isPremium) {
-
-        closePremiumModal();
-
-        showNotification(
+        showAuthNotification(
             "Your Premium membership is already active.",
             "success"
         );
 
-
+        openAccountModal();
         return;
     }
 
+    const client =
+        initializeSupabase();
 
-    if (!supabaseReady()) {
-
-        showNotification(
-            "Payment service is unavailable.",
+    if (!client) {
+        showAuthNotification(
+            "Supabase is not available.",
             "error"
         );
-
         return;
     }
 
+    showAuthNotification(
+        "Preparing secure payment...",
+        "info"
+    );
 
     try {
 
         const {
             data: sessionData,
             error: sessionError
-        } =
-            await supabaseClient.auth.getSession();
+        } = await client.auth.getSession();
 
+        if (sessionError) {
+            throw sessionError;
+        }
 
-        if (
-            sessionError ||
-            !sessionData?.session
-        ) {
+        const accessToken =
+            sessionData?.session?.access_token;
 
-            openAuthModal(
-                "login"
+        if (!accessToken) {
+
+            showAuthNotification(
+                "Your session has expired. Please sign in again.",
+                "error"
             );
 
+            openAuthModal("signin");
             return;
         }
 
-
-        const accessToken =
-            sessionData.session.access_token;
-
-
-        showNotification(
-            "Preparing your Paystack checkout...",
-            "success"
-        );
-
-
         const response =
             await fetch(
-                `${SUPABASE_URL}/functions/v1/activate-premium`,
+                AUTH_FUNCTION_URL,
                 {
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json",
 
@@ -1650,72 +1056,49 @@ async function requestPremiumPlan(
                             SUPABASE_KEY
                     },
 
-                    body:
-                        JSON.stringify({
-                            plan:
-                                plan
-                        })
+                    body: JSON.stringify({
+                        plan: cleanPlan
+                    })
                 }
             );
 
-
-        const raw =
+        const rawText =
             await response.text();
 
-
-        let data = null;
-
+        let data = {};
 
         try {
-
-            data =
-                raw
-                    ? JSON.parse(raw)
-                    : null;
-
-        } catch (error) {
-
-            console.error(
-                "Payment response JSON error:",
-                error
-            );
+            data = rawText
+                ? JSON.parse(rawText)
+                : {};
+        } catch {
+            data = {
+                error: rawText ||
+                    "Invalid server response."
+            };
         }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-
-                data?.error ||
-
-                data?.message ||
-
-                `Payment initialization failed (${response.status}).`
-            );
-        }
-
 
         if (
-            !data?.authorization_url
+            !response.ok ||
+            !data.authorization_url
         ) {
 
             console.error(
-                "Unexpected payment response:",
+                "Premium initialization failed:",
                 data
             );
 
-
             throw new Error(
-                "Paystack authorization link was not returned."
+                data.error ||
+                data.message ||
+                "Unable to start Premium payment."
             );
         }
 
-
         /*
-           Save reference so the return page can
-           verify the payment.
-        */
-
+         * Save only non-sensitive transaction information.
+         * Never store the Paystack secret key here.
+         */
         if (data.reference) {
 
             sessionStorage.setItem(
@@ -1723,7 +1106,6 @@ async function requestPremiumPlan(
                 data.reference
             );
         }
-
 
         if (data.subscription_id) {
 
@@ -1733,92 +1115,71 @@ async function requestPremiumPlan(
             );
         }
 
-
         sessionStorage.setItem(
-            "chemlab_selected_plan",
-            plan
+            "chemlab_payment_plan",
+            cleanPlan
         );
 
-
         /*
-           Redirect to Paystack.
-        */
-
-        window.location.href =
-            data.authorization_url;
-
+         * Paystack redirects the customer to the
+         * callback URL configured by the backend/dashboard.
+         */
+        window.location.assign(
+            data.authorization_url
+        );
 
     } catch (error) {
 
         console.error(
-            "Premium payment error:",
+            "requestPremiumPlan error:",
             error
         );
 
-
-        showNotification(
+        showAuthNotification(
             error.message ||
-            "Could not start Premium payment.",
+            "Unable to start payment.",
             "error"
         );
     }
 }
 
 
-window.requestPremiumPlan =
-    requestPremiumPlan;
-
-
 /* =========================================================
-   HANDLE PREMIUM EXPERIMENT
-========================================================= */
+   16. PREMIUM EXPERIMENT ACCESS
+   ========================================================= */
 
-async function handlePremiumExperiment(
-    button
-) {
-
-    if (!button) {
-        return;
-    }
-
+async function handlePremiumExperiment(button) {
 
     const user =
         await getCurrentUser();
 
-
-    /*
-       Not logged in.
-    */
-
     if (!user) {
 
-        openAuthModal(
-            "login"
+        showAuthNotification(
+            "Please sign in to access Premium experiments.",
+            "error"
         );
 
+        openAuthModal("signin");
         return;
     }
-
 
     const status =
         await getPremiumStatus();
 
-
-    /*
-       Student is logged in but not Premium.
-    */
-
     if (!status.isPremium) {
 
-        openPremiumPage();
+        showAuthNotification(
+            "This experiment requires ChemLab Premium.",
+            "error"
+        );
 
+        openPremiumModal();
         return;
     }
 
-
     const experiment =
-        button.dataset.experiment;
-
+        button?.dataset?.experiment || "";
 
     if (
         experiment ===
@@ -1829,13 +1190,11 @@ async function handlePremiumExperiment(
             typeof window.openAdvancedTitration ===
             "function"
         ) {
-
             window.openAdvancedTitration();
-
         } else {
 
-            showNotification(
-                "Advanced Chemistry Lab is loading. Please try again.",
+            showAuthNotification(
+                "Advanced Titration is not available yet.",
                 "error"
             );
         }
@@ -1843,95 +1202,133 @@ async function handlePremiumExperiment(
         return;
     }
 
-
-    showNotification(
-        "This Premium experiment is not available yet.",
-        "error"
+    showAuthNotification(
+        "Premium experiment unlocked.",
+        "success"
     );
 }
 
 
-window.handlePremiumExperiment =
-    handlePremiumExperiment;
-
-
 /* =========================================================
-   PAYSTACK RETURN
-========================================================= */
+   17. PAYSTACK RETURN HANDLER
+   ========================================================= */
 
 async function handlePaystackReturn() {
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+    const url =
+        new URL(window.location.href);
 
+    const referenceFromURL =
+        url.searchParams.get("reference");
 
-    const payment =
-        params.get(
-            "payment"
-        );
-
-
-    const reference =
-        params.get(
-            "reference"
-        ) ||
+    const storedReference =
         sessionStorage.getItem(
             "chemlab_payment_reference"
         );
 
+    /*
+     * Paystack normally returns:
+     *
+     * ?reference=YOUR_REFERENCE
+     *
+     * The URL reference is preferred.
+     */
+    const reference =
+        referenceFromURL ||
+        storedReference;
 
-    if (
-        payment !== "success" &&
-        !reference
-    ) {
-
+    if (!reference) {
         return;
     }
 
+    /*
+     * Avoid repeatedly verifying the same callback
+     * during the same page session.
+     */
+    const processingKey =
+        "chemlab_processing_reference";
 
-    const user =
-        await getCurrentUser();
+    const alreadyProcessing =
+        sessionStorage.getItem(processingKey);
 
-
-    if (!user) {
+    if (alreadyProcessing === reference) {
         return;
     }
 
-
-    const {
-        data: sessionData
-    } =
-        await supabaseClient.auth.getSession();
-
-
-    const accessToken =
-        sessionData?.session?.access_token;
-
-
-    if (!accessToken) {
-        return;
-    }
-
+    sessionStorage.setItem(
+        processingKey,
+        reference
+    );
 
     try {
 
-        showNotification(
-            "Verifying your Premium payment...",
-            "success"
-        );
+        const client =
+            initializeSupabase();
 
+        if (!client) {
+            throw new Error(
+                "Supabase is not available."
+            );
+        }
+
+        const user =
+            await getCurrentUser();
+
+        if (!user) {
+
+            /*
+             * Keep the reference so verification can
+             * happen after the user signs back in.
+             */
+            sessionStorage.setItem(
+                "chemlab_payment_reference",
+                reference
+            );
+
+            showAuthNotification(
+                "Please sign in to finish verifying your payment.",
+                "error"
+            );
+
+            openAuthModal("signin");
+
+            sessionStorage.removeItem(
+                processingKey
+            );
+
+            return;
+        }
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } = await client.auth.getSession();
+
+        if (sessionError) {
+            throw sessionError;
+        }
+
+        const accessToken =
+            sessionData?.session?.access_token;
+
+        if (!accessToken) {
+            throw new Error(
+                "Your login session has expired. Please sign in again."
+            );
+        }
+
+        showAuthNotification(
+            "Verifying your payment...",
+            "info"
+        );
 
         const response =
             await fetch(
-                `${SUPABASE_URL}/functions/v1/verify-paystack-payment`,
+                VERIFY_FUNCTION_URL,
                 {
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json",
 
@@ -1942,574 +1339,520 @@ async function handlePaystackReturn() {
                             SUPABASE_KEY
                     },
 
-                    body:
-                        JSON.stringify({
-                            reference:
-                                reference
-                        })
+                    body: JSON.stringify({
+                        reference: reference
+                    })
                 }
             );
 
+        const rawText =
+            await response.text();
 
-        const data =
-            await response.json();
+        let data = {};
 
-
-        if (!response.ok) {
-
-            throw new Error(
-                data?.error ||
-                data?.message ||
-                "Payment verification failed."
-            );
+        try {
+            data = rawText
+                ? JSON.parse(rawText)
+                : {};
+        } catch {
+            data = {
+                error: rawText ||
+                    "Invalid verification response."
+            };
         }
-
 
         if (
-            data?.success &&
-            data?.premium
+            !response.ok ||
+            data.success !== true
         ) {
 
-            sessionStorage.removeItem(
-                "chemlab_payment_reference"
-            );
-
-
-            sessionStorage.removeItem(
-                "chemlab_subscription_id"
-            );
-
-
-            sessionStorage.removeItem(
-                "chemlab_selected_plan"
-            );
-
-
-            showNotification(
-                "🎉 ChemLab Premium is now active!",
-                "success"
-            );
-
-
-            /*
-               Remove payment parameters from URL.
-            */
-
-            window.history.replaceState(
-                {},
-                document.title,
-                window.location.pathname
-            );
-
-
-            await updateAccountUI();
-
-
-            setTimeout(
-                function () {
-
-                    openPremiumPage();
-
-                },
-                800
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Payment could not be verified yet."
             );
         }
 
+        /*
+         * Verification succeeded.
+         */
+        sessionStorage.removeItem(
+            "chemlab_payment_reference"
+        );
+
+        sessionStorage.removeItem(
+            "chemlab_subscription_id"
+        );
+
+        sessionStorage.removeItem(
+            "chemlab_payment_plan"
+        );
+
+        sessionStorage.removeItem(
+            processingKey
+        );
+
+        /*
+         * Remove Paystack reference from browser URL.
+         */
+        url.searchParams.delete("reference");
+        url.searchParams.delete("payment");
+
+        window.history.replaceState(
+            {},
+            document.title,
+            url.pathname +
+            url.search +
+            url.hash
+        );
+
+        showAuthNotification(
+            "🎉 Premium activated successfully!",
+            "success"
+        );
+
+        await updateAccountUI();
+
+        openPremiumPage();
 
     } catch (error) {
 
         console.error(
-            "Paystack verification error:",
+            "handlePaystackReturn error:",
             error
         );
 
+        sessionStorage.removeItem(
+            processingKey
+        );
 
-        showNotification(
+        /*
+         * Do not delete the reference on a temporary
+         * verification failure. The webhook may still
+         * activate the subscription.
+         */
+        showAuthNotification(
             error.message ||
-            "Could not verify your payment.",
+            "Payment verification is still processing.",
             "error"
         );
     }
 }
 
 
-window.handlePaystackReturn =
-    handlePaystackReturn;
+/* =========================================================
+   18. CLOSE MODALS WITH ESCAPE
+   ========================================================= */
+
+function handleEscapeKey(event) {
+
+    if (event.key !== "Escape") {
+        return;
+    }
+
+    closeAuthModal();
+    closeAccountModal();
+    closePremiumModal();
+}
 
 
 /* =========================================================
-   DOM READY
-========================================================= */
+   19. DOM INITIALIZATION
+   ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     async function () {
 
         console.log(
-            "ChemLab authentication system initialized."
+            "ChemLab auth system initializing..."
         );
 
+        const client =
+            initializeSupabase();
 
-        /* -------------------------------------------------
-           LOGIN / ACCOUNT BUTTON
-        ------------------------------------------------- */
+        if (!client) {
+            console.error(
+                "ChemLab could not initialize Supabase."
+            );
+            return;
+        }
+
+        /*
+         * -----------------------------------------------
+         * Auth modal buttons
+         * -----------------------------------------------
+         */
 
         const loginButton =
-            document.getElementById(
-                "loginButton"
-            );
-
+            getElement("loginButton");
 
         if (loginButton) {
 
-            loginButton.onclick =
-                async function () {
+            loginButton.addEventListener(
+                "click",
+                async function (event) {
 
+                    /*
+                     * We only use this listener if the
+                     * button has not already been assigned
+                     * an account action.
+                     */
                     const user =
                         await getCurrentUser();
 
-
                     if (user) {
-
-                        openAccount();
-
+                        openAccountModal();
                     } else {
-
-                        openAuthModal(
-                            "login"
-                        );
+                        openAuthModal("signin");
                     }
-                };
+                }
+            );
         }
 
-
-        /* -------------------------------------------------
-           AUTH MODAL CLOSE
-        ------------------------------------------------- */
-
         const closeAuth =
-            document.getElementById(
-                "closeAuthModal"
-            );
-
+            getElement("closeAuthModal");
 
         if (closeAuth) {
 
-            closeAuth.onclick =
-                closeAuthModal;
+            closeAuth.addEventListener(
+                "click",
+                closeAuthModal
+            );
         }
 
-
-        /* -------------------------------------------------
-           AUTH SWITCH
-        ------------------------------------------------- */
-
         const authSwitch =
-            document.getElementById(
-                "authSwitch"
-            );
-
+            getElement("authSwitch");
 
         if (authSwitch) {
 
-            authSwitch.onclick =
-                function () {
-
-                    openAuthModal(
-                        authMode === "login"
-                            ? "signup"
-                            : "login"
-                    );
-                };
+            authSwitch.addEventListener(
+                "click",
+                switchAuthMode
+            );
         }
 
-
-        /* -------------------------------------------------
-           AUTH SUBMIT
-        ------------------------------------------------- */
-
         const authSubmit =
-            document.getElementById(
-                "authSubmit"
-            );
-
+            getElement("authSubmit");
 
         if (authSubmit) {
 
-            authSubmit.onclick =
-                handleAuthSubmit;
+            authSubmit.addEventListener(
+                "click",
+                submitAuthForm
+            );
         }
 
+        const authPassword =
+            getElement("authPassword");
 
-        /* -------------------------------------------------
-           AUTH ENTER KEY
-        ------------------------------------------------- */
+        if (authPassword) {
 
-        const authInputs =
-            document.querySelectorAll(
-                "#authModal input"
-            );
+            authPassword.addEventListener(
+                "keydown",
+                function (event) {
 
-
-        authInputs.forEach(
-            function (input) {
-
-                input.addEventListener(
-                    "keydown",
-                    function (event) {
-
-                        if (
-                            event.key ===
-                            "Enter"
-                        ) {
-
-                            event.preventDefault();
-
-                            handleAuthSubmit();
-                        }
+                    if (
+                        event.key === "Enter"
+                    ) {
+                        submitAuthForm();
                     }
-                );
-            }
-        );
-
-
-        /* -------------------------------------------------
-           ACCOUNT CLOSE
-        ------------------------------------------------- */
-
-        const closeAccountButton =
-            document.getElementById(
-                "closeAccountModal"
+                }
             );
-
-
-        if (closeAccountButton) {
-
-            closeAccountButton.onclick =
-                closeAccount;
         }
 
+        /*
+         * -----------------------------------------------
+         * Account modal
+         * -----------------------------------------------
+         */
 
-        /* -------------------------------------------------
-           ACCOUNT PREMIUM BUTTON
-        ------------------------------------------------- */
+        const closeAccount =
+            getElement("closeAccountModal");
 
-        const accountPremiumButton =
-            document.getElementById(
-                "accountPremiumButton"
+        if (closeAccount) {
+
+            closeAccount.addEventListener(
+                "click",
+                closeAccountModal
             );
-
-
-        if (accountPremiumButton) {
-
-            accountPremiumButton.onclick =
-                async function () {
-
-                    closeAccount();
-
-                    await openPremiumPage();
-                };
         }
-
-
-        /* -------------------------------------------------
-           LOGOUT
-        ------------------------------------------------- */
 
         const logoutButton =
-            document.getElementById(
-                "logoutButton"
-            );
-
+            getElement("logoutButton");
 
         if (logoutButton) {
 
-            logoutButton.onclick =
-                async function () {
-
-                    const success =
-                        await logoutStudent();
-
-
-                    if (success) {
-
-                        closeAccount();
-
-                        updateAuthButton(
-                            null
-                        );
-
-
-                        showNotification(
-                            "You have been signed out.",
-                            "success"
-                        );
-                    }
-                };
+            logoutButton.addEventListener(
+                "click",
+                logoutStudent
+            );
         }
 
+        const accountPremiumButton =
+            getElement("accountPremiumButton");
 
-        /* -------------------------------------------------
-           PREMIUM EXPERIMENT BUTTONS
-        ------------------------------------------------- */
+        if (accountPremiumButton) {
 
-        const premiumExperimentButtons =
-            document.querySelectorAll(
-                ".premium-experiment-button"
+            accountPremiumButton.addEventListener(
+                "click",
+                async function () {
+
+                    const status =
+                        await getPremiumStatus();
+
+                    if (status.isPremium) {
+                        closeAccountModal();
+                        openPremiumPage();
+                    } else {
+                        closeAccountModal();
+                        openPremiumModal();
+                    }
+                }
             );
+        }
 
+        /*
+         * -----------------------------------------------
+         * Premium modal
+         * -----------------------------------------------
+         */
 
-        premiumExperimentButtons.forEach(
-            function (button) {
+        const closePremium =
+            getElement("closePremiumModal");
 
-                button.onclick =
-                    function (event) {
+        if (closePremium) {
 
-                        event.preventDefault();
+            closePremium.addEventListener(
+                "click",
+                closePremiumModal
+            );
+        }
 
-                        event.stopPropagation();
+        const startPremium =
+            getElement("startPremiumButton");
 
-                        handlePremiumExperiment(
-                            button
-                        );
-                    };
-            }
-        );
+        if (startPremium) {
 
+            startPremium.addEventListener(
+                "click",
+                function () {
 
-        /* -------------------------------------------------
-           PREMIUM PLAN BUTTONS
-        ------------------------------------------------- */
+                    closePremiumModal();
+                    openPremiumPage();
+                }
+            );
+        }
 
-        const premiumPlanButtons =
+        /*
+         * -----------------------------------------------
+         * Premium plan buttons
+         * -----------------------------------------------
+         */
+
+        const planButtons =
             document.querySelectorAll(
                 ".premium-plan-button"
             );
 
-
-        premiumPlanButtons.forEach(
+        planButtons.forEach(
             function (button) {
 
-                button.onclick =
+                /*
+                 * Prevent duplicate listeners if
+                 * initialization is accidentally called again.
+                 */
+                if (
+                    button.dataset.chemlabAuthBound ===
+                    "true"
+                ) {
+                    return;
+                }
+
+                button.dataset.chemlabAuthBound =
+                    "true";
+
+                button.addEventListener(
+                    "click",
                     function () {
 
                         const plan =
                             button.dataset.plan;
 
-
-                        requestPremiumPlan(
-                            plan
-                        );
-                    };
+                        requestPremiumPlan(plan);
+                    }
+                );
             }
         );
 
+        /*
+         * -----------------------------------------------
+         * Premium experiment buttons
+         * -----------------------------------------------
+         */
 
-        /* -------------------------------------------------
-           PREMIUM MODAL CLOSE
-        ------------------------------------------------- */
-
-        const closePremium =
-            document.getElementById(
-                "closePremiumModal"
+        const premiumExperiments =
+            document.querySelectorAll(
+                ".premium-experiment-button"
             );
 
+        premiumExperiments.forEach(
+            function (button) {
 
-        if (closePremium) {
-
-            closePremium.onclick =
-                closePremiumModal;
-        }
-
-
-        /* -------------------------------------------------
-           PREMIUM MODAL CONTINUE
-        ------------------------------------------------- */
-
-        const startPremiumButton =
-            document.getElementById(
-                "startPremiumButton"
-            );
-
-
-        if (startPremiumButton) {
-
-            startPremiumButton.onclick =
-                function () {
-
-                    showNotification(
-                        "Choose Monthly or Yearly to continue.",
-                        "success"
-                    );
-                };
-        }
-
-
-        /* -------------------------------------------------
-           BACKDROP CLOSE
-        ------------------------------------------------- */
-
-        const authModal =
-            document.getElementById(
-                "authModal"
-            );
-
-
-        if (authModal) {
-
-            authModal.addEventListener(
-                "click",
-                function (event) {
-
-                    if (
-                        event.target ===
-                        authModal
-                    ) {
-
-                        closeAuthModal();
-                    }
+                if (
+                    button.dataset.chemlabAuthBound ===
+                    "true"
+                ) {
+                    return;
                 }
-            );
-        }
 
+                button.dataset.chemlabAuthBound =
+                    "true";
 
-        const accountModal =
-            document.getElementById(
-                "accountModal"
-            );
-
-
-        if (accountModal) {
-
-            accountModal.addEventListener(
-                "click",
-                function (event) {
-
-                    if (
-                        event.target ===
-                        accountModal
-                    ) {
-
-                        closeAccount();
+                button.addEventListener(
+                    "click",
+                    function () {
+                        handlePremiumExperiment(
+                            button
+                        );
                     }
-                }
-            );
-        }
-
-
-        const premiumModal =
-            document.getElementById(
-                "premiumModal"
-            );
-
-
-        if (premiumModal) {
-
-            premiumModal.addEventListener(
-                "click",
-                function (event) {
-
-                    if (
-                        event.target ===
-                        premiumModal
-                    ) {
-
-                        closePremiumModal();
-                    }
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           INITIAL AUTH STATE
-        ------------------------------------------------- */
-
-        const user =
-            await getCurrentUser();
-
-
-        updateAuthButton(
-            user
+                );
+            }
         );
 
+        /*
+         * -----------------------------------------------
+         * Global keyboard handling
+         * -----------------------------------------------
+         */
 
-        if (user) {
+        document.addEventListener(
+            "keydown",
+            handleEscapeKey
+        );
 
+        /*
+         * -----------------------------------------------
+         * Initial authentication state
+         * -----------------------------------------------
+         */
+
+        const currentUser =
+            await getCurrentUser();
+
+        await updateAuthUI(
+            currentUser
+        );
+
+        if (currentUser) {
             await updateAccountUI();
         }
 
+        /*
+         * -----------------------------------------------
+         * Supabase auth state listener
+         * -----------------------------------------------
+         */
 
-        /* -------------------------------------------------
-           AUTH STATE CHANGES
-        ------------------------------------------------- */
+        if (!authListenerRegistered) {
 
-        if (supabaseReady()) {
+            authListenerRegistered = true;
 
-            supabaseClient.auth.onAuthStateChange(
-                async function (
-                    event,
-                    session
-                ) {
+            client.auth.onAuthStateChange(
+                async function (event, session) {
 
                     console.log(
-                        "Auth event:",
+                        "ChemLab auth event:",
                         event
                     );
 
+                    const user =
+                        session?.user || null;
 
-                    const currentUser =
-                        session?.user ||
-                        null;
+                    await updateAuthUI(user);
 
-
-                    updateAuthButton(
-                        currentUser
-                    );
-
-
-                    if (
-                        currentUser
-                    ) {
-
+                    if (user) {
                         await updateAccountUI();
                     }
                 }
             );
         }
 
-
-        /* -------------------------------------------------
-           PAYMENT RETURN
-        ------------------------------------------------- */
+        /*
+         * -----------------------------------------------
+         * Paystack callback
+         * -----------------------------------------------
+         */
 
         await handlePaystackReturn();
 
+        console.log(
+            "ChemLab auth system ready."
+        );
     }
 );
 
 
 /* =========================================================
-   ESCAPE KEY
-========================================================= */
+   20. GLOBAL FUNCTIONS
+   ========================================================= */
 
-document.addEventListener(
-    "keydown",
-    function (event) {
+window.initializeSupabase =
+    initializeSupabase;
 
-        if (
-            event.key !==
-            "Escape"
-        ) {
+window.getCurrentUser =
+    getCurrentUser;
 
-            return;
-        }
+window.getCurrentStudent =
+    getCurrentStudent;
 
+window.signUpStudent =
+    signUpStudent;
 
-        closeAuthModal();
+window.loginStudent =
+    loginStudent;
 
-        closeAccount();
+window.logoutStudent =
+    logoutStudent;
 
-        closePremiumModal();
-    }
-);
+window.getPremiumStatus =
+    getPremiumStatus;
+
+window.openAuthModal =
+    openAuthModal;
+
+window.closeAuthModal =
+    closeAuthModal;
+
+window.switchAuthMode =
+    switchAuthMode;
+
+window.submitAuthForm =
+    submitAuthForm;
+
+window.openAccountModal =
+    openAccountModal;
+
+window.closeAccountModal =
+    closeAccountModal;
+
+window.updateAccountUI =
+    updateAccountUI;
+
+window.openPremiumPage =
+    openPremiumPage;
+
+window.openPremiumModal =
+    openPremiumModal;
+
+window.closePremiumModal =
+    closePremiumModal;
+
+window.requestPremiumPlan =
+    requestPremiumPlan;
+
+window.handlePremiumExperiment =
+    handlePremiumExperiment;
+
+window.handlePaystackReturn =
+    handlePaystackReturn;
