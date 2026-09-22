@@ -3287,28 +3287,32 @@ window.updateAdvancedTitrationChart =
 
 function showPremiumSection() {
 
-    const premiumSection =
-        $("premiumSection");
-
+    const premiumSection = $("premiumSection");
 
     if (!premiumSection) {
+        console.error("ChemLab: premiumSection was not found.");
         return;
     }
 
+    // Hide every page
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+        page.style.display = "";
+    });
 
-    premiumSection.style.display =
-        "";
+    // Show Premium as the active page
+    premiumSection.classList.add("active");
+    premiumSection.style.display = "";
 
+    chemLabState.currentPage = "premiumSection";
 
-    premiumSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
     });
 }
 
-
-window.showPremiumSection =
-    showPremiumSection;
+window.showPremiumSection = showPremiumSection;
 
 
 /* =========================================================
