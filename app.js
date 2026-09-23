@@ -1758,6 +1758,296 @@ async function mainAIQuestion() {
         }
 
 
+       /* =========================================
+   START NEW AI CHAT
+========================================= */
+
+function startNewAIChat() {
+
+    aiChatState.currentConversationId =
+        null;
+
+    const chat =
+        $("aiChat");
+
+    if (chat) {
+
+        chat.innerHTML = `
+            <div class="ai-message ai-message-bot">
+                <div class="ai-avatar">🧪</div>
+
+                <div class="ai-bubble">
+
+                    <strong>ChemLab AI</strong>
+
+                    <p>
+                        Hello! I'm your chemistry tutor.
+                        Ask me about acids, bases,
+                        titration, pH, moles, reactions,
+                        calculations or your virtual lab.
+                    </p>
+
+                </div>
+            </div>
+        `;
+    }
+
+
+    const input =
+        $("aiQuestion");
+
+    if (input) {
+        input.value = "";
+        input.focus();
+    }
+
+
+    const status =
+        $("aiStatus");
+
+    if (status) {
+        status.textContent =
+            "Ready";
+    }
+
+
+    /* Refresh history UI if available */
+    if (
+        typeof renderAIConversationHistory ===
+        "function"
+    ) {
+
+        renderAIConversationHistory();
+    }
+}
+       /* =========================================
+   RENDER AI CONVERSATION HISTORY
+========================================= */
+
+function renderAIConversationHistory() {
+
+    const history =
+        $("aiConversationHistory");
+
+    if (!history) {
+        return;
+    }
+
+    const conversations =
+        aiChatState.conversations || [];
+
+
+    /* -----------------------------------------
+       No conversations
+    ----------------------------------------- */
+
+    if (conversations.length === 0) {
+
+        history.innerHTML = `
+            <div class="ai-history-empty">
+                <div class="ai-history-empty-icon">
+                    💬
+                </div>
+
+                <p>No saved conversations yet.</p>
+
+                <small>
+                    Your chemistry conversations
+                    will appear here.
+                </small>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* -----------------------------------------
+       Render conversations
+    ----------------------------------------- */
+
+    history.innerHTML =
+        conversations.map(conversation => {
+
+            const active =
+                conversation.id ===
+                aiChatState.currentConversationId;
+
+            return `
+                <button
+                    type="button"
+                    class="ai-history-item ${
+                        active
+                            ? "active"
+                            : ""
+                    }"
+                    data-conversation-id="${
+                        conversation.id
+                    }"
+                >
+
+                    <span class="ai-history-icon">
+                        🧪
+                    </span>
+
+                    <span class="ai-history-content">
+
+                        <strong>
+                            ${
+                                escapeAIHistoryText(
+                                    conversation.title ||
+                                    "Chemistry Chat"
+                                )
+                            }
+                        </strong>
+
+                        <small>
+                            ${
+                                formatAIChatDate(
+                                    conversation.updated_at
+                                )
+                            }
+                        </small>
+
+                    </span>
+
+                </button>
+            `;
+
+        }).join("");
+
+
+    /* -----------------------------------------
+       Add click handlers
+    ----------------------------------------- */
+
+    history
+        .querySelectorAll(
+            ".ai-history-item"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                async () => {
+
+                    const id =
+                        button.dataset
+                            .conversationId;
+
+                    if (!id) {
+                        return;
+                    }
+
+                    await loadAIConversation(
+                        id
+                    );
+
+                    renderAIConversationHistory();
+                }
+            );
+
+        });
+}
+
+
+/* =========================================
+   ESCAPE HISTORY TEXT
+========================================= */
+
+function escapeAIHistoryText(text) {
+
+    return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================
+   FORMAT CHAT DATE
+========================================= */
+
+function formatAIChatDate(dateValue) {
+
+    if (!dateValue) {
+        return "";
+    }
+
+    const date =
+        new Date(dateValue);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return "";
+    }
+
+    const now =
+        new Date();
+
+    const diff =
+        now.getTime() -
+        date.getTime();
+
+    const minute =
+        60 * 1000;
+
+    const hour =
+        60 * minute;
+
+    const day =
+        24 * hour;
+
+
+    if (diff < minute) {
+        return "Just now";
+    }
+
+    if (diff < hour) {
+
+        const minutes =
+            Math.floor(
+                diff / minute
+            );
+
+        return `${minutes}m ago`;
+    }
+
+    if (diff < day) {
+
+        const hours =
+            Math.floor(
+                diff / hour
+            );
+
+        return `${hours}h ago`;
+    }
+
+    if (diff < 7 * day) {
+
+        const days =
+            Math.floor(
+                diff / day
+            );
+
+        return `${days}d ago`;
+    }
+
+
+    return date.toLocaleDateString(
+        undefined,
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
+}
         /* -------------------------------------------------
            SUCCESS
         ------------------------------------------------- */
@@ -2038,6 +2328,149 @@ function renderLoadedAIConversation(
             conversation?.title ||
             "Conversation loaded";
     }
+}
+       /* =========================================
+   PERSIST AI EXCHANGE
+========================================= */
+
+async function persistAIExchange(
+    question,
+    answer
+) {
+
+    const user =
+        await getAIUser();
+
+    if (!user) {
+        throw new Error(
+            "You must be signed in to save AI conversations."
+        );
+    }
+
+    let conversationId =
+        aiChatState.currentConversationId;
+
+
+    /* -----------------------------------------
+       Create conversation if needed
+    ----------------------------------------- */
+
+    if (!conversationId) {
+
+        const conversation =
+            await createAIConversation(
+                question
+            );
+
+        conversationId =
+            conversation.id;
+
+        aiChatState.currentConversationId =
+            conversationId;
+    }
+
+
+    /* -----------------------------------------
+       Save student's question
+    ----------------------------------------- */
+
+    await saveAIMessage(
+        conversationId,
+        "user",
+        question
+    );
+
+
+    /* -----------------------------------------
+       Save AI's answer
+    ----------------------------------------- */
+
+    await saveAIMessage(
+        conversationId,
+        "assistant",
+        answer
+    );
+
+
+    /* -----------------------------------------
+       Refresh conversation history
+    ----------------------------------------- */
+
+    await loadAIConversations();
+
+
+    return conversationId;
+}/* =========================================
+   PERSIST AI EXCHANGE
+========================================= */
+
+async function persistAIExchange(
+    question,
+    answer
+) {
+
+    const user =
+        await getAIUser();
+
+    if (!user) {
+        throw new Error(
+            "You must be signed in to save AI conversations."
+        );
+    }
+
+    let conversationId =
+        aiChatState.currentConversationId;
+
+
+    /* -----------------------------------------
+       Create conversation if needed
+    ----------------------------------------- */
+
+    if (!conversationId) {
+
+        const conversation =
+            await createAIConversation(
+                question
+            );
+
+        conversationId =
+            conversation.id;
+
+        aiChatState.currentConversationId =
+            conversationId;
+    }
+
+
+    /* -----------------------------------------
+       Save student's question
+    ----------------------------------------- */
+
+    await saveAIMessage(
+        conversationId,
+        "user",
+        question
+    );
+
+
+    /* -----------------------------------------
+       Save AI's answer
+    ----------------------------------------- */
+
+    await saveAIMessage(
+        conversationId,
+        "assistant",
+        answer
+    );
+
+
+    /* -----------------------------------------
+       Refresh conversation history
+    ----------------------------------------- */
+
+    await loadAIConversations();
+
+
+    return conversationId;
 }
 
         /* -------------------------------------------------
