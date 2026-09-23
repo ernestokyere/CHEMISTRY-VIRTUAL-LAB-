@@ -44,6 +44,219 @@ const chemLabState = {
     advancedExperimentCompleted: false
 };
 
+/* =========================================
+   CHEMLAB AI CHAT STATE
+========================================= */
+
+const aiChatState = {
+    currentConversationId: null,
+    conversations: [],
+    loadingConversation: false,
+    sendingMessage: false,
+    initialized: false
+};
+
+/* =========================================
+   CHEMLAB AI CHAT — SUPABASE HELPERS
+========================================= */
+
+function getChemLabSupabase() {
+
+    if (typeof supabaseClient !== "undefined") {
+        return supabaseClient;
+    }
+
+    if (
+        typeof window !== "undefined" &&
+        window.supabaseClient
+    ) {
+        return window.supabaseClient;
+    }
+
+    return null;
+}
+
+
+async function getAIUser() {
+
+    const client =
+        getChemLabSupabase();
+
+    if (!client) {
+        return null;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await client.auth.getUser();
+
+        if (error) {
+            console.error(
+                "ChemLab AI user error:",
+                error
+            );
+
+            return null;
+        }
+
+        return data?.user || null;
+
+    } catch (error) {
+
+        console.error(
+            "ChemLab AI authentication error:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+/* =========================================
+   CREATE CONVERSATION TITLE
+========================================= */
+
+function createConversationTitle(question) {
+
+    const cleaned =
+        String(question || "")
+            .replace(/\s+/g, " ")
+            .trim();
+
+    if (!cleaned) {
+        return "New Chemistry Chat";
+    }
+
+    if (cleaned.length <= 50) {
+        return cleaned;
+    }
+
+    return cleaned.substring(0, 47) + "...";
+}
+
+
+/* =========================================
+   CREATE AI CONVERSATION
+========================================= */
+
+async function createAIConversation(question) {
+
+    const client =
+        getChemLabSupabase();
+
+    const user =
+        await getAIUser();
+
+    if (!client || !user) {
+        throw new Error(
+            "You must be signed in to save AI conversations."
+        );
+    }
+
+    const title =
+        createConversationTitle(question);
+
+    const {
+        data,
+        error
+    } = await client
+        .from("ai_conversations")
+        .insert({
+            user_id: user.id,
+            title: title
+        })
+        .select()
+        .single();
+
+    if (error) {
+
+        console.error(
+            "Create AI conversation error:",
+            error
+        );
+
+        throw new Error(
+            error.message ||
+            "Unable to create AI conversation."
+        );
+    }
+
+    aiChatState.currentConversationId =
+        data.id;
+
+    return data;
+}
+
+
+/* =========================================
+   SAVE AI MESSAGE
+========================================= */
+
+async function saveAIMessage(
+    conversationId,
+    role,
+    content
+) {
+
+    const client =
+        getChemLabSupabase();
+
+    const user =
+        await getAIUser();
+
+    if (!client || !user) {
+        throw new Error(
+            "You must be signed in to save AI messages."
+        );
+    }
+
+    if (!conversationId) {
+        throw new Error(
+            "AI conversation ID is missing."
+        );
+    }
+
+    const {
+        data,
+        error
+    } = await client
+        .from("ai_messages")
+        .insert({
+            conversation_id:
+                conversationId,
+
+            user_id:
+                user.id,
+
+            role:
+                role,
+
+            content:
+                String(content || "")
+        })
+        .select()
+        .single();
+
+    if (error) {
+
+        console.error(
+            "Save AI message error:",
+            error
+        );
+
+        throw new Error(
+            error.message ||
+            "Unable to save AI message."
+        );
+    }
+
+    return data;
+}
+
 
 /* =========================================================
    3. BASIC TITRATION STATE
