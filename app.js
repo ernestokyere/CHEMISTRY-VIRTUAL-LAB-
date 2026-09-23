@@ -1071,18 +1071,13 @@ const CHEMLAB_SUPABASE_KEY =
     CHEMLAB_CONFIG.supabasePublishableKey;
 
 
-/* ---------------------------------------------------------
-   GET CURRENT SUPABASE SESSION
---------------------------------------------------------- */
+/* =========================================================
+   12.1 GET CURRENT SUPABASE SESSION
+========================================================= */
 
 async function getAISessionToken() {
 
     try {
-
-        /*
-         * Your auth.js creates supabaseClient.
-         * We use that client when available.
-         */
 
         if (
             typeof supabaseClient !== "undefined" &&
@@ -1092,9 +1087,11 @@ async function getAISessionToken() {
             const {
                 data,
                 error
-            } = await supabaseClient.auth.getSession();
+            } =
+                await supabaseClient.auth.getSession();
 
             if (error) {
+
                 console.warn(
                     "Supabase session error:",
                     error
@@ -1119,9 +1116,9 @@ async function getAISessionToken() {
 }
 
 
-/* ---------------------------------------------------------
-   SEND QUESTION TO CHEMLAB AI
---------------------------------------------------------- */
+/* =========================================================
+   12.2 SEND QUESTION TO CHEMLAB AI
+========================================================= */
 
 async function askAI(
     question,
@@ -1139,18 +1136,9 @@ async function askAI(
     }
 
 
-    /*
-     * Get the student's current authentication
-     * session.
-     */
-
     const token =
         await getAISessionToken();
 
-
-    /*
-     * Build secure request headers.
-     */
 
     const headers = {
 
@@ -1162,21 +1150,12 @@ async function askAI(
     };
 
 
-    /*
-     * If the student is signed in,
-     * send their access token.
-     */
-
     if (token) {
 
         headers.Authorization =
             `Bearer ${token}`;
     }
 
-
-    /*
-     * Send request to Supabase Edge Function.
-     */
 
     let response;
 
@@ -1192,33 +1171,36 @@ async function askAI(
 
                     body: JSON.stringify({
 
-    question:
-        cleanedQuestion,
+                        question:
+                            cleanedQuestion,
 
-    experiment:
-        typeof experiment === "string"
-            ? experiment
-            : experiment?.experiment ||
-              chemLabState.currentExperiment ||
-              "General Chemistry",
+                        experiment:
+                            typeof experiment === "string"
+                                ? experiment
+                                : experiment?.experiment ||
+                                  chemLabState.currentExperiment ||
+                                  "General Chemistry",
 
-    experimentState:
-        typeof experiment === "object" &&
-        experiment !== null
-            ? experiment
-            : (
-                typeof getCurrentAIExperimentState ===
-                "function"
-                    ? getCurrentAIExperimentState()
-                    : null
-            ),
+                        experimentState:
+                            typeof experiment === "object" &&
+                            experiment !== null
+                                ? experiment
+                                : (
+                                    typeof getCurrentAIExperimentState ===
+                                    "function"
+                                        ? getCurrentAIExperimentState()
+                                        : null
+                                ),
 
-    source:
-        "ChemLab",
+                        source:
+                            "ChemLab",
 
-    student_mode:
-        true
-})
+                        student_mode:
+                            true
+                    })
+                }
+            );
+
     } catch (networkError) {
 
         console.error(
@@ -1231,10 +1213,6 @@ async function askAI(
         );
     }
 
-
-    /*
-     * Read response safely.
-     */
 
     let data = null;
 
@@ -1278,10 +1256,6 @@ async function askAI(
     }
 
 
-    /*
-     * Handle Supabase / Edge Function errors.
-     */
-
     if (!response.ok) {
 
         console.error(
@@ -1295,6 +1269,7 @@ async function askAI(
             data?.message ||
             data?.details;
 
+
         if (
             response.status === 401 ||
             response.status === 403
@@ -1305,6 +1280,7 @@ async function askAI(
             );
         }
 
+
         if (
             response.status === 404
         ) {
@@ -1313,6 +1289,7 @@ async function askAI(
                 "ChemLab AI service could not be found. Please check the Supabase Edge Function."
             );
         }
+
 
         if (
             response.status >= 500
@@ -1324,16 +1301,13 @@ async function askAI(
             );
         }
 
+
         throw new Error(
             serverMessage ||
             `ChemLab AI returned an error (${response.status}).`
         );
     }
 
-
-    /*
-     * Extract AI answer.
-     */
 
     const answer =
         data?.answer ||
@@ -1360,7 +1334,7 @@ async function askAI(
 
 
 /* =========================================================
-   MAIN AI QUESTION — PERSISTENT CHAT VERSION
+   12.3 MAIN AI QUESTION
 ========================================================= */
 
 async function mainAIQuestion() {
@@ -1376,10 +1350,6 @@ async function mainAIQuestion() {
     const status =
         $("aiStatus");
 
-
-    /* -----------------------------------------------------
-       CHECK INPUT
-    ----------------------------------------------------- */
 
     if (!input) {
 
@@ -1409,12 +1379,7 @@ async function mainAIQuestion() {
     }
 
 
-    /* -----------------------------------------------------
-       PREVENT MULTIPLE REQUESTS
-    ----------------------------------------------------- */
-
     if (
-        typeof aiChatState !== "undefined" &&
         aiChatState.sendingMessage
     ) {
 
@@ -1422,18 +1387,9 @@ async function mainAIQuestion() {
     }
 
 
-    if (
-        typeof aiChatState !== "undefined"
-    ) {
+    aiChatState.sendingMessage =
+        true;
 
-        aiChatState.sendingMessage =
-            true;
-    }
-
-
-    /* -----------------------------------------------------
-       ASK BUTTON
-    ----------------------------------------------------- */
 
     const button =
         $("askAIButton");
@@ -1460,63 +1416,29 @@ async function mainAIQuestion() {
 
 
     /* -----------------------------------------------------
-       REQUIRE SIGNED-IN STUDENT
+       REQUIRE SIGN-IN FOR SAVED CONVERSATIONS
     ----------------------------------------------------- */
 
     let user = null;
 
     try {
 
-        if (
-            typeof getAIUser ===
-            "function"
-        ) {
+        user =
+            await getAIUser();
 
-            user =
-                await getAIUser();
-
-        } else {
-
-            /*
-             * Fallback to the existing
-             * Supabase session function.
-             */
-
-            const token =
-                await getAISessionToken();
-
-            if (!token) {
-
-                user = null;
-
-            } else {
-
-                user = {
-                    authenticated: true
-                };
-            }
-        }
-
-    } catch (authError) {
+    } catch (error) {
 
         console.error(
             "ChemLab AI authentication error:",
-            authError
+            error
         );
-
-        user = null;
     }
 
 
     if (!user) {
 
-        if (
-            typeof aiChatState !== "undefined"
-        ) {
-
-            aiChatState.sendingMessage =
-                false;
-        }
+        aiChatState.sendingMessage =
+            false;
 
 
         if (button) {
@@ -1558,12 +1480,14 @@ async function mainAIQuestion() {
 
 
     /* -----------------------------------------------------
-       DISPLAY USER QUESTION
+       SHOW QUESTION
     ----------------------------------------------------- */
 
     if (
         output &&
-        output.id === "aiChat"
+        output.id === "aiChat" &&
+        typeof addAIChatMessage ===
+        "function"
     ) {
 
         addAIChatMessage(
@@ -1573,54 +1497,26 @@ async function mainAIQuestion() {
 
     } else if (output) {
 
-        output.textContent =
-            "🧠 ChemLab AI is thinking...";
+        output.innerHTML = `
+            <div class="ai-response-content">
+                <p><strong>You:</strong></p>
+                <p>${escapeAIHistoryText(question)}</p>
+
+                <p>
+                    🧠 ChemLab AI is thinking...
+                </p>
+            </div>
+        `;
     }
 
 
     /* -----------------------------------------------------
-       DISPLAY THINKING MESSAGE
+       GET CURRENT EXPERIMENT STATE
     ----------------------------------------------------- */
 
-    let thinkingId = null;
-
-
-    if (
-        typeof addAIThinkingMessage ===
-        "function"
-    ) {
-
-        thinkingId =
-            addAIThinkingMessage();
-
-    } else if (
-        output &&
-        output.id === "aiChat"
-    ) {
-
-        addAIChatMessage(
-            "assistant",
-            "🧠 ChemLab AI is thinking..."
-        );
-    }
-
-
-    /* -----------------------------------------------------
-       ASK CHEMLAB AI
-    ----------------------------------------------------- */
+    let experimentState = null;
 
     try {
-
-        /*
-         * Get the current virtual-lab state.
-         *
-         * This allows the V5 Chemistry Engine
-         * to understand what the student is
-         * currently doing in the laboratory.
-         */
-
-        let experimentState = null;
-
 
         if (
             typeof getCurrentAIExperimentState ===
@@ -1639,11 +1535,22 @@ async function mainAIQuestion() {
                 getExperimentState();
         }
 
+    } catch (stateError) {
 
-        /*
-         * Send question to the existing
-         * working Chemistry AI engine.
-         */
+        console.warn(
+            "Could not read experiment state:",
+            stateError
+        );
+
+        experimentState = null;
+    }
+
+
+    /* -----------------------------------------------------
+       ASK CHEMLAB AI
+    ----------------------------------------------------- */
+
+    try {
 
         const answer =
             await askAI(
@@ -1652,405 +1559,74 @@ async function mainAIQuestion() {
             );
 
 
-        /* -------------------------------------------------
-           REPLACE THINKING MESSAGE
-        ------------------------------------------------- */
+        /* ---------------------------------------------
+           DISPLAY ANSWER
+        --------------------------------------------- */
 
         if (
-            thinkingId &&
-            typeof replaceAIThinkingMessage ===
+            output &&
+            output.id === "aiChat" &&
+            typeof addAIChatMessage ===
             "function"
         ) {
 
-            replaceAIThinkingMessage(
-                thinkingId,
+            addAIChatMessage(
+                "assistant",
                 answer
             );
 
-        } else if (
-            output &&
-            output.id === "aiChat"
-        ) {
-
-            /*
-             * Fallback for the current chat UI.
-             */
-
-            const messages =
-                output.querySelectorAll(
-                    ".ai-message.assistant"
-                );
-
-            const lastMessage =
-                messages[
-                    messages.length - 1
-                ];
-
-
-            if (lastMessage) {
-
-                const paragraph =
-                    lastMessage.querySelector(
-                        "p"
-                    );
-
-                if (paragraph) {
-
-                    paragraph.textContent =
-                        answer;
-
-                } else {
-
-                    lastMessage.textContent =
-                        answer;
-                }
-
-            } else {
-
-                addAIChatMessage(
-                    "assistant",
-                    answer
-                );
-            }
-
         } else if (output) {
 
-            output.textContent =
-                answer;
-        }
-
-
-        /* -------------------------------------------------
-           SAVE QUESTION + ANSWER
-        ------------------------------------------------- */
-
-        if (
-            typeof persistAIExchange ===
-            "function"
-        ) {
-
-            try {
-
-                await persistAIExchange(
-                    question,
-                    answer
-                );
-
-            } catch (saveError) {
-
-                console.error(
-                    "ChemLab AI chat save error:",
-                    saveError
-                );
-
-
-                /*
-                 * The AI answer has already been
-                 * displayed, so don't remove it
-                 * if database saving fails.
-                 */
-
-                showNotification(
-                    "Answer received, but this conversation could not be saved.",
-                    "warning"
-                );
-            }
-        }
-
-
-       /* =========================================
-   START NEW AI CHAT
-========================================= */
-
-function startNewAIChat() {
-
-    aiChatState.currentConversationId =
-        null;
-
-    const chat =
-        $("aiChat");
-
-    if (chat) {
-
-        chat.innerHTML = `
-            <div class="ai-message ai-message-bot">
-                <div class="ai-avatar">🧪</div>
-
-                <div class="ai-bubble">
-
-                    <strong>ChemLab AI</strong>
+            output.innerHTML = `
+                <div class="ai-response-content">
 
                     <p>
-                        Hello! I'm your chemistry tutor.
-                        Ask me about acids, bases,
-                        titration, pH, moles, reactions,
-                        calculations or your virtual lab.
+                        <strong>You:</strong>
+                    </p>
+
+                    <p>
+                        ${escapeAIHistoryText(question)}
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        <strong>🧪 ChemLab AI:</strong>
+                    </p>
+
+                    <p>
+                        ${escapeAIHistoryText(answer)}
                     </p>
 
                 </div>
-            </div>
-        `;
-    }
-
-
-    const input =
-        $("aiQuestion");
-
-    if (input) {
-        input.value = "";
-        input.focus();
-    }
-
-
-    const status =
-        $("aiStatus");
-
-    if (status) {
-        status.textContent =
-            "Ready";
-    }
-
-
-    /* Refresh history UI if available */
-    if (
-        typeof renderAIConversationHistory ===
-        "function"
-    ) {
-
-        renderAIConversationHistory();
-    }
-}
-       /* =========================================
-   RENDER AI CONVERSATION HISTORY
-========================================= */
-
-function renderAIConversationHistory() {
-
-    const history =
-        $("aiConversationHistory");
-
-    if (!history) {
-        return;
-    }
-
-    const conversations =
-        aiChatState.conversations || [];
-
-
-    /* -----------------------------------------
-       No conversations
-    ----------------------------------------- */
-
-    if (conversations.length === 0) {
-
-        history.innerHTML = `
-            <div class="ai-history-empty">
-                <div class="ai-history-empty-icon">
-                    💬
-                </div>
-
-                <p>No saved conversations yet.</p>
-
-                <small>
-                    Your chemistry conversations
-                    will appear here.
-                </small>
-            </div>
-        `;
-
-        return;
-    }
-
-
-    /* -----------------------------------------
-       Render conversations
-    ----------------------------------------- */
-
-    history.innerHTML =
-        conversations.map(conversation => {
-
-            const active =
-                conversation.id ===
-                aiChatState.currentConversationId;
-
-            return `
-                <button
-                    type="button"
-                    class="ai-history-item ${
-                        active
-                            ? "active"
-                            : ""
-                    }"
-                    data-conversation-id="${
-                        conversation.id
-                    }"
-                >
-
-                    <span class="ai-history-icon">
-                        🧪
-                    </span>
-
-                    <span class="ai-history-content">
-
-                        <strong>
-                            ${
-                                escapeAIHistoryText(
-                                    conversation.title ||
-                                    "Chemistry Chat"
-                                )
-                            }
-                        </strong>
-
-                        <small>
-                            ${
-                                formatAIChatDate(
-                                    conversation.updated_at
-                                )
-                            }
-                        </small>
-
-                    </span>
-
-                </button>
             `;
-
-        }).join("");
-
-
-    /* -----------------------------------------
-       Add click handlers
-    ----------------------------------------- */
-
-    history
-        .querySelectorAll(
-            ".ai-history-item"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                async () => {
-
-                    const id =
-                        button.dataset
-                            .conversationId;
-
-                    if (!id) {
-                        return;
-                    }
-
-                    await loadAIConversation(
-                        id
-                    );
-
-                    renderAIConversationHistory();
-                }
-            );
-
-        });
-}
-
-
-/* =========================================
-   ESCAPE HISTORY TEXT
-========================================= */
-
-function escapeAIHistoryText(text) {
-
-    return String(text || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/* =========================================
-   FORMAT CHAT DATE
-========================================= */
-
-function formatAIChatDate(dateValue) {
-
-    if (!dateValue) {
-        return "";
-    }
-
-    const date =
-        new Date(dateValue);
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-        return "";
-    }
-
-    const now =
-        new Date();
-
-    const diff =
-        now.getTime() -
-        date.getTime();
-
-    const minute =
-        60 * 1000;
-
-    const hour =
-        60 * minute;
-
-    const day =
-        24 * hour;
-
-
-    if (diff < minute) {
-        return "Just now";
-    }
-
-    if (diff < hour) {
-
-        const minutes =
-            Math.floor(
-                diff / minute
-            );
-
-        return `${minutes}m ago`;
-    }
-
-    if (diff < day) {
-
-        const hours =
-            Math.floor(
-                diff / hour
-            );
-
-        return `${hours}h ago`;
-    }
-
-    if (diff < 7 * day) {
-
-        const days =
-            Math.floor(
-                diff / day
-            );
-
-        return `${days}d ago`;
-    }
-
-
-    return date.toLocaleDateString(
-        undefined,
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
         }
-    );
-}
-        /* -------------------------------------------------
-           SUCCESS
-        ------------------------------------------------- */
+
+
+        /* ---------------------------------------------
+           SAVE CONVERSATION
+        --------------------------------------------- */
+
+        try {
+
+            await persistAIExchange(
+                question,
+                answer
+            );
+
+        } catch (saveError) {
+
+            console.error(
+                "ChemLab AI save error:",
+                saveError
+            );
+
+            showNotification(
+                "Answer received, but the conversation could not be saved.",
+                "warning"
+            );
+        }
+
 
         if (status) {
 
@@ -2059,35 +1635,12 @@ function formatAIChatDate(dateValue) {
         }
 
 
-        /*
-         * Clear the input only after
-         * the AI successfully answers.
-         */
-
         input.value = "";
 
 
-        /*
-         * Refresh saved conversation history.
-         */
+        await loadAIConversations();
 
-        if (
-            typeof loadAIConversations ===
-            "function"
-        ) {
-
-            try {
-
-                await loadAIConversations();
-
-            } catch (historyError) {
-
-                console.warn(
-                    "ChemLab AI history refresh failed:",
-                    historyError
-                );
-            }
-        }
+        renderAIConversationHistory();
 
 
     } catch (error) {
@@ -2101,12 +1654,129 @@ function formatAIChatDate(dateValue) {
         const message =
             error?.message ||
             "Unable to connect to ChemLab AI.";
-       
-/* =========================================
-   LOAD ONE AI CONVERSATION
-========================================= */
 
-async function loadAIConversation(conversationId) {
+
+        if (output) {
+
+            output.innerHTML += `
+                <p>
+                    <strong>⚠️</strong>
+                    ${escapeAIHistoryText(message)}
+                </p>
+            `;
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                message;
+        }
+
+    } finally {
+
+        aiChatState.sendingMessage =
+            false;
+
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                button.dataset.originalText ||
+                "Ask AI";
+        }
+    }
+}
+
+
+/* =========================================================
+   12.4 CREATE / SAVE AI CONVERSATION
+========================================================= */
+
+async function persistAIExchange(
+    question,
+    answer
+) {
+
+    const user =
+        await getAIUser();
+
+    if (!user) {
+
+        throw new Error(
+            "You must be signed in to save AI conversations."
+        );
+    }
+
+
+    let conversationId =
+        aiChatState.currentConversationId;
+
+
+    /* ---------------------------------------------
+       Create new conversation when needed
+    --------------------------------------------- */
+
+    if (!conversationId) {
+
+        const conversation =
+            await createAIConversation(
+                question
+            );
+
+        conversationId =
+            conversation.id;
+
+        aiChatState.currentConversationId =
+            conversationId;
+    }
+
+
+    /* ---------------------------------------------
+       Save user message
+    --------------------------------------------- */
+
+    await saveAIMessage(
+        conversationId,
+        "user",
+        question
+    );
+
+
+    /* ---------------------------------------------
+       Save assistant message
+    --------------------------------------------- */
+
+    await saveAIMessage(
+        conversationId,
+        "assistant",
+        answer
+    );
+
+
+    /* ---------------------------------------------
+       Refresh history
+    --------------------------------------------- */
+
+    await loadAIConversations();
+
+    renderAIConversationHistory();
+
+
+    return conversationId;
+}
+
+
+/* =========================================================
+   12.5 LOAD ONE AI CONVERSATION
+========================================================= */
+
+async function loadAIConversation(
+    conversationId
+) {
 
     const client =
         getChemLabSupabase();
@@ -2115,43 +1785,48 @@ async function loadAIConversation(conversationId) {
         await getAIUser();
 
     if (!client || !user) {
+
         return null;
     }
+
 
     if (!conversationId) {
+
         return null;
     }
 
-    aiChatState.loadingConversation = true;
+
+    aiChatState.loadingConversation =
+        true;
+
 
     try {
-
-        /* -------------------------------------
-           Load conversation
-        ------------------------------------- */
 
         const {
             data: conversation,
             error: conversationError
-        } = await client
-            .from("ai_conversations")
-            .select(`
-                id,
-                title,
-                created_at,
-                updated_at,
-                expires_at
-            `)
-            .eq("id", conversationId)
-            .eq("user_id", user.id)
-            .single();
+        } =
+            await client
+                .from("ai_conversations")
+                .select(`
+                    id,
+                    title,
+                    created_at,
+                    updated_at,
+                    expires_at
+                `)
+                .eq(
+                    "id",
+                    conversationId
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .single();
+
 
         if (conversationError) {
-
-            console.error(
-                "Load AI conversation error:",
-                conversationError
-            );
 
             throw new Error(
                 conversationError.message ||
@@ -2160,43 +1835,36 @@ async function loadAIConversation(conversationId) {
         }
 
 
-        /* -------------------------------------
-           Load messages
-        ------------------------------------- */
-
         const {
             data: messages,
             error: messagesError
-        } = await client
-            .from("ai_messages")
-            .select(`
-                id,
-                conversation_id,
-                role,
-                content,
-                created_at
-            `)
-            .eq(
-                "conversation_id",
-                conversationId
-            )
-            .eq(
-                "user_id",
-                user.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: true
-                }
-            );
+        } =
+            await client
+                .from("ai_messages")
+                .select(`
+                    id,
+                    conversation_id,
+                    role,
+                    content,
+                    created_at
+                `)
+                .eq(
+                    "conversation_id",
+                    conversationId
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                );
+
 
         if (messagesError) {
-
-            console.error(
-                "Load AI messages error:",
-                messagesError
-            );
 
             throw new Error(
                 messagesError.message ||
@@ -2205,22 +1873,17 @@ async function loadAIConversation(conversationId) {
         }
 
 
-        /* -------------------------------------
-           Set active conversation
-        ------------------------------------- */
-
         aiChatState.currentConversationId =
             conversation.id;
 
-
-        /* -------------------------------------
-           Render conversation
-        ------------------------------------- */
 
         renderLoadedAIConversation(
             conversation,
             messages || []
         );
+
+
+        renderAIConversationHistory();
 
 
         return {
@@ -2250,74 +1913,145 @@ async function loadAIConversation(conversationId) {
             false;
     }
 }
-       /* =========================================
-   RENDER LOADED AI CONVERSATION
-========================================= */
+
+
+/* =========================================================
+   12.6 RENDER LOADED CONVERSATION
+========================================================= */
 
 function renderLoadedAIConversation(
     conversation,
     messages
 ) {
 
-    const chat =
-        $("aiChat");
+    const output =
+        $("aiChat") ||
+        $("mainAIAnswer");
 
-    if (!chat) {
-        console.warn(
-            "ChemLab AI: aiChat container not found."
-        );
-        return;
-    }
-
-    /* Clear current messages */
-    chat.innerHTML = "";
-
-
-    /* -----------------------------------------
-       Add conversation messages
-    ----------------------------------------- */
-
-    if (!messages || messages.length === 0) {
-
-        addAIChatMessage(
-            "assistant",
-            "This conversation is empty. Ask me a chemistry question!"
-        );
+    if (!output) {
 
         return;
     }
 
 
-    messages.forEach(message => {
+    output.innerHTML = "";
 
-        const role =
-            message.role === "user"
-                ? "user"
-                : "assistant";
 
-        addAIChatMessage(
-            role,
-            message.content
+    if (
+        !messages ||
+        messages.length === 0
+    ) {
+
+        output.innerHTML = `
+            <div class="ai-welcome">
+
+                <span>
+                    🧪
+                </span>
+
+                <h3>
+                    This conversation is empty.
+                </h3>
+
+                <p>
+                    Ask ChemLab AI a chemistry question.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       Current AI layout
+    ----------------------------------------------------- */
+
+    if (
+        output.id === "mainAIAnswer"
+    ) {
+
+        messages.forEach(
+            message => {
+
+                const wrapper =
+                    document.createElement(
+                        "div"
+                    );
+
+                wrapper.className =
+                    message.role === "user"
+                        ? "ai-history-message user"
+                        : "ai-history-message assistant";
+
+
+                const label =
+                    document.createElement(
+                        "strong"
+                    );
+
+                label.textContent =
+                    message.role === "user"
+                        ? "You"
+                        : "🧪 ChemLab AI";
+
+
+                const content =
+                    document.createElement(
+                        "p"
+                    );
+
+                content.textContent =
+                    message.content;
+
+
+                wrapper.appendChild(
+                    label
+                );
+
+                wrapper.appendChild(
+                    content
+                );
+
+                output.appendChild(
+                    wrapper
+                );
+            }
         );
 
-    });
+    } else {
+
+        /* -------------------------------------------------
+           Newer chat layout compatibility
+        ------------------------------------------------- */
+
+        messages.forEach(
+            message => {
+
+                if (
+                    typeof addAIChatMessage ===
+                    "function"
+                ) {
+
+                    addAIChatMessage(
+                        message.role,
+                        message.content
+                    );
+                }
+            }
+        );
+    }
 
 
-    /* -----------------------------------------
-       Scroll to newest message
-    ----------------------------------------- */
+    requestAnimationFrame(
+        () => {
 
-    requestAnimationFrame(() => {
+            output.scrollTop =
+                output.scrollHeight;
+        }
+    );
 
-        chat.scrollTop =
-            chat.scrollHeight;
-
-    });
-
-
-    /* -----------------------------------------
-       Update AI status
-    ----------------------------------------- */
 
     const status =
         $("aiStatus");
@@ -2329,362 +2063,45 @@ function renderLoadedAIConversation(
             "Conversation loaded";
     }
 }
-       /* =========================================
-   PERSIST AI EXCHANGE
-========================================= */
-
-async function persistAIExchange(
-    question,
-    answer
-) {
-
-    const user =
-        await getAIUser();
-
-    if (!user) {
-        throw new Error(
-            "You must be signed in to save AI conversations."
-        );
-    }
-
-    let conversationId =
-        aiChatState.currentConversationId;
-
-
-    /* -----------------------------------------
-       Create conversation if needed
-    ----------------------------------------- */
-
-    if (!conversationId) {
-
-        const conversation =
-            await createAIConversation(
-                question
-            );
-
-        conversationId =
-            conversation.id;
-
-        aiChatState.currentConversationId =
-            conversationId;
-    }
-
-
-    /* -----------------------------------------
-       Save student's question
-    ----------------------------------------- */
-
-    await saveAIMessage(
-        conversationId,
-        "user",
-        question
-    );
-
-
-    /* -----------------------------------------
-       Save AI's answer
-    ----------------------------------------- */
-
-    await saveAIMessage(
-        conversationId,
-        "assistant",
-        answer
-    );
-
-
-    /* -----------------------------------------
-       Refresh conversation history
-    ----------------------------------------- */
-
-    await loadAIConversations();
-
-
-    return conversationId;
-}/* =========================================
-   PERSIST AI EXCHANGE
-========================================= */
-
-async function persistAIExchange(
-    question,
-    answer
-) {
-
-    const user =
-        await getAIUser();
-
-    if (!user) {
-        throw new Error(
-            "You must be signed in to save AI conversations."
-        );
-    }
-
-    let conversationId =
-        aiChatState.currentConversationId;
-
-
-    /* -----------------------------------------
-       Create conversation if needed
-    ----------------------------------------- */
-
-    if (!conversationId) {
-
-        const conversation =
-            await createAIConversation(
-                question
-            );
-
-        conversationId =
-            conversation.id;
-
-        aiChatState.currentConversationId =
-            conversationId;
-    }
-
-
-    /* -----------------------------------------
-       Save student's question
-    ----------------------------------------- */
-
-    await saveAIMessage(
-        conversationId,
-        "user",
-        question
-    );
-
-
-    /* -----------------------------------------
-       Save AI's answer
-    ----------------------------------------- */
-
-    await saveAIMessage(
-        conversationId,
-        "assistant",
-        answer
-    );
-
-
-    /* -----------------------------------------
-       Refresh conversation history
-    ----------------------------------------- */
-
-    await loadAIConversations();
-
-
-    return conversationId;
-}
-
-        /* -------------------------------------------------
-           SHOW ERROR IN CHAT
-        ------------------------------------------------- */
-
-        if (
-            thinkingId &&
-            typeof replaceAIThinkingMessage ===
-            "function"
-        ) {
-
-            replaceAIThinkingMessage(
-                thinkingId,
-                `⚠️ ${message}`
-            );
-
-        } else if (
-            output &&
-            output.id === "aiChat"
-        ) {
-
-            const messages =
-                output.querySelectorAll(
-                    ".ai-message.assistant"
-                );
-
-            const lastMessage =
-                messages[
-                    messages.length - 1
-                ];
-
-
-            if (lastMessage) {
-
-                const paragraph =
-                    lastMessage.querySelector(
-                        "p"
-                    );
-
-                if (paragraph) {
-
-                    paragraph.textContent =
-                        `⚠️ ${message}`;
-
-                } else {
-
-                    lastMessage.textContent =
-                        `⚠️ ${message}`;
-                }
-
-            } else {
-
-                addAIChatMessage(
-                    "assistant",
-                    `⚠️ ${message}`
-                );
-            }
-
-        } else if (output) {
-
-            output.textContent =
-                `⚠️ ${message}`;
-        }
-
-
-        if (status) {
-
-            status.textContent =
-                message;
-        }
-
-    } finally {
-
-        /* -------------------------------------------------
-           RESTORE BUTTON
-        ------------------------------------------------- */
-
-        if (button) {
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                button.dataset.originalText ||
-                "Ask AI";
-        }
-
-
-        /* -------------------------------------------------
-           RELEASE SEND LOCK
-        ------------------------------------------------- */
-
-        if (
-            typeof aiChatState !== "undefined"
-        ) {
-
-            aiChatState.sendingMessage =
-                false;
-        }
-    }
-}
 
 
 /* =========================================================
-   ADD MESSAGE TO AI CHAT
+   12.7 START NEW AI CHAT
 ========================================================= */
 
-function addAIChatMessage(
-    role,
-    message
-) {
+function startNewAIChat() {
 
-    const chat =
-        $("aiChat");
-
-    if (!chat) {
-        return;
-    }
+    aiChatState.currentConversationId =
+        null;
 
 
-    const wrapper =
-        document.createElement("div");
+    const output =
+        $("aiChat") ||
+        $("mainAIAnswer");
 
 
-    wrapper.className =
-        role === "user"
-            ? "ai-message user"
-            : "ai-message assistant";
+    if (output) {
 
+        output.innerHTML = `
 
-    if (role === "user") {
+            <div class="ai-welcome">
 
-        wrapper.innerHTML = `
-            <div>
-                <strong>You</strong>
-                <p></p>
+                <span>
+                    🧪
+                </span>
+
+                <h3>
+                    What would you like to learn?
+                </h3>
+
+                <p>
+                    Ask me about acids, bases,
+                    reactions, calculations,
+                    periodic trends and more.
+                </p>
+
             </div>
         `;
-
-    } else {
-
-        wrapper.innerHTML = `
-            <div class="ai-avatar">🤖</div>
-            <div>
-                <strong>ChemLab AI</strong>
-                <p></p>
-            </div>
-        `;
-    }
-
-
-    const paragraph =
-        wrapper.querySelector("p");
-
-
-    if (paragraph) {
-
-        paragraph.textContent =
-            message;
-    }
-
-
-    chat.appendChild(
-        wrapper
-    );
-
-
-    /*
-     * Keep latest message visible.
-     */
-
-    chat.scrollTop =
-        chat.scrollHeight;
-}
-
-
-/* =========================================================
-   CLEAR AI CHAT
-========================================================= */
-
-function clearAIChat() {
-
-    const chat =
-        $("aiChat");
-
-    const status =
-        $("aiStatus");
-
-
-    if (chat) {
-
-        chat.innerHTML = `
-            <div class="ai-message assistant">
-                <div class="ai-avatar">🤖</div>
-
-                <div>
-                    <strong>ChemLab AI</strong>
-
-                    <p>
-                        Hello! Ask me a chemistry question
-                        and I’ll help you understand it
-                        step by step.
-                    </p>
-                </div>
-            </div>
-        `;
-    }
-
-
-    if (status) {
-
-        status.textContent =
-            "";
     }
 
 
@@ -2699,60 +2116,454 @@ function clearAIChat() {
 
         input.focus();
     }
+
+
+    const status =
+        $("aiStatus");
+
+
+    if (status) {
+
+        status.textContent =
+            "Ready";
+    }
+
+
+    renderAIConversationHistory();
 }
 
 
 /* =========================================================
-   ADVANCED EXPERIMENT AI
+   12.8 RENDER AI CONVERSATION HISTORY
 ========================================================= */
 
-async function askExperimentAI() {
+function renderAIConversationHistory() {
 
-    const input =
-        $("advancedExplanationText");
+    const history =
+        $("aiConversationHistory");
 
 
-    if (!input) {
+    if (!history) {
+
         return;
     }
 
 
-    const question =
-        "Explain the current advanced acid-base titration experiment. " +
-        "Use the current volume, pH, equivalence point, " +
-        "and chemical reaction to explain what is happening to a student.";
+    const conversations =
+        aiChatState.conversations || [];
 
 
-    input.textContent =
-        "🧠 ChemLab AI is analyzing the experiment...";
+    if (
+        conversations.length === 0
+    ) {
+
+        history.innerHTML = `
+
+            <div class="ai-history-empty">
+
+                <div class="ai-history-empty-icon">
+                    💬
+                </div>
+
+                <p>
+                    No saved conversations yet.
+                </p>
+
+                <small>
+                    Your chemistry conversations
+                    will appear here.
+                </small>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    history.innerHTML =
+        conversations
+            .map(
+                conversation => {
+
+                    const active =
+                        conversation.id ===
+                        aiChatState.currentConversationId;
+
+
+                    return `
+
+                        <button
+                            type="button"
+                            class="ai-history-item ${
+                                active
+                                    ? "active"
+                                    : ""
+                            }"
+                            data-conversation-id="${
+                                escapeAIHistoryText(
+                                    conversation.id
+                                )
+                            }"
+                        >
+
+                            <span class="ai-history-icon">
+                                🧪
+                            </span>
+
+                            <span class="ai-history-content">
+
+                                <strong>
+                                    ${
+                                        escapeAIHistoryText(
+                                            conversation.title ||
+                                            "Chemistry Chat"
+                                        )
+                                    }
+                                </strong>
+
+                                <small>
+                                    ${
+                                        formatAIChatDate(
+                                            conversation.updated_at
+                                        )
+                                    }
+                                </small>
+
+                            </span>
+
+                        </button>
+                    `;
+                }
+            )
+            .join("");
+
+
+    history
+        .querySelectorAll(
+            ".ai-history-item"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        const id =
+                            button.dataset
+                                .conversationId;
+
+                        if (!id) {
+
+                            return;
+                        }
+
+
+                        await loadAIConversation(
+                            id
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+/* =========================================================
+   12.9 ESCAPE HISTORY TEXT
+========================================================= */
+
+function escapeAIHistoryText(
+    text
+) {
+
+    return String(text || "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   12.10 FORMAT CHAT DATE
+========================================================= */
+
+function formatAIChatDate(
+    dateValue
+) {
+
+    if (!dateValue) {
+
+        return "";
+    }
+
+
+    const date =
+        new Date(dateValue);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+    }
+
+
+    const now =
+        new Date();
+
+
+    const difference =
+        now.getTime() -
+        date.getTime();
+
+
+    const minute =
+        60 * 1000;
+
+    const hour =
+        60 * minute;
+
+    const day =
+        24 * hour;
+
+
+    if (
+        difference < minute
+    ) {
+
+        return "Just now";
+    }
+
+
+    if (
+        difference < hour
+    ) {
+
+        return `${Math.floor(
+            difference / minute
+        )}m ago`;
+    }
+
+
+    if (
+        difference < day
+    ) {
+
+        return `${Math.floor(
+            difference / hour
+        )}h ago`;
+    }
+
+
+    if (
+        difference < 7 * day
+    ) {
+
+        return `${Math.floor(
+            difference / day
+        )}d ago`;
+    }
+
+
+    return date.toLocaleDateString(
+        undefined,
+        {
+            day:
+                "numeric",
+
+            month:
+                "short",
+
+            year:
+                "numeric"
+        }
+    );
+}
+
+
+/* =========================================================
+   12.11 INITIALIZE NEW CHAT BUTTON
+========================================================= */
+
+function initializeAINewChatButton() {
+
+    const button =
+        $("newAIChatButton");
+
+
+    if (!button) {
+
+        return;
+    }
+
+
+    if (
+        button.dataset.aiInitialized ===
+        "true"
+    ) {
+
+        return;
+    }
+
+
+    button.dataset.aiInitialized =
+        "true";
+
+
+    button.addEventListener(
+        "click",
+        startNewAIChat
+    );
+}
+
+
+/* =========================================================
+   12.12 AI EXPERIMENT EXPLANATION
+========================================================= */
+
+async function askExperimentAI() {
+
+    const output =
+        $("mainAIAnswer") ||
+        $("aiChat");
+
+
+    if (!output) {
+
+        return;
+    }
+
+
+    let experimentState = null;
 
 
     try {
 
-        const result =
+        if (
+            typeof getCurrentAIExperimentState ===
+            "function"
+        ) {
+
+            experimentState =
+                getCurrentAIExperimentState();
+
+        } else if (
+            typeof getExperimentState ===
+            "function"
+        ) {
+
+            experimentState =
+                getExperimentState();
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Could not read experiment state:",
+            error
+        );
+    }
+
+
+    const experimentName =
+        experimentState?.experiment ||
+        "Current Chemistry Experiment";
+
+
+    const question =
+        `Explain the current ${experimentName} experiment to a student. ` +
+        `Use the current experimental values and explain what is happening chemically, ` +
+        `whether acid or base is in excess, how the pH relates to the reaction, ` +
+        `what the equivalence point means, and what the student should observe next.`;
+
+
+    output.innerHTML = `
+        <div class="ai-welcome">
+
+            <span>
+                🧠
+            </span>
+
+            <h3>
+                ChemLab AI is analyzing the experiment...
+            </h3>
+
+        </div>
+    `;
+
+
+    try {
+
+        const answer =
             await askAI(
                 question,
-                "Advanced Acid-Base Titration"
+                experimentState
             );
 
 
-        input.textContent =
-            result;
+        output.innerHTML = `
+
+            <div class="ai-response-content">
+
+                <h3>
+                    🧪 ChemLab AI
+                </h3>
+
+                <p>
+                    ${escapeAIHistoryText(answer)}
+                </p>
+
+            </div>
+        `;
 
     } catch (error) {
 
         console.error(
-            "Advanced AI error:",
+            "Experiment AI error:",
             error
         );
 
 
-        input.textContent =
-            error?.message ||
-            "Unable to get the AI explanation.";
+        output.innerHTML = `
+
+            <div class="ai-response-content">
+
+                <p>
+                    ⚠️
+                    ${escapeAIHistoryText(
+                        error?.message ||
+                        "Unable to generate the explanation."
+                    )}
+                </p>
+
+            </div>
+        `;
     }
 }
 
+     
 /* =========================================================
    13. QUIZ SYSTEM
 ========================================================= */
