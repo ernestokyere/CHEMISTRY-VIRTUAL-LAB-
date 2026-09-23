@@ -661,7 +661,6 @@ function getExperimentState() {
     };
 }
 
-
 /* =========================================================
    12. AI CHEMISTRY TUTOR
 ========================================================= */
@@ -673,9 +672,18 @@ const CHEMLAB_SUPABASE_KEY =
     CHEMLAB_CONFIG.supabasePublishableKey;
 
 
+/* ---------------------------------------------------------
+   GET CURRENT SUPABASE SESSION
+--------------------------------------------------------- */
+
 async function getAISessionToken() {
 
     try {
+
+        /*
+         * Your auth.js creates supabaseClient.
+         * We use that client when available.
+         */
 
         if (
             typeof supabaseClient !== "undefined" &&
@@ -683,25 +691,16 @@ async function getAISessionToken() {
         ) {
 
             const {
-                data
-            } =
-                await supabaseClient.auth.getSession();
+                data,
+                error
+            } = await supabaseClient.auth.getSession();
 
-            return (
-                data?.session?.access_token ||
-                null
-            );
-        }
-
-        if (
-            typeof supabase !== "undefined" &&
-            supabase?.auth
-        ) {
-
-            const {
-                data
-            } =
-                await supabase.auth.getSession();
+            if (error) {
+                console.warn(
+                    "Supabase session error:",
+                    error
+                );
+            }
 
             return (
                 data?.session?.access_token ||
@@ -712,7 +711,7 @@ async function getAISessionToken() {
     } catch (error) {
 
         console.warn(
-            "Could not get AI session:",
+            "Could not get Supabase AI session:",
             error
         );
     }
@@ -721,7 +720,14 @@ async function getAISessionToken() {
 }
 
 
-async function askAI(question, experiment = null) {
+/* ---------------------------------------------------------
+   SEND QUESTION TO CHEMLAB AI
+--------------------------------------------------------- */
+
+async function askAI(
+    question,
+    experiment = null
+) {
 
     const cleanedQuestion =
         String(question || "").trim();
@@ -733,8 +739,19 @@ async function askAI(question, experiment = null) {
         );
     }
 
+
+    /*
+     * Get the student's current authentication
+     * session.
+     */
+
     const token =
         await getAISessionToken();
+
+
+    /*
+     * Build secure request headers.
+     */
 
     const headers = {
 
@@ -745,97 +762,303 @@ async function askAI(question, experiment = null) {
             CHEMLAB_SUPABASE_KEY
     };
 
+
+    /*
+     * If the student is signed in,
+     * send their access token.
+     */
+
     if (token) {
 
         headers.Authorization =
             `Bearer ${token}`;
     }
 
-    const response =
-        await fetch(
-            CHEMLAB_AI_URL,
-            {
-                method: "POST",
-                headers,
-                body: JSON.stringify({
 
-                    question:
-                        cleanedQuestion,
+    /*
+     * Send request to Supabase Edge Function.
+     */
 
-                    experiment:
-                        experiment ||
-                        chemLabState.currentExperiment ||
-                        "general chemistry",
+    let response;
 
-                    source:
-                        "ChemLab",
+    try {
 
-                    student_mode:
-                        true
-                })
-            }
+        response =
+            await fetch(
+                CHEMLAB_AI_URL,
+                {
+                    method: "POST",
+
+                    headers,
+
+                    body: JSON.stringify({
+
+                        question:
+                            cleanedQuestion,
+
+                        experiment:
+                            experiment ||
+                            chemLabState.currentExperiment ||
+                            "General Chemistry",
+
+                        source:
+                            "ChemLab",
+
+                        student_mode:
+                            true
+                    })
+                }
+            );
+
+    } catch (networkError) {
+
+        console.error(
+            "ChemLab AI network error:",
+            networkError
         );
 
-    if (!response.ok) {
+        throw new Error(
+            "Could not connect to ChemLab AI. Please check your internet connection."
+        );
+    }
 
-        let errorText =
-            "The AI service returned an error.";
+
+    /*
+     * Read response safely.
+     */
+
+    let data = null;
+
+    const contentType =
+        response.headers.get(
+            "content-type"
+        ) || "";
+
+
+    if (
+        contentType.includes(
+            "application/json"
+        )
+    ) {
 
         try {
 
-            const errorData =
+            data =
                 await response.json();
 
-            errorText =
-                errorData?.error ||
-                errorData?.message ||
-                errorText;
+        } catch (error) {
+
+            console.error(
+                "Invalid AI JSON response:",
+                error
+            );
+        }
+
+    } else {
+
+        try {
+
+            const text =
+                await response.text();
+
+            data = {
+                error: text
+            };
 
         } catch (_) {}
+    }
+
+
+    /*
+     * Handle Supabase / Edge Function errors.
+     */
+
+    if (!response.ok) {
+
+        console.error(
+            "ChemLab AI server error:",
+            response.status,
+            data
+        );
+
+        const serverMessage =
+            data?.error ||
+            data?.message ||
+            data?.details;
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            throw new Error(
+                "ChemLab AI requires a valid student session. Please sign in and try again."
+            );
+        }
+
+        if (
+            response.status === 404
+        ) {
+
+            throw new Error(
+                "ChemLab AI service could not be found. Please check the Supabase Edge Function."
+            );
+        }
+
+        if (
+            response.status >= 500
+        ) {
+
+            throw new Error(
+                serverMessage ||
+                "ChemLab AI is temporarily unavailable. Please try again."
+            );
+        }
 
         throw new Error(
-            errorText
+            serverMessage ||
+            `ChemLab AI returned an error (${response.status}).`
         );
     }
 
-    const data =
-        await response.json();
 
-    return (
-        data.answer ||
-        data.response ||
-        data.message ||
-        data.result ||
-        "The AI did not return an answer."
-    );
+    /*
+     * Extract AI answer.
+     */
+
+    const answer =
+        data?.answer ||
+        data?.response ||
+        data?.message ||
+        data?.result;
+
+
+    if (!answer) {
+
+        console.error(
+            "ChemLab AI returned no answer:",
+            data
+        );
+
+        throw new Error(
+            "ChemLab AI connected successfully, but no answer was returned."
+        );
+    }
+
+
+    return String(answer);
 }
 
 
+/* =========================================================
+   MAIN AI QUESTION
+========================================================= */
+
 async function mainAIQuestion() {
 
+    /*
+     * Support both the old and new input IDs.
+     */
+
     const input =
+        $("aiQuestion") ||
         $("mainAIInput");
 
+
+    /*
+     * Support both possible output containers.
+     */
+
     const output =
+        $("aiChat") ||
         $("mainAIAnswer");
 
-    if (!input || !output) {
+
+    const status =
+        $("aiStatus");
+
+
+    if (!input) {
+
+        console.error(
+            "ChemLab AI: question input not found."
+        );
+
         return;
     }
+
 
     const question =
         input.value.trim();
 
+
     if (!question) {
 
-        output.textContent =
-            "Please enter a chemistry question.";
+        if (status) {
+
+            status.textContent =
+                "Please enter a chemistry question.";
+        }
+
+        input.focus();
 
         return;
     }
 
-    output.textContent =
-        "🧠 ChemLab AI is thinking...";
+
+    /*
+     * Disable the button while AI is responding.
+     */
+
+    const button =
+        $("askAIButton");
+
+
+    if (button) {
+
+        button.disabled =
+            true;
+
+        button.dataset.originalText =
+            button.textContent;
+
+        button.textContent =
+            "🧠 Thinking...";
+    }
+
+
+    if (status) {
+
+        status.textContent =
+            "ChemLab AI is thinking...";
+    }
+
+
+    /*
+     * Add student's question to chat.
+     */
+
+    if (
+        output &&
+        output.id === "aiChat"
+    ) {
+
+        addAIChatMessage(
+            "user",
+            question
+        );
+
+        addAIChatMessage(
+            "assistant",
+            "🧠 ChemLab AI is thinking..."
+        );
+
+    } else if (output) {
+
+        output.textContent =
+            "🧠 ChemLab AI is thinking...";
+    }
+
 
     try {
 
@@ -844,39 +1067,298 @@ async function mainAIQuestion() {
                 question
             );
 
-        output.textContent =
-            answer;
+
+        /*
+         * Replace temporary thinking message.
+         */
+
+        if (
+            output &&
+            output.id === "aiChat"
+        ) {
+
+            const messages =
+                output.querySelectorAll(
+                    ".ai-message.assistant"
+                );
+
+            const lastMessage =
+                messages[
+                    messages.length - 1
+                ];
+
+            if (lastMessage) {
+
+                const paragraph =
+                    lastMessage.querySelector(
+                        "p"
+                    );
+
+                if (paragraph) {
+
+                    paragraph.textContent =
+                        answer;
+
+                } else {
+
+                    lastMessage.textContent =
+                        answer;
+                }
+
+            } else {
+
+                addAIChatMessage(
+                    "assistant",
+                    answer
+                );
+            }
+
+        } else if (output) {
+
+            output.textContent =
+                answer;
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                "ChemLab AI is ready.";
+        }
+
+
+        /*
+         * Clear question after successful response.
+         */
+
+        input.value = "";
 
     } catch (error) {
 
         console.error(
-            "Chemistry AI error:",
+            "ChemLab AI error:",
             error
         );
 
-        output.textContent =
-            error.message ||
+
+        const message =
+            error?.message ||
             "Unable to connect to ChemLab AI.";
+
+
+        if (
+            output &&
+            output.id === "aiChat"
+        ) {
+
+            const messages =
+                output.querySelectorAll(
+                    ".ai-message.assistant"
+                );
+
+            const lastMessage =
+                messages[
+                    messages.length - 1
+                ];
+
+            if (lastMessage) {
+
+                const paragraph =
+                    lastMessage.querySelector(
+                        "p"
+                    );
+
+                if (paragraph) {
+
+                    paragraph.textContent =
+                        `⚠️ ${message}`;
+
+                } else {
+
+                    lastMessage.textContent =
+                        `⚠️ ${message}`;
+                }
+            }
+
+        } else if (output) {
+
+            output.textContent =
+                `⚠️ ${message}`;
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                message;
+        }
+
+    } finally {
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                button.dataset.originalText ||
+                "🤖 Ask ChemLab AI";
+        }
     }
 }
 
+
+/* =========================================================
+   ADD MESSAGE TO AI CHAT
+========================================================= */
+
+function addAIChatMessage(
+    role,
+    message
+) {
+
+    const chat =
+        $("aiChat");
+
+    if (!chat) {
+        return;
+    }
+
+
+    const wrapper =
+        document.createElement("div");
+
+
+    wrapper.className =
+        role === "user"
+            ? "ai-message user"
+            : "ai-message assistant";
+
+
+    if (role === "user") {
+
+        wrapper.innerHTML = `
+            <div>
+                <strong>You</strong>
+                <p></p>
+            </div>
+        `;
+
+    } else {
+
+        wrapper.innerHTML = `
+            <div class="ai-avatar">🤖</div>
+            <div>
+                <strong>ChemLab AI</strong>
+                <p></p>
+            </div>
+        `;
+    }
+
+
+    const paragraph =
+        wrapper.querySelector("p");
+
+
+    if (paragraph) {
+
+        paragraph.textContent =
+            message;
+    }
+
+
+    chat.appendChild(
+        wrapper
+    );
+
+
+    /*
+     * Keep latest message visible.
+     */
+
+    chat.scrollTop =
+        chat.scrollHeight;
+}
+
+
+/* =========================================================
+   CLEAR AI CHAT
+========================================================= */
+
+function clearAIChat() {
+
+    const chat =
+        $("aiChat");
+
+    const status =
+        $("aiStatus");
+
+
+    if (chat) {
+
+        chat.innerHTML = `
+            <div class="ai-message assistant">
+                <div class="ai-avatar">🤖</div>
+
+                <div>
+                    <strong>ChemLab AI</strong>
+
+                    <p>
+                        Hello! Ask me a chemistry question
+                        and I’ll help you understand it
+                        step by step.
+                    </p>
+                </div>
+            </div>
+        `;
+    }
+
+
+    if (status) {
+
+        status.textContent =
+            "";
+    }
+
+
+    const input =
+        $("aiQuestion") ||
+        $("mainAIInput");
+
+
+    if (input) {
+
+        input.value = "";
+
+        input.focus();
+    }
+}
+
+
+/* =========================================================
+   ADVANCED EXPERIMENT AI
+========================================================= */
 
 async function askExperimentAI() {
 
     const input =
         $("advancedExplanationText");
 
+
     if (!input) {
         return;
     }
+
 
     const question =
         "Explain the current advanced acid-base titration experiment. " +
         "Use the current volume, pH, equivalence point, " +
         "and chemical reaction to explain what is happening to a student.";
 
+
     input.textContent =
         "🧠 ChemLab AI is analyzing the experiment...";
+
 
     try {
 
@@ -886,17 +1368,23 @@ async function askExperimentAI() {
                 "Advanced Acid-Base Titration"
             );
 
+
         input.textContent =
             result;
 
     } catch (error) {
 
+        console.error(
+            "Advanced AI error:",
+            error
+        );
+
+
         input.textContent =
-            error.message ||
+            error?.message ||
             "Unable to get the AI explanation.";
     }
 }
-
 
 /* =========================================================
    13. QUIZ SYSTEM
@@ -2655,42 +3143,90 @@ function initializeAppButtons() {
 
 
 /* =========================================================
-   29. AI KEYBOARD SUPPORT
+   29. AI BUTTON + KEYBOARD SUPPORT
 ========================================================= */
 
 function initializeAIKeyboard() {
 
     const input =
+        $("aiQuestion") ||
         $("mainAIInput");
 
+    const askButton =
+        $("askAIButton");
+
+    const clearButton =
+        $("clearAIButton");
+
+
+    /* -----------------------------
+       ASK BUTTON
+    ----------------------------- */
+
     if (
-        !input ||
-        input.dataset.bound
+        askButton &&
+        !askButton.dataset.bound
     ) {
 
-        return;
+        askButton.addEventListener(
+            "click",
+            mainAIQuestion
+        );
+
+        askButton.dataset.bound =
+            "true";
     }
 
-    input.addEventListener(
-        "keydown",
-        event => {
 
-            if (
-                event.key === "Enter" &&
-                !event.shiftKey
-            ) {
+    /* -----------------------------
+       CLEAR BUTTON
+    ----------------------------- */
 
-                event.preventDefault();
+    if (
+        clearButton &&
+        !clearButton.dataset.bound
+    ) {
 
-                mainAIQuestion();
+        clearButton.addEventListener(
+            "click",
+            clearAIChat
+        );
+
+        clearButton.dataset.bound =
+            "true";
+    }
+
+
+    /* -----------------------------
+       ENTER KEY
+    ----------------------------- */
+
+    if (
+        input &&
+        !input.dataset.bound
+    ) {
+
+        input.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    mainAIQuestion();
+                }
             }
-        }
-    );
+        );
 
-    input.dataset.bound =
-        "true";
+
+        input.dataset.bound =
+            "true";
+    }
 }
-
 
 /* =========================================================
    30. WINDOW RESIZE
