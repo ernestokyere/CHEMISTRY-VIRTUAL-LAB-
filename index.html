@@ -1430,108 +1430,141 @@
 <!-- =====================================================
      AI TUTOR PAGE
 ===================================================== -->
+<div class="ai-container">
 
-<section
-    id="ai"
-    class="page"
->
+    <!-- =========================================
+         AI CHAT HISTORY
+    ========================================== -->
 
-    <div class="page-header">
+    <aside class="ai-history-card">
 
-        <span class="section-badge">
-            AI CHEMISTRY TUTOR
-        </span>
+        <div class="ai-history-header">
 
-        <h1>
-            Ask ChemLab AI
-        </h1>
+            <div>
+                <h3>
+                    Chat History
+                </h3>
 
-        <p>
-            Ask chemistry questions and get explanations
-            from your AI-powered chemistry tutor.
-        </p>
-
-    </div>
-
-
-
-    <div class="ai-container">
-
-        <div class="ai-card">
-
-            <div class="ai-header">
-
-                <div class="ai-avatar">
-                    🤖
-                </div>
-
-                <div>
-
-                    <h2>
-                        ChemLab AI
-                    </h2>
-
-                    <p>
-                        Your chemistry learning assistant
-                    </p>
-
-                </div>
-
+                <p>
+                    Your saved chemistry conversations
+                </p>
             </div>
 
-
-
-            <div
-                id="mainAIAnswer"
-                class="ai-answer"
+            <button
+                id="newAIChatButton"
+                class="primary-button"
+                type="button"
             >
+                + New Chat
+            </button>
 
-                <div class="ai-welcome">
+        </div>
 
-                    <span>
-                        🧪
-                    </span>
 
-                    <h3>
-                        What would you like to learn?
-                    </h3>
+        <div
+            id="aiConversationHistory"
+            class="ai-conversation-history"
+        >
 
-                    <p>
-                        Ask me about acids, bases, reactions,
-                        calculations, periodic trends and more.
-                    </p>
+            <div class="ai-history-empty">
 
+                <div class="ai-history-empty-icon">
+                    💬
                 </div>
 
-            </div>
+                <p>
+                    No saved conversations yet.
+                </p>
 
-
-
-            <div class="ai-input-area">
-
-                <textarea
-                    id="mainAIInput"
-                    rows="4"
-                    placeholder="Ask a chemistry question..."
-                ></textarea>
-
-
-                <button
-                    type="button"
-                    class="primary-button"
-                    onclick="mainAIQuestion()"
-                >
-                    🤖 Ask ChemLab AI
-                </button>
+                <small>
+                    Your chemistry conversations
+                    will appear here.
+                </small>
 
             </div>
 
         </div>
 
+    </aside>
+
+
+
+    <!-- =========================================
+         EXISTING AI CHAT
+    ========================================== -->
+
+    <div class="ai-card">
+
+        <div class="ai-header">
+
+            <div class="ai-avatar">
+                🤖
+            </div>
+
+            <div>
+
+                <h2>
+                    ChemLab AI
+                </h2>
+
+                <p>
+                    Your chemistry learning assistant
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div
+            id="mainAIAnswer"
+            class="ai-answer"
+        >
+
+            <div class="ai-welcome">
+
+                <span>
+                    🧪
+                </span>
+
+                <h3>
+                    What would you like to learn?
+                </h3>
+
+                <p>
+                    Ask me about acids, bases, reactions,
+                    calculations, periodic trends and more.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="ai-input-area">
+
+            <textarea
+                id="mainAIInput"
+                rows="4"
+                placeholder="Ask a chemistry question..."
+            ></textarea>
+
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="mainAIQuestion()"
+            >
+                🤖 Ask ChemLab AI
+            </button>
+
+        </div>
+
     </div>
 
-</section>
-
+</div>
 
 
 <!-- =====================================================
