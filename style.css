@@ -3382,3 +3382,1034 @@ img {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================================
+   CHEMLAB — DASHBOARD & PROGRESS REDESIGN
+   PROFESSIONAL STUDENT DASHBOARD
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   GLOBAL PAGE CONTAINER
+--------------------------------------------------------- */
+
+.page {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 48px 0 90px;
+}
+
+
+/* ---------------------------------------------------------
+   DASHBOARD / PROGRESS MAIN LAYOUT
+--------------------------------------------------------- */
+
+#progress,
+#dashboard {
+    width: min(1180px, calc(100% - 40px));
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ---------------------------------------------------------
+   PAGE HEADERS
+--------------------------------------------------------- */
+
+#progress > h1,
+#progress > h2,
+#dashboard > h1,
+#dashboard > h2 {
+    margin-top: 0;
+}
+
+
+.page-header,
+.dashboard-header,
+.progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    margin-bottom: 32px;
+}
+
+
+.page-header-content,
+.dashboard-header-content,
+.progress-header-content {
+    min-width: 0;
+}
+
+
+.page-kicker {
+    display: inline-block;
+
+    margin-bottom: 8px;
+
+    color: var(--primary);
+
+    font-size: 0.75rem;
+    font-weight: 800;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+
+.page-title,
+.dashboard-title,
+.progress-title {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 800;
+
+    line-height: 1.15;
+}
+
+
+.page-description,
+.dashboard-description,
+.progress-description {
+    max-width: 650px;
+
+    margin: 10px 0 0;
+
+    color: var(--text-soft);
+
+    font-size: 0.98rem;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   STAT CARDS
+========================================================= */
+
+.progress-stats,
+.dashboard-stats,
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+
+    width: 100%;
+
+    margin-bottom: 28px;
+}
+
+
+.stat-card,
+.progress-stat-card,
+.dashboard-stat-card {
+    position: relative;
+
+    min-width: 0;
+
+    padding: 22px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    overflow: hidden;
+}
+
+
+.stat-card::after,
+.progress-stat-card::after,
+.dashboard-stat-card::after {
+    content: "";
+
+    position: absolute;
+
+    right: -25px;
+    bottom: -35px;
+
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+
+    background: rgba(49, 87, 213, 0.05);
+}
+
+
+.stat-icon,
+.progress-stat-icon,
+.dashboard-stat-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 15px;
+
+    border-radius: 12px;
+
+    background: rgba(49, 87, 213, 0.09);
+
+    font-size: 1.3rem;
+}
+
+
+.stat-label,
+.progress-stat-label,
+.dashboard-stat-label {
+    margin-bottom: 7px;
+
+    color: var(--text-soft);
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+
+.stat-value,
+.progress-stat-value,
+.dashboard-stat-value {
+    color: var(--text);
+
+    font-size: 1.8rem;
+    font-weight: 800;
+
+    line-height: 1.1;
+}
+
+
+/* =========================================================
+   LEVEL PROGRESS CARD
+========================================================= */
+
+.level-progress-card {
+    width: 100%;
+
+    margin-bottom: 28px;
+
+    padding: 28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #f8faff 100%
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.level-progress-top {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+
+.level-progress-title {
+    margin: 0 0 5px;
+
+    color: var(--text);
+
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+
+.level-progress-subtitle {
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 0.88rem;
+}
+
+
+.level-badge {
+    flex-shrink: 0;
+
+    padding: 8px 13px;
+
+    color: var(--primary);
+
+    background: rgba(49, 87, 213, 0.09);
+
+    border-radius: 999px;
+
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+
+.level-progress-meta {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 9px;
+}
+
+
+.level-progress-meta span {
+    color: var(--text-soft);
+
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+
+.progress-track {
+    width: 100%;
+    height: 12px;
+
+    overflow: hidden;
+
+    background: #e9edf5;
+
+    border-radius: 999px;
+}
+
+
+.progress-fill {
+    width: 0;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    border-radius: inherit;
+
+    transition: width 0.5s ease;
+}
+
+
+/* Existing progress IDs */
+
+#progressBar {
+    height: 12px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    border-radius: 999px;
+
+    transition: width 0.5s ease;
+}
+
+
+#progressText {
+    margin-top: 9px;
+
+    color: var(--text-soft);
+
+    font-size: 0.8rem;
+}
+
+
+/* =========================================================
+   LEARNING OVERVIEW
+========================================================= */
+
+.progress-overview,
+.dashboard-overview {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.7fr)
+        minmax(280px, 1fr);
+
+    gap: 22px;
+
+    margin-bottom: 28px;
+}
+
+
+.progress-panel,
+.dashboard-panel {
+    min-width: 0;
+
+    padding: 25px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.panel-title {
+    margin: 0 0 7px;
+
+    color: var(--text);
+
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+
+.panel-description {
+    margin: 0 0 22px;
+
+    color: var(--text-soft);
+
+    font-size: 0.87rem;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   MEMBERSHIP CARD
+========================================================= */
+
+.membership-card,
+.premium-access-card {
+    position: relative;
+
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f8faff
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.membership-card.premium,
+.premium-access-card.premium {
+    border-color: rgba(124, 58, 237, 0.25);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #faf7ff
+        );
+}
+
+
+.membership-label {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 14px;
+
+    color: var(--text-soft);
+
+    font-size: 0.72rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+
+.membership-card h3,
+.premium-access-card h3 {
+    margin: 0 0 8px;
+
+    color: var(--text);
+
+    font-size: 1.25rem;
+}
+
+
+.membership-card p,
+.premium-access-card p {
+    margin: 0 0 20px;
+
+    color: var(--text-soft);
+
+    font-size: 0.88rem;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+.quick-action,
+.quick-action-button {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-height: 52px;
+
+    padding: 13px 15px;
+
+    color: var(--text);
+
+    background: var(--surface-soft);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    font-size: 0.86rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.quick-action:hover,
+.quick-action-button:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(49, 87, 213, 0.3);
+
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   ACHIEVEMENTS
+========================================================= */
+
+.achievements-section {
+    width: 100%;
+
+    margin-top: 30px;
+
+    padding: 30px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.achievements-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 26px;
+}
+
+
+.achievements-header h2 {
+    margin: 0 0 7px;
+
+    color: var(--text);
+
+    font-size: 1.45rem;
+}
+
+
+.achievements-header p {
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 0.88rem;
+
+    line-height: 1.5;
+}
+
+
+.achievement-counter {
+    flex-shrink: 0;
+
+    min-width: 95px;
+
+    padding: 12px 16px;
+
+    text-align: center;
+
+    background: var(--surface-soft);
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+}
+
+
+.achievement-counter span {
+    display: block;
+
+    color: var(--primary);
+
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+
+.achievement-counter small {
+    color: var(--text-soft);
+
+    font-size: 0.7rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.achievements-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+
+    width: 100%;
+}
+
+
+.achievement-card {
+    position: relative;
+
+    min-width: 0;
+
+    padding: 22px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow: none;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.achievement-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: var(--shadow-md);
+}
+
+
+.achievement-card.unlocked {
+    border-color: rgba(49, 87, 213, 0.28);
+}
+
+
+.achievement-card.locked {
+    opacity: 0.65;
+}
+
+
+.achievement-icon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 17px;
+
+    border-radius: 14px;
+
+    background: var(--surface-soft);
+
+    font-size: 1.55rem;
+}
+
+
+.achievement-card.unlocked
+.achievement-icon {
+    background: rgba(49, 87, 213, 0.09);
+}
+
+
+.achievement-card h3 {
+    margin: 0 0 8px;
+
+    color: var(--text);
+
+    font-size: 0.98rem;
+
+    line-height: 1.3;
+}
+
+
+.achievement-card p {
+    min-height: 52px;
+
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 0.82rem;
+
+    line-height: 1.55;
+}
+
+
+.achievement-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    margin-top: 17px;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.7rem;
+
+    font-weight: 800;
+}
+
+
+.achievement-status.unlocked {
+    color: var(--success);
+
+    background: rgba(22, 163, 74, 0.09);
+}
+
+
+.achievement-status.locked {
+    color: var(--text-soft);
+
+    background: var(--surface-soft);
+}
+
+
+.achievement-check {
+    position: absolute;
+
+    top: 15px;
+    right: 15px;
+
+    font-size: 0.82rem;
+}
+
+
+/* =========================================================
+   DASHBOARD CONTENT CARDS
+========================================================= */
+
+.dashboard-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    width: 100%;
+}
+
+
+.dashboard-card {
+    min-width: 0;
+
+    padding: 24px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: var(--shadow-md);
+}
+
+
+.dashboard-card h3 {
+    margin: 0 0 8px;
+
+    color: var(--text);
+
+    font-size: 1.05rem;
+}
+
+
+.dashboard-card p {
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 0.86rem;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.dashboard-button,
+.progress-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 44px;
+
+    padding: 0 17px;
+
+    border: 0;
+
+    border-radius: 11px;
+
+    font-size: 0.85rem;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+.dashboard-button:hover,
+.progress-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.dashboard-button.primary,
+.progress-button.primary {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+}
+
+
+/* =========================================================
+   MOBILE / TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .progress-stats,
+    .dashboard-stats,
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .achievements-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+
+    .dashboard-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .progress-overview,
+    .dashboard-overview {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .page,
+    #progress,
+    #dashboard {
+        width: min(
+            100% - 28px,
+            600px
+        );
+
+        padding-top: 30px;
+    }
+
+
+    .page-header,
+    .dashboard-header,
+    .progress-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .progress-stats,
+    .dashboard-stats,
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+
+    .stat-card,
+    .progress-stat-card,
+    .dashboard-stat-card {
+        padding: 18px;
+    }
+
+
+    .achievements-section {
+        padding: 20px;
+    }
+
+
+    .achievements-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+
+    .achievement-card {
+        padding: 17px;
+    }
+
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .progress-stats,
+    .dashboard-stats,
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .achievements-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .achievement-counter {
+        width: 100%;
+    }
+
+
+    .level-progress-card,
+    .progress-panel,
+    .dashboard-panel,
+    .membership-card,
+    .premium-access-card {
+        padding: 20px;
+    }
+}
