@@ -257,6 +257,76 @@ async function saveAIMessage(
     return data;
 }
 
+/* =========================================
+   LOAD AI CONVERSATION HISTORY
+========================================= */
+
+async function loadAIConversations() {
+
+    const client =
+        getChemLabSupabase();
+
+    const user =
+        await getAIUser();
+
+    if (!client || !user) {
+        aiChatState.conversations = [];
+        return [];
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await client
+            .from("ai_conversations")
+            .select(`
+                id,
+                title,
+                created_at,
+                updated_at,
+                expires_at
+            `)
+            .eq("user_id", user.id)
+            .order(
+                "updated_at",
+                {
+                    ascending: false
+                }
+            );
+
+        if (error) {
+
+            console.error(
+                "Load AI conversations error:",
+                error
+            );
+
+            throw new Error(
+                error.message ||
+                "Unable to load AI conversations."
+            );
+        }
+
+        aiChatState.conversations =
+            data || [];
+
+        return aiChatState.conversations;
+
+    } catch (error) {
+
+        console.error(
+            "ChemLab AI history error:",
+            error
+        );
+
+        aiChatState.conversations =
+            [];
+
+        return [];
+    }
+}
 
 /* =========================================================
    3. BASIC TITRATION STATE
@@ -1741,7 +1811,234 @@ async function mainAIQuestion() {
         const message =
             error?.message ||
             "Unable to connect to ChemLab AI.";
+       
+/* =========================================
+   LOAD ONE AI CONVERSATION
+========================================= */
 
+async function loadAIConversation(conversationId) {
+
+    const client =
+        getChemLabSupabase();
+
+    const user =
+        await getAIUser();
+
+    if (!client || !user) {
+        return null;
+    }
+
+    if (!conversationId) {
+        return null;
+    }
+
+    aiChatState.loadingConversation = true;
+
+    try {
+
+        /* -------------------------------------
+           Load conversation
+        ------------------------------------- */
+
+        const {
+            data: conversation,
+            error: conversationError
+        } = await client
+            .from("ai_conversations")
+            .select(`
+                id,
+                title,
+                created_at,
+                updated_at,
+                expires_at
+            `)
+            .eq("id", conversationId)
+            .eq("user_id", user.id)
+            .single();
+
+        if (conversationError) {
+
+            console.error(
+                "Load AI conversation error:",
+                conversationError
+            );
+
+            throw new Error(
+                conversationError.message ||
+                "Unable to load conversation."
+            );
+        }
+
+
+        /* -------------------------------------
+           Load messages
+        ------------------------------------- */
+
+        const {
+            data: messages,
+            error: messagesError
+        } = await client
+            .from("ai_messages")
+            .select(`
+                id,
+                conversation_id,
+                role,
+                content,
+                created_at
+            `)
+            .eq(
+                "conversation_id",
+                conversationId
+            )
+            .eq(
+                "user_id",
+                user.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+        if (messagesError) {
+
+            console.error(
+                "Load AI messages error:",
+                messagesError
+            );
+
+            throw new Error(
+                messagesError.message ||
+                "Unable to load conversation messages."
+            );
+        }
+
+
+        /* -------------------------------------
+           Set active conversation
+        ------------------------------------- */
+
+        aiChatState.currentConversationId =
+            conversation.id;
+
+
+        /* -------------------------------------
+           Render conversation
+        ------------------------------------- */
+
+        renderLoadedAIConversation(
+            conversation,
+            messages || []
+        );
+
+
+        return {
+            conversation,
+            messages:
+                messages || []
+        };
+
+    } catch (error) {
+
+        console.error(
+            "ChemLab AI conversation loading error:",
+            error
+        );
+
+        showNotification(
+            error.message ||
+            "Unable to load this conversation.",
+            "error"
+        );
+
+        return null;
+
+    } finally {
+
+        aiChatState.loadingConversation =
+            false;
+    }
+}
+       /* =========================================
+   RENDER LOADED AI CONVERSATION
+========================================= */
+
+function renderLoadedAIConversation(
+    conversation,
+    messages
+) {
+
+    const chat =
+        $("aiChat");
+
+    if (!chat) {
+        console.warn(
+            "ChemLab AI: aiChat container not found."
+        );
+        return;
+    }
+
+    /* Clear current messages */
+    chat.innerHTML = "";
+
+
+    /* -----------------------------------------
+       Add conversation messages
+    ----------------------------------------- */
+
+    if (!messages || messages.length === 0) {
+
+        addAIChatMessage(
+            "assistant",
+            "This conversation is empty. Ask me a chemistry question!"
+        );
+
+        return;
+    }
+
+
+    messages.forEach(message => {
+
+        const role =
+            message.role === "user"
+                ? "user"
+                : "assistant";
+
+        addAIChatMessage(
+            role,
+            message.content
+        );
+
+    });
+
+
+    /* -----------------------------------------
+       Scroll to newest message
+    ----------------------------------------- */
+
+    requestAnimationFrame(() => {
+
+        chat.scrollTop =
+            chat.scrollHeight;
+
+    });
+
+
+    /* -----------------------------------------
+       Update AI status
+    ----------------------------------------- */
+
+    const status =
+        $("aiStatus");
+
+    if (status) {
+
+        status.textContent =
+            conversation?.title ||
+            "Conversation loaded";
+    }
+}
 
         /* -------------------------------------------------
            SHOW ERROR IN CHAT
