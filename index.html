@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -25,6 +26,7 @@
         rel="stylesheet"
         href="style.css"
     >
+
 </head>
 
 
@@ -39,6 +41,7 @@
 
     <div class="nav-container">
 
+
         <button
             class="logo"
             type="button"
@@ -48,7 +51,9 @@
         </button>
 
 
+
         <nav class="nav-links">
+
 
             <button
                 type="button"
@@ -57,12 +62,22 @@
                 Home
             </button>
 
+
+            <button
+                type="button"
+                onclick="showPage('dashboard')"
+            >
+                Dashboard
+            </button>
+
+
             <button
                 type="button"
                 onclick="showPage('lab')"
             >
                 Lab
             </button>
+
 
             <button
                 type="button"
@@ -71,12 +86,14 @@
                 Quiz
             </button>
 
+
             <button
                 type="button"
                 onclick="showPage('progress')"
             >
                 Progress
             </button>
+
 
             <button
                 type="button"
@@ -86,6 +103,7 @@
             </button>
 
         </nav>
+
 
 
         <button
@@ -118,9 +136,12 @@
     class="page active"
 >
 
+
     <div class="hero">
 
+
         <div class="hero-content">
+
 
             <span class="hero-badge">
                 🧪 Interactive Chemistry Learning
@@ -128,20 +149,25 @@
 
 
             <h1>
+
                 Learn Chemistry.
                 <span>Experiment.</span>
                 Master It.
+
             </h1>
 
 
             <p>
+
                 Explore chemistry through interactive virtual
                 experiments, quizzes, progress tracking and
                 an AI-powered chemistry tutor.
+
             </p>
 
 
             <div class="hero-buttons">
+
 
                 <button
                     type="button"
@@ -165,7 +191,9 @@
         </div>
 
 
+
         <div class="hero-visual">
+
 
             <div class="chemistry-orb">
 
@@ -173,7 +201,9 @@
                     ⚗️
                 </div>
 
-                <span>CHEMISTRY</span>
+                <span>
+                    CHEMISTRY
+                </span>
 
             </div>
 
@@ -201,6 +231,7 @@
         </p>
 
     </div>
+
 
 
     <div class="feature-grid">
@@ -340,6 +371,621 @@
             onclick="showPage('lab')"
         >
             Open Laboratory →
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     STUDENT DASHBOARD
+===================================================== -->
+
+<section
+    id="dashboard"
+    class="page"
+>
+
+
+    <div class="dashboard-hero">
+
+
+        <div class="dashboard-welcome">
+
+
+            <span class="section-badge">
+                STUDENT DASHBOARD
+            </span>
+
+
+            <h1>
+                Welcome back,
+                <span id="dashboardStudentName">
+                    Student
+                </span> 👋
+            </h1>
+
+
+            <p id="dashboardSubtitle">
+                Continue your chemistry learning journey.
+            </p>
+
+        </div>
+
+
+
+        <div
+            id="dashboardMembershipBadge"
+            class="dashboard-membership-badge"
+        >
+            🔒 FREE STUDENT
+        </div>
+
+    </div>
+
+
+
+    <!-- DASHBOARD STATISTICS -->
+
+    <div class="dashboard-stat-grid">
+
+
+        <div class="dashboard-stat-card">
+
+            <div class="dashboard-stat-icon">
+                ⚡
+            </div>
+
+            <div>
+
+                <span>
+                    TOTAL XP
+                </span>
+
+                <strong
+                    id="dashboardXP"
+                >
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="dashboard-stat-card">
+
+            <div class="dashboard-stat-icon">
+                🏆
+            </div>
+
+            <div>
+
+                <span>
+                    CURRENT LEVEL
+                </span>
+
+                <strong
+                    id="dashboardLevel"
+                >
+                    1
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="dashboard-stat-card">
+
+            <div class="dashboard-stat-icon">
+                🧪
+            </div>
+
+            <div>
+
+                <span>
+                    EXPERIMENTS
+                </span>
+
+                <strong
+                    id="dashboardExperiments"
+                >
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="dashboard-stat-card">
+
+            <div class="dashboard-stat-icon">
+                🔥
+            </div>
+
+            <div>
+
+                <span>
+                    LEARNING STREAK
+                </span>
+
+                <strong
+                    id="dashboardStreak"
+                >
+                    0 days
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- LEARNING PROGRESS -->
+
+    <div class="dashboard-grid">
+
+
+        <div class="dashboard-panel">
+
+
+            <div class="dashboard-panel-header">
+
+                <div>
+
+                    <span>
+                        YOUR LEARNING
+                    </span>
+
+                    <h2>
+                        Level Progress
+                    </h2>
+
+                </div>
+
+
+                <strong
+                    id="dashboardXPText"
+                >
+                    0 XP
+                </strong>
+
+            </div>
+
+
+            <div class="dashboard-level-row">
+
+                <div class="dashboard-level-badge">
+                    <span>
+                        LVL
+                    </span>
+
+                    <strong
+                        id="dashboardLevelLarge"
+                    >
+                        1
+                    </strong>
+                </div>
+
+
+                <div class="dashboard-level-info">
+
+                    <div class="dashboard-progress-track">
+
+                        <div
+                            id="dashboardXPBar"
+                            class="dashboard-progress-fill"
+                            style="width: 0%;"
+                        ></div>
+
+                    </div>
+
+
+                    <p id="dashboardLevelText">
+                        Earn XP to reach the next level.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- MEMBERSHIP -->
+
+        <div class="dashboard-panel">
+
+
+            <div class="dashboard-panel-header">
+
+                <div>
+
+                    <span>
+                        MEMBERSHIP
+                    </span>
+
+                    <h2>
+                        ChemLab Access
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="dashboardMembershipCard"
+                class="dashboard-membership-card"
+            >
+
+                <div
+                    id="dashboardMembershipIcon"
+                    class="dashboard-membership-icon"
+                >
+                    🔒
+                </div>
+
+
+                <div>
+
+                    <strong
+                        id="dashboardMembershipTitle"
+                    >
+                        Free Student
+                    </strong>
+
+                    <p
+                        id="dashboardMembershipText"
+                    >
+                        Access the core ChemLab learning
+                        experience.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="dashboardPremiumButton"
+                type="button"
+                class="secondary-button"
+                onclick="showPremiumSection()"
+            >
+                👑 Explore Premium
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-section-header">
+
+        <div>
+
+            <span class="section-badge">
+                QUICK ACTIONS
+            </span>
+
+            <h2>
+                Continue Learning
+            </h2>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="dashboard-action-grid">
+
+
+        <button
+            type="button"
+            class="dashboard-action-card"
+            onclick="showPage('lab')"
+        >
+
+            <span>
+                🧪
+            </span>
+
+            <div>
+
+                <strong>
+                    Virtual Laboratory
+                </strong>
+
+                <p>
+                    Perform chemistry experiments.
+                </p>
+
+            </div>
+
+            <b>
+                →
+            </b>
+
+        </button>
+
+
+
+        <button
+            type="button"
+            class="dashboard-action-card"
+            onclick="showPage('quiz')"
+        >
+
+            <span>
+                📝
+            </span>
+
+            <div>
+
+                <strong>
+                    Quiz Arena
+                </strong>
+
+                <p>
+                    Test your chemistry knowledge.
+                </p>
+
+            </div>
+
+            <b>
+                →
+            </b>
+
+        </button>
+
+
+
+        <button
+            type="button"
+            class="dashboard-action-card"
+            onclick="showPage('ai')"
+        >
+
+            <span>
+                🤖
+            </span>
+
+            <div>
+
+                <strong>
+                    AI Chemistry Tutor
+                </strong>
+
+                <p>
+                    Ask questions and learn.
+                </p>
+
+            </div>
+
+            <b>
+                →
+            </b>
+
+        </button>
+
+
+
+        <button
+            type="button"
+            class="dashboard-action-card"
+            onclick="showPage('progress')"
+        >
+
+            <span>
+                📊
+            </span>
+
+            <div>
+
+                <strong>
+                    My Progress
+                </strong>
+
+                <p>
+                    Review your learning journey.
+                </p>
+
+            </div>
+
+            <b>
+                →
+            </b>
+
+        </button>
+
+    </div>
+
+
+
+    <!-- ACHIEVEMENTS -->
+
+    <div class="dashboard-section-header">
+
+        <div>
+
+            <span class="section-badge">
+                ACHIEVEMENTS
+            </span>
+
+            <h2>
+                Your Chemistry Milestones
+            </h2>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="dashboard-achievement-grid">
+
+
+        <div
+            id="dashboardAchievementExperiment"
+            class="dashboard-achievement-card locked"
+        >
+
+            <div class="achievement-icon">
+                🧪
+            </div>
+
+            <div>
+
+                <strong>
+                    First Experiment
+                </strong>
+
+                <p>
+                    Complete your first experiment.
+                </p>
+
+            </div>
+
+            <span class="achievement-status">
+                🔒
+            </span>
+
+        </div>
+
+
+
+        <div
+            id="dashboardAchievementQuiz"
+            class="dashboard-achievement-card locked"
+        >
+
+            <div class="achievement-icon">
+                📝
+            </div>
+
+            <div>
+
+                <strong>
+                    Quiz Starter
+                </strong>
+
+                <p>
+                    Complete your first chemistry quiz.
+                </p>
+
+            </div>
+
+            <span class="achievement-status">
+                🔒
+            </span>
+
+        </div>
+
+
+
+        <div
+            id="dashboardAchievementAI"
+            class="dashboard-achievement-card locked"
+        >
+
+            <div class="achievement-icon">
+                🤖
+            </div>
+
+            <div>
+
+                <strong>
+                    Ask the AI
+                </strong>
+
+                <p>
+                    Ask ChemLab AI your first question.
+                </p>
+
+            </div>
+
+            <span class="achievement-status">
+                🔒
+            </span>
+
+        </div>
+
+
+
+        <div
+            id="dashboardAchievementXP"
+            class="dashboard-achievement-card locked"
+        >
+
+            <div class="achievement-icon">
+                ⚡
+            </div>
+
+            <div>
+
+                <strong>
+                    Chemistry Learner
+                </strong>
+
+                <p>
+                    Earn your first 100 XP.
+                </p>
+
+            </div>
+
+            <span class="achievement-status">
+                🔒
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- DASHBOARD MOTIVATION -->
+
+    <div class="dashboard-motivation">
+
+        <div>
+
+            <span>
+                🧠 KEEP LEARNING
+            </span>
+
+            <h2>
+                Every experiment teaches you something.
+            </h2>
+
+            <p>
+                Explore, experiment, ask questions and
+                build your chemistry skills one step at a time.
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="primary-button"
+            onclick="showPage('lab')"
+        >
+            Start Learning →
         </button>
 
     </div>
@@ -569,8 +1215,6 @@
     <div class="lab-layout">
 
 
-        <!-- EXPERIMENT -->
-
         <div class="lab-panel">
 
             <div class="panel-header">
@@ -588,8 +1232,6 @@
 
             <div class="apparatus-area">
 
-
-                <!-- BURETTE -->
 
                 <div class="burette-container">
 
@@ -627,8 +1269,6 @@
 
 
 
-                <!-- FLASK -->
-
                 <div class="flask-container">
 
                     <div
@@ -653,7 +1293,6 @@
             </div>
 
 
-            <!-- CONTROLS -->
 
             <div class="experiment-controls">
 
@@ -690,8 +1329,6 @@
 
 
 
-        <!-- DATA -->
-
         <div class="lab-panel">
 
             <div class="panel-header">
@@ -713,10 +1350,13 @@
                     </span>
 
                     <strong>
+
                         <span id="titrantVolume">
                             0.00
                         </span>
+
                         mL
+
                     </strong>
 
                 </div>
@@ -1043,9 +1683,8 @@
 
 
 
-    <!-- PREMIUM FEATURES -->
-
     <div class="premium-features">
+
 
         <div class="premium-feature">
 
@@ -1104,8 +1743,6 @@
 
 
 
-    <!-- PREMIUM EXPERIMENT -->
-
     <div class="premium-experiment-list">
 
         <div class="premium-experiment-card">
@@ -1148,8 +1785,6 @@
 
 
 
-    <!-- PRICING -->
-
     <div class="pricing-section">
 
         <div class="section-header">
@@ -1172,8 +1807,6 @@
 
         <div class="pricing-grid">
 
-
-            <!-- MONTHLY -->
 
             <div class="premium-plan-card">
 
@@ -1223,8 +1856,6 @@
             </div>
 
 
-
-            <!-- YEARLY -->
 
             <div class="premium-plan-card featured-plan">
 
@@ -1514,8 +2145,6 @@
     <div class="advanced-lab-layout">
 
 
-        <!-- SETTINGS -->
-
         <div class="lab-panel">
 
             <div class="panel-header">
@@ -1642,8 +2271,6 @@
 
 
 
-        <!-- ADVANCED APPARATUS -->
-
         <div class="lab-panel">
 
             <div class="panel-header">
@@ -1721,8 +2348,6 @@
         </div>
 
 
-
-        <!-- RESULTS -->
 
         <div class="lab-panel">
 
@@ -1859,8 +2484,6 @@
 
 
 
-        <!-- OBSERVATION -->
-
         <div class="lab-panel">
 
             <div class="panel-header">
@@ -1909,8 +2532,6 @@
 
 
 
-        <!-- EXPLANATION -->
-
         <div
             id="advancedExplanation"
             class="lab-panel explanation-panel"
@@ -1936,8 +2557,6 @@
         </div>
 
 
-
-        <!-- CHART -->
 
         <div class="lab-panel chart-panel">
 
@@ -2372,6 +2991,7 @@
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
+
 
 
 <!-- =====================================================
