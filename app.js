@@ -662,6 +662,122 @@ function getExperimentState() {
 }
 
 /* =========================================================
+   CURRENT EXPERIMENT STATE FOR CHEMLAB AI
+========================================================= */
+
+function getCurrentAIExperimentState() {
+
+    /* -----------------------------------------------------
+       ADVANCED TITRATION
+    ----------------------------------------------------- */
+
+    if (
+        chemLabState.currentExperiment ===
+        "advanced-titration"
+    ) {
+
+        const result =
+            advancedTitration.lastCalculatedState ||
+            calculateAdvancedTitration(
+                advancedTitration.addedVolume
+            );
+
+        return {
+
+            experiment:
+                "Advanced Acid-Base Titration",
+
+            hclConcentration:
+                advancedTitration.hclConcentration,
+
+            hclSampleVolume:
+                advancedTitration.sampleVolume,
+
+            naohConcentration:
+                advancedTitration.naohConcentration,
+
+            naohAddedVolume:
+                result.addedVolume,
+
+            equivalenceVolume:
+                result.equivalenceVolume,
+
+            pH:
+                result.pH,
+
+            state:
+                result.state,
+
+            neutralizationProgress:
+                result.neutralizationProgress,
+
+            nearEquivalence:
+                result.nearEquivalence,
+
+            hPlus:
+                result.hPlus,
+
+            ohMinus:
+                result.ohMinus
+        };
+    }
+
+
+    /* -----------------------------------------------------
+       BASIC TITRATION
+    ----------------------------------------------------- */
+
+    if (
+        chemLabState.currentExperiment ===
+        "titration"
+    ) {
+
+        const result =
+            calculateBasicTitration(
+                titrationState.titrantVolume
+            );
+
+        return {
+
+            experiment:
+                "Basic Acid-Base Titration",
+
+            hclConcentration:
+                titrationState.hclConcentration,
+
+            hclSampleVolume:
+                titrationState.hclVolume,
+
+            naohConcentration:
+                titrationState.naohConcentration,
+
+            naohAddedVolume:
+                titrationState.titrantVolume,
+
+            equivalenceVolume:
+                titrationState.equivalencePoint,
+
+            pH:
+                result.pH,
+
+            state:
+                result.state
+        };
+    }
+
+
+    /* -----------------------------------------------------
+       GENERAL CHEMISTRY
+    ----------------------------------------------------- */
+
+    return {
+
+        experiment:
+            "General Chemistry"
+    };
+}
+
+/* =========================================================
    12. AI CHEMISTRY TUTOR
 ========================================================= */
 
