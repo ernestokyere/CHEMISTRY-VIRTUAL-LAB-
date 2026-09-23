@@ -3111,3 +3111,274 @@ img {
     }
 
 }
+
+/* =========================================================
+   CHEMLAB ACHIEVEMENTS
+========================================================= */
+
+.achievements-section {
+    margin-top: 45px;
+    padding: 30px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+
+.achievements-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 28px;
+}
+
+
+.section-kicker {
+    display: inline-block;
+    margin-bottom: 8px;
+
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+
+    color: var(--primary);
+}
+
+
+.achievements-header h2 {
+    margin: 0 0 8px;
+
+    font-size: 1.7rem;
+    color: var(--text);
+}
+
+
+.achievements-header p {
+    margin: 0;
+
+    color: var(--text-soft);
+    line-height: 1.6;
+}
+
+
+.achievement-counter {
+    min-width: 105px;
+    padding: 15px;
+
+    text-align: center;
+
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+
+.achievement-counter span {
+    display: block;
+
+    font-size: 1.8rem;
+    font-weight: 800;
+
+    color: var(--primary);
+}
+
+
+.achievement-counter small {
+    color: var(--text-soft);
+    font-size: 0.75rem;
+}
+
+
+.achievements-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+.achievement-card {
+    position: relative;
+
+    padding: 22px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.achievement-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: var(--shadow-md);
+}
+
+
+.achievement-card.unlocked {
+    border-color: rgba(49, 87, 213, 0.3);
+}
+
+
+.achievement-card.locked {
+    opacity: 0.62;
+}
+
+
+.achievement-icon {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 16px;
+
+    border-radius: 16px;
+
+    background: var(--surface-soft);
+
+    font-size: 1.8rem;
+}
+
+
+.achievement-card.unlocked
+.achievement-icon {
+    background: rgba(49, 87, 213, 0.1);
+}
+
+
+.achievement-card h3 {
+    margin: 0 0 8px;
+
+    font-size: 1rem;
+
+    color: var(--text);
+}
+
+
+.achievement-card p {
+    margin: 0;
+
+    min-height: 45px;
+
+    color: var(--text-soft);
+
+    font-size: 0.86rem;
+
+    line-height: 1.55;
+}
+
+
+.achievement-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    margin-top: 16px;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+}
+
+
+.achievement-status.unlocked {
+    color: var(--success);
+
+    background: rgba(22, 163, 74, 0.1);
+}
+
+
+.achievement-status.locked {
+    color: var(--text-soft);
+
+    background: var(--surface-soft);
+}
+
+
+.achievement-check {
+    position: absolute;
+
+    top: 15px;
+    right: 15px;
+
+    font-size: 0.9rem;
+}
+
+
+.achievements-empty {
+    grid-column: 1 / -1;
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    color: var(--text-soft);
+
+    border: 1px dashed var(--border);
+
+    border-radius: var(--radius-md);
+}
+
+
+/* =========================================
+   ACHIEVEMENT RESPONSIVE
+========================================= */
+
+@media (max-width: 1000px) {
+
+    .achievements-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .achievements-section {
+        padding: 22px;
+    }
+
+    .achievements-header {
+        align-items: flex-start;
+    }
+
+    .achievements-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .achievements-header {
+        flex-direction: column;
+    }
+
+    .achievement-counter {
+        width: 100%;
+    }
+
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+}
