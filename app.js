@@ -909,23 +909,33 @@ async function askAI(
 
                     body: JSON.stringify({
 
-                        question:
-                            cleanedQuestion,
+    question:
+        cleanedQuestion,
 
-                        experiment:
-                            experiment ||
-                            chemLabState.currentExperiment ||
-                            "General Chemistry",
+    experiment:
+        typeof experiment === "string"
+            ? experiment
+            : experiment?.experiment ||
+              chemLabState.currentExperiment ||
+              "General Chemistry",
 
-                        source:
-                            "ChemLab",
+    experimentState:
+        typeof experiment === "object" &&
+        experiment !== null
+            ? experiment
+            : (
+                typeof getCurrentAIExperimentState ===
+                "function"
+                    ? getCurrentAIExperimentState()
+                    : null
+            ),
 
-                        student_mode:
-                            true
-                    })
-                }
-            );
+    source:
+        "ChemLab",
 
+    student_mode:
+        true
+})
     } catch (networkError) {
 
         console.error(
