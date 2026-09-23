@@ -951,32 +951,26 @@ async function askAI(
 
 
 /* =========================================================
-   MAIN AI QUESTION
+   MAIN AI QUESTION — PERSISTENT CHAT VERSION
 ========================================================= */
 
 async function mainAIQuestion() {
-
-    /*
-     * Support both the old and new input IDs.
-     */
 
     const input =
         $("aiQuestion") ||
         $("mainAIInput");
 
-
-    /*
-     * Support both possible output containers.
-     */
-
     const output =
         $("aiChat") ||
         $("mainAIAnswer");
 
-
     const status =
         $("aiStatus");
 
+
+    /* -----------------------------------------------------
+       CHECK INPUT
+    ----------------------------------------------------- */
 
     if (!input) {
 
@@ -1006,9 +1000,31 @@ async function mainAIQuestion() {
     }
 
 
-    /*
-     * Disable the button while AI is responding.
-     */
+    /* -----------------------------------------------------
+       PREVENT MULTIPLE REQUESTS
+    ----------------------------------------------------- */
+
+    if (
+        typeof aiChatState !== "undefined" &&
+        aiChatState.sendingMessage
+    ) {
+
+        return;
+    }
+
+
+    if (
+        typeof aiChatState !== "undefined"
+    ) {
+
+        aiChatState.sendingMessage =
+            true;
+    }
+
+
+    /* -----------------------------------------------------
+       ASK BUTTON
+    ----------------------------------------------------- */
 
     const button =
         $("askAIButton");
@@ -1034,9 +1050,107 @@ async function mainAIQuestion() {
     }
 
 
-    /*
-     * Add student's question to chat.
-     */
+    /* -----------------------------------------------------
+       REQUIRE SIGNED-IN STUDENT
+    ----------------------------------------------------- */
+
+    let user = null;
+
+    try {
+
+        if (
+            typeof getAIUser ===
+            "function"
+        ) {
+
+            user =
+                await getAIUser();
+
+        } else {
+
+            /*
+             * Fallback to the existing
+             * Supabase session function.
+             */
+
+            const token =
+                await getAISessionToken();
+
+            if (!token) {
+
+                user = null;
+
+            } else {
+
+                user = {
+                    authenticated: true
+                };
+            }
+        }
+
+    } catch (authError) {
+
+        console.error(
+            "ChemLab AI authentication error:",
+            authError
+        );
+
+        user = null;
+    }
+
+
+    if (!user) {
+
+        if (
+            typeof aiChatState !== "undefined"
+        ) {
+
+            aiChatState.sendingMessage =
+                false;
+        }
+
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                button.dataset.originalText ||
+                "Ask AI";
+        }
+
+
+        showNotification(
+            "Please sign in to use saved AI conversations.",
+            "warning"
+        );
+
+
+        if (
+            typeof window.openAuthModal ===
+            "function"
+        ) {
+
+            window.openAuthModal(
+                "signin"
+            );
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                "Sign in required";
+        }
+
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       DISPLAY USER QUESTION
+    ----------------------------------------------------- */
 
     if (
         output &&
@@ -1048,11 +1162,6 @@ async function mainAIQuestion() {
             question
         );
 
-        addAIChatMessage(
-            "assistant",
-            "🧠 ChemLab AI is thinking..."
-        );
-
     } else if (output) {
 
         output.textContent =
@@ -1060,22 +1169,103 @@ async function mainAIQuestion() {
     }
 
 
+    /* -----------------------------------------------------
+       DISPLAY THINKING MESSAGE
+    ----------------------------------------------------- */
+
+    let thinkingId = null;
+
+
+    if (
+        typeof addAIThinkingMessage ===
+        "function"
+    ) {
+
+        thinkingId =
+            addAIThinkingMessage();
+
+    } else if (
+        output &&
+        output.id === "aiChat"
+    ) {
+
+        addAIChatMessage(
+            "assistant",
+            "🧠 ChemLab AI is thinking..."
+        );
+    }
+
+
+    /* -----------------------------------------------------
+       ASK CHEMLAB AI
+    ----------------------------------------------------- */
+
     try {
 
-        const answer =
-            await askAI(
-                question
-            );
+        /*
+         * Get the current virtual-lab state.
+         *
+         * This allows the V5 Chemistry Engine
+         * to understand what the student is
+         * currently doing in the laboratory.
+         */
+
+        let experimentState = null;
+
+
+        if (
+            typeof getCurrentAIExperimentState ===
+            "function"
+        ) {
+
+            experimentState =
+                getCurrentAIExperimentState();
+
+        } else if (
+            typeof getExperimentState ===
+            "function"
+        ) {
+
+            experimentState =
+                getExperimentState();
+        }
 
 
         /*
-         * Replace temporary thinking message.
+         * Send question to the existing
+         * working Chemistry AI engine.
          */
 
+        const answer =
+            await askAI(
+                question,
+                experimentState
+            );
+
+
+        /* -------------------------------------------------
+           REPLACE THINKING MESSAGE
+        ------------------------------------------------- */
+
         if (
+            thinkingId &&
+            typeof replaceAIThinkingMessage ===
+            "function"
+        ) {
+
+            replaceAIThinkingMessage(
+                thinkingId,
+                answer
+            );
+
+        } else if (
             output &&
             output.id === "aiChat"
         ) {
+
+            /*
+             * Fallback for the current chat UI.
+             */
 
             const messages =
                 output.querySelectorAll(
@@ -1086,6 +1276,7 @@ async function mainAIQuestion() {
                 messages[
                     messages.length - 1
                 ];
+
 
             if (lastMessage) {
 
@@ -1120,6 +1311,48 @@ async function mainAIQuestion() {
         }
 
 
+        /* -------------------------------------------------
+           SAVE QUESTION + ANSWER
+        ------------------------------------------------- */
+
+        if (
+            typeof persistAIExchange ===
+            "function"
+        ) {
+
+            try {
+
+                await persistAIExchange(
+                    question,
+                    answer
+                );
+
+            } catch (saveError) {
+
+                console.error(
+                    "ChemLab AI chat save error:",
+                    saveError
+                );
+
+
+                /*
+                 * The AI answer has already been
+                 * displayed, so don't remove it
+                 * if database saving fails.
+                 */
+
+                showNotification(
+                    "Answer received, but this conversation could not be saved.",
+                    "warning"
+                );
+            }
+        }
+
+
+        /* -------------------------------------------------
+           SUCCESS
+        ------------------------------------------------- */
+
         if (status) {
 
             status.textContent =
@@ -1128,10 +1361,35 @@ async function mainAIQuestion() {
 
 
         /*
-         * Clear question after successful response.
+         * Clear the input only after
+         * the AI successfully answers.
          */
 
         input.value = "";
+
+
+        /*
+         * Refresh saved conversation history.
+         */
+
+        if (
+            typeof loadAIConversations ===
+            "function"
+        ) {
+
+            try {
+
+                await loadAIConversations();
+
+            } catch (historyError) {
+
+                console.warn(
+                    "ChemLab AI history refresh failed:",
+                    historyError
+                );
+            }
+        }
+
 
     } catch (error) {
 
@@ -1146,7 +1404,22 @@ async function mainAIQuestion() {
             "Unable to connect to ChemLab AI.";
 
 
+        /* -------------------------------------------------
+           SHOW ERROR IN CHAT
+        ------------------------------------------------- */
+
         if (
+            thinkingId &&
+            typeof replaceAIThinkingMessage ===
+            "function"
+        ) {
+
+            replaceAIThinkingMessage(
+                thinkingId,
+                `⚠️ ${message}`
+            );
+
+        } else if (
             output &&
             output.id === "aiChat"
         ) {
@@ -1160,6 +1433,7 @@ async function mainAIQuestion() {
                 messages[
                     messages.length - 1
                 ];
+
 
             if (lastMessage) {
 
@@ -1178,6 +1452,13 @@ async function mainAIQuestion() {
                     lastMessage.textContent =
                         `⚠️ ${message}`;
                 }
+
+            } else {
+
+                addAIChatMessage(
+                    "assistant",
+                    `⚠️ ${message}`
+                );
             }
 
         } else if (output) {
@@ -1195,6 +1476,10 @@ async function mainAIQuestion() {
 
     } finally {
 
+        /* -------------------------------------------------
+           RESTORE BUTTON
+        ------------------------------------------------- */
+
         if (button) {
 
             button.disabled =
@@ -1202,7 +1487,20 @@ async function mainAIQuestion() {
 
             button.textContent =
                 button.dataset.originalText ||
-                "🤖 Ask ChemLab AI";
+                "Ask AI";
+        }
+
+
+        /* -------------------------------------------------
+           RELEASE SEND LOCK
+        ------------------------------------------------- */
+
+        if (
+            typeof aiChatState !== "undefined"
+        ) {
+
+            aiChatState.sendingMessage =
+                false;
         }
     }
 }
