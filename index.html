@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -12,7 +10,7 @@
 
     <meta
         name="description"
-        content="ChemLab — an interactive chemistry learning and virtual laboratory platform for students."
+        content="ChemLab — A professional virtual chemistry laboratory for students."
     >
 
     <meta
@@ -20,153 +18,460 @@
         content="#3157d5"
     >
 
-    <title>ChemLab | Learn Chemistry. Practice. Experiment.</title>
+    <title>ChemLab | Virtual Chemistry Laboratory</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
+<!-- =========================================================
+     APPLICATION
+========================================================= -->
 
-<!-- =====================================================
-     NAVIGATION
-===================================================== -->
+<div id="app">
 
-<header class="navbar">
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
 
-    <div class="nav-container">
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                🧪
+            </div>
+
+            <div class="brand-text">
+
+                <strong>ChemLab</strong>
+
+                <span>
+                    Virtual Chemistry Laboratory
+                </span>
+
+            </div>
+
+        </div>
 
 
-        <button
-            class="logo"
-            type="button"
-            onclick="showPage('home')"
+        <nav
+            class="main-navigation"
+            aria-label="Main navigation"
         >
-            🧪 ChemLab
-        </button>
-
-
-
-        <nav class="nav-links">
-
 
             <button
                 type="button"
+                class="nav-button active"
+                data-page="home"
                 onclick="showPage('home')"
             >
-                Home
+                🏠
+                <span>Home</span>
             </button>
 
 
             <button
                 type="button"
+                class="nav-button"
+                data-page="dashboard"
                 onclick="showPage('dashboard')"
             >
-                Dashboard
+                📊
+                <span>Dashboard</span>
             </button>
 
 
             <button
                 type="button"
+                class="nav-button"
+                data-page="lab"
                 onclick="showPage('lab')"
             >
-                Lab
+                🧪
+                <span>Lab</span>
             </button>
 
 
             <button
                 type="button"
-                onclick="showPage('quiz')"
-            >
-                Quiz
-            </button>
-
-
-            <button
-                type="button"
-                onclick="showPage('progress')"
-            >
-                Progress
-            </button>
-
-
-            <button
-                type="button"
+                class="nav-button"
+                data-page="ai"
                 onclick="showPage('ai')"
             >
-                AI Tutor
+                🤖
+                <span>AI Tutor</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-button"
+                data-page="quiz"
+                onclick="showPage('quiz')"
+            >
+                📝
+                <span>Quiz</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-button"
+                data-page="progress"
+                onclick="showPage('progress')"
+            >
+                📈
+                <span>Progress</span>
             </button>
 
         </nav>
 
 
+        <div class="topbar-actions">
 
-        <button
-            id="loginButton"
-            class="login-button"
-            type="button"
+            <button
+                type="button"
+                id="loginButton"
+                class="login-button"
+            >
+                Sign In
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             HOME
+        ================================================== -->
+
+        <section
+            id="home"
+            class="page active"
         >
-            👤 Sign In
-        </button>
 
-    </div>
+            <div class="hero-section">
 
-</header>
+                <div class="hero-content">
 
+                    <span class="eyebrow">
+                        🧪 STUDENT CHEMISTRY LAB
+                    </span>
 
+                    <h1>
+                        Learn Chemistry.
+                        <span>Experiment.</span>
+                        Master It.
+                    </h1>
 
-<!-- =====================================================
-     MAIN APPLICATION
-===================================================== -->
-
-<main id="app">
-
-
-<!-- =====================================================
-     HOME PAGE
-===================================================== -->
-
-<section
-    id="home"
-    class="page active"
->
+                    <p>
+                        Explore chemistry through interactive
+                        virtual experiments, AI-powered tutoring,
+                        quizzes and real student progress tracking.
+                    </p>
 
 
-    <div class="hero">
+                    <div class="hero-actions">
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                            onclick="showPage('lab')"
+                        >
+                            Start Experiment
+                            <span>→</span>
+                        </button>
 
 
-        <div class="hero-content">
+                        <button
+                            type="button"
+                            class="secondary-button"
+                            onclick="showPage('ai')"
+                        >
+                            Ask AI Tutor
+                        </button>
+
+                    </div>
 
 
-            <span class="hero-badge">
-                🧪 Interactive Chemistry Learning
-            </span>
+                    <div class="hero-stats">
+
+                        <div class="hero-stat">
+
+                            <strong>
+                                🧪
+                            </strong>
+
+                            <span>
+                                Virtual Experiments
+                            </span>
+
+                        </div>
 
 
-            <h1>
+                        <div class="hero-stat">
 
-                Learn Chemistry.
-                <span>Experiment.</span>
-                Master It.
+                            <strong>
+                                🤖
+                            </strong>
 
-            </h1>
+                            <span>
+                                Chemistry AI
+                            </span>
 
-
-            <p>
-
-                Explore chemistry through interactive virtual
-                experiments, quizzes, progress tracking and
-                an AI-powered chemistry tutor.
-
-            </p>
+                        </div>
 
 
-            <div class="hero-buttons">
+                        <div class="hero-stat">
+
+                            <strong>
+                                🏆
+                            </strong>
+
+                            <span>
+                                XP & Achievements
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-visual">
+
+                    <div class="laboratory-card">
+
+                        <div class="lab-card-header">
+
+                            <span>
+                                LIVE LAB
+                            </span>
+
+                            <span class="status-dot">
+                                ● Ready
+                            </span>
+
+                        </div>
+
+
+                        <div class="laboratory-beaker">
+
+                            <div class="beaker-liquid"></div>
+
+                            <div class="beaker-mark mark-one">
+                                50
+                            </div>
+
+                            <div class="beaker-mark mark-two">
+                                100
+                            </div>
+
+                            <div class="beaker-mark mark-three">
+                                150
+                            </div>
+
+                        </div>
+
+
+                        <div class="molecule molecule-one">
+                            H₂O
+                        </div>
+
+                        <div class="molecule molecule-two">
+                            NaOH
+                        </div>
+
+                        <div class="molecule molecule-three">
+                            HCl
+                        </div>
+
+
+                        <div class="lab-card-footer">
+
+                            <strong>
+                                Acid–Base Titration
+                            </strong>
+
+                            <span>
+                                Ready to experiment
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- QUICK FEATURES -->
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        EXPLORE CHEMLAB
+                    </span>
+
+                    <h2>
+                        Everything you need to learn chemistry
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        🧪
+                    </div>
+
+                    <h3>
+                        Virtual Laboratory
+                    </h3>
+
+                    <p>
+                        Perform interactive chemistry experiments
+                        without needing a physical laboratory.
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="showPage('lab')"
+                    >
+                        Explore Lab →
+                    </button>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        🤖
+                    </div>
+
+                    <h3>
+                        Chemistry AI Tutor
+                    </h3>
+
+                    <p>
+                        Ask chemistry questions and get explanations
+                        connected to your current experiment.
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="showPage('ai')"
+                    >
+                        Ask AI →
+                    </button>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        📝
+                    </div>
+
+                    <h3>
+                        Quiz Arena
+                    </h3>
+
+                    <p>
+                        Test your chemistry knowledge and earn
+                        experience points.
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="showPage('quiz')"
+                    >
+                        Start Quiz →
+                    </button>
+
+                </article>
+
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        🏆
+                    </div>
+
+                    <h3>
+                        Student Progress
+                    </h3>
+
+                    <p>
+                        Track XP, levels, experiments, streaks
+                        and achievements.
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="showPage('progress')"
+                    >
+                        View Progress →
+                    </button>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
+        <section
+            id="dashboard"
+            class="page"
+        >
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="section-label">
+                        STUDENT DASHBOARD
+                    </span>
+
+                    <h1>
+                        Welcome back, Chemist 👋
+                    </h1>
+
+                    <p>
+                        Continue learning and keep building
+                        your chemistry skills.
+                    </p>
+
+                </div>
 
 
                 <button
@@ -174,2901 +479,1964 @@
                     class="primary-button"
                     onclick="showPage('lab')"
                 >
-                    🧪 Start Experimenting
+                    Enter Lab →
                 </button>
+
+            </div>
+
+
+            <div class="dashboard-stats">
+
+                <article class="dashboard-stat-card">
+
+                    <span class="stat-icon">
+                        ⚡
+                    </span>
+
+                    <div>
+
+                        <small>
+                            EXPERIENCE
+                        </small>
+
+                        <strong id="xpValue">
+                            0
+                        </strong>
+
+                        <span>
+                            XP
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <article class="dashboard-stat-card">
+
+                    <span class="stat-icon">
+                        🔥
+                    </span>
+
+                    <div>
+
+                        <small>
+                            STREAK
+                        </small>
+
+                        <strong id="streakValue">
+                            0
+                        </strong>
+
+                        <span>
+                            days
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <article class="dashboard-stat-card">
+
+                    <span class="stat-icon">
+                        ⭐
+                    </span>
+
+                    <div>
+
+                        <small>
+                            LEVEL
+                        </small>
+
+                        <strong id="levelValue">
+                            1
+                        </strong>
+
+                        <span>
+                            current
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <article class="dashboard-stat-card">
+
+                    <span class="stat-icon">
+                        🧪
+                    </span>
+
+                    <div>
+
+                        <small>
+                            EXPERIMENTS
+                        </small>
+
+                        <strong id="experimentsCompleted">
+                            0
+                        </strong>
+
+                        <span>
+                            completed
+                        </span>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <article class="dashboard-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                CONTINUE LEARNING
+                            </span>
+
+                            <h2>
+                                Acid–Base Titration
+                            </h2>
+
+                        </div>
+
+                        <span class="status-badge">
+                            Ready
+                        </span>
+
+                    </div>
+
+
+                    <p>
+                        Practice determining the endpoint
+                        and equivalence point of a titration.
+                    </p>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        onclick="openExperiment('titration')"
+                    >
+                        Continue Experiment →
+                    </button>
+
+                </article>
+
+
+                <article class="dashboard-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                YOUR LEVEL
+                            </span>
+
+                            <h2 id="progressLevel">
+                                Level 1
+                            </h2>
+
+                        </div>
+
+                        <strong id="progressXP">
+                            0 / 100 XP
+                        </strong>
+
+                    </div>
+
+
+                    <div class="progress-track">
+
+                        <div
+                            id="progressBar"
+                            class="progress-fill"
+                            style="width: 0%"
+                        ></div>
+
+                    </div>
+
+
+                    <p id="progressText">
+                        0% to Level 2
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             LAB
+        ================================================== -->
+
+        <section
+            id="lab"
+            class="page"
+        >
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="section-label">
+                        VIRTUAL LABORATORY
+                    </span>
+
+                    <h1>
+                        Choose an Experiment
+                    </h1>
+
+                    <p>
+                        Select an experiment and start exploring.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="experiment-grid">
+
+                <article
+                    class="experiment-card"
+                    onclick="openExperiment('titration')"
+                >
+
+                    <div class="experiment-image">
+                        ⚗️
+                    </div>
+
+                    <div class="experiment-content">
+
+                        <span class="level-badge">
+                            BASIC
+                        </span>
+
+                        <h2>
+                            Acid–Base Titration
+                        </h2>
+
+                        <p>
+                            Explore neutralization, pH,
+                            indicators and the endpoint.
+                        </p>
+
+                        <span class="experiment-action">
+                            Open Experiment →
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <article
+                    class="experiment-card premium-experiment-card"
+                    onclick="openAdvancedTitration()"
+                >
+
+                    <div class="experiment-image">
+                        🔬
+                    </div>
+
+                    <div class="experiment-content">
+
+                        <span class="premium-badge">
+                            👑 PREMIUM
+                        </span>
+
+                        <h2>
+                            Advanced Titration Lab
+                        </h2>
+
+                        <p>
+                            Investigate concentration, equivalence,
+                            pH and detailed titration calculations.
+                        </p>
+
+                        <span class="experiment-action">
+                            Open Advanced Lab →
+                        </span>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <div class="lab-info-card">
+
+                <div class="lab-info-icon">
+                    💡
+                </div>
+
+                <div>
+
+                    <h3>
+                        Learn while you experiment
+                    </h3>
+
+                    <p>
+                        You can ask the ChemLab AI Tutor about
+                        the experiment while you work.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="showPage('ai')"
+                >
+                    Open AI Tutor
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BASIC TITRATION
+        ================================================== -->
+
+        <section
+            id="titration"
+            class="page experiment-page"
+        >
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="section-label">
+                        BASIC EXPERIMENT
+                    </span>
+
+                    <h1>
+                        Acid–Base Titration
+                    </h1>
+
+                    <p>
+                        Add sodium hydroxide to hydrochloric acid
+                        and observe the changing solution.
+                    </p>
+
+                </div>
 
 
                 <button
                     type="button"
                     class="secondary-button"
-                    onclick="showPage('quiz')"
+                    onclick="showPage('lab')"
                 >
-                    📝 Take a Quiz
+                    ← Back to Lab
                 </button>
 
             </div>
 
-        </div>
 
+            <div class="experiment-layout">
 
+                <!-- LAB VIEW -->
 
-        <div class="hero-visual">
+                <div class="lab-bench">
 
+                    <div class="experiment-apparatus">
 
-            <div class="chemistry-orb">
+                        <div class="burette">
 
-                <div class="orb-symbol">
-                    ⚗️
-                </div>
+                            <div class="burette-label">
+                                NaOH
+                            </div>
 
-                <span>
-                    CHEMISTRY
-                </span>
+                            <div
+                                id="buretteLiquid"
+                                class="burette-liquid"
+                            ></div>
 
-            </div>
+                            <div class="burette-scale">
+                                <span>0</span>
+                                <span>10</span>
+                                <span>20</span>
+                                <span>30</span>
+                            </div>
 
-        </div>
+                        </div>
 
-    </div>
 
+                        <div class="burette-tap">
+                            ▼
+                        </div>
 
-
-    <!-- FEATURES -->
-
-    <div class="section-header">
-
-        <span class="section-badge">
-            WHY CHEMLAB?
-        </span>
-
-        <h2>
-            Chemistry beyond the textbook.
-        </h2>
-
-        <p>
-            Understand concepts by learning, practicing
-            and experimenting.
-        </p>
-
-    </div>
-
-
-
-    <div class="feature-grid">
-
-
-        <div class="feature-card">
-
-            <div class="feature-icon">
-                🧪
-            </div>
-
-            <h3>
-                Virtual Laboratory
-            </h3>
-
-            <p>
-                Perform interactive chemistry experiments
-                without needing a physical laboratory.
-            </p>
-
-            <button
-                type="button"
-                onclick="showPage('lab')"
-            >
-                Explore Lab →
-            </button>
-
-        </div>
-
-
-
-        <div class="feature-card">
-
-            <div class="feature-icon">
-                🤖
-            </div>
-
-            <h3>
-                AI Chemistry Tutor
-            </h3>
-
-            <p>
-                Ask chemistry questions and receive
-                explanations from your AI tutor.
-            </p>
-
-            <button
-                type="button"
-                onclick="showPage('ai')"
-            >
-                Ask AI →
-            </button>
-
-        </div>
-
-
-
-        <div class="feature-card">
-
-            <div class="feature-icon">
-                📝
-            </div>
-
-            <h3>
-                Chemistry Quizzes
-            </h3>
-
-            <p>
-                Test your knowledge with chemistry questions
-                and earn XP as you improve.
-            </p>
-
-            <button
-                type="button"
-                onclick="showPage('quiz')"
-            >
-                Start Quiz →
-            </button>
-
-        </div>
-
-
-
-        <div class="feature-card">
-
-            <div class="feature-icon">
-                📊
-            </div>
-
-            <h3>
-                Track Progress
-            </h3>
-
-            <p>
-                Monitor your quiz scores, XP, completed
-                experiments and learning progress.
-            </p>
-
-            <button
-                type="button"
-                onclick="showPage('progress')"
-            >
-                View Progress →
-            </button>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- QUICK ACCESS -->
-
-    <div class="quick-access">
-
-        <div>
-
-            <span>
-                READY TO LEARN?
-            </span>
-
-            <h2>
-                Enter the ChemLab.
-            </h2>
-
-            <p>
-                Choose an experiment and start learning
-                chemistry interactively.
-            </p>
-
-        </div>
-
-
-        <button
-            type="button"
-            class="primary-button"
-            onclick="showPage('lab')"
-        >
-            Open Laboratory →
-        </button>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     STUDENT DASHBOARD
-===================================================== -->
-
-<section
-    id="dashboard"
-    class="page"
->
-
-
-    <div class="dashboard-hero">
-
-
-        <div class="dashboard-welcome">
-
-
-            <span class="section-badge">
-                STUDENT DASHBOARD
-            </span>
-
-
-            <h1>
-                Welcome back,
-                <span id="dashboardStudentName">
-                    Student
-                </span> 👋
-            </h1>
-
-
-            <p id="dashboardSubtitle">
-                Continue your chemistry learning journey.
-            </p>
-
-        </div>
-
-
-
-        <div
-            id="dashboardMembershipBadge"
-            class="dashboard-membership-badge"
-        >
-            🔒 FREE STUDENT
-        </div>
-
-    </div>
-
-
-
-    <!-- DASHBOARD STATISTICS -->
-
-    <div class="dashboard-stat-grid">
-
-
-        <div class="dashboard-stat-card">
-
-            <div class="dashboard-stat-icon">
-                ⚡
-            </div>
-
-            <div>
-
-                <span>
-                    TOTAL XP
-                </span>
-
-                <strong
-                    id="dashboardXP"
-                >
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="dashboard-stat-card">
-
-            <div class="dashboard-stat-icon">
-                🏆
-            </div>
-
-            <div>
-
-                <span>
-                    CURRENT LEVEL
-                </span>
-
-                <strong
-                    id="dashboardLevel"
-                >
-                    1
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="dashboard-stat-card">
-
-            <div class="dashboard-stat-icon">
-                🧪
-            </div>
-
-            <div>
-
-                <span>
-                    EXPERIMENTS
-                </span>
-
-                <strong
-                    id="dashboardExperiments"
-                >
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="dashboard-stat-card">
-
-            <div class="dashboard-stat-icon">
-                🔥
-            </div>
-
-            <div>
-
-                <span>
-                    LEARNING STREAK
-                </span>
-
-                <strong
-                    id="dashboardStreak"
-                >
-                    0 days
-                </strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- LEARNING PROGRESS -->
-
-    <div class="dashboard-grid">
-
-
-        <div class="dashboard-panel">
-
-
-            <div class="dashboard-panel-header">
-
-                <div>
-
-                    <span>
-                        YOUR LEARNING
-                    </span>
-
-                    <h2>
-                        Level Progress
-                    </h2>
-
-                </div>
-
-
-                <strong
-                    id="dashboardXPText"
-                >
-                    0 XP
-                </strong>
-
-            </div>
-
-
-            <div class="dashboard-level-row">
-
-                <div class="dashboard-level-badge">
-                    <span>
-                        LVL
-                    </span>
-
-                    <strong
-                        id="dashboardLevelLarge"
-                    >
-                        1
-                    </strong>
-                </div>
-
-
-                <div class="dashboard-level-info">
-
-                    <div class="dashboard-progress-track">
 
                         <div
-                            id="dashboardXPBar"
-                            class="dashboard-progress-fill"
-                            style="width: 0%;"
-                        ></div>
+                            id="flask"
+                            class="flask"
+                        >
+
+                            <div
+                                id="solution"
+                                class="solution"
+                            ></div>
+
+                        </div>
+
+
+                        <div class="experiment-label">
+                            HCl + Indicator
+                        </div>
 
                     </div>
 
 
-                    <p id="dashboardLevelText">
-                        Earn XP to reach the next level.
-                    </p>
+                    <div class="experiment-controls">
+
+                        <button
+                            type="button"
+                            id="add1ml"
+                            class="secondary-button"
+                        >
+                            Add 1 mL
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="add5ml"
+                            class="primary-button"
+                        >
+                            Add 5 mL
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="resetExperiment"
+                            class="danger-button"
+                        >
+                            Reset
+                        </button>
+
+                    </div>
 
                 </div>
 
-            </div>
 
-        </div>
+                <!-- RESULTS -->
 
+                <aside class="experiment-sidebar">
 
+                    <div class="result-card">
 
-        <!-- MEMBERSHIP -->
+                        <span>
+                            TITRANT VOLUME
+                        </span>
 
-        <div class="dashboard-panel">
+                        <strong>
+                            <span id="titrantVolume">
+                                0.00
+                            </span>
+                            mL
+                        </strong>
 
-
-            <div class="dashboard-panel-header">
-
-                <div>
-
-                    <span>
-                        MEMBERSHIP
-                    </span>
-
-                    <h2>
-                        ChemLab Access
-                    </h2>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="dashboardMembershipCard"
-                class="dashboard-membership-card"
-            >
-
-                <div
-                    id="dashboardMembershipIcon"
-                    class="dashboard-membership-icon"
-                >
-                    🔒
-                </div>
-
-
-                <div>
-
-                    <strong
-                        id="dashboardMembershipTitle"
-                    >
-                        Free Student
-                    </strong>
-
-                    <p
-                        id="dashboardMembershipText"
-                    >
-                        Access the core ChemLab learning
-                        experience.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <button
-                id="dashboardPremiumButton"
-                type="button"
-                class="secondary-button"
-                onclick="showPremiumSection()"
-            >
-                👑 Explore Premium
-            </button>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- QUICK ACTIONS -->
-
-    <div class="dashboard-section-header">
-
-        <div>
-
-            <span class="section-badge">
-                QUICK ACTIONS
-            </span>
-
-            <h2>
-                Continue Learning
-            </h2>
-
-        </div>
-
-    </div>
-
-
-
-    <div class="dashboard-action-grid">
-
-
-        <button
-            type="button"
-            class="dashboard-action-card"
-            onclick="showPage('lab')"
-        >
-
-            <span>
-                🧪
-            </span>
-
-            <div>
-
-                <strong>
-                    Virtual Laboratory
-                </strong>
-
-                <p>
-                    Perform chemistry experiments.
-                </p>
-
-            </div>
-
-            <b>
-                →
-            </b>
-
-        </button>
-
-
-
-        <button
-            type="button"
-            class="dashboard-action-card"
-            onclick="showPage('quiz')"
-        >
-
-            <span>
-                📝
-            </span>
-
-            <div>
-
-                <strong>
-                    Quiz Arena
-                </strong>
-
-                <p>
-                    Test your chemistry knowledge.
-                </p>
-
-            </div>
-
-            <b>
-                →
-            </b>
-
-        </button>
-
-
-
-        <button
-            type="button"
-            class="dashboard-action-card"
-            onclick="showPage('ai')"
-        >
-
-            <span>
-                🤖
-            </span>
-
-            <div>
-
-                <strong>
-                    AI Chemistry Tutor
-                </strong>
-
-                <p>
-                    Ask questions and learn.
-                </p>
-
-            </div>
-
-            <b>
-                →
-            </b>
-
-        </button>
-
-
-
-        <button
-            type="button"
-            class="dashboard-action-card"
-            onclick="showPage('progress')"
-        >
-
-            <span>
-                📊
-            </span>
-
-            <div>
-
-                <strong>
-                    My Progress
-                </strong>
-
-                <p>
-                    Review your learning journey.
-                </p>
-
-            </div>
-
-            <b>
-                →
-            </b>
-
-        </button>
-
-    </div>
-
-
-
-    <!-- ACHIEVEMENTS -->
-
-    <div class="dashboard-section-header">
-
-        <div>
-
-            <span class="section-badge">
-                ACHIEVEMENTS
-            </span>
-
-            <h2>
-                Your Chemistry Milestones
-            </h2>
-
-        </div>
-
-    </div>
-
-
-
-    <div class="dashboard-achievement-grid">
-
-
-        <div
-            id="dashboardAchievementExperiment"
-            class="dashboard-achievement-card locked"
-        >
-
-            <div class="achievement-icon">
-                🧪
-            </div>
-
-            <div>
-
-                <strong>
-                    First Experiment
-                </strong>
-
-                <p>
-                    Complete your first experiment.
-                </p>
-
-            </div>
-
-            <span class="achievement-status">
-                🔒
-            </span>
-
-        </div>
-
-
-
-        <div
-            id="dashboardAchievementQuiz"
-            class="dashboard-achievement-card locked"
-        >
-
-            <div class="achievement-icon">
-                📝
-            </div>
-
-            <div>
-
-                <strong>
-                    Quiz Starter
-                </strong>
-
-                <p>
-                    Complete your first chemistry quiz.
-                </p>
-
-            </div>
-
-            <span class="achievement-status">
-                🔒
-            </span>
-
-        </div>
-
-
-
-        <div
-            id="dashboardAchievementAI"
-            class="dashboard-achievement-card locked"
-        >
-
-            <div class="achievement-icon">
-                🤖
-            </div>
-
-            <div>
-
-                <strong>
-                    Ask the AI
-                </strong>
-
-                <p>
-                    Ask ChemLab AI your first question.
-                </p>
-
-            </div>
-
-            <span class="achievement-status">
-                🔒
-            </span>
-
-        </div>
-
-
-
-        <div
-            id="dashboardAchievementXP"
-            class="dashboard-achievement-card locked"
-        >
-
-            <div class="achievement-icon">
-                ⚡
-            </div>
-
-            <div>
-
-                <strong>
-                    Chemistry Learner
-                </strong>
-
-                <p>
-                    Earn your first 100 XP.
-                </p>
-
-            </div>
-
-            <span class="achievement-status">
-                🔒
-            </span>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- DASHBOARD MOTIVATION -->
-
-    <div class="dashboard-motivation">
-
-        <div>
-
-            <span>
-                🧠 KEEP LEARNING
-            </span>
-
-            <h2>
-                Every experiment teaches you something.
-            </h2>
-
-            <p>
-                Explore, experiment, ask questions and
-                build your chemistry skills one step at a time.
-            </p>
-
-        </div>
-
-
-        <button
-            type="button"
-            class="primary-button"
-            onclick="showPage('lab')"
-        >
-            Start Learning →
-        </button>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     LAB PAGE
-===================================================== -->
-
-<section
-    id="lab"
-    class="page"
->
-
-    <div class="page-header">
-
-        <span class="section-badge">
-            VIRTUAL LABORATORY
-        </span>
-
-        <h1>
-            Chemistry Laboratory
-        </h1>
-
-        <p>
-            Perform chemistry experiments interactively
-            and observe what happens as you change
-            experimental conditions.
-        </p>
-
-    </div>
-
-
-
-    <div class="experiment-grid">
-
-
-        <!-- BASIC TITRATION -->
-
-        <div
-            class="experiment-card"
-            onclick="openExperiment('titration')"
-        >
-
-            <div class="experiment-image">
-                ⚗️
-            </div>
-
-
-            <div class="experiment-content">
-
-                <span class="level-badge">
-                    BEGINNER
-                </span>
-
-                <h3>
-                    Acid-Base Titration
-                </h3>
-
-                <p>
-                    Explore neutralization between hydrochloric
-                    acid and sodium hydroxide.
-                </p>
-
-
-                <div class="experiment-meta">
-
-                    <span>
-                        🧪 Interactive
-                    </span>
-
-                    <span>
-                        ⏱ Practice
-                    </span>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    onclick="event.stopPropagation(); openExperiment('titration')"
-                >
-                    Start Experiment →
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- PREMIUM EXPERIMENT -->
-
-        <div
-            class="experiment-card premium-card"
-        >
-
-            <div class="experiment-image">
-                🔬
-            </div>
-
-
-            <div class="experiment-content">
-
-                <span class="level-badge premium-badge">
-                    👑 PREMIUM
-                </span>
-
-                <h3>
-                    Advanced Acid-Base Titration
-                </h3>
-
-                <p>
-                    Study concentration, equivalence point,
-                    neutralization and pH changes in greater detail.
-                </p>
-
-
-                <div class="experiment-meta">
-
-                    <span>
-                        👑 Premium
-                    </span>
-
-                    <span>
-                        📈 Advanced
-                    </span>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="premium-experiment-button"
-                    data-premium="true"
-                    data-experiment="Advanced Acid-Base Titration"
-                >
-                    🔒 Open Premium Lab
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- COMING SOON -->
-
-        <div class="experiment-card coming-soon-card">
-
-            <div class="experiment-image">
-                ⚛️
-            </div>
-
-
-            <div class="experiment-content">
-
-                <span class="level-badge">
-                    COMING SOON
-                </span>
-
-                <h3>
-                    More Chemistry Experiments
-                </h3>
-
-                <p>
-                    More interactive experiments will be
-                    added to the ChemLab laboratory.
-                </p>
-
-                <button
-                    type="button"
-                    disabled
-                >
-                    Coming Soon
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     BASIC TITRATION PAGE
-===================================================== -->
-
-<section
-    id="titration"
-    class="page"
->
-
-    <div class="page-header">
-
-        <button
-            type="button"
-            class="back-button"
-            onclick="showPage('lab')"
-        >
-            ← Back to Laboratory
-        </button>
-
-        <span class="section-badge">
-            BASIC EXPERIMENT
-        </span>
-
-        <h1>
-            Acid-Base Titration
-        </h1>
-
-        <p>
-            Add sodium hydroxide to hydrochloric acid and
-            observe the change in pH.
-        </p>
-
-    </div>
-
-
-
-    <div class="lab-layout">
-
-
-        <div class="lab-panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    ⚗️ Virtual Apparatus
-                </h2>
-
-                <span>
-                    Interactive
-                </span>
-
-            </div>
-
-
-            <div class="apparatus-area">
-
-
-                <div class="burette-container">
-
-                    <div class="burette-label">
-                        NaOH
                     </div>
 
 
-                    <div class="burette">
+                    <div class="result-card">
 
-                        <div
-                            id="buretteLiquid"
-                            class="burette-liquid"
-                        ></div>
+                        <span>
+                            pH
+                        </span>
 
-                        <div class="burette-scale">
+                        <strong id="phValue">
+                            1.00
+                        </strong>
 
-                            <span>0</span>
-                            <span>10</span>
-                            <span>20</span>
-                            <span>30</span>
-                            <span>40</span>
-                            <span>50</span>
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <span>
+                            INDICATOR
+                        </span>
+
+                        <strong id="indicatorStatus">
+                            Colorless
+                        </strong>
+
+                    </div>
+
+
+                    <div
+                        id="endpointMessage"
+                        class="experiment-message"
+                    >
+                        Begin adding NaOH to the flask.
+                    </div>
+
+
+                    <div class="observation-card">
+
+                        <span>
+                            OBSERVATION
+                        </span>
+
+                        <p id="titrationObservation">
+                            The solution is ready.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="ai-experiment-button"
+                        onclick="showPage('ai')"
+                    >
+                        🤖 Ask AI About This Experiment
+                    </button>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             AI TUTOR
+        ================================================== -->
+
+        <section
+            id="ai"
+            class="page"
+        >
+
+            <div class="ai-page-header">
+
+                <div>
+
+                    <span class="section-label">
+                        CHEMLAB AI
+                    </span>
+
+                    <h1>
+                        Your Chemistry Tutor
+                    </h1>
+
+                    <p>
+                        Ask questions, understand your experiment,
+                        and review your previous conversations.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="newAIChatButton"
+                    class="secondary-button"
+                >
+                    ＋ New Chat
+                </button>
+
+            </div>
+
+
+            <div class="ai-workspace">
+
+                <!-- CONVERSATION HISTORY -->
+
+                <aside class="ai-history-panel">
+
+                    <div class="ai-history-header">
+
+                        <div>
+
+                            <span>
+                                CONVERSATIONS
+                            </span>
+
+                            <h2>
+                                Your Chats
+                            </h2>
 
                         </div>
 
                     </div>
 
 
-                    <div class="burette-tip">
-                        ▼
+                    <div
+                        id="aiConversationHistory"
+                        class="ai-conversation-list"
+                    >
+
+                        <div class="ai-history-empty">
+                            Your conversations will appear here.
+                        </div>
+
+                    </div>
+
+                </aside>
+
+
+                <!-- CHAT -->
+
+                <div class="ai-chat-panel">
+
+                    <div class="ai-chat-header">
+
+                        <div class="ai-avatar">
+                            🤖
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                ChemLab AI Tutor
+                            </strong>
+
+                            <span id="aiStatus">
+                                Ready
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="mainAIAnswer"
+                        class="ai-chat-messages"
+                    >
+
+                        <div class="ai-welcome">
+
+                            <div class="ai-welcome-icon">
+                                🧪
+                            </div>
+
+                            <h2>
+                                What would you like to learn?
+                            </h2>
+
+                            <p>
+                                Ask me about chemistry,
+                                calculations or your current
+                                virtual experiment.
+                            </p>
+
+
+                            <div class="ai-suggestions">
+
+                                <button
+                                    type="button"
+                                    onclick="document.getElementById('mainAIInput').value='Why is the solution turning pink?'; mainAIQuestion();"
+                                >
+                                    Why is the solution turning pink?
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    onclick="document.getElementById('mainAIInput').value='What is the equivalence point?'; mainAIQuestion();"
+                                >
+                                    What is the equivalence point?
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    onclick="document.getElementById('mainAIInput').value='Calculate the molar mass of H2SO4'; mainAIQuestion();"
+                                >
+                                    Calculate molar mass
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="ai-composer">
+
+                        <textarea
+                            id="mainAIInput"
+                            rows="2"
+                            placeholder="Ask a chemistry question..."
+                            autocomplete="off"
+                        ></textarea>
+
+
+                        <div class="ai-composer-footer">
+
+                            <span>
+                                Press Enter to send
+                            </span>
+
+
+                            <button
+                                type="button"
+                                id="askAIButton"
+                                class="primary-button"
+                                onclick="mainAIQuestion()"
+                            >
+                                Send
+                                <span>→</span>
+                            </button>
+
+                        </div>
+
                     </div>
 
                 </div>
 
+            </div>
+
+        </section>
 
 
-                <div class="flask-container">
 
-                    <div
-                        id="flask"
-                        class="flask"
-                    >
+        <!-- =================================================
+             QUIZ
+        ================================================== -->
+
+        <section
+            id="quiz"
+            class="page"
+        >
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="section-label">
+                        QUIZ ARENA
+                    </span>
+
+                    <h1>
+                        Test Your Chemistry Knowledge
+                    </h1>
+
+                    <p>
+                        Answer chemistry questions and earn XP.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="quiz-container">
+
+                <div class="quiz-header">
+
+                    <span id="quizQuestionNumber">
+                        Question 1 of 5
+                    </span>
+
+                    <div class="quiz-progress">
 
                         <div
-                            id="solution"
-                            class="solution"
+                            id="quizProgressBar"
+                            class="quiz-progress-fill"
+                            style="width: 20%"
                         ></div>
 
                     </div>
 
+                </div>
 
-                    <div class="flask-label">
-                        HCl Sample
+
+                <div class="quiz-card">
+
+                    <div class="quiz-icon">
+                        🧠
+                    </div>
+
+
+                    <h2 id="quizQuestion">
+                        Loading question...
+                    </h2>
+
+
+                    <div
+                        id="quizOptions"
+                        class="quiz-options"
+                    ></div>
+
+
+                    <div
+                        id="quizResult"
+                        class="quiz-result"
+                        style="display:none;"
+                    >
+
+                        <strong>
+                            Quiz Complete
+                        </strong>
+
+                        <p id="quizResultText"></p>
+
+                    </div>
+
+
+                    <div class="quiz-footer">
+
+                        <span>
+                            Score:
+                            <strong id="quizScore">
+                                0
+                            </strong>
+                        </span>
+
+                        <button
+                            type="button"
+                            id="restartQuizButton"
+                            class="secondary-button"
+                            onclick="restartQuiz()"
+                        >
+                            Restart Quiz
+                        </button>
+
                     </div>
 
                 </div>
 
             </div>
 
+        </section>
 
 
-            <div class="experiment-controls">
 
-                <button
-                    id="add1ml"
-                    type="button"
-                    class="primary-button"
-                >
-                    +1 mL NaOH
-                </button>
+        <!-- =================================================
+             PREMIUM
+        ================================================== -->
 
-
-                <button
-                    id="add5ml"
-                    type="button"
-                    class="secondary-button"
-                >
-                    +5 mL NaOH
-                </button>
-
-
-                <button
-                    id="resetExperiment"
-                    type="button"
-                    class="danger-button"
-                    onclick="resetExperiment()"
-                >
-                    ↻ Reset
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="lab-panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    📊 Experiment Data
-                </h2>
-
-            </div>
-
-
-            <div class="measurement-grid">
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        NaOH Added
-                    </span>
-
-                    <strong>
-
-                        <span id="titrantVolume">
-                            0.00
-                        </span>
-
-                        mL
-
-                    </strong>
-
-                </div>
-
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        pH
-                    </span>
-
-                    <strong id="phValue">
-                        1.00
-                    </strong>
-
-                </div>
-
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        Indicator
-                    </span>
-
-                    <strong id="indicatorStatus">
-                        Acidic
-                    </strong>
-
-                </div>
-
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        Endpoint
-                    </span>
-
-                    <strong id="endpointMessage">
-                        Not reached
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="experiment-observation">
-
-                <h3>
-                    🔎 Observation
-                </h3>
-
-                <p id="titrationObservation">
-                    Add sodium hydroxide to begin the
-                    titration experiment.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     AI TUTOR PAGE
-===================================================== -->
-<div class="ai-container">
-
-    <!-- =========================================
-         AI CHAT HISTORY
-    ========================================== -->
-
-    <aside class="ai-history-card">
-
-        <div class="ai-history-header">
-
-            <div>
-                <h3>
-                    Chat History
-                </h3>
-
-                <p>
-                    Your saved chemistry conversations
-                </p>
-            </div>
-
-            <button
-                id="newAIChatButton"
-                class="primary-button"
-                type="button"
-            >
-                + New Chat
-            </button>
-
-        </div>
-
-
-        <div
-            id="aiConversationHistory"
-            class="ai-conversation-history"
+        <section
+            id="premiumSection"
+            class="page premium-section"
         >
 
-            <div class="ai-history-empty">
-
-                <div class="ai-history-empty-icon">
-                    💬
-                </div>
-
-                <p>
-                    No saved conversations yet.
-                </p>
-
-                <small>
-                    Your chemistry conversations
-                    will appear here.
-                </small>
-
-            </div>
-
-        </div>
-
-    </aside>
-
-
-
-    <!-- =========================================
-         EXISTING AI CHAT
-    ========================================== -->
-
-    <div class="ai-card">
-
-        <div class="ai-header">
-
-            <div class="ai-avatar">
-                🤖
-            </div>
-
-            <div>
-
-                <h2>
-                    ChemLab AI
-                </h2>
-
-                <p>
-                    Your chemistry learning assistant
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <div
-            id="mainAIAnswer"
-            class="ai-answer"
-        >
-
-            <div class="ai-welcome">
-
-                <span>
-                    🧪
-                </span>
-
-                <h3>
-                    What would you like to learn?
-                </h3>
-
-                <p>
-                    Ask me about acids, bases, reactions,
-                    calculations, periodic trends and more.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="ai-input-area">
-
-            <textarea
-                id="mainAIInput"
-                rows="4"
-                placeholder="Ask a chemistry question..."
-            ></textarea>
-
-
-            <button
-                type="button"
-                class="primary-button"
-                onclick="mainAIQuestion()"
-            >
-                🤖 Ask ChemLab AI
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     QUIZ PAGE
-===================================================== -->
-
-<section
-    id="quiz"
-    class="page"
->
-
-    <div class="page-header">
-
-        <span class="section-badge">
-            QUIZ ARENA
-        </span>
-
-        <h1>
-            Test Your Chemistry Knowledge
-        </h1>
-
-        <p>
-            Answer chemistry questions and earn XP.
-        </p>
-
-    </div>
-
-
-
-    <div class="quiz-container">
-
-        <div class="quiz-card">
-
-
-            <div class="quiz-top">
-
-                <span id="quizQuestionNumber">
-                    Question 1
-                </span>
-
-                <span>
-                    🧪 Chemistry
-                </span>
-
-            </div>
-
-
-
-            <div
-                id="quizQuestion"
-                class="quiz-question"
-            >
-                Loading question...
-            </div>
-
-
-
-            <div
-                id="quizOptions"
-                class="quiz-options"
-            ></div>
-
-
-
-            <div class="quiz-footer">
-
-                <div class="quiz-progress">
-
-                    <div
-                        id="quizProgressBar"
-                        class="quiz-progress-bar"
-                    ></div>
-
-                </div>
-
-
-                <span id="quizScore">
-                    Score: 0
-                </span>
-
-            </div>
-
-        </div>
-
-
-
-        <div
-            id="quizResult"
-            class="quiz-result hidden"
-        >
-
-            <div class="result-icon">
-                🎉
-            </div>
-
-            <h2>
-                Quiz Complete!
-            </h2>
-
-            <p id="quizResultText">
-                Great work!
-            </p>
-
-
-            <button
-                type="button"
-                class="primary-button"
-                onclick="restartQuiz()"
-            >
-                🔄 Try Again
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     PREMIUM PAGE
-===================================================== -->
-
-<section
-    id="premiumSection"
-    class="page premium-section"
->
-
-    <div class="premium-hero">
-
-        <span class="premium-badge-large">
-            👑 CHEMLAB PREMIUM
-        </span>
-
-
-        <h1>
-            Take Your Chemistry
-            <span>Further.</span>
-        </h1>
-
-
-        <p>
-            Unlock advanced virtual experiments, detailed
-            quizzes and enhanced AI-powered chemistry learning.
-        </p>
-
-    </div>
-
-
-
-    <div class="premium-features">
-
-
-        <div class="premium-feature">
-
-            <span>
-                🔬
-            </span>
-
-            <h3>
-                Advanced Experiments
-            </h3>
-
-            <p>
-                Explore deeper chemistry concepts through
-                interactive experiments.
-            </p>
-
-        </div>
-
-
-        <div class="premium-feature">
-
-            <span>
-                📈
-            </span>
-
-            <h3>
-                Detailed Analysis
-            </h3>
-
-            <p>
-                Study measurements, calculations, graphs
-                and experimental observations.
-            </p>
-
-        </div>
-
-
-        <div class="premium-feature">
-
-            <span>
-                🤖
-            </span>
-
-            <h3>
-                Enhanced Learning
-            </h3>
-
-            <p>
-                Get more powerful support while studying
-                chemistry.
-            </p>
-
-        </div>
-
-    </div>
-
-
-
-    <div class="premium-experiment-list">
-
-        <div class="premium-experiment-card">
-
-            <div class="premium-experiment-icon">
-                ⚗️
-            </div>
-
-
-            <div class="premium-experiment-info">
+            <div class="premium-hero">
 
                 <span class="premium-badge">
-                    👑 PREMIUM
+                    👑 CHEMLAB PREMIUM
                 </span>
 
-                <h2>
-                    Advanced Acid-Base Titration
-                </h2>
+                <h1>
+                    Go Beyond the Basic Lab
+                </h1>
 
                 <p>
-                    Explore equivalence point, concentration,
-                    pH changes and neutralization in detail.
+                    Unlock advanced virtual experiments,
+                    enhanced chemistry learning tools and
+                    premium student features.
                 </p>
 
             </div>
 
 
-            <button
-                type="button"
-                class="premium-experiment-button"
-                data-premium="true"
-                data-experiment="Advanced Acid-Base Titration"
-            >
-                🔒 Open Experiment
-            </button>
+            <div class="premium-feature-grid">
 
-        </div>
-
-    </div>
-
-
-
-    <div class="pricing-section">
-
-        <div class="section-header">
-
-            <span class="section-badge">
-                PREMIUM PLANS
-            </span>
-
-            <h2>
-                Choose Your Plan
-            </h2>
-
-            <p>
-                Select a plan to unlock ChemLab Premium.
-            </p>
-
-        </div>
-
-
-
-        <div class="pricing-grid">
-
-
-            <div class="premium-plan-card">
-
-                <div class="plan-header">
+                <article class="premium-feature-card">
 
                     <span>
+                        🔬
+                    </span>
+
+                    <h3>
+                        Advanced Experiments
+                    </h3>
+
+                    <p>
+                        Explore deeper chemistry simulations
+                        and calculations.
+                    </p>
+
+                </article>
+
+
+                <article class="premium-feature-card">
+
+                    <span>
+                        🤖
+                    </span>
+
+                    <h3>
+                        Enhanced AI Learning
+                    </h3>
+
+                    <p>
+                        Use experiment context while learning
+                        with the Chemistry Tutor.
+                    </p>
+
+                </article>
+
+
+                <article class="premium-feature-card">
+
+                    <span>
+                        📊
+                    </span>
+
+                    <h3>
+                        Deeper Analysis
+                    </h3>
+
+                    <p>
+                        Study detailed values and experiment
+                        observations.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <div class="premium-plans">
+
+                <article
+                    class="premium-plan"
+                    data-plan="monthly"
+                >
+
+                    <span class="plan-label">
                         MONTHLY
                     </span>
 
-                    <h3>
+                    <h2>
                         GHS 35
-                        <small>/ month</small>
-                    </h3>
+                    </h2>
 
-                </div>
+                    <p>
+                        Per month
+                    </p>
 
+                    <ul>
+                        <li>✓ Advanced virtual labs</li>
+                        <li>✓ Premium chemistry features</li>
+                        <li>✓ Student progress tracking</li>
+                    </ul>
 
-                <ul>
+                    <button
+                        type="button"
+                        class="premium-plan-button primary-button"
+                        data-plan="monthly"
+                    >
+                        Unlock Monthly
+                    </button>
 
-                    <li>
-                        ✓ Advanced experiments
-                    </li>
-
-                    <li>
-                        ✓ Detailed experiment analysis
-                    </li>
-
-                    <li>
-                        ✓ Premium chemistry content
-                    </li>
-
-                    <li>
-                        ✓ Cancel anytime
-                    </li>
-
-                </ul>
+                </article>
 
 
-                <button
-                    type="button"
-                    class="premium-plan-button"
-                    data-plan="monthly"
+                <article
+                    class="premium-plan featured-plan"
+                    data-plan="yearly"
                 >
-                    👑 Choose Monthly
-                </button>
 
-            </div>
-
-
-
-            <div class="premium-plan-card featured-plan">
-
-                <div class="plan-popular">
-                    POPULAR
-                </div>
-
-
-                <div class="plan-header">
-
-                    <span>
+                    <span class="plan-label">
                         YEARLY
                     </span>
 
-                    <h3>
+                    <h2>
                         GHS 420
-                        <small>/ year</small>
-                    </h3>
+                    </h2>
 
-                </div>
+                    <p>
+                        Per year
+                    </p>
 
+                    <ul>
+                        <li>✓ Advanced virtual labs</li>
+                        <li>✓ Premium chemistry features</li>
+                        <li>✓ Student progress tracking</li>
+                    </ul>
 
-                <ul>
+                    <button
+                        type="button"
+                        class="premium-plan-button primary-button"
+                        data-plan="yearly"
+                    >
+                        Unlock Yearly
+                    </button>
 
-                    <li>
-                        ✓ Advanced experiments
-                    </li>
-
-                    <li>
-                        ✓ Detailed experiment analysis
-                    </li>
-
-                    <li>
-                        ✓ Premium chemistry content
-                    </li>
-
-                    <li>
-                        ✓ Full-year access
-                    </li>
-
-                </ul>
-
-
-                <button
-                    type="button"
-                    class="premium-plan-button"
-                    data-plan="yearly"
-                >
-                    👑 Choose Yearly
-                </button>
+                </article>
 
             </div>
 
-        </div>
+        </section>
 
-    </div>
 
-</section>
 
+        <!-- =================================================
+             PROGRESS
+        ================================================== -->
 
-
-<!-- =====================================================
-     PROGRESS PAGE
-===================================================== -->
-
-<section
-    id="progress"
-    class="page"
->
-
-    <div class="page-header">
-
-        <span class="section-badge">
-            YOUR PROGRESS
-        </span>
-
-        <h1>
-            Chemistry Progress
-        </h1>
-
-        <p>
-            Keep track of your learning journey.
-        </p>
-
-    </div>
-
-
-
-    <div class="progress-dashboard">
-
-
-        <div class="progress-card">
-
-            <span>
-                ⭐ XP
-            </span>
-
-            <strong id="xpValue">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="progress-card">
-
-            <span>
-                🔥 Streak
-            </span>
-
-            <strong id="streakValue">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="progress-card">
-
-            <span>
-                🏆 Level
-            </span>
-
-            <strong id="levelValue">
-                1
-            </strong>
-
-        </div>
-
-
-        <div class="progress-card">
-
-            <span>
-                🧪 Experiments
-            </span>
-
-            <strong id="experimentsCompleted">
-                0
-            </strong>
-
-        </div>
-
-        <!-- =========================================
-     CHEMLAB ACHIEVEMENTS
-========================================= -->
-
-<div class="achievements-section">
-
-    <div class="achievements-header">
-
-        <div>
-            <span class="section-kicker">CHEMLAB REWARDS</span>
-
-            <h2>Achievements</h2>
-
-            <p>
-                Complete experiments, quizzes and learning
-                challenges to unlock badges.
-            </p>
-        </div>
-
-        <div class="achievement-counter">
-            <span id="achievementUnlockedCount">0</span>
-            <small>Unlocked</small>
-        </div>
-
-    </div>
-
-
-    <div
-        id="achievementsGrid"
-        class="achievements-grid"
-    ></div>
-
-</div>
-    </div>
-
-
-
-    <div class="progress-main-card">
-
-        <div class="progress-title">
-
-            <div>
-
-                <span>
-                    CURRENT LEVEL
-                </span>
-
-                <h2 id="progressLevel">
-                    Level 1
-                </h2>
-
-            </div>
-
-            <strong id="progressXP">
-                0 XP
-            </strong>
-
-        </div>
-
-
-        <div class="large-progress">
-
-            <div
-                id="progressBar"
-                class="large-progress-bar"
-                style="width: 0%;"
-            ></div>
-
-        </div>
-
-
-        <p id="progressText">
-            Start learning to earn XP.
-        </p>
-
-    </div>
-
-
-
-    <div class="achievement-grid">
-
-        <div class="achievement-card">
-
-            <span>
-                🧪
-            </span>
-
-            <h3>
-                First Experiment
-            </h3>
-
-            <p>
-                Complete your first chemistry experiment.
-            </p>
-
-        </div>
-
-
-        <div class="achievement-card">
-
-            <span>
-                📝
-            </span>
-
-            <h3>
-                Quiz Starter
-            </h3>
-
-            <p>
-                Complete your first quiz.
-            </p>
-
-        </div>
-
-
-        <div class="achievement-card">
-
-            <span>
-                🤖
-            </span>
-
-            <h3>
-                Ask the AI
-            </h3>
-
-            <p>
-                Ask ChemLab AI your first question.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     ADVANCED TITRATION PAGE
-===================================================== -->
-
-<section
-    id="advancedTitrationPage"
-    class="page premium-lab-page"
-    style="display: none;"
->
-
-    <div class="page-header">
-
-        <button
-            type="button"
-            class="back-button"
-            onclick="closeAdvancedTitration()"
+        <section
+            id="progress"
+            class="page"
         >
-            ← Back to Premium
-        </button>
 
+            <div class="page-header">
 
-        <span class="premium-badge">
-            👑 PREMIUM LAB
-        </span>
+                <div>
 
-
-        <h1>
-            Advanced Acid-Base Titration
-        </h1>
-
-
-        <p>
-            Investigate neutralization, concentration,
-            equivalence point and pH changes.
-        </p>
-
-    </div>
-
-
-
-    <div class="advanced-lab-layout">
-
-
-        <div class="lab-panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    ⚙️ Experimental Setup
-                </h2>
-
-            </div>
-
-
-            <div class="input-grid">
-
-
-                <label>
-
-                    HCl Concentration (M)
-
-                    <input
-                        id="advancedHclConcentration"
-                        type="number"
-                        min="0.01"
-                        step="0.01"
-                        value="0.100"
-                    >
-
-                </label>
-
-
-                <label>
-
-                    NaOH Concentration (M)
-
-                    <input
-                        id="advancedNaohConcentration"
-                        type="number"
-                        min="0.01"
-                        step="0.01"
-                        value="0.100"
-                    >
-
-                </label>
-
-
-                <label>
-
-                    HCl Sample Volume (mL)
-
-                    <input
-                        id="advancedSampleVolume"
-                        type="number"
-                        min="1"
-                        step="1"
-                        value="25"
-                    >
-
-                </label>
-
-            </div>
-
-
-            <div class="advanced-controls">
-
-                <label
-                    for="advancedVolumeSlider"
-                >
-                    NaOH Volume:
-                </label>
-
-
-                <input
-                    id="advancedVolumeSlider"
-                    type="range"
-                    min="0"
-                    max="60"
-                    step="0.5"
-                    value="0"
-                >
-
-
-                <strong>
-
-                    <span id="advancedNaohVolume">
-                        0.00
+                    <span class="section-label">
+                        STUDENT PROGRESS
                     </span>
-                    mL
 
-                </strong>
+                    <h1>
+                        Your Chemistry Journey
+                    </h1>
 
-            </div>
-
-
-            <div class="experiment-controls">
-
-                <button
-                    id="advancedAddNaohButton"
-                    type="button"
-                    class="primary-button"
-                >
-                    + Add NaOH
-                </button>
-
-
-                <button
-                    id="advancedResetButton"
-                    type="button"
-                    class="danger-button"
-                >
-                    ↻ Reset
-                </button>
-
-
-                <button
-                    id="advancedExplainButton"
-                    type="button"
-                    class="secondary-button"
-                >
-                    🤖 Explain
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="lab-panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    ⚗️ Advanced Apparatus
-                </h2>
-
-                <span>
-                    Premium
-                </span>
-
-            </div>
-
-
-            <div class="advanced-apparatus-area">
-
-
-                <div class="advanced-burette">
-
-                    <div class="advanced-burette-label">
-                        NaOH
-                    </div>
-
-
-                    <div class="advanced-burette-body">
-
-                        <div
-                            id="advancedBuretteLiquid"
-                            class="advanced-burette-liquid"
-                        ></div>
-
-                    </div>
+                    <p>
+                        Track your learning progress,
+                        achievements and consistency.
+                    </p>
 
                 </div>
 
+            </div>
 
 
-                <div class="advanced-flask-container">
+            <div class="progress-overview">
 
-                    <div
-                        id="advancedFlask"
-                        class="advanced-flask"
-                    >
+                <article class="progress-main-card">
+
+                    <div>
+
+                        <span>
+                            CURRENT LEVEL
+                        </span>
+
+                        <strong id="progressLevel">
+                            Level 1
+                        </strong>
+
+                    </div>
+
+
+                    <div class="large-progress-track">
 
                         <div
-                            id="advancedSolution"
-                            class="advanced-solution"
-                        ></div>
-
-
-                        <div
-                            class="equivalence-indicator"
+                            id="progressBar"
+                            class="progress-fill"
+                            style="width:0%"
                         ></div>
 
                     </div>
 
 
+                    <div class="progress-meta">
+
+                        <span id="progressXP">
+                            0 / 100 XP
+                        </span>
+
+                        <span id="progressText">
+                            0% to Level 2
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <article class="progress-stat">
+
                     <span>
-                        HCl Sample
+                        ⚡
                     </span>
 
-                </div>
+                    <strong id="xpValue">
+                        0
+                    </strong>
+
+                    <small>
+                        Total XP
+                    </small>
+
+                </article>
+
+
+                <article class="progress-stat">
+
+                    <span>
+                        🔥
+                    </span>
+
+                    <strong id="streakValue">
+                        0
+                    </strong>
+
+                    <small>
+                        Day Streak
+                    </small>
+
+                </article>
+
+
+                <article class="progress-stat">
+
+                    <span>
+                        🧪
+                    </span>
+
+                    <strong id="experimentsCompleted">
+                        0
+                    </strong>
+
+                    <small>
+                        Experiments
+                    </small>
+
+                </article>
 
             </div>
 
 
-            <div
-                id="advancedEquivalenceStatus"
-                class="status-box"
-            >
-                Equivalence point not reached.
-            </div>
-
-        </div>
-
-
-
-        <div class="lab-panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    📊 Live Results
-                </h2>
-
-            </div>
-
-
-            <div class="advanced-results-grid">
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        pH
-                    </span>
-
-                    <strong id="advancedPhValue">
-                        1.00
-                    </strong>
-
-                </div>
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        H⁺
-                    </span>
-
-                    <strong id="advancedHplus">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        OH⁻
-                    </span>
-
-                    <strong id="advancedOhminus">
-                        —
-                    </strong>
-
-                </div>
-
-
-                <div class="measurement-card">
-
-                    <span>
-                        Equivalence
-                    </span>
-
-                    <strong id="advancedEquivalence">
-                        —
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="advanced-analysis">
-
-                <p>
-                    H⁺ concentration:
-                    <strong id="advancedHplusConcentration">
-                        —
-                    </strong>
-                </p>
-
-
-                <p>
-                    OH⁻ concentration:
-                    <strong id="advancedOhConcentration">
-                        —
-                    </strong>
-                </p>
-
-
-                <p>
-                    Total volume:
-                    <strong id="advancedTotalVolume">
-                        —
-                    </strong>
-                </p>
-
-
-                <p>
-                    Neutralization:
-                    <strong id="advancedNeutralizationProgress">
-                        0%
-                    </strong>
-                </p>
-
-            </div>
-
+            <!-- ACHIEVEMENTS -->
 
             <div class="progress-section">
 
-                <div class="progress-title">
+                <div class="section-heading">
 
-                    <span>
-                        Experiment Progress
-                    </span>
+                    <div>
 
-                    <strong id="advancedProgressText">
-                        0%
+                        <span class="section-label">
+                            ACHIEVEMENTS
+                        </span>
+
+                        <h2>
+                            Chemistry Milestones
+                        </h2>
+
+                    </div>
+
+
+                    <strong id="achievementUnlockedCount">
+                        0/8
                     </strong>
 
                 </div>
 
 
-                <div class="large-progress">
+                <div
+                    id="achievementsGrid"
+                    class="achievements-grid"
+                ></div>
 
-                    <div
-                        id="advancedProgressBar"
-                        class="large-progress-bar"
-                        style="width: 0%;"
-                    ></div>
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ADVANCED TITRATION
+        ================================================== -->
+
+        <section
+            id="advancedTitrationPage"
+            class="page premium-lab-page"
+        >
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="premium-badge">
+                        👑 PREMIUM LAB
+                    </span>
+
+                    <h1>
+                        Advanced Acid–Base Titration
+                    </h1>
+
+                    <p>
+                        Explore concentration, pH,
+                        equivalence and neutralization.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeAdvancedTitration()"
+                >
+                    ← Back to Lab
+                </button>
+
+            </div>
+
+
+            <div class="advanced-lab-layout">
+
+                <!-- SETTINGS -->
+
+                <aside class="advanced-settings">
+
+                    <h2>
+                        Experiment Setup
+                    </h2>
+
+
+                    <label>
+                        HCl Concentration
+                        <input
+                            id="advancedHclConcentration"
+                            type="number"
+                            min="0.001"
+                            max="5"
+                            step="0.001"
+                            value="0.100"
+                        >
+                        <span>M</span>
+                    </label>
+
+
+                    <label>
+                        NaOH Concentration
+                        <input
+                            id="advancedNaohConcentration"
+                            type="number"
+                            min="0.001"
+                            max="5"
+                            step="0.001"
+                            value="0.100"
+                        >
+                        <span>M</span>
+                    </label>
+
+
+                    <label>
+                        HCl Sample Volume
+                        <input
+                            id="advancedSampleVolume"
+                            type="number"
+                            min="1"
+                            max="100"
+                            step="1"
+                            value="25"
+                        >
+                        <span>mL</span>
+                    </label>
+
+
+                    <div class="advanced-volume-control">
+
+                        <div class="control-label">
+
+                            <span>
+                                NaOH Added
+                            </span>
+
+                            <strong>
+                                <span id="advancedNaohVolume">
+                                    0.00
+                                </span>
+                                mL
+                            </strong>
+
+                        </div>
+
+
+                        <input
+                            id="advancedVolumeSlider"
+                            type="range"
+                            min="0"
+                            max="60"
+                            step="0.1"
+                            value="0"
+                        >
+
+                    </div>
+
+
+                    <div class="advanced-control-actions">
+
+                        <button
+                            type="button"
+                            id="advancedAddNaohButton"
+                            class="primary-button"
+                        >
+                            Add 1 mL NaOH
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="advancedResetButton"
+                            class="secondary-button"
+                        >
+                            Reset
+                        </button>
+
+                    </div>
+
+                </aside>
+
+
+                <!-- VISUAL LAB -->
+
+                <div class="advanced-lab-main">
+
+                    <div class="advanced-apparatus">
+
+                        <div class="advanced-burette">
+
+                            <div class="advanced-burette-label">
+                                NaOH
+                            </div>
+
+                            <div
+                                id="advancedBuretteLiquid"
+                                class="advanced-burette-liquid"
+                            ></div>
+
+                        </div>
+
+
+                        <div
+                            id="advancedFlask"
+                            class="advanced-flask"
+                        >
+
+                            <div
+                                id="advancedSolution"
+                                class="advanced-solution"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="advanced-result-grid">
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                pH
+                            </span>
+
+                            <strong id="advancedPhValue">
+                                1.00
+                            </strong>
+
+                        </article>
+
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                [H⁺]
+                            </span>
+
+                            <strong id="advancedHplus">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                [OH⁻]
+                            </span>
+
+                            <strong id="advancedOhminus">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                Equivalence
+                            </span>
+
+                            <strong id="advancedEquivalence">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                [H⁺] Concentration
+                            </span>
+
+                            <strong id="advancedHplusConcentration">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                [OH⁻] Concentration
+                            </span>
+
+                            <strong id="advancedOhConcentration">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                Total Volume
+                            </span>
+
+                            <strong id="advancedTotalVolume">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="advanced-result-card">
+
+                            <span>
+                                Neutralization
+                            </span>
+
+                            <strong id="advancedNeutralizationProgress">
+                                0%
+                            </strong>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="advanced-progress-panel">
+
+                        <div class="control-label">
+
+                            <span>
+                                Neutralization Progress
+                            </span>
+
+                            <strong id="advancedProgressText">
+                                0%
+                            </strong>
+
+                        </div>
+
+
+                        <div class="progress-track">
+
+                            <div
+                                id="advancedProgressBar"
+                                class="progress-fill"
+                                style="width:0%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="advanced-observation-grid">
+
+                        <article class="observation-card">
+
+                            <span>
+                                OBSERVATION
+                            </span>
+
+                            <p id="advancedObservation">
+                                The experiment is ready.
+                            </p>
+
+                        </article>
+
+
+                        <article class="observation-card">
+
+                            <span>
+                                INDICATOR
+                            </span>
+
+                            <p id="advancedIndicatorStatus">
+                                Colorless
+                            </p>
+
+                        </article>
+
+
+                        <article class="observation-card">
+
+                            <span>
+                                REACTION
+                            </span>
+
+                            <p id="advancedReactionStatus">
+                                Waiting for titrant.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="advanced-explanation">
+
+                        <div class="explanation-header">
+
+                            <span>
+                                AI EXPLANATION
+                            </span>
+
+                            <button
+                                type="button"
+                                id="advancedExplainButton"
+                                class="secondary-button"
+                            >
+                                🤖 Explain This
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="advancedExplanation"
+                            class="explanation-content"
+                        >
+
+                            <p id="advancedExplanationText">
+                                Ask ChemLab AI to explain what is
+                                happening in the experiment.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="advanced-chart-card">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <span>
+                                    TITRATION CURVE
+                                </span>
+
+                                <h2>
+                                    pH vs NaOH Volume
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+
+                        <canvas
+                            id="advancedTitrationChart"
+                            width="900"
+                            height="350"
+                        ></canvas>
+
+                    </div>
 
                 </div>
 
             </div>
 
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         NOTIFICATIONS
+    ====================================================== -->
+
+    <div
+        id="notificationContainer"
+        class="notification-container"
+        aria-live="polite"
+    ></div>
+
+
+
+    <!-- =====================================================
+         AUTH MODAL
+    ====================================================== -->
+
+    <div
+        id="authModal"
+        class="modal"
+        aria-hidden="true"
+    >
+
+        <div class="modal-overlay"></div>
+
+        <div class="modal-card">
+
+            <button
+                type="button"
+                id="closeAuthModal"
+                class="modal-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+
+            <div class="modal-icon">
+                🧪
+            </div>
+
+
+            <h2 id="authTitle">
+                Welcome to ChemLab
+            </h2>
+
+
+            <p id="authSubtitle">
+                Sign in to save your progress and AI conversations.
+            </p>
+
+
+            <div
+                id="authMessage"
+                class="auth-message"
+            ></div>
+
+
+            <div
+                id="nameField"
+                class="form-group"
+                style="display:none;"
+            >
+
+                <label for="authName">
+                    Full Name
+                </label>
+
+                <input
+                    id="authName"
+                    type="text"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="authEmail">
+                    Email Address
+                </label>
+
+                <input
+                    id="authEmail"
+                    type="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="authPassword">
+                    Password
+                </label>
+
+                <input
+                    id="authPassword"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button
+                type="button"
+                id="authSubmit"
+                class="primary-button full-width"
+            >
+                Sign In
+            </button>
+
+
+            <div class="auth-switch">
+
+                <span id="authSwitchText">
+                    Don't have an account?
+                </span>
+
+                <button
+                    type="button"
+                    id="authSwitch"
+                >
+                    Create account
+                </button>
+
+            </div>
+
         </div>
 
+    </div>
 
 
-        <div class="lab-panel">
 
-            <div class="panel-header">
+    <!-- =====================================================
+         ACCOUNT MODAL
+    ====================================================== -->
 
-                <h2>
-                    🔎 Observation
-                </h2>
+    <div
+        id="accountModal"
+        class="modal"
+        aria-hidden="true"
+    >
+
+        <div class="modal-overlay"></div>
+
+        <div class="modal-card account-card">
+
+            <button
+                type="button"
+                id="closeAccountModal"
+                class="modal-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+
+            <div
+                id="membershipIcon"
+                class="modal-icon"
+            >
+                👤
+            </div>
+
+
+            <h2 id="accountName">
+                Student Account
+            </h2>
+
+
+            <p id="accountEmail">
+                —
+            </p>
+
+
+            <div class="membership-status-card">
+
+                <span>
+                    MEMBERSHIP
+                </span>
+
+                <strong id="membershipStatus">
+                    Free Student
+                </strong>
+
+                <p id="premiumAccountStatus">
+                    Basic ChemLab access
+                </p>
 
             </div>
 
 
             <div
-                id="advancedObservation"
-                class="observation-box"
-            >
-                Begin the experiment to observe changes.
-            </div>
-
-
-            <div class="indicator-box">
-
-                <span>
-                    Indicator:
-                </span>
-
-                <strong id="advancedIndicatorStatus">
-                    Acidic
-                </strong>
-
-            </div>
-
-
-            <div class="reaction-box">
-
-                <span>
-                    Reaction:
-                </span>
-
-                <strong id="advancedReactionStatus">
-                    H⁺ + OH⁻ → H₂O
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div
-            id="advancedExplanation"
-            class="lab-panel explanation-panel"
-        >
-
-            <div class="panel-header">
-
-                <h2>
-                    🤖 AI Experiment Explanation
-                </h2>
-
-            </div>
-
-
-            <div
-                id="advancedExplanationText"
-                class="explanation-content"
-            >
-                Select "Explain" to receive an explanation
-                of what is happening in the experiment.
-            </div>
-
-        </div>
-
-
-
-        <div class="lab-panel chart-panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    📈 Titration Curve
-                </h2>
-
-                <span>
-                    pH vs Volume
-                </span>
-
-            </div>
-
-
-            <div class="chart-container">
-
-                <canvas
-                    id="advancedTitrationChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-
-
-<!-- =====================================================
-     LOGIN / SIGNUP MODAL
-===================================================== -->
-
-<div
-    id="authModal"
-    class="auth-modal"
-    aria-hidden="true"
->
-
-    <div class="auth-modal-content">
-
-        <button
-            id="closeAuthModal"
-            type="button"
-            class="modal-close"
-            aria-label="Close"
-        >
-            ×
-        </button>
-
-
-        <div class="auth-icon">
-            🧪
-        </div>
-
-
-        <h2 id="authTitle">
-            Welcome Back
-        </h2>
-
-
-        <p id="authSubtitle">
-            Sign in to continue learning.
-        </p>
-
-
-        <div
-            id="authMessage"
-            class="auth-message"
-        ></div>
-
-
-
-        <div
-            id="nameField"
-            class="form-group hidden"
-        >
-
-            <label for="authName">
-                Full Name
-            </label>
-
-            <input
-                id="authName"
-                type="text"
-                placeholder="Enter your name"
-                autocomplete="name"
+                id="premiumDetails"
+                class="premium-details"
             >
 
-        </div>
+                <div>
+
+                    <span>
+                        Plan
+                    </span>
+
+                    <strong id="accountPlan">
+                        —
+                    </strong>
+
+                </div>
 
 
+                <div>
 
-        <div class="form-group">
+                    <span>
+                        Expires
+                    </span>
 
-            <label for="authEmail">
-                Email
-            </label>
+                    <strong id="accountExpiry">
+                        —
+                    </strong>
 
-            <input
-                id="authEmail"
-                type="email"
-                placeholder="you@example.com"
-                autocomplete="email"
-            >
+                </div>
 
-        </div>
+            </div>
 
-
-
-        <div class="form-group">
-
-            <label for="authPassword">
-                Password
-            </label>
-
-            <input
-                id="authPassword"
-                type="password"
-                placeholder="Enter your password"
-                autocomplete="current-password"
-            >
-
-        </div>
-
-
-
-        <button
-            id="authSubmit"
-            type="button"
-            class="primary-button auth-submit"
-        >
-            Sign In
-        </button>
-
-
-
-        <div class="auth-switch">
-
-            <span id="authSwitchText">
-                Don't have an account?
-            </span>
 
             <button
-                id="authSwitch"
                 type="button"
+                id="accountPremiumButton"
+                class="primary-button full-width"
             >
-                Create Account
+                Upgrade to Premium
+            </button>
+
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="secondary-button full-width"
+            >
+                Sign Out
             </button>
 
         </div>
 
     </div>
 
-</div>
 
 
+    <!-- =====================================================
+         PREMIUM MODAL
+    ====================================================== -->
 
-<!-- =====================================================
-     ACCOUNT MODAL
-===================================================== -->
+    <div
+        id="premiumModal"
+        class="modal"
+        aria-hidden="true"
+    >
 
-<div
-    id="accountModal"
-    class="account-modal"
-    aria-hidden="true"
->
+        <div class="modal-overlay"></div>
 
-    <div class="account-modal-content">
+        <div class="modal-card premium-modal-card">
 
-        <button
-            id="closeAccountModal"
-            type="button"
-            class="modal-close"
-        >
-            ×
-        </button>
-
-
-        <div class="account-avatar">
-            👤
-        </div>
+            <button
+                type="button"
+                id="closePremiumModal"
+                class="modal-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
 
 
-        <h2>
-            My ChemLab Account
-        </h2>
-
-
-        <div class="account-information">
-
-            <div>
-
-                <span>
-                    Name
-                </span>
-
-                <strong id="accountName">
-                    Student
-                </strong>
-
+            <div class="modal-icon">
+                👑
             </div>
 
 
-            <div>
-
-                <span>
-                    Email
-                </span>
-
-                <strong id="accountEmail">
-                    —
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    Membership
-                </span>
-
-                <strong>
-
-                    <span id="membershipIcon">
-                        🔒
-                    </span>
-
-                    <span id="membershipStatus">
-                        FREE
-                    </span>
-
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div
-            id="premiumAccountStatus"
-            class="premium-account-status"
-        >
-
-            <strong>
-                🔒 Not Active
-            </strong>
-
-            <span>
-                Unlock advanced ChemLab features.
-            </span>
-
-        </div>
-
-
-
-        <div
-            id="premiumDetails"
-            class="premium-details hidden"
-        >
-
-            <p>
-                Plan:
-                <strong id="accountPlan">
-                    —
-                </strong>
-            </p>
+            <h2>
+                Unlock ChemLab Premium
+            </h2>
 
 
             <p>
-                Expires:
-                <strong id="accountExpiry">
-                    —
-                </strong>
+                Get access to advanced chemistry experiments
+                and premium learning features.
             </p>
 
-        </div>
+
+            <div class="premium-modal-summary">
+
+                <div>
+
+                    <span>
+                        Selected Plan
+                    </span>
+
+                    <strong id="selectedPremiumPlan">
+                        Premium
+                    </strong>
+
+                </div>
 
 
+                <div>
 
-        <button
-            id="accountPremiumButton"
-            type="button"
-            class="primary-button"
-        >
-            👑 Explore Premium
-        </button>
+                    <span>
+                        Price
+                    </span>
 
+                    <strong id="selectedPremiumPrice">
+                        —
+                    </strong>
 
-        <button
-            id="logoutButton"
-            type="button"
-            class="danger-button"
-        >
-            Sign Out
-        </button>
+                </div>
 
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     PREMIUM MODAL
-===================================================== -->
-
-<div
-    id="premiumModal"
-    class="premium-modal"
-    aria-hidden="true"
->
-
-    <div class="premium-modal-content">
-
-        <button
-            id="closePremiumModal"
-            type="button"
-            class="modal-close"
-        >
-            ×
-        </button>
-
-
-        <div class="premium-modal-icon">
-            👑
-        </div>
-
-
-        <h2>
-            Unlock ChemLab Premium
-        </h2>
-
-
-        <p>
-            Choose a plan to unlock advanced chemistry
-            experiments and premium learning features.
-        </p>
-
-
-
-        <div class="premium-modal-plans">
+            </div>
 
 
             <button
                 type="button"
-                class="premium-plan-button"
-                data-plan="monthly"
+                id="startPremiumButton"
+                class="primary-button full-width"
             >
-
-                <span>
-                    MONTHLY
-                </span>
-
-                <strong>
-                    GHS 35
-                </strong>
-
-                <small>
-                    per month
-                </small>
-
-            </button>
-
-
-
-            <button
-                type="button"
-                class="premium-plan-button"
-                data-plan="yearly"
-            >
-
-                <span>
-                    YEARLY
-                </span>
-
-                <strong>
-                    GHS 420
-                </strong>
-
-                <small>
-                    per year
-                </small>
-
+                Continue to Payment
             </button>
 
         </div>
 
-
-        <button
-            id="startPremiumButton"
-            type="button"
-            class="secondary-button"
-        >
-            Continue
-        </button>
-
-
-        <p class="payment-note">
-            🔐 Payments are securely processed through Paystack.
-        </p>
-
     </div>
 
-</div>
 
 
+    <!-- =====================================================
+         SCRIPTS
+    ====================================================== -->
 
-<!-- =====================================================
-     NOTIFICATION CONTAINER
-===================================================== -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
 
-<div
-    id="notificationContainer"
-    class="notification-container"
-    aria-live="polite"
-></div>
+    <script src="app.js"></script>
 
+    <script src="auth.js"></script>
 
+    <script src="progress.js"></script>
 
-<!-- =====================================================
-     SUPABASE
-===================================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-<!-- =====================================================
-     CHEMLAB APPLICATION
-===================================================== -->
-
-<script src="app.js"></script>
-
-<script src="auth.js"></script>
-
-<script src="progress.js"></script>
-
-<script src="achievements.js"></script>
+    <script src="achievements.js"></script>
 
 </body>
-
 </html>
