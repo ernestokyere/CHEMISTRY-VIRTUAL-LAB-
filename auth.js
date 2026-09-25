@@ -2,62 +2,126 @@
 
 /* =========================================================
    CHEMLAB AUTH + PREMIUM SYSTEM
-   Complete replacement version
-========================================================= */
+   CLEAN REPLACEMENT VERSION
+   =========================================================
+   Responsibilities:
+   - Supabase authentication
+   - Student account creation
+   - Login / logout
+   - Profile management
+   - Premium status
+   - Paystack Premium initialization
+   - Paystack payment verification
+   - Premium experiment protection
+   - Auth UI
+   - Account modal
+   - Premium modal
+   - Auth events for app.js
+   ========================================================= */
 
 
 /* =========================================================
    1. CONFIGURATION
-========================================================= */
+   ========================================================= */
 
-const SUPABASE_URL =
-    "https://zscbgeaieiqwknhjxpnt.supabase.co";
+const CHEMLAB_AUTH_CONFIG = Object.freeze({
 
-const SUPABASE_KEY =
-    "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy";
+    SUPABASE_URL:
+        "https://zscbgeaieiqwknhjxpnt.supabase.co",
 
-const AUTH_FUNCTION_URL =
-    `${SUPABASE_URL}/functions/v1/activate-premium`;
+    SUPABASE_KEY:
+        "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy",
 
-const VERIFY_FUNCTION_URL =
-    `${SUPABASE_URL}/functions/v1/verify-paystack-payment`;
+    ACTIVATE_PREMIUM_URL:
+        "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/activate-premium",
+
+    VERIFY_PAYMENT_URL:
+        "https://zscbgeaieiqwknhjxpnt.supabase.co/functions/v1/verify-paystack-payment"
+
+});
 
 
 /* =========================================================
-   2. SUPABASE INITIALIZATION
-========================================================= */
+   2. SUPABASE CLIENT
+   ========================================================= */
 
-let supabaseClient = null;
+/*
+   Important:
+   We DO NOT declare another global "supabaseClient"
+   variable here.
+
+   app.js may already have created one.
+
+   This prevents:
+       Identifier 'supabaseClient' has already been declared
+*/
+
+let chemLabAuthClient = null;
 
 try {
-    if (window.supabase && typeof window.supabase.createClient === "function") {
 
-        supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY,
-            {
-                auth: {
-                    persistSession: true,
-                    autoRefreshToken: true,
-                    detectSessionInUrl: true
-                }
-            }
-        );
+    /*
+       Reuse the client created by app.js when available.
+    */
 
-        console.log("ChemLab: Supabase initialized successfully.");
+    if (
+        window.supabaseClient &&
+        typeof window.supabaseClient.auth?.getUser === "function"
+    ) {
 
-    } else {
+        chemLabAuthClient =
+            window.supabaseClient;
 
-        console.error(
-            "ChemLab: Supabase library was not loaded."
+        console.log(
+            "ChemLab Auth: Reusing existing Supabase client."
         );
 
     }
 
-} catch (error) {
+    /*
+       Otherwise create the client here.
+    */
+
+    else if (
+        window.supabase &&
+        typeof window.supabase.createClient === "function"
+    ) {
+
+        chemLabAuthClient =
+            window.supabase.createClient(
+                CHEMLAB_AUTH_CONFIG.SUPABASE_URL,
+                CHEMLAB_AUTH_CONFIG.SUPABASE_KEY,
+                {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true
+                    }
+                }
+            );
+
+        window.supabaseClient =
+            chemLabAuthClient;
+
+        console.log(
+            "ChemLab Auth: Supabase client created."
+        );
+
+    }
+
+    else {
+
+        console.error(
+            "ChemLab Auth: Supabase library is unavailable."
+        );
+
+    }
+
+}
+catch (error) {
 
     console.error(
-        "ChemLab: Supabase initialization failed:",
+        "ChemLab Auth: Supabase initialization failed:",
         error
     );
 
@@ -65,145 +129,258 @@ try {
 
 
 /* =========================================================
-   3. HELPER FUNCTIONS
-========================================================= */
+   3. INTERNAL HELPERS
+   ========================================================= */
 
-function getElement(id) {
+function authGetElement(id) {
+
     return document.getElementById(id);
+
 }
 
 
-function safeText(element, value) {
-    if (!element) return;
+function authSetText(id, value) {
+
+    const element =
+        authGetElement(id);
+
+    if (!element) {
+        return;
+    }
 
     element.textContent =
         value === null ||
         value === undefined
             ? ""
             : String(value);
+
 }
 
 
-function showAuthMessage(message, type = "error") {
+function authShowMessage(
+    message,
+    type = "error"
+) {
 
-    const box = getElement("authMessage");
+    const box =
+        authGetElement("authMessage");
 
-    if (!box) return;
+    if (!box) {
+        return;
+    }
 
-    box.textContent = message;
+    box.textContent =
+        message || "";
 
     box.classList.remove(
         "error",
         "success"
     );
 
-    box.classList.add(type);
+    box.classList.add(
+        type === "success"
+            ? "success"
+            : "error"
+    );
 
-    box.style.display = "block";
+    box.style.display =
+        "block";
+
 }
 
 
-function clearAuthMessage() {
+function authClearMessage() {
 
-    const box = getElement("authMessage");
+    const box =
+        authGetElement("authMessage");
 
-    if (!box) return;
+    if (!box) {
+        return;
+    }
 
-    box.textContent = "";
+    box.textContent =
+        "";
 
     box.classList.remove(
         "error",
         "success"
     );
 
-    box.style.display = "";
+    box.style.display =
+        "";
+
+}
+
+
+function authNotify(
+    message,
+    type = "success"
+) {
+
+    if (
+        typeof window.showNotification ===
+        "function"
+    ) {
+
+        window.showNotification(
+            message,
+            type
+        );
+
+    }
+    else {
+
+        alert(message);
+
+    }
+
 }
 
 
 /* =========================================================
-   4. MODAL CONTROL
-   IMPORTANT:
-   CSS uses .active, NOT .show
-========================================================= */
+   4. AUTH MODAL
+   ========================================================= */
 
-function openAuthModal(mode = "signin") {
+function openAuthModal(
+    mode = "signin"
+) {
 
-    const modal = getElement("authModal");
+    const modal =
+        authGetElement("authModal");
 
     if (!modal) {
-        console.error("ChemLab: authModal not found.");
+
+        console.error(
+            "ChemLab Auth: authModal not found."
+        );
+
         return;
+
     }
 
-    const title = getElement("authTitle");
-    const subtitle = getElement("authSubtitle");
-    const submit = getElement("authSubmit");
-    const switchText = getElement("authSwitchText");
-    const switchButton = getElement("authSwitch");
-    const nameField = getElement("nameField");
 
-    clearAuthMessage();
+    const title =
+        authGetElement("authTitle");
 
-    if (mode === "signup") {
+    const subtitle =
+        authGetElement("authSubtitle");
+
+    const submit =
+        authGetElement("authSubmit");
+
+    const switchText =
+        authGetElement("authSwitchText");
+
+    const switchButton =
+        authGetElement("authSwitch");
+
+    const nameField =
+        authGetElement("nameField");
+
+    const normalizedMode =
+        mode === "signup"
+            ? "signup"
+            : "signin";
+
+
+    authClearMessage();
+
+
+    if (normalizedMode === "signup") {
 
         if (title) {
-            title.textContent = "Create Student Account";
+
+            title.textContent =
+                "Create Student Account";
+
         }
 
         if (subtitle) {
+
             subtitle.textContent =
                 "Create your ChemLab account to save your progress.";
+
         }
 
         if (submit) {
-            submit.textContent = "Create Account";
+
+            submit.textContent =
+                "Create Account";
+
         }
 
         if (switchText) {
+
             switchText.textContent =
                 "Already have an account?";
+
         }
 
         if (switchButton) {
-            switchButton.textContent = "Sign In";
+
+            switchButton.textContent =
+                "Sign In";
+
         }
 
         if (nameField) {
-            nameField.style.display = "block";
+
+            nameField.style.display =
+                "block";
+
         }
 
-        modal.dataset.mode = "signup";
+    }
 
-    } else {
+    else {
 
         if (title) {
-            title.textContent = "Welcome Back";
+
+            title.textContent =
+                "Welcome Back";
+
         }
 
         if (subtitle) {
+
             subtitle.textContent =
                 "Sign in to continue using ChemLab.";
+
         }
 
         if (submit) {
-            submit.textContent = "Sign In";
+
+            submit.textContent =
+                "Sign In";
+
         }
 
         if (switchText) {
+
             switchText.textContent =
                 "Don't have an account?";
+
         }
 
         if (switchButton) {
-            switchButton.textContent = "Create Account";
+
+            switchButton.textContent =
+                "Create Account";
+
         }
 
         if (nameField) {
-            nameField.style.display = "none";
+
+            nameField.style.display =
+                "none";
+
         }
 
-        modal.dataset.mode = "signin";
     }
+
+
+    modal.dataset.mode =
+        normalizedMode;
 
     modal.classList.add("active");
     modal.classList.remove("show");
@@ -212,14 +389,31 @@ function openAuthModal(mode = "signin") {
         "aria-hidden",
         "false"
     );
+
+
+    const email =
+        authGetElement("authEmail");
+
+    if (email) {
+
+        setTimeout(
+            () => email.focus(),
+            50
+        );
+
+    }
+
 }
 
 
 function closeAuthModal() {
 
-    const modal = getElement("authModal");
+    const modal =
+        authGetElement("authModal");
 
-    if (!modal) return;
+    if (!modal) {
+        return;
+    }
 
     modal.classList.remove("active");
     modal.classList.remove("show");
@@ -229,22 +423,29 @@ function closeAuthModal() {
         "true"
     );
 
-    clearAuthMessage();
+    authClearMessage();
+
 }
 
 
+/* =========================================================
+   5. ACCOUNT MODAL
+   ========================================================= */
+
 function openAccountModal() {
 
-    const modal = getElement("accountModal");
+    const modal =
+        authGetElement("accountModal");
 
     if (!modal) {
-        console.error(
-            "ChemLab: accountModal not found."
-        );
-        return;
-    }
 
-    updateAccountModal();
+        console.error(
+            "ChemLab Auth: accountModal not found."
+        );
+
+        return;
+
+    }
 
     modal.classList.add("active");
     modal.classList.remove("show");
@@ -253,14 +454,20 @@ function openAccountModal() {
         "aria-hidden",
         "false"
     );
+
+    updateAccountModal();
+
 }
 
 
 function closeAccountModal() {
 
-    const modal = getElement("accountModal");
+    const modal =
+        authGetElement("accountModal");
 
-    if (!modal) return;
+    if (!modal) {
+        return;
+    }
 
     modal.classList.remove("active");
     modal.classList.remove("show");
@@ -269,22 +476,25 @@ function closeAccountModal() {
         "aria-hidden",
         "true"
     );
+
 }
 
 
+/* =========================================================
+   6. PREMIUM MODAL
+   ========================================================= */
+
 function openPremiumModal() {
 
-    const modal = getElement("premiumModal");
+    const modal =
+        authGetElement("premiumModal");
 
     if (!modal) {
-
-        console.warn(
-            "ChemLab: premiumModal not found. Opening Premium page directly."
-        );
 
         openPremiumPage();
 
         return;
+
     }
 
     modal.classList.add("active");
@@ -294,14 +504,18 @@ function openPremiumModal() {
         "aria-hidden",
         "false"
     );
+
 }
 
 
 function closePremiumModal() {
 
-    const modal = getElement("premiumModal");
+    const modal =
+        authGetElement("premiumModal");
 
-    if (!modal) return;
+    if (!modal) {
+        return;
+    }
 
     modal.classList.remove("active");
     modal.classList.remove("show");
@@ -310,42 +524,61 @@ function closePremiumModal() {
         "aria-hidden",
         "true"
     );
+
 }
 
 
 /* =========================================================
-   5. PREMIUM PAGE
-========================================================= */
+   7. PREMIUM PAGE
+   ========================================================= */
 
 function openPremiumPage() {
-
-    console.log(
-        "ChemLab: Opening Premium page..."
-    );
 
     closePremiumModal();
     closeAccountModal();
 
-    const premiumSection =
-        getElement("premiumSection");
 
-    if (!premiumSection) {
+    /*
+       Prefer app.js navigation when available.
+    */
 
-        console.error(
-            "ChemLab ERROR: premiumSection was not found."
+    if (
+        typeof window.showPage ===
+        "function"
+    ) {
+
+        window.showPage(
+            "premiumSection"
         );
 
-        alert(
-            "ChemLab error: Premium section was not found on this page."
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        return;
+
+    }
+
+
+    /*
+       Safe fallback if app.js navigation
+       is unavailable.
+    */
+
+    const premiumPage =
+        authGetElement("premiumSection");
+
+    if (!premiumPage) {
+
+        console.error(
+            "ChemLab Auth: premiumSection not found."
         );
 
         return;
+
     }
 
-    /*
-       Hide every page using both the CSS class
-       and inline display protection.
-    */
 
     document
         .querySelectorAll(".page")
@@ -353,42 +586,28 @@ function openPremiumPage() {
 
             page.classList.remove("active");
 
-            if (page.id !== "premiumSection") {
-                page.style.display = "none";
-            }
+            page.style.display =
+                "none";
+
         });
 
 
-    /*
-       Show Premium page.
-    */
+    premiumPage.classList.add(
+        "active"
+    );
 
-    premiumSection.classList.add("active");
+    premiumPage.style.display =
+        "block";
 
-    premiumSection.style.display = "block";
 
+    if (
+        window.chemLabState &&
+        typeof window.chemLabState === "object"
+    ) {
 
-    /*
-       Keep ChemLab state synchronized if app.js
-       exposes it.
-    */
+        window.chemLabState.currentPage =
+            "premiumSection";
 
-    try {
-
-        if (
-            typeof window.chemLabState === "object" &&
-            window.chemLabState
-        ) {
-            window.chemLabState.currentPage =
-                "premiumSection";
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "ChemLab: Could not update page state.",
-            error
-        );
     }
 
 
@@ -397,187 +616,406 @@ function openPremiumPage() {
         behavior: "smooth"
     });
 
-    console.log(
-        "ChemLab: Premium page opened successfully."
-    );
 }
 
 
 /* =========================================================
-   6. GET CURRENT USER
-========================================================= */
+   8. CURRENT USER
+   ========================================================= */
 
 async function getCurrentUser() {
 
-    if (!supabaseClient) {
-        console.error(
-            "ChemLab: Supabase client unavailable."
-        );
+    if (!chemLabAuthClient) {
 
         return null;
+
     }
+
 
     try {
 
         const {
             data,
             error
-        } = await supabaseClient.auth.getUser();
+        } =
+            await chemLabAuthClient.auth.getUser();
+
 
         if (error) {
 
-            console.warn(
-                "ChemLab: getUser error:",
-                error.message
-            );
+            /*
+               A missing session is normal.
+            */
+
+            if (
+                error.message &&
+                !error.message
+                    .toLowerCase()
+                    .includes("session")
+            ) {
+
+                console.warn(
+                    "ChemLab Auth: getUser:",
+                    error.message
+                );
+
+            }
 
             return null;
+
         }
+
 
         return data?.user || null;
 
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "ChemLab: Failed to get current user:",
+            "ChemLab Auth: getCurrentUser failed:",
             error
         );
 
         return null;
+
     }
+
 }
 
 
 /* =========================================================
-   7. GET CURRENT SESSION
-========================================================= */
+   9. CURRENT SESSION
+   ========================================================= */
 
 async function getCurrentSession() {
 
-    if (!supabaseClient) {
+    if (!chemLabAuthClient) {
         return null;
     }
+
 
     try {
 
         const {
             data,
             error
-        } = await supabaseClient.auth.getSession();
+        } =
+            await chemLabAuthClient.auth.getSession();
+
 
         if (error) {
 
             console.warn(
-                "ChemLab: getSession error:",
+                "ChemLab Auth: getSession:",
                 error.message
             );
 
             return null;
+
         }
+
 
         return data?.session || null;
 
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "ChemLab: Failed to get session:",
+            "ChemLab Auth: getCurrentSession failed:",
             error
         );
 
         return null;
+
     }
+
 }
 
 
 /* =========================================================
-   8. GET PREMIUM STATUS
-========================================================= */
+   10. CREATE / ENSURE PROFILE
+   ========================================================= */
 
-async function getPremiumStatus() {
+async function createStudentProfile(
+    userId,
+    fullName = "ChemLab Student"
+) {
 
-    const user = await getCurrentUser();
+    if (
+        !chemLabAuthClient ||
+        !userId
+    ) {
 
-    if (!user) {
+        return null;
 
-        return {
-            isPremium: false,
-            expiresAt: null,
-            plan: null,
-            subscription: null
-        };
     }
 
 
     try {
 
         /*
-           First get profile.
+           First check whether the profile already exists.
+           This prevents accidentally resetting Premium.
+        */
+
+        const {
+            data: existing,
+            error: existingError
+        } =
+            await chemLabAuthClient
+                .from("profiles")
+                .select(
+                    "id, full_name, is_premium, premium_expires_at"
+                )
+                .eq("id", userId)
+                .maybeSingle();
+
+
+        if (
+            !existingError &&
+            existing
+        ) {
+
+            return existing;
+
+        }
+
+
+        /*
+           Only create a profile when one doesn't exist.
+        */
+
+        const {
+            data,
+            error
+        } =
+            await chemLabAuthClient
+                .from("profiles")
+                .insert({
+                    id: userId,
+
+                    full_name:
+                        String(fullName || "")
+                            .trim() ||
+                        "ChemLab Student",
+
+                    is_premium:
+                        false,
+
+                    premium_expires_at:
+                        null
+                })
+                .select()
+                .maybeSingle();
+
+
+        if (error) {
+
+            /*
+               Another auth process may have created it
+               between the check and insert.
+            */
+
+            console.warn(
+                "ChemLab Auth: Profile creation:",
+                error.message
+            );
+
+            return null;
+
+        }
+
+
+        return data || null;
+
+    }
+    catch (error) {
+
+        console.warn(
+            "ChemLab Auth: createStudentProfile:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* =========================================================
+   11. ENSURE PROFILE AFTER LOGIN
+   ========================================================= */
+
+async function ensureStudentProfile(
+    user
+) {
+
+    if (!user?.id) {
+        return null;
+    }
+
+
+    try {
+
+        const {
+            data: profile,
+            error
+        } =
+            await chemLabAuthClient
+                .from("profiles")
+                .select(
+                    "id, full_name, is_premium, premium_expires_at"
+                )
+                .eq("id", user.id)
+                .maybeSingle();
+
+
+        if (!error && profile) {
+
+            return profile;
+
+        }
+
+
+        return await createStudentProfile(
+            user.id,
+            user.user_metadata?.full_name ||
+            "ChemLab Student"
+        );
+
+    }
+    catch (error) {
+
+        console.warn(
+            "ChemLab Auth: ensureStudentProfile:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* =========================================================
+   12. PREMIUM STATUS
+   ========================================================= */
+
+async function getPremiumStatus() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        return {
+
+            isPremium: false,
+
+            expiresAt: null,
+
+            plan: null,
+
+            subscription: null,
+
+            profile: null
+
+        };
+
+    }
+
+
+    try {
+
+        /*
+           Get profile.
         */
 
         const {
             data: profile,
             error: profileError
-        } = await supabaseClient
-            .from("profiles")
-            .select(
-                "id, full_name, is_premium, premium_expires_at"
-            )
-            .eq("id", user.id)
-            .maybeSingle();
+        } =
+            await chemLabAuthClient
+                .from("profiles")
+                .select(
+                    "id, full_name, is_premium, premium_expires_at"
+                )
+                .eq("id", user.id)
+                .maybeSingle();
 
 
         if (profileError) {
 
-            console.error(
-                "ChemLab: Profile query failed:",
-                profileError
+            console.warn(
+                "ChemLab Auth: Profile status query:",
+                profileError.message
             );
+
         }
 
 
         /*
-           Get active subscription if available.
+           Get newest active subscription.
         */
-
-        let subscription = null;
 
         const {
             data: subscriptions,
             error: subscriptionError
-        } = await supabaseClient
-            .from("subscriptions")
-            .select(
-                "*"
-            )
-            .eq("user_id", user.id)
-            .eq("status", "active")
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(1);
+        } =
+            await chemLabAuthClient
+                .from("subscriptions")
+                .select("*")
+                .eq("user_id", user.id)
+                .eq("status", "active")
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(1);
 
 
-        if (!subscriptionError &&
-            subscriptions &&
-            subscriptions.length > 0) {
+        let subscription =
+            null;
 
-            subscription = subscriptions[0];
+
+        if (
+            !subscriptionError &&
+            Array.isArray(subscriptions) &&
+            subscriptions.length
+        ) {
+
+            subscription =
+                subscriptions[0];
+
         }
 
 
+        /*
+           Start with the profile state.
+        */
+
         let isPremium =
-            Boolean(profile?.is_premium);
+            Boolean(
+                profile?.is_premium
+            );
 
 
         let expiresAt =
-            profile?.premium_expires_at || null;
+            profile?.premium_expires_at ||
+            null;
+
+
+        let plan =
+            null;
 
 
         /*
-           Check expiration locally too.
+           Check profile expiry.
         */
 
         if (
@@ -585,20 +1023,35 @@ async function getPremiumStatus() {
             expiresAt
         ) {
 
-            const expiryTime =
-                new Date(expiresAt).getTime();
+            const expiry =
+                new Date(
+                    expiresAt
+                ).getTime();
+
 
             if (
-                Number.isFinite(expiryTime) &&
-                expiryTime <= Date.now()
+                Number.isFinite(expiry) &&
+                expiry <= Date.now()
             ) {
 
-                isPremium = false;
+                isPremium =
+                    false;
+
             }
+
         }
 
 
+        /*
+           Active subscription can confirm Premium.
+        */
+
         if (subscription) {
+
+            plan =
+                subscription.plan ||
+                null;
+
 
             if (
                 subscription.expires_at
@@ -607,19 +1060,34 @@ async function getPremiumStatus() {
                 expiresAt =
                     subscription.expires_at;
 
-                const expiryTime =
+
+                const expiry =
                     new Date(
                         subscription.expires_at
                     ).getTime();
 
+
                 if (
-                    Number.isFinite(expiryTime) &&
-                    expiryTime > Date.now()
+                    Number.isFinite(expiry) &&
+                    expiry > Date.now()
                 ) {
 
-                    isPremium = true;
+                    isPremium =
+                        true;
+
                 }
+
+                else if (
+                    Number.isFinite(expiry)
+                ) {
+
+                    isPremium =
+                        false;
+
+                }
+
             }
+
         }
 
 
@@ -629,35 +1097,45 @@ async function getPremiumStatus() {
 
             expiresAt,
 
-            plan:
-                subscription?.plan || null,
+            plan,
 
             subscription,
 
-            profile: profile || null
+            profile:
+                profile || null
 
         };
 
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "ChemLab: Premium status check failed:",
+            "ChemLab Auth: Premium status failed:",
             error
         );
 
         return {
+
             isPremium: false,
+
             expiresAt: null,
+
             plan: null,
-            subscription: null
+
+            subscription: null,
+
+            profile: null
+
         };
+
     }
+
 }
 
 
 /* =========================================================
-   9. SIGN UP
-========================================================= */
+   13. SIGN UP
+   ========================================================= */
 
 async function signUpStudent(
     email,
@@ -665,11 +1143,12 @@ async function signUpStudent(
     fullName
 ) {
 
-    if (!supabaseClient) {
+    if (!chemLabAuthClient) {
 
         throw new Error(
             "Supabase is not available."
         );
+
     }
 
 
@@ -677,6 +1156,7 @@ async function signUpStudent(
         String(email || "")
             .trim()
             .toLowerCase();
+
 
     const cleanName =
         String(fullName || "")
@@ -688,6 +1168,7 @@ async function signUpStudent(
         throw new Error(
             "Please enter your full name."
         );
+
     }
 
 
@@ -696,135 +1177,95 @@ async function signUpStudent(
         throw new Error(
             "Please enter your email address."
         );
+
     }
 
 
-    if (!password || password.length < 6) {
+    if (
+        !password ||
+        password.length < 6
+    ) {
 
         throw new Error(
             "Password must be at least 6 characters."
         );
+
     }
 
 
     const {
         data,
         error
-    } = await supabaseClient.auth.signUp({
+    } =
+        await chemLabAuthClient.auth.signUp({
 
-        email: cleanEmail,
+            email:
+                cleanEmail,
 
-        password: password,
+            password:
+                password,
 
-        options: {
-            data: {
-                full_name: cleanName
+            options: {
+
+                data: {
+
+                    full_name:
+                        cleanName
+
+                }
+
             }
-        }
 
-    });
+        });
 
 
     if (error) {
 
         throw error;
+
     }
 
 
     /*
-       If email confirmation is disabled,
-       create/update profile immediately.
+       If Supabase automatically authenticated the user,
+       create the profile now.
+
+       If email confirmation is required, the profile
+       will be created after the first successful login.
     */
 
-    if (data?.user) {
+    if (
+        data?.user &&
+        data?.session
+    ) {
 
-        await createStudentProfile(
-            data.user.id,
-            cleanName
+        await ensureStudentProfile(
+            data.user
         );
+
     }
 
 
     return data;
+
 }
 
 
 /* =========================================================
-   10. CREATE STUDENT PROFILE
-========================================================= */
-
-async function createStudentProfile(
-    userId,
-    fullName
-) {
-
-    if (!supabaseClient || !userId) {
-        return null;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("profiles")
-            .upsert(
-                {
-                    id: userId,
-                    full_name:
-                        fullName || "ChemLab Student",
-                    is_premium: false,
-                    premium_expires_at: null
-                },
-                {
-                    onConflict: "id"
-                }
-            )
-            .select()
-            .maybeSingle();
-
-
-        if (error) {
-
-            console.warn(
-                "ChemLab: Could not create/update profile:",
-                error.message
-            );
-
-            return null;
-        }
-
-
-        return data;
-
-    } catch (error) {
-
-        console.warn(
-            "ChemLab: Profile creation failed:",
-            error
-        );
-
-        return null;
-    }
-}
-
-
-/* =========================================================
-   11. LOGIN
-========================================================= */
+   14. LOGIN
+   ========================================================= */
 
 async function loginStudent(
     email,
     password
 ) {
 
-    if (!supabaseClient) {
+    if (!chemLabAuthClient) {
 
         throw new Error(
             "Supabase is not available."
         );
+
     }
 
 
@@ -839,6 +1280,7 @@ async function loginStudent(
         throw new Error(
             "Please enter your email address."
         );
+
     }
 
 
@@ -847,66 +1289,54 @@ async function loginStudent(
         throw new Error(
             "Please enter your password."
         );
+
     }
 
 
     const {
         data,
         error
-    } = await supabaseClient.auth.signInWithPassword({
+    } =
+        await chemLabAuthClient.auth
+            .signInWithPassword({
 
-        email: cleanEmail,
+                email:
+                    cleanEmail,
 
-        password: password
+                password:
+                    password
 
-    });
+            });
 
 
     if (error) {
 
         throw error;
+
     }
 
 
     if (data?.user) {
 
-        /*
-           Try to ensure profile exists.
-           This will not overwrite premium status
-           because upsert here is avoided.
-        */
+        await ensureStudentProfile(
+            data.user
+        );
 
-        const {
-            data: existingProfile
-        } = await supabaseClient
-            .from("profiles")
-            .select("id")
-            .eq("id", data.user.id)
-            .maybeSingle();
-
-
-        if (!existingProfile) {
-
-            await createStudentProfile(
-                data.user.id,
-                data.user.user_metadata?.full_name ||
-                "ChemLab Student"
-            );
-        }
     }
 
 
     return data;
+
 }
 
 
 /* =========================================================
-   12. LOGOUT
-========================================================= */
+   15. LOGOUT
+   ========================================================= */
 
 async function logoutStudent() {
 
-    if (!supabaseClient) {
+    if (!chemLabAuthClient) {
         return;
     }
 
@@ -915,95 +1345,116 @@ async function logoutStudent() {
 
         const {
             error
-        } = await supabaseClient.auth.signOut();
+        } =
+            await chemLabAuthClient.auth.signOut();
 
 
         if (error) {
 
             throw error;
+
         }
 
 
         closeAccountModal();
         closePremiumModal();
+        closeAuthModal();
 
 
-        updateAuthUI(null);
+        updateAuthUI(
+            null
+        );
 
+
+        /*
+           Tell the rest of ChemLab.
+        */
+
+        document.dispatchEvent(
+            new CustomEvent(
+                "chemlab:auth-change",
+                {
+                    detail: {
+                        event:
+                            "SIGNED_OUT",
+
+                        user:
+                            null,
+
+                        session:
+                            null
+                    }
+                }
+            )
+        );
+
+
+        /*
+           Return to home.
+        */
 
         if (
-            typeof window.showPage === "function"
-        ) {
-
-            window.showPage("home");
-
-        } else {
-
-            document
-                .querySelectorAll(".page")
-                .forEach(page => {
-
-                    page.classList.remove("active");
-                    page.style.display = "none";
-
-                });
-
-            const home =
-                getElement("home");
-
-            if (home) {
-
-                home.classList.add("active");
-                home.style.display = "block";
-            }
-        }
-
-
-        if (
-            typeof window.showNotification ===
+            typeof window.showPage ===
             "function"
         ) {
 
-            window.showNotification(
-                "You have been signed out.",
-                "success"
+            window.showPage(
+                "home"
             );
+
         }
 
 
-    } catch (error) {
+        authNotify(
+            "You have been signed out.",
+            "success"
+        );
+
+    }
+    catch (error) {
 
         console.error(
-            "ChemLab: Logout failed:",
+            "ChemLab Auth: Logout failed:",
             error
         );
 
-        alert(
-            "Logout failed. Please try again."
+        authNotify(
+            "Logout failed. Please try again.",
+            "error"
         );
+
     }
+
 }
 
 
 /* =========================================================
-   13. UPDATE AUTH UI
-========================================================= */
+   16. UPDATE AUTH UI
+   ========================================================= */
 
 async function updateAuthUI(
     suppliedUser = null
 ) {
 
-    const user =
-        suppliedUser ||
-        await getCurrentUser();
-
-
     const loginButton =
-        getElement("loginButton");
+        authGetElement("loginButton");
+
+
+    const user =
+        suppliedUser !== null
+            ? suppliedUser
+            : await getCurrentUser();
 
 
     if (!loginButton) {
+
+        /*
+           Auth can still function even if the
+           navigation login button isn't present.
+        */
+
         return;
+
     }
 
 
@@ -1012,51 +1463,59 @@ async function updateAuthUI(
         loginButton.textContent =
             "Sign In";
 
-        loginButton.onclick = function () {
+        loginButton.onclick =
+            function(event) {
 
-            openAuthModal("signin");
+                if (event) {
+                    event.preventDefault();
+                }
 
-        };
+                openAuthModal(
+                    "signin"
+                );
+
+            };
 
         return;
+
     }
 
-
-    /*
-       Logged in.
-    */
 
     loginButton.textContent =
         "My Account";
 
 
     loginButton.onclick =
-        function () {
+        function(event) {
+
+            if (event) {
+                event.preventDefault();
+            }
 
             openAccountModal();
 
         };
 
 
-    /*
-       Update account information.
-    */
+    await updateAccountModal(
+        user
+    );
 
-    await updateAccountModal(user);
 }
 
 
 /* =========================================================
-   14. UPDATE ACCOUNT MODAL
-========================================================= */
+   17. UPDATE ACCOUNT MODAL
+   ========================================================= */
 
 async function updateAccountModal(
     suppliedUser = null
 ) {
 
     const user =
-        suppliedUser ||
-        await getCurrentUser();
+        suppliedUser !== null
+            ? suppliedUser
+            : await getCurrentUser();
 
 
     if (!user) {
@@ -1068,107 +1527,98 @@ async function updateAccountModal(
         await getPremiumStatus();
 
 
-    const name =
+    const fullName =
         user.user_metadata?.full_name ||
         premium.profile?.full_name ||
         "ChemLab Student";
 
 
-    safeText(
-        getElement("accountName"),
-        name
+    authSetText(
+        "accountName",
+        fullName
     );
 
 
-    safeText(
-        getElement("accountEmail"),
+    authSetText(
+        "accountEmail",
         user.email || ""
     );
 
 
-    const status =
-        getElement("membershipStatus");
-
-
-    const premiumStatus =
-        getElement("premiumAccountStatus");
-
-
     const premiumDetails =
-        getElement("premiumDetails");
-
-
-    const accountPlan =
-        getElement("accountPlan");
-
-
-    const accountExpiry =
-        getElement("accountExpiry");
-
-
-    const membershipIcon =
-        getElement("membershipIcon");
+        authGetElement(
+            "premiumDetails"
+        );
 
 
     const accountPremiumButton =
-        getElement("accountPremiumButton");
+        authGetElement(
+            "accountPremiumButton"
+        );
 
 
     if (premium.isPremium) {
 
-        safeText(
-            membershipIcon,
+        authSetText(
+            "membershipIcon",
             "👑"
         );
 
-
-        safeText(
-            status,
+        authSetText(
+            "membershipStatus",
             "Premium Member"
         );
 
-
-        safeText(
-            premiumStatus,
+        authSetText(
+            "premiumAccountStatus",
             "Active"
         );
 
-
         if (premiumDetails) {
+
             premiumDetails.style.display =
                 "block";
+
         }
 
 
-        safeText(
-            accountPlan,
+        authSetText(
+            "accountPlan",
             premium.plan
-                ? premium.plan.toUpperCase()
+                ? String(
+                    premium.plan
+                ).toUpperCase()
                 : "PREMIUM"
         );
 
 
         if (premium.expiresAt) {
 
-            const date =
+            const expiry =
                 new Date(
                     premium.expiresAt
                 );
 
 
-            safeText(
-                accountExpiry,
-                Number.isNaN(date.getTime())
+            authSetText(
+                "accountExpiry",
+
+                Number.isNaN(
+                    expiry.getTime()
+                )
                     ? premium.expiresAt
-                    : date.toLocaleDateString()
+                    : expiry.toLocaleDateString()
             );
 
-        } else {
+        }
 
-            safeText(
-                accountExpiry,
+        else {
+
+            authSetText(
+                "accountExpiry",
                 "Active"
             );
+
         }
 
 
@@ -1179,40 +1629,41 @@ async function updateAccountModal(
 
         }
 
-    } else {
+    }
 
-        safeText(
-            membershipIcon,
+    else {
+
+        authSetText(
+            "membershipIcon",
             "🧪"
         );
 
-
-        safeText(
-            status,
+        authSetText(
+            "membershipStatus",
             "Free Student"
         );
 
-
-        safeText(
-            premiumStatus,
+        authSetText(
+            "premiumAccountStatus",
             "Free"
         );
 
 
         if (premiumDetails) {
+
             premiumDetails.style.display =
                 "none";
+
         }
 
 
-        safeText(
-            accountPlan,
+        authSetText(
+            "accountPlan",
             "FREE"
         );
 
-
-        safeText(
-            accountExpiry,
+        authSetText(
+            "accountExpiry",
             "—"
         );
 
@@ -1223,44 +1674,43 @@ async function updateAccountModal(
                 "Get Premium";
 
         }
+
     }
+
 }
 
 
 /* =========================================================
-   15. PREMIUM PLAN REQUEST
-========================================================= */
+   18. PREMIUM PAYMENT INITIALIZATION
+   ========================================================= */
 
 async function requestPremiumPlan(
     plan
 ) {
 
-    console.log(
-        "ChemLab: Premium plan selected:",
-        plan
-    );
+    const selectedPlan =
+        String(plan || "")
+            .trim()
+            .toLowerCase();
 
 
     if (
-        plan !== "monthly" &&
-        plan !== "yearly"
+        selectedPlan !== "monthly" &&
+        selectedPlan !== "yearly"
     ) {
 
-        console.error(
-            "ChemLab: Invalid premium plan:",
-            plan
-        );
-
-        alert(
-            "Invalid Premium plan."
+        authNotify(
+            "Invalid Premium plan.",
+            "error"
         );
 
         return;
+
     }
 
 
     /*
-       Make sure user is logged in.
+       User must be authenticated.
     */
 
     const user =
@@ -1271,19 +1721,22 @@ async function requestPremiumPlan(
 
         closePremiumModal();
 
-        openAuthModal("signin");
+        openAuthModal(
+            "signin"
+        );
 
-        showAuthMessage(
+        authShowMessage(
             "Please sign in before choosing Premium.",
             "error"
         );
 
         return;
+
     }
 
 
     /*
-       Check current Premium status.
+       Check whether Premium is already active.
     */
 
     const premium =
@@ -1296,29 +1749,18 @@ async function requestPremiumPlan(
 
         openAccountModal();
 
-        if (
-            typeof window.showNotification ===
-            "function"
-        ) {
-
-            window.showNotification(
-                "Your Premium membership is already active.",
-                "success"
-            );
-
-        } else {
-
-            alert(
-                "Your Premium membership is already active."
-            );
-        }
+        authNotify(
+            "Your Premium membership is already active.",
+            "success"
+        );
 
         return;
+
     }
 
 
     /*
-       Get fresh session.
+       Get a fresh session.
     */
 
     const session =
@@ -1329,77 +1771,85 @@ async function requestPremiumPlan(
 
         closePremiumModal();
 
-        openAuthModal("signin");
+        openAuthModal(
+            "signin"
+        );
 
-        showAuthMessage(
+        authShowMessage(
             "Your session has expired. Please sign in again.",
             "error"
         );
 
         return;
+
     }
 
 
-    /*
-       Disable plan buttons while request is running.
-    */
-
-    const planButtons =
+    const buttons =
         document.querySelectorAll(
             ".premium-plan-button"
         );
 
 
-    planButtons.forEach(button => {
+    buttons.forEach(
+        button => {
 
-        button.disabled = true;
+            button.disabled =
+                true;
 
-        button.dataset.originalText =
-            button.textContent;
+            if (
+                !button.dataset.originalText
+            ) {
 
-        button.textContent =
-            "Processing...";
+                button.dataset.originalText =
+                    button.textContent;
 
-    });
+            }
+
+            button.textContent =
+                "Processing...";
+
+        }
+    );
 
 
     try {
 
-        console.log(
-            "ChemLab: Sending Premium request to Supabase..."
-        );
-
-
         const response =
             await fetch(
-                AUTH_FUNCTION_URL,
+                CHEMLAB_AUTH_CONFIG
+                    .ACTIVATE_PREMIUM_URL,
                 {
-                    method: "POST",
+
+                    method:
+                        "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json",
 
                         "Authorization":
                             `Bearer ${session.access_token}`
+
                     },
 
-                    body: JSON.stringify({
-                        plan
-                    })
+                    body:
+                        JSON.stringify({
+                            plan:
+                                selectedPlan
+                        })
+
                 }
             );
 
 
         const result =
-            await response.json()
-                .catch(() => ({}));
-
-
-        console.log(
-            "ChemLab: activate-premium response:",
-            result
-        );
+            await response
+                .json()
+                .catch(
+                    () => ({})
+                );
 
 
         if (!response.ok) {
@@ -1409,6 +1859,7 @@ async function requestPremiumPlan(
                 result?.message ||
                 "Unable to start Premium payment."
             );
+
         }
 
 
@@ -1419,28 +1870,27 @@ async function requestPremiumPlan(
             throw new Error(
                 "Paystack did not return a payment URL."
             );
+
         }
 
 
         /*
-           Store payment information so that
-           the callback can be verified later.
+           Save payment information.
         */
 
-        if (
-            result.reference
-        ) {
+        if (result.reference) {
 
             sessionStorage.setItem(
                 "chemLabPaystackReference",
                 result.reference
             );
+
         }
 
 
         sessionStorage.setItem(
             "chemLabPaystackPlan",
-            plan
+            selectedPlan
         );
 
 
@@ -1452,58 +1902,64 @@ async function requestPremiumPlan(
                 "chemLabSubscriptionId",
                 result.subscription_id
             );
+
         }
 
 
         /*
-           Redirect to Paystack Live Checkout.
+           Redirect to Paystack.
         */
 
         window.location.href =
             result.authorization_url;
 
-
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "ChemLab: Premium payment initialization failed:",
+            "ChemLab Auth: Premium initialization failed:",
             error
         );
 
 
-        alert(
-            error.message ||
-            "Unable to start Premium payment."
+        authNotify(
+            error?.message ||
+            "Unable to start Premium payment.",
+            "error"
         );
 
+    }
+    finally {
 
-    } finally {
+        buttons.forEach(
+            button => {
 
-        planButtons.forEach(button => {
+                button.disabled =
+                    false;
 
-            button.disabled = false;
+                if (
+                    button.dataset.originalText
+                ) {
 
-            if (
-                button.dataset.originalText
-            ) {
+                    button.textContent =
+                        button.dataset.originalText;
 
-                button.textContent =
-                    button.dataset.originalText;
+                }
 
             }
-
-        });
+        );
 
     }
+
 }
 
 
 /* =========================================================
-   16. PREMIUM EXPERIMENT ACCESS
-========================================================= */
+   19. PREMIUM EXPERIMENT ACCESS
+   ========================================================= */
 
 async function handlePremiumExperiment(
-    button
+    button = null
 ) {
 
     const user =
@@ -1512,14 +1968,17 @@ async function handlePremiumExperiment(
 
     if (!user) {
 
-        openAuthModal("signin");
+        openAuthModal(
+            "signin"
+        );
 
-        showAuthMessage(
+        authShowMessage(
             "Please sign in to access Premium experiments.",
             "error"
         );
 
         return;
+
     }
 
 
@@ -1532,12 +1991,12 @@ async function handlePremiumExperiment(
         openPremiumModal();
 
         return;
+
     }
 
 
     /*
-       User has Premium.
-       Open advanced titration.
+       Premium confirmed.
     */
 
     if (
@@ -1547,22 +2006,248 @@ async function handlePremiumExperiment(
 
         window.openAdvancedTitration();
 
-    } else {
+    }
+
+    else if (
+        typeof window.showPage ===
+        "function"
+    ) {
+
+        window.showPage(
+            "advancedTitrationPage"
+        );
+
+    }
+
+    else {
 
         console.error(
-            "ChemLab: openAdvancedTitration() is unavailable."
+            "ChemLab Auth: Advanced Titration function unavailable."
         );
 
-        alert(
-            "Advanced Chemistry Lab is still loading. Please try again."
+        authNotify(
+            "Advanced Chemistry Lab is still loading. Please try again.",
+            "error"
         );
+
     }
+
 }
 
 
 /* =========================================================
-   17. PAYSTACK RETURN VERIFICATION
-========================================================= */
+   20. VERIFY PAYSTACK PAYMENT
+   ========================================================= */
+
+async function verifyPaystackPayment(
+    reference
+) {
+
+    if (!reference) {
+
+        throw new Error(
+            "Payment reference is missing."
+        );
+
+    }
+
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user) {
+
+        sessionStorage.setItem(
+            "chemLabPendingPaystackReference",
+            reference
+        );
+
+        openAuthModal(
+            "signin"
+        );
+
+        authShowMessage(
+            "Please sign in to complete Premium verification.",
+            "success"
+        );
+
+        return false;
+
+    }
+
+
+    const session =
+        await getCurrentSession();
+
+
+    if (!session?.access_token) {
+
+        sessionStorage.setItem(
+            "chemLabPendingPaystackReference",
+            reference
+        );
+
+        openAuthModal(
+            "signin"
+        );
+
+        return false;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                CHEMLAB_AUTH_CONFIG
+                    .VERIFY_PAYMENT_URL,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${session.access_token}`
+
+                    },
+
+                    body:
+                        JSON.stringify({
+                            reference
+                        })
+
+                }
+            );
+
+
+        const result =
+            await response
+                .json()
+                .catch(
+                    () => ({})
+                );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result?.error ||
+                result?.message ||
+                "Payment verification failed."
+            );
+
+        }
+
+
+        /*
+           Remove temporary payment information.
+        */
+
+        sessionStorage.removeItem(
+            "chemLabPendingPaystackReference"
+        );
+
+        sessionStorage.removeItem(
+            "chemLabPaystackReference"
+        );
+
+        sessionStorage.removeItem(
+            "chemLabPaystackPlan"
+        );
+
+        sessionStorage.removeItem(
+            "chemLabSubscriptionId"
+        );
+
+
+        /*
+           Remove Paystack query parameters.
+        */
+
+        try {
+
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+        }
+        catch (error) {
+
+            console.warn(
+                "ChemLab Auth: URL cleanup failed:",
+                error
+            );
+
+        }
+
+
+        /*
+           Refresh account information.
+        */
+
+        await updateAuthUI(
+            user
+        );
+
+
+        authNotify(
+            "🎉 Premium activated successfully!",
+            "success"
+        );
+
+
+        openPremiumPage();
+
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(
+            "ChemLab Auth: Payment verification failed:",
+            error
+        );
+
+
+        /*
+           Keep the reference so verification can
+           be retried after the webhook/transaction
+           becomes available.
+        */
+
+        sessionStorage.setItem(
+            "chemLabPendingPaystackReference",
+            reference
+        );
+
+
+        authNotify(
+            error?.message ||
+            "Payment verification could not be completed yet.",
+            "error"
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   21. PAYSTACK RETURN
+   ========================================================= */
 
 async function handlePaystackReturn() {
 
@@ -1578,193 +2263,27 @@ async function handlePaystackReturn() {
 
 
     if (!reference) {
+
         return;
+
     }
 
 
     console.log(
-        "ChemLab: Paystack reference detected:",
-        reference
+        "ChemLab Auth: Paystack reference detected."
     );
 
 
-    const user =
-        await getCurrentUser();
+    await verifyPaystackPayment(
+        reference
+    );
 
-
-    if (!user) {
-
-        /*
-           Keep reference so verification can happen
-           after the student signs in.
-        */
-
-        sessionStorage.setItem(
-            "chemLabPendingPaystackReference",
-            reference
-        );
-
-
-        openAuthModal("signin");
-
-        showAuthMessage(
-            "Please sign in to complete Premium verification.",
-            "success"
-        );
-
-        return;
-    }
-
-
-    const session =
-        await getCurrentSession();
-
-
-    if (!session?.access_token) {
-
-        openAuthModal("signin");
-
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                VERIFY_FUNCTION_URL,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            `Bearer ${session.access_token}`
-                    },
-
-                    body: JSON.stringify({
-                        reference
-                    })
-                }
-            );
-
-
-        const result =
-            await response.json()
-                .catch(() => ({}));
-
-
-        console.log(
-            "ChemLab: Paystack verification response:",
-            result
-        );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result?.error ||
-                result?.message ||
-                "Payment verification failed."
-            );
-        }
-
-
-        /*
-           Remove stored payment data.
-        */
-
-        sessionStorage.removeItem(
-            "chemLabPaystackReference"
-        );
-
-        sessionStorage.removeItem(
-            "chemLabPaystackPlan"
-        );
-
-        sessionStorage.removeItem(
-            "chemLabSubscriptionId"
-        );
-
-        sessionStorage.removeItem(
-            "chemLabPendingPaystackReference"
-        );
-
-
-        /*
-           Remove Paystack parameters from URL.
-        */
-
-        try {
-
-            window.history.replaceState(
-                {},
-                document.title,
-                window.location.pathname
-            );
-
-        } catch (error) {
-
-            console.warn(
-                "ChemLab: Could not clean payment URL.",
-                error
-            );
-        }
-
-
-        /*
-           Refresh UI.
-        */
-
-        await updateAuthUI(user);
-
-
-        if (
-            typeof window.showNotification ===
-            "function"
-        ) {
-
-            window.showNotification(
-                "🎉 Premium activated successfully!",
-                "success"
-            );
-
-        } else {
-
-            alert(
-                "🎉 Premium activated successfully!"
-            );
-        }
-
-
-        /*
-           Open Premium page.
-        */
-
-        openPremiumPage();
-
-
-    } catch (error) {
-
-        console.error(
-            "ChemLab: Paystack verification failed:",
-            error
-        );
-
-
-        alert(
-            error.message ||
-            "Payment was received, but verification could not be completed."
-        );
-    }
 }
 
 
 /* =========================================================
-   18. VERIFY PENDING PAYMENT AFTER LOGIN
-========================================================= */
+   22. VERIFY PENDING PAYMENT
+   ========================================================= */
 
 async function verifyPendingPaymentAfterLogin() {
 
@@ -1775,7 +2294,9 @@ async function verifyPendingPaymentAfterLogin() {
 
 
     if (!reference) {
+
         return;
+
     }
 
 
@@ -1784,116 +2305,29 @@ async function verifyPendingPaymentAfterLogin() {
 
 
     if (!user) {
+
         return;
+
     }
 
 
-    /*
-       Temporarily put the reference in URL-style
-       verification flow.
-    */
+    await verifyPaystackPayment(
+        reference
+    );
 
-    const session =
-        await getCurrentSession();
-
-
-    if (!session?.access_token) {
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                VERIFY_FUNCTION_URL,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            `Bearer ${session.access_token}`
-                    },
-
-                    body: JSON.stringify({
-                        reference
-                    })
-                }
-            );
-
-
-        const result =
-            await response.json()
-                .catch(() => ({}));
-
-
-        if (!response.ok) {
-
-            console.warn(
-                "ChemLab: Pending payment verification failed:",
-                result
-            );
-
-            return;
-        }
-
-
-        sessionStorage.removeItem(
-            "chemLabPendingPaystackReference"
-        );
-
-        sessionStorage.removeItem(
-            "chemLabPaystackReference"
-        );
-
-        sessionStorage.removeItem(
-            "chemLabPaystackPlan"
-        );
-
-        sessionStorage.removeItem(
-            "chemLabSubscriptionId"
-        );
-
-
-        await updateAuthUI(user);
-
-
-        if (
-            typeof window.showNotification ===
-            "function"
-        ) {
-
-            window.showNotification(
-                "🎉 Your Premium membership is now active!",
-                "success"
-            );
-        }
-
-
-        openPremiumPage();
-
-
-    } catch (error) {
-
-        console.warn(
-            "ChemLab: Pending payment check failed:",
-            error
-        );
-    }
 }
 
 
 /* =========================================================
-   19. AUTH FORM SUBMISSION
-========================================================= */
+   23. AUTH FORM SUBMISSION
+   ========================================================= */
 
 async function handleAuthSubmit() {
 
     const modal =
-        getElement("authModal");
+        authGetElement(
+            "authModal"
+        );
 
 
     if (!modal) {
@@ -1907,29 +2341,38 @@ async function handleAuthSubmit() {
 
 
     const email =
-        getElement("authEmail")?.value
+        authGetElement(
+            "authEmail"
+        )?.value
             ?.trim();
 
 
     const password =
-        getElement("authPassword")?.value;
+        authGetElement(
+            "authPassword"
+        )?.value;
 
 
     const fullName =
-        getElement("authName")?.value
+        authGetElement(
+            "authName"
+        )?.value
             ?.trim();
 
 
     const submit =
-        getElement("authSubmit");
+        authGetElement(
+            "authSubmit"
+        );
 
 
-    clearAuthMessage();
+    authClearMessage();
 
 
     if (submit) {
 
-        submit.disabled = true;
+        submit.disabled =
+            true;
 
         submit.dataset.originalText =
             submit.textContent;
@@ -1938,6 +2381,7 @@ async function handleAuthSubmit() {
             mode === "signup"
                 ? "Creating Account..."
                 : "Signing In...";
+
     }
 
 
@@ -1945,51 +2389,55 @@ async function handleAuthSubmit() {
 
         if (mode === "signup") {
 
-            await signUpStudent(
-                email,
-                password,
-                fullName
-            );
+            const data =
+                await signUpStudent(
+                    email,
+                    password,
+                    fullName
+                );
 
 
-            showAuthMessage(
-                "Account created successfully. Check your email if confirmation is required.",
+            /*
+               If email confirmation is required,
+               no active session exists yet.
+            */
+
+            if (!data?.session) {
+
+                authShowMessage(
+                    "Account created. Please check your email and confirm your account before signing in.",
+                    "success"
+                );
+
+                return;
+
+            }
+
+
+            authShowMessage(
+                "Account created successfully.",
                 "success"
             );
 
 
-            /*
-               Give the user a moment to read
-               the success message.
-            */
-
-            setTimeout(
-                async function () {
-
-                    const user =
-                        await getCurrentUser();
-
-
-                    if (user) {
-
-                        closeAuthModal();
-
-                        await updateAuthUI(user);
-
-                        await verifyPendingPaymentAfterLogin();
-
-                    } else {
-
-                        openAuthModal("signin");
-
-                    }
-
-                },
-                1200
+            await updateAuthUI(
+                data.user
             );
 
 
-        } else {
+            await verifyPendingPaymentAfterLogin();
+
+
+            setTimeout(
+                () => {
+                    closeAuthModal();
+                },
+                700
+            );
+
+        }
+
+        else {
 
             const data =
                 await loginStudent(
@@ -1998,33 +2446,35 @@ async function handleAuthSubmit() {
                 );
 
 
-            showAuthMessage(
+            authShowMessage(
                 "Signed in successfully.",
                 "success"
             );
 
 
+            await updateAuthUI(
+                data?.user ||
+                null
+            );
+
+
+            await verifyPendingPaymentAfterLogin();
+
+
             setTimeout(
-                async function () {
-
+                () => {
                     closeAuthModal();
-
-                    await updateAuthUI(
-                        data?.user || null
-                    );
-
-                    await verifyPendingPaymentAfterLogin();
-
                 },
                 500
             );
+
         }
 
-
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "ChemLab: Authentication error:",
+            "ChemLab Auth: Authentication failed:",
             error
         );
 
@@ -2034,33 +2484,36 @@ async function handleAuthSubmit() {
             "Authentication failed.";
 
 
-        /*
-           Make common Supabase messages
-           easier for students to understand.
-        */
+        const lower =
+            message.toLowerCase();
+
 
         if (
-            message
-                .toLowerCase()
-                .includes("invalid login credentials")
+            lower.includes(
+                "invalid login credentials"
+            )
         ) {
 
             message =
                 "Incorrect email or password.";
 
-        } else if (
-            message
-                .toLowerCase()
-                .includes("email not confirmed")
+        }
+
+        else if (
+            lower.includes(
+                "email not confirmed"
+            )
         ) {
 
             message =
                 "Please confirm your email before signing in.";
 
-        } else if (
-            message
-                .toLowerCase()
-                .includes("user already registered")
+        }
+
+        else if (
+            lower.includes(
+                "user already registered"
+            )
         ) {
 
             message =
@@ -2068,18 +2521,30 @@ async function handleAuthSubmit() {
 
         }
 
+        else if (
+            lower.includes(
+                "password should be at least"
+            )
+        ) {
 
-        showAuthMessage(
+            message =
+                "Your password must be at least 6 characters.";
+
+        }
+
+
+        authShowMessage(
             message,
             "error"
         );
 
-
-    } finally {
+    }
+    finally {
 
         if (submit) {
 
-            submit.disabled = false;
+            submit.disabled =
+                false;
 
             submit.textContent =
                 submit.dataset.originalText ||
@@ -2088,14 +2553,17 @@ async function handleAuthSubmit() {
                         ? "Create Account"
                         : "Sign In"
                 );
+
         }
+
     }
+
 }
 
 
 /* =========================================================
-   20. PREMIUM BUTTON CLICK HANDLER
-========================================================= */
+   24. PREMIUM PLAN BUTTONS
+   ========================================================= */
 
 function setupPremiumButtons() {
 
@@ -2106,50 +2574,59 @@ function setupPremiumButtons() {
 
 
     console.log(
-        `ChemLab: Found ${buttons.length} Premium plan button(s).`
+        `ChemLab Auth: ${buttons.length} Premium plan button(s) found.`
     );
 
 
-    buttons.forEach(button => {
+    buttons.forEach(
+        button => {
 
-        /*
-           Remove old onclick if any.
-        */
+            /*
+               Prevent duplicate listeners.
+            */
 
-        button.onclick = null;
+            if (
+                button.dataset.authPremiumBound ===
+                "true"
+            ) {
 
-
-        button.addEventListener(
-            "click",
-            async function(event) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-
-                const plan =
-                    button.dataset.plan;
-
-
-                console.log(
-                    "ChemLab: Premium button clicked:",
-                    plan
-                );
-
-
-                await requestPremiumPlan(
-                    plan
-                );
+                return;
 
             }
-        );
-    });
+
+
+            button.dataset.authPremiumBound =
+                "true";
+
+
+            button.addEventListener(
+                "click",
+                async function(event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+
+                    const plan =
+                        button.dataset.plan;
+
+
+                    await requestPremiumPlan(
+                        plan
+                    );
+
+                }
+            );
+
+        }
+    );
+
 }
 
 
 /* =========================================================
-   21. PREMIUM EXPERIMENT BUTTONS
-========================================================= */
+   25. PREMIUM EXPERIMENT BUTTONS
+   ========================================================= */
 
 function setupPremiumExperimentButtons() {
 
@@ -2160,338 +2637,472 @@ function setupPremiumExperimentButtons() {
 
 
     console.log(
-        `ChemLab: Found ${buttons.length} Premium experiment button(s).`
+        `ChemLab Auth: ${buttons.length} Premium experiment button(s) found.`
     );
 
 
-    buttons.forEach(button => {
+    buttons.forEach(
+        button => {
 
-        button.addEventListener(
-            "click",
-            async function(event) {
+            if (
+                button.dataset.authPremiumExperimentBound ===
+                "true"
+            ) {
 
-                event.preventDefault();
-                event.stopPropagation();
-
-
-                await handlePremiumExperiment(
-                    button
-                );
+                return;
 
             }
-        );
-    });
-}
 
 
-/* =========================================================
-   22. MAIN INITIALIZATION
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async function() {
-
-        console.log(
-            "ChemLab Auth: Initialization started."
-        );
+            button.dataset.authPremiumExperimentBound =
+                "true";
 
 
-        /* -----------------------------------------
-           Auth modal controls
-        ----------------------------------------- */
-
-        const closeAuth =
-            getElement("closeAuthModal");
-
-
-        if (closeAuth) {
-
-            closeAuth.addEventListener(
+            button.addEventListener(
                 "click",
-                closeAuthModal
-            );
-        }
+                async function(event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
 
 
-        const authSwitch =
-            getElement("authSwitch");
-
-
-        if (authSwitch) {
-
-            authSwitch.addEventListener(
-                "click",
-                function() {
-
-                    const modal =
-                        getElement("authModal");
-
-
-                    const currentMode =
-                        modal?.dataset.mode ||
-                        "signin";
-
-
-                    openAuthModal(
-                        currentMode === "signin"
-                            ? "signup"
-                            : "signin"
+                    await handlePremiumExperiment(
+                        button
                     );
 
                 }
             );
+
         }
+    );
+
+}
 
 
-        const authSubmit =
-            getElement("authSubmit");
+/* =========================================================
+   26. AUTH STATE EVENT
+   ========================================================= */
+
+function dispatchChemLabAuthEvent(
+    eventName,
+    session
+) {
+
+    const user =
+        session?.user ||
+        null;
 
 
-        if (authSubmit) {
+    document.dispatchEvent(
+        new CustomEvent(
+            "chemlab:auth-change",
+            {
+                detail: {
 
-            authSubmit.addEventListener(
-                "click",
-                handleAuthSubmit
-            );
-        }
+                    event:
+                        eventName,
 
+                    user,
 
-        const passwordInput =
-            getElement("authPassword");
-
-
-        if (passwordInput) {
-
-            passwordInput.addEventListener(
-                "keydown",
-                function(event) {
-
-                    if (
-                        event.key === "Enter"
-                    ) {
-
-                        event.preventDefault();
-
-                        handleAuthSubmit();
-                    }
-                }
-            );
-        }
-
-
-        /* -----------------------------------------
-           Account modal
-        ----------------------------------------- */
-
-        const closeAccount =
-            getElement("closeAccountModal");
-
-
-        if (closeAccount) {
-
-            closeAccount.addEventListener(
-                "click",
-                closeAccountModal
-            );
-        }
-
-
-        const logoutButton =
-            getElement("logoutButton");
-
-
-        if (logoutButton) {
-
-            logoutButton.addEventListener(
-                "click",
-                logoutStudent
-            );
-        }
-
-
-        const accountPremiumButton =
-            getElement("accountPremiumButton");
-
-
-        if (accountPremiumButton) {
-
-            accountPremiumButton.addEventListener(
-                "click",
-                function() {
-
-                    closeAccountModal();
-
-                    openPremiumPage();
+                    session:
+                        session || null
 
                 }
-            );
-        }
+            }
+        )
+    );
+
+}
 
 
-        /* -----------------------------------------
-           Premium modal
-        ----------------------------------------- */
+/* =========================================================
+   27. INITIALIZATION
+   ========================================================= */
 
-        const closePremium =
-            getElement("closePremiumModal");
-
-
-        if (closePremium) {
-
-            closePremium.addEventListener(
-                "click",
-                closePremiumModal
-            );
-        }
+let chemLabAuthInitialized =
+    false;
 
 
-        const premiumStartButton =
-            getElement("startPremiumButton");
+async function initializeChemLabAuth() {
+
+    if (chemLabAuthInitialized) {
+
+        return;
+
+    }
 
 
-        if (premiumStartButton) {
-
-            premiumStartButton.addEventListener(
-                "click",
-                function(event) {
-
-                    event.preventDefault();
-
-                    openPremiumPage();
-
-                }
-            );
-        }
+    chemLabAuthInitialized =
+        true;
 
 
-        /* -----------------------------------------
-           Premium plan buttons
-        ----------------------------------------- */
-
-        setupPremiumButtons();
+    console.log(
+        "ChemLab Auth: Initialization started."
+    );
 
 
-        /* -----------------------------------------
-           Premium experiment buttons
-        ----------------------------------------- */
+    /* -----------------------------------------------------
+       AUTH MODAL
+       ----------------------------------------------------- */
 
-        setupPremiumExperimentButtons();
-
-
-        /* -----------------------------------------
-           Close modals by clicking backdrop
-        ----------------------------------------- */
-
-        const authModal =
-            getElement("authModal");
+    const closeAuth =
+        authGetElement(
+            "closeAuthModal"
+        );
 
 
-        if (authModal) {
+    if (closeAuth) {
 
-            authModal.addEventListener(
-                "click",
-                function(event) {
+        closeAuth.addEventListener(
+            "click",
+            closeAuthModal
+        );
 
-                    if (
-                        event.target ===
-                        authModal
-                    ) {
-
-                        closeAuthModal();
-                    }
-                }
-            );
-        }
+    }
 
 
-        const accountModal =
-            getElement("accountModal");
+    const authSwitch =
+        authGetElement(
+            "authSwitch"
+        );
 
 
-        if (accountModal) {
+    if (authSwitch) {
 
-            accountModal.addEventListener(
-                "click",
-                function(event) {
-
-                    if (
-                        event.target ===
-                        accountModal
-                    ) {
-
-                        closeAccountModal();
-                    }
-                }
-            );
-        }
-
-
-        const premiumModal =
-            getElement("premiumModal");
-
-
-        if (premiumModal) {
-
-            premiumModal.addEventListener(
-                "click",
-                function(event) {
-
-                    if (
-                        event.target ===
-                        premiumModal
-                    ) {
-
-                        closePremiumModal();
-                    }
-                }
-            );
-        }
-
-
-        /* -----------------------------------------
-           Escape key
-        ----------------------------------------- */
-
-        document.addEventListener(
-            "keydown",
+        authSwitch.addEventListener(
+            "click",
             function(event) {
 
-                if (
-                    event.key !== "Escape"
-                ) {
-                    return;
-                }
+                event.preventDefault();
 
 
-                closeAuthModal();
-                closeAccountModal();
-                closePremiumModal();
+                const modal =
+                    authGetElement(
+                        "authModal"
+                    );
+
+
+                const currentMode =
+                    modal?.dataset.mode ||
+                    "signin";
+
+
+                openAuthModal(
+                    currentMode === "signin"
+                        ? "signup"
+                        : "signin"
+                );
 
             }
         );
 
-
-        /* -----------------------------------------
-           Initial user
-        ----------------------------------------- */
-
-        if (supabaseClient) {
-
-            const user =
-                await getCurrentUser();
+    }
 
 
-            await updateAuthUI(
+    const authSubmit =
+        authGetElement(
+            "authSubmit"
+        );
+
+
+    if (authSubmit) {
+
+        authSubmit.addEventListener(
+            "click",
+            handleAuthSubmit
+        );
+
+    }
+
+
+    const passwordInput =
+        authGetElement(
+            "authPassword"
+        );
+
+
+    if (passwordInput) {
+
+        passwordInput.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    handleAuthSubmit();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------------------
+       ACCOUNT MODAL
+       ----------------------------------------------------- */
+
+    const closeAccount =
+        authGetElement(
+            "closeAccountModal"
+        );
+
+
+    if (closeAccount) {
+
+        closeAccount.addEventListener(
+            "click",
+            closeAccountModal
+        );
+
+    }
+
+
+    const logoutButton =
+        authGetElement(
+            "logoutButton"
+        );
+
+
+    if (logoutButton) {
+
+        logoutButton.addEventListener(
+            "click",
+            logoutStudent
+        );
+
+    }
+
+
+    const accountPremiumButton =
+        authGetElement(
+            "accountPremiumButton"
+        );
+
+
+    if (accountPremiumButton) {
+
+        accountPremiumButton.addEventListener(
+            "click",
+            function(event) {
+
+                event.preventDefault();
+
+                closeAccountModal();
+
+                openPremiumPage();
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------------------
+       PREMIUM MODAL
+       ----------------------------------------------------- */
+
+    const closePremium =
+        authGetElement(
+            "closePremiumModal"
+        );
+
+
+    if (closePremium) {
+
+        closePremium.addEventListener(
+            "click",
+            closePremiumModal
+        );
+
+    }
+
+
+    const startPremiumButton =
+        authGetElement(
+            "startPremiumButton"
+        );
+
+
+    if (startPremiumButton) {
+
+        startPremiumButton.addEventListener(
+            "click",
+            function(event) {
+
+                event.preventDefault();
+
+                openPremiumPage();
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------------------
+       PREMIUM BUTTONS
+       ----------------------------------------------------- */
+
+    setupPremiumButtons();
+
+    setupPremiumExperimentButtons();
+
+
+    /* -----------------------------------------------------
+       BACKDROP CLOSING
+       ----------------------------------------------------- */
+
+    const authModal =
+        authGetElement(
+            "authModal"
+        );
+
+
+    if (authModal) {
+
+        authModal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    authModal
+                ) {
+
+                    closeAuthModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    const accountModal =
+        authGetElement(
+            "accountModal"
+        );
+
+
+    if (accountModal) {
+
+        accountModal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    accountModal
+                ) {
+
+                    closeAccountModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    const premiumModal =
+        authGetElement(
+            "premiumModal"
+        );
+
+
+    if (premiumModal) {
+
+        premiumModal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    premiumModal
+                ) {
+
+                    closePremiumModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------------------
+       ESCAPE KEY
+       ----------------------------------------------------- */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key !== "Escape"
+            ) {
+
+                return;
+
+            }
+
+
+            closeAuthModal();
+            closeAccountModal();
+            closePremiumModal();
+
+        }
+    );
+
+
+    /* -----------------------------------------------------
+       SUPABASE AUTH
+       ----------------------------------------------------- */
+
+    if (chemLabAuthClient) {
+
+        /*
+           Initial session.
+        */
+
+        const session =
+            await getCurrentSession();
+
+
+        const user =
+            session?.user ||
+            null;
+
+
+        if (user) {
+
+            await ensureStudentProfile(
                 user
             );
 
+        }
 
-            /*
-               Listen for authentication changes.
-            */
 
-            supabaseClient.auth.onAuthStateChange(
+        await updateAuthUI(
+            user
+        );
+
+
+        /*
+           Auth state listener.
+        */
+
+        chemLabAuthClient.auth
+            .onAuthStateChange(
                 async function(
                     event,
                     session
@@ -2508,45 +3119,106 @@ document.addEventListener(
                         null;
 
 
+                    if (user) {
+
+                        /*
+                           Avoid changing Premium
+                           fields when ensuring profile.
+                        */
+
+                        await ensureStudentProfile(
+                            user
+                        );
+
+                    }
+
+
                     await updateAuthUI(
                         user
                     );
 
+
+                    dispatchChemLabAuthEvent(
+                        event,
+                        session
+                    );
+
+
+                    /*
+                       Verify pending payment after
+                       successful authentication.
+                    */
 
                     if (
                         event ===
                         "SIGNED_IN"
                     ) {
 
-                        await verifyPendingPaymentAfterLogin();
+                        /*
+                           Small delay prevents Supabase
+                           auth state timing conflicts.
+                        */
+
+                        setTimeout(
+                            () => {
+
+                                verifyPendingPaymentAfterLogin();
+
+                            },
+                            300
+                        );
+
                     }
 
                 }
             );
-        }
-
-
-        /* -----------------------------------------
-           Paystack callback
-        ----------------------------------------- */
-
-        await handlePaystackReturn();
-
-
-        console.log(
-            "ChemLab Auth: Initialization complete."
-        );
 
     }
-);
+
+
+    /* -----------------------------------------------------
+       PAYSTACK RETURN
+       ----------------------------------------------------- */
+
+    await handlePaystackReturn();
+
+
+    console.log(
+        "ChemLab Auth: Initialization complete."
+    );
+
+}
 
 
 /* =========================================================
-   23. GLOBAL EXPORTS
-========================================================= */
+   28. DOM READY
+   ========================================================= */
 
-window.supabaseClient =
-    supabaseClient;
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeChemLabAuth,
+        {
+            once: true
+        }
+    );
+
+}
+
+else {
+
+    initializeChemLabAuth();
+
+}
+
+
+/* =========================================================
+   29. GLOBAL API
+   ========================================================= */
 
 window.openAuthModal =
     openAuthModal;
@@ -2599,10 +3271,16 @@ window.updateAuthUI =
 window.updateAccountModal =
     updateAccountModal;
 
+window.verifyPaystackPayment =
+    verifyPaystackPayment;
+
+window.verifyPendingPaymentAfterLogin =
+    verifyPendingPaymentAfterLogin;
+
 
 /* =========================================================
-   24. FINAL DIAGNOSTIC
-========================================================= */
+   30. DIAGNOSTIC
+   ========================================================= */
 
 console.log(
     "=========================================="
@@ -2614,13 +3292,21 @@ console.log(
 
 console.log(
     "Supabase:",
-    supabaseClient
+    chemLabAuthClient
         ? "CONNECTED"
         : "NOT CONNECTED"
 );
 
 console.log(
-    "Premium system: READY"
+    "Authentication: READY"
+);
+
+console.log(
+    "Premium: READY"
+);
+
+console.log(
+    "Paystack: READY"
 );
 
 console.log(
