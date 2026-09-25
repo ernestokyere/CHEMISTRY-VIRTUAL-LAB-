@@ -1,61 +1,103 @@
 /* =========================================================
    CHEMLAB
-   MASTER STYLESHEET — CLEAN REPLACEMENT
+   PROFESSIONAL MASTER STYLESHEET
+   Version: 2.0
    ========================================================= */
 
 
 /* =========================================================
-   01. DESIGN TOKENS
+   01. DESIGN SYSTEM
    ========================================================= */
 
 :root {
+
+    /* Brand */
     --primary: #3157d5;
     --primary-dark: #2444b5;
-    --secondary: #6c63ff;
+    --primary-light: #eef2ff;
 
+    --secondary: #6c63ff;
+    --secondary-light: #f1efff;
+
+    /* Chemistry */
+    --chem-blue: #2563eb;
+    --chem-cyan: #06b6d4;
+    --chem-purple: #7c3aed;
+    --chem-violet: #8b5cf6;
+
+    /* Surfaces */
     --background: #f5f7fb;
     --surface: #ffffff;
     --surface-soft: #f8faff;
+    --surface-muted: #f2f4f7;
 
+    /* Text */
     --text: #101828;
     --text-soft: #667085;
     --text-muted: #98a2b3;
+    --text-white: #ffffff;
 
+    /* Borders */
     --border: #e4e7ec;
     --border-strong: #d0d5dd;
 
+    /* Status */
     --success: #16a34a;
-    --danger: #dc2626;
-    --warning: #d97706;
+    --success-soft: #dcfce7;
 
-    --premium: #7c3aed;
-    --premium-soft: #f3e8ff;
+    --danger: #dc2626;
+    --danger-soft: #fee2e2;
+
+    --warning: #d97706;
+    --warning-soft: #fef3c7;
 
     --info: #2563eb;
+    --info-soft: #dbeafe;
 
-    --radius-sm: 8px;
+    /* Premium */
+    --premium: #7c3aed;
+    --premium-dark: #6d28d9;
+    --premium-soft: #f3e8ff;
+    --premium-border: #ddd6fe;
+
+    /* Radius */
+    --radius-xs: 6px;
+    --radius-sm: 9px;
     --radius-md: 14px;
-    --radius-lg: 22px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
+
+    /* Shadows */
+    --shadow-xs:
+        0 1px 3px rgba(16, 24, 40, 0.05);
 
     --shadow-sm:
-        0 3px 12px rgba(16, 24, 40, 0.06);
+        0 4px 14px rgba(16, 24, 40, 0.06);
 
     --shadow-md:
-        0 12px 35px rgba(16, 24, 40, 0.09);
+        0 12px 32px rgba(16, 24, 40, 0.09);
 
     --shadow-lg:
         0 20px 60px rgba(16, 24, 40, 0.14);
 
-    --transition:
-        0.2s ease;
+    --shadow-primary:
+        0 12px 30px rgba(49, 87, 213, 0.20);
+
+    /* Animation */
+    --transition-fast: 0.15s ease;
+    --transition: 0.22s ease;
+    --transition-slow: 0.35s ease;
 }
 
 
 /* =========================================================
-   02. RESET / GLOBAL
+   02. RESET
    ========================================================= */
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -68,18 +110,28 @@ body {
 
     font-family:
         Inter,
+        ui-sans-serif,
         system-ui,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
 
-    background: var(--background);
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(108, 99, 255, 0.035),
+            transparent 35%
+        ),
+        var(--background);
+
     color: var(--text);
 
     line-height: 1.6;
 
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
     text-rendering: optimizeLegibility;
 }
 
@@ -96,6 +148,7 @@ button {
 
 button:disabled {
     cursor: not-allowed;
+
     opacity: 0.55;
 }
 
@@ -107,11 +160,14 @@ select {
 
 img {
     display: block;
+
     max-width: 100%;
 }
 
 a {
     color: inherit;
+
+    text-decoration: none;
 }
 
 .hidden {
@@ -120,68 +176,150 @@ a {
 
 
 /* =========================================================
-   03. ACCESSIBILITY / FOCUS
+   03. ACCESSIBILITY
    ========================================================= */
 
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible {
-    outline: 3px solid rgba(49, 87, 213, 0.18);
-    outline-offset: 2px;
+select:focus-visible,
+a:focus-visible {
+    outline: 3px solid rgba(49, 87, 213, 0.22);
+
+    outline-offset: 3px;
+}
+
+::selection {
+    background: rgba(49, 87, 213, 0.18);
+
+    color: var(--text);
 }
 
 
 /* =========================================================
-   04. NAVBAR
+   04. SCROLLBAR
+   ========================================================= */
+
+* {
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        rgba(49, 87, 213, 0.28)
+        transparent;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background:
+        rgba(49, 87, 213, 0.25);
+
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background:
+        rgba(49, 87, 213, 0.4);
+}
+
+
+/* =========================================================
+   05. NAVBAR
    ========================================================= */
 
 .navbar {
     position: sticky;
+
     top: 0;
+
     z-index: 1000;
 
     background:
-        rgba(255, 255, 255, 0.94);
+        rgba(255, 255, 255, 0.88);
 
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 
-    border-bottom: 1px solid var(--border);
+    border-bottom:
+        1px solid rgba(228, 231, 236, 0.85);
+
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .nav-container {
-    width: min(1200px, calc(100% - 32px));
+    width:
+        min(1220px, calc(100% - 36px));
 
     min-height: 72px;
 
     margin: 0 auto;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     gap: 20px;
 }
 
 .logo {
+    position: relative;
+
     border: 0;
+
     background: transparent;
 
     color: var(--primary);
 
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-size: 1.3rem;
+
+    font-weight: 900;
+
+    letter-spacing: -0.03em;
 
     white-space: nowrap;
 }
 
+.logo::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    bottom: -3px;
+
+    width: 18px;
+
+    height: 3px;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+}
+
 .nav-links {
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
-    gap: 5px;
+    gap: 4px;
 
     flex: 1;
 }
@@ -190,68 +328,88 @@ select:focus-visible {
     border: 0;
 
     background: transparent;
+
     color: var(--text-soft);
 
     padding: 9px 12px;
 
-    border-radius: 9px;
+    border-radius: 10px;
 
-    font-weight: 600;
+    font-size: 0.86rem;
+
+    font-weight: 700;
 
     transition:
         color var(--transition),
-        background var(--transition);
+        background var(--transition),
+        transform var(--transition);
 }
 
 .nav-links button:hover {
     color: var(--primary);
-    background: #eef2ff;
+
+    background: var(--primary-light);
+
+    transform: translateY(-1px);
 }
 
 .login-button {
     border: 0;
 
-    background: var(--primary);
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
     color: #ffffff;
 
-    padding: 10px 16px;
+    padding: 10px 17px;
 
-    border-radius: 10px;
+    border-radius: 11px;
 
-    font-weight: 700;
+    font-size: 0.86rem;
+
+    font-weight: 800;
 
     white-space: nowrap;
 
+    box-shadow:
+        0 5px 15px rgba(49, 87, 213, 0.16);
+
     transition:
-        background var(--transition),
         transform var(--transition),
-        box-shadow var(--transition);
+        box-shadow var(--transition),
+        filter var(--transition);
 }
 
 .login-button:hover {
-    background: var(--primary-dark);
-
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 
     box-shadow:
-        0 6px 16px rgba(49, 87, 213, 0.2);
+        0 9px 22px rgba(49, 87, 213, 0.22);
+
+    filter: brightness(0.98);
 }
 
 
 /* =========================================================
-   05. PAGE SYSTEM
+   06. PAGE SYSTEM
    ========================================================= */
 
 .page {
     display: none;
 
-    width: min(1180px, calc(100% - 40px));
+    width:
+        min(1180px, calc(100% - 40px));
 
     margin: 0 auto;
 
     padding: 48px 0 90px;
 
-    animation: pageIn 0.3s ease;
+    animation:
+        pageEnter 0.3s ease;
 }
 
 .page.active {
@@ -260,27 +418,33 @@ select:focus-visible {
 
 #progress,
 #dashboard {
-    width: min(1180px, calc(100% - 40px));
+    width:
+        min(1180px, calc(100% - 40px));
 
     margin-left: auto;
     margin-right: auto;
 }
 
-@keyframes pageIn {
+@keyframes pageEnter {
+
     from {
         opacity: 0;
-        transform: translateY(8px);
+
+        transform:
+            translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
 }
 
 
 /* =========================================================
-   06. HERO
+   07. HERO
    ========================================================= */
 
 .hero {
@@ -289,12 +453,14 @@ select:focus-visible {
     display: grid;
 
     grid-template-columns:
-        1.15fr
-        0.85fr;
+        minmax(0, 1.12fr)
+        minmax(300px, 0.88fr);
 
     align-items: center;
 
-    gap: 60px;
+    gap: 70px;
+
+    padding: 30px 0;
 }
 
 .hero-content {
@@ -307,34 +473,59 @@ select:focus-visible {
 
     align-items: center;
 
-    gap: 7px;
+    gap: 8px;
 
     padding: 7px 12px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
-    background: #eef2ff;
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f3f1ff
+        );
+
+    border:
+        1px solid #dfe5ff;
+
     color: var(--primary);
 
-    font-size: 0.78rem;
-    font-weight: 800;
+    font-size: 0.72rem;
 
-    letter-spacing: 0.04em;
+    font-weight: 900;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
 }
 
 .hero h1 {
     margin: 20px 0 18px;
 
     font-size:
-        clamp(2.5rem, 6vw, 4.7rem);
+        clamp(2.7rem, 6vw, 5rem);
 
-    line-height: 1.05;
+    line-height: 1.02;
 
-    letter-spacing: -0.05em;
+    letter-spacing: -0.055em;
 }
 
 .hero h1 span {
     color: var(--primary);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    -webkit-background-clip: text;
+
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
 }
 
 .hero p {
@@ -342,7 +533,9 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 1.12rem;
+    font-size: 1.08rem;
+
+    line-height: 1.75;
 }
 
 .hero-buttons {
@@ -359,16 +552,34 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 }
 
 .chemistry-orb {
-    width: 330px;
-    height: 330px;
+    position: relative;
+
+    width: 340px;
+    height: 340px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
 
     border-radius: 50%;
 
     background:
+        radial-gradient(
+            circle at 35% 25%,
+            rgba(255, 255, 255, 0.24),
+            transparent 25%
+        ),
         linear-gradient(
             145deg,
             #3157d5,
@@ -377,20 +588,45 @@ select:focus-visible {
 
     color: #ffffff;
 
-    display: flex;
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
-
     box-shadow:
-        0 30px 80px
-        rgba(49, 87, 213, 0.3);
+        0 35px 90px rgba(49, 87, 213, 0.28);
+
+    isolation: isolate;
+}
+
+.chemistry-orb::before,
+.chemistry-orb::after {
+    content: "";
+
+    position: absolute;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.2);
+
+    pointer-events: none;
+}
+
+.chemistry-orb::before {
+    width: 85%;
+    height: 85%;
+}
+
+.chemistry-orb::after {
+    width: 110%;
+    height: 110%;
+
+    border-style: dashed;
+
+    opacity: 0.35;
 }
 
 .orb-symbol {
+    position: relative;
+
+    z-index: 2;
+
     font-size: 6rem;
 
     line-height: 1;
@@ -399,79 +635,109 @@ select:focus-visible {
 }
 
 .chemistry-orb span {
-    font-size: 0.85rem;
+    position: relative;
 
-    font-weight: 800;
+    z-index: 2;
+
+    font-size: 0.8rem;
+
+    font-weight: 900;
 
     letter-spacing: 0.2em;
 }
 
 
 /* =========================================================
-   07. BUTTON SYSTEM
+   08. BUTTON SYSTEM
    ========================================================= */
 
 .primary-button,
 .secondary-button,
 .danger-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 44px;
+
     border: 0;
 
     border-radius: 11px;
 
-    padding: 12px 18px;
+    padding: 11px 18px;
 
-    font-weight: 700;
+    font-weight: 800;
 
     transition:
         transform var(--transition),
         background var(--transition),
         box-shadow var(--transition),
-        opacity var(--transition);
+        filter var(--transition);
 }
 
 .primary-button {
-    background: var(--primary);
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
     color: #ffffff;
+
+    box-shadow:
+        0 7px 20px rgba(49, 87, 213, 0.18);
 }
 
 .primary-button:hover {
-    background: var(--primary-dark);
-
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 
     box-shadow:
-        0 6px 18px rgba(49, 87, 213, 0.2);
+        var(--shadow-primary);
+
+    filter: brightness(0.98);
 }
 
 .secondary-button {
-    background: #eef2ff;
+    background: var(--primary-light);
+
     color: var(--primary);
+
+    border:
+        1px solid #dce4ff;
 }
 
 .secondary-button:hover {
-    background: #e0e7ff;
+    background: #e2e8ff;
 
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 .danger-button {
-    background: #fee2e2;
+    background: var(--danger-soft);
+
     color: var(--danger);
 }
 
 .danger-button:hover {
     background: #fecaca;
+
+    transform: translateY(-2px);
 }
 
 
 /* =========================================================
-   08. SECTION HEADERS
+   09. SECTION HEADERS
    ========================================================= */
 
 .section-header {
-    max-width: 700px;
+    max-width: 720px;
 
-    margin: 30px auto 38px;
+    margin: 38px auto 40px;
 
     text-align: center;
 }
@@ -480,20 +746,24 @@ select:focus-visible {
     margin: 12px 0 8px;
 
     font-size:
-        clamp(1.8rem, 4vw, 2.7rem);
+        clamp(1.8rem, 4vw, 2.75rem);
 
-    letter-spacing: -0.035em;
+    line-height: 1.15;
+
+    letter-spacing: -0.04em;
 }
 
 .section-header p {
     margin: 0;
 
     color: var(--text-soft);
+
+    line-height: 1.7;
 }
 
 
 /* =========================================================
-   09. FEATURES
+   10. FEATURE CARDS
    ========================================================= */
 
 .feature-grid {
@@ -508,53 +778,99 @@ select:focus-visible {
 }
 
 .feature-card {
-    padding: 24px;
+    position: relative;
+
+    padding: 25px;
+
+    overflow: hidden;
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
 
     box-shadow: var(--shadow-sm);
 
     transition:
         transform var(--transition),
-        box-shadow var(--transition);
+        box-shadow var(--transition),
+        border-color var(--transition);
+}
+
+.feature-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 100px;
+    height: 100px;
+
+    right: -50px;
+    bottom: -50px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(49, 87, 213, 0.05);
 }
 
 .feature-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
+
+    border-color:
+        rgba(49, 87, 213, 0.18);
 
     box-shadow: var(--shadow-md);
 }
 
 .feature-icon {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
-    border-radius: 13px;
+    border-radius: 15px;
 
-    background: #eef2ff;
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f1efff
+        );
 
     font-size: 1.5rem;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(49, 87, 213, 0.06);
 }
 
 .feature-card h3 {
     margin: 18px 0 7px;
+
+    font-size: 1.02rem;
 }
 
 .feature-card p {
-    margin: 0 0 16px;
+    margin: 0 0 17px;
 
     color: var(--text-soft);
+
+    font-size: 0.9rem;
+
+    line-height: 1.65;
 }
 
 .feature-card button {
+    position: relative;
+
+    z-index: 2;
+
     border: 0;
 
     padding: 0;
@@ -563,47 +879,61 @@ select:focus-visible {
 
     color: var(--primary);
 
-    font-weight: 700;
+    font-weight: 800;
 }
 
 
 /* =========================================================
-   10. QUICK ACCESS
+   11. QUICK ACCESS
    ========================================================= */
 
 .quick-access {
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 30px;
 
     padding: 30px;
 
-    border-radius: var(--radius-lg);
+    border:
+        1px solid #dce4ff;
+
+    border-radius: var(--radius-xl);
 
     background:
+        radial-gradient(
+            circle at right top,
+            rgba(108, 99, 255, 0.12),
+            transparent 35%
+        ),
         linear-gradient(
             135deg,
             #eef2ff,
-            #f5f3ff
+            #f6f4ff
         );
 
-    border: 1px solid #dbe2ff;
+    box-shadow: var(--shadow-sm);
 }
 
 .quick-access span {
     color: var(--primary);
 
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-size: 0.7rem;
 
-    letter-spacing: 0.08em;
+    font-weight: 900;
+
+    letter-spacing: 0.1em;
+
+    text-transform: uppercase;
 }
 
 .quick-access h2 {
     margin: 5px 0;
+
+    letter-spacing: -0.025em;
 }
 
 .quick-access p {
@@ -614,7 +944,7 @@ select:focus-visible {
 
 
 /* =========================================================
-   11. PAGE HEADERS
+   12. PAGE HEADERS
    ========================================================= */
 
 .page-header,
@@ -623,6 +953,7 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 24px;
@@ -639,12 +970,13 @@ select:focus-visible {
 .page-kicker {
     display: inline-block;
 
-    margin-bottom: 8px;
+    margin-bottom: 7px;
 
     color: var(--primary);
 
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-size: 0.7rem;
+
+    font-weight: 900;
 
     letter-spacing: 0.12em;
 
@@ -657,7 +989,9 @@ select:focus-visible {
     font-size:
         clamp(2rem, 5vw, 3.2rem);
 
-    letter-spacing: -0.04em;
+    line-height: 1.1;
+
+    letter-spacing: -0.045em;
 }
 
 .page-title,
@@ -668,26 +1002,28 @@ select:focus-visible {
     color: var(--text);
 
     font-size:
-        clamp(1.8rem, 3vw, 2.5rem);
+        clamp(1.85rem, 3vw, 2.6rem);
 
-    font-weight: 800;
+    font-weight: 850;
 
     line-height: 1.15;
+
+    letter-spacing: -0.04em;
 }
 
 .page-header p,
 .page-description,
 .dashboard-description,
 .progress-description {
-    max-width: 700px;
+    max-width: 720px;
 
     margin: 10px 0 0;
 
     color: var(--text-soft);
 
-    font-size: 0.98rem;
+    font-size: 0.96rem;
 
-    line-height: 1.65;
+    line-height: 1.7;
 }
 
 .back-button {
@@ -697,16 +1033,23 @@ select:focus-visible {
 
     color: var(--primary);
 
-    font-weight: 700;
+    font-weight: 800;
 
     padding: 0;
 
     margin-bottom: 22px;
+
+    transition:
+        transform var(--transition);
+}
+
+.back-button:hover {
+    transform: translateX(-3px);
 }
 
 
 /* =========================================================
-   12. EXPERIMENT GRID
+   13. EXPERIMENT GRID
    ========================================================= */
 
 .experiment-grid {
@@ -723,7 +1066,8 @@ select:focus-visible {
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius-lg);
 
@@ -731,76 +1075,107 @@ select:focus-visible {
 
     transition:
         transform var(--transition),
-        box-shadow var(--transition);
+        box-shadow var(--transition),
+        border-color var(--transition);
 }
 
 .experiment-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
+
+    border-color:
+        rgba(49, 87, 213, 0.18);
 
     box-shadow: var(--shadow-md);
 }
 
 .experiment-image {
-    min-height: 180px;
+    min-height: 185px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     background:
+        radial-gradient(
+            circle at center,
+            rgba(108, 99, 255, 0.12),
+            transparent 60%
+        ),
         linear-gradient(
             135deg,
             #eef2ff,
-            #f5f3ff
+            #f7f5ff
         );
 
     font-size: 5rem;
 }
 
 .experiment-content {
-    padding: 22px;
+    padding: 23px;
 }
 
 .experiment-content h3 {
     margin: 10px 0 7px;
+
+    font-size: 1.12rem;
+
+    letter-spacing: -0.015em;
 }
 
 .experiment-content p {
     color: var(--text-soft);
+
+    font-size: 0.9rem;
+
+    line-height: 1.65;
 }
 
 .level-badge,
 .premium-badge {
     display: inline-flex;
 
+    align-items: center;
+
     padding: 5px 9px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
-    background: #eef2ff;
+    background: var(--primary-light);
+
     color: var(--primary);
 
-    font-size: 0.7rem;
-    font-weight: 800;
+    font-size: 0.67rem;
+
+    font-weight: 900;
+
+    letter-spacing: 0.02em;
 }
 
 .premium-badge {
     background: var(--premium-soft);
+
     color: var(--premium);
 }
 
 .premium-badge-large {
     display: inline-flex;
 
+    align-items: center;
+
     padding: 8px 14px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
     background: var(--premium-soft);
+
+    border:
+        1px solid var(--premium-border);
+
     color: var(--premium);
 
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .experiment-meta {
@@ -808,13 +1183,13 @@ select:focus-visible {
 
     flex-wrap: wrap;
 
-    gap: 15px;
+    gap: 12px;
 
     margin: 15px 0;
 
     color: var(--text-soft);
 
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .experiment-content button {
@@ -822,23 +1197,35 @@ select:focus-visible {
 
     border: 0;
 
-    border-radius: 10px;
+    border-radius: 11px;
 
     padding: 11px;
 
-    background: #eef2ff;
+    background: var(--primary-light);
 
     color: var(--primary);
 
-    font-weight: 700;
+    font-weight: 800;
+
+    transition:
+        background var(--transition),
+        transform var(--transition);
+}
+
+.experiment-content button:hover {
+    background: #e1e7ff;
+
+    transform: translateY(-1px);
 }
 
 .premium-card {
-    border-color: #ddd6fe;
+    border-color:
+        var(--premium-border);
 }
 
 .premium-card .experiment-content button {
     background: var(--premium-soft);
+
     color: var(--premium);
 }
 
@@ -847,22 +1234,22 @@ select:focus-visible {
 }
 
 .coming-soon-card button {
-    background: #f2f4f7;
+    background: var(--surface-muted);
 
     color: var(--text-soft);
 }
 
 
 /* =========================================================
-   13. BASIC LAB
+   14. LAB LAYOUT
    ========================================================= */
 
 .lab-layout {
     display: grid;
 
     grid-template-columns:
-        1.2fr
-        0.8fr;
+        minmax(0, 1.2fr)
+        minmax(300px, 0.8fr);
 
     gap: 22px;
 }
@@ -870,11 +1257,12 @@ select:focus-visible {
 .lab-panel {
     margin-bottom: 22px;
 
-    padding: 24px;
+    padding: 25px;
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius-lg);
 
@@ -885,6 +1273,7 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 15px;
@@ -895,18 +1284,20 @@ select:focus-visible {
 .panel-header h2 {
     margin: 0;
 
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+
+    letter-spacing: -0.02em;
 }
 
 .panel-header span {
     color: var(--text-soft);
 
-    font-size: 0.82rem;
+    font-size: 0.8rem;
 }
 
 
 /* =========================================================
-   14. BASIC APPARATUS
+   15. BASIC TITRATION APPARATUS
    ========================================================= */
 
 .apparatus-area {
@@ -915,6 +1306,7 @@ select:focus-visible {
     display: flex;
 
     align-items: flex-end;
+
     justify-content: center;
 
     gap: 90px;
@@ -938,23 +1330,33 @@ select:focus-visible {
 
     color: var(--primary);
 
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .burette {
     position: relative;
 
     width: 58px;
+
     height: 310px;
 
     overflow: hidden;
 
-    border: 3px solid #98a2b3;
+    border:
+        3px solid #98a2b3;
 
     border-radius:
         9px 9px 14px 14px;
 
-    background: #f8fafc;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.95),
+            #f8fafc
+        );
+
+    box-shadow:
+        inset 0 0 12px rgba(16,24,40,0.05);
 }
 
 .burette-liquid {
@@ -969,11 +1371,12 @@ select:focus-visible {
     background:
         linear-gradient(
             to top,
-            #93c5fd,
+            #60a5fa,
             #bfdbfe
         );
 
-    transition: height 0.3s ease;
+    transition:
+        height 0.35s ease;
 }
 
 .burette-scale {
@@ -984,28 +1387,36 @@ select:focus-visible {
     display: flex;
 
     flex-direction: column;
+
     justify-content: space-between;
 
     padding: 8px 4px;
 
     color: #475467;
 
-    font-size: 0.65rem;
+    font-size: 0.62rem;
+
+    pointer-events: none;
 }
 
 .burette-tip {
     margin-top: 5px;
 
-    color: #667085;
+    color: var(--text-soft);
+
+    font-size: 0.75rem;
 }
 
 .flask {
     position: relative;
 
     width: 180px;
+
     height: 210px;
 
-    border: 4px solid #98a2b3;
+    border:
+        4px solid #98a2b3;
+
     border-top: 0;
 
     clip-path:
@@ -1021,7 +1432,7 @@ select:focus-visible {
         );
 
     background:
-        rgba(255, 255, 255, 0.4);
+        rgba(255, 255, 255, 0.5);
 }
 
 .solution {
@@ -1037,9 +1448,14 @@ select:focus-visible {
         0 0 45px 45px;
 
     background:
-        rgba(147, 197, 253, 0.75);
+        linear-gradient(
+            to top,
+            rgba(96,165,250,0.8),
+            rgba(191,219,254,0.7)
+        );
 
-    transition: height 0.3s ease;
+    transition:
+        height 0.35s ease;
 }
 
 .flask-label {
@@ -1047,7 +1463,9 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-weight: 600;
+    font-weight: 700;
+
+    font-size: 0.82rem;
 }
 
 .experiment-controls {
@@ -1062,7 +1480,7 @@ select:focus-visible {
 
 
 /* =========================================================
-   15. MEASUREMENTS
+   16. MEASUREMENTS
    ========================================================= */
 
 .measurement-grid,
@@ -1078,9 +1496,15 @@ select:focus-visible {
 .measurement-card {
     padding: 18px;
 
-    background: var(--surface-soft);
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #ffffff
+        );
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius-md);
 }
@@ -1092,11 +1516,15 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+
+    font-weight: 700;
 }
 
 .measurement-card strong {
     font-size: 1.25rem;
+
+    letter-spacing: -0.02em;
 }
 
 .experiment-observation {
@@ -1106,7 +1534,15 @@ select:focus-visible {
 
     border-radius: var(--radius-md);
 
-    background: #f8fafc;
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #f1f5f9
+        );
+
+    border:
+        1px solid var(--border);
 }
 
 .experiment-observation h3 {
@@ -1117,17 +1553,21 @@ select:focus-visible {
     margin: 0;
 
     color: var(--text-soft);
+
+    font-size: 0.88rem;
 }
 
 
 /* =========================================================
-   16. AI TUTOR
+   17. AI TUTOR
    ========================================================= */
 
 .ai-container {
-    max-width: 900px;
+    width: 100%;
 
-    margin: auto;
+    max-width: 1050px;
+
+    margin: 0 auto;
 }
 
 .ai-card {
@@ -1135,9 +1575,10 @@ select:focus-visible {
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-md);
 }
@@ -1149,31 +1590,51 @@ select:focus-visible {
 
     gap: 15px;
 
-    padding: 22px;
+    padding: 22px 24px;
 
-    border-bottom: 1px solid var(--border);
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f8faff
+        );
+
+    border-bottom:
+        1px solid var(--border);
 }
 
 .ai-avatar {
-    width: 52px;
-    height: 52px;
+    width: 54px;
+    height: 54px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     flex-shrink: 0;
 
-    border-radius: 14px;
+    border-radius: 16px;
 
-    background: #eef2ff;
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f1efff
+        );
+
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(49,87,213,0.08);
 
     font-size: 1.6rem;
 }
 
 .ai-header h2 {
     margin: 0;
+
+    font-size: 1.15rem;
 }
 
 .ai-header p {
@@ -1181,112 +1642,93 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.9rem;
+    font-size: 0.84rem;
 }
 
 .ai-answer {
-    min-height: 300px;
+    min-height: 320px;
 
     padding: 25px;
 
     overflow-wrap: anywhere;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(108,99,255,0.035),
+            transparent 30%
+        );
 }
 
 .ai-welcome {
-    max-width: 500px;
+    max-width: 520px;
 
-    margin: 55px auto;
+    margin: 65px auto;
 
     text-align: center;
 }
 
 .ai-welcome span {
-    font-size: 3rem;
+    font-size: 3.2rem;
 }
 
 .ai-welcome h3 {
     margin: 10px 0 5px;
+
+    font-size: 1.25rem;
 }
 
 .ai-welcome p {
     color: var(--text-soft);
+
+    font-size: 0.9rem;
 }
 
 .ai-input-area {
     padding: 20px;
 
-    border-top: 1px solid var(--border);
+    background: #ffffff;
+
+    border-top:
+        1px solid var(--border);
 }
 
 .ai-input-area textarea {
     width: 100%;
 
-    min-height: 100px;
+    min-height: 105px;
 
     resize: vertical;
 
-    padding: 14px;
+    padding: 14px 15px;
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: 12px;
+    border-radius: 13px;
 
     outline: none;
+
+    background: #ffffff;
+
+    line-height: 1.6;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
 }
 
 .ai-input-area textarea:focus {
     border-color: var(--primary);
 
     box-shadow:
-        0 0 0 3px
-        rgba(49, 87, 213, 0.1);
+        0 0 0 4px
+        rgba(49,87,213,0.08);
 }
 
 .ai-input-area button {
     margin-top: 10px;
 }
-
-
-/* AI message presentation */
-
-.ai-message {
-    display: flex;
-
-    margin-bottom: 16px;
-}
-
-.ai-message-user {
-    justify-content: flex-end;
-}
-
-.ai-message-content {
-    max-width: 85%;
-
-    padding: 13px 16px;
-
-    border-radius: 14px;
-
-    white-space: pre-wrap;
-
-    overflow-wrap: anywhere;
-}
-
-.ai-message-user .ai-message-content {
-    background: #eef2ff;
-
-    color: var(--text);
-}
-
-.ai-message-assistant .ai-message-content {
-    background: #f8fafc;
-
-    border: 1px solid var(--border);
-
-    color: var(--text);
-}
-
-
-/* AI status */
 
 .ai-status {
     min-height: 20px;
@@ -1295,18 +1737,101 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.82rem;
+    font-size: 0.8rem;
 }
 
 
-/* AI history */
+/* =========================================================
+   18. AI CHAT MESSAGES
+   ========================================================= */
 
-.ai-history {
+.ai-message {
+    display: flex;
+
+    margin-bottom: 17px;
+
+    animation:
+        messageIn 0.22s ease;
+}
+
+.ai-message-user {
+    justify-content: flex-end;
+}
+
+.ai-message-assistant {
+    justify-content: flex-start;
+}
+
+.ai-message-content {
+    max-width: 82%;
+
+    padding: 14px 16px;
+
+    border-radius: 16px;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+
+    line-height: 1.65;
+}
+
+.ai-message-user .ai-message-content {
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    color: #ffffff;
+
+    border-bottom-right-radius: 5px;
+
+    box-shadow:
+        0 5px 15px rgba(49,87,213,0.13);
+}
+
+.ai-message-assistant .ai-message-content {
+    background: #f8fafc;
+
+    border:
+        1px solid var(--border);
+
+    color: var(--text);
+
+    border-bottom-left-radius: 5px;
+}
+
+@keyframes messageIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* =========================================================
+   19. AI HISTORY
+   ========================================================= */
+
+.ai-history,
+#aiConversationHistory {
     display: grid;
 
     gap: 8px;
 
-    max-height: 360px;
+    max-height: 390px;
 
     overflow-y: auto;
 }
@@ -1318,23 +1843,28 @@ select:focus-visible {
 
     text-align: left;
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: 11px;
+    border-radius: 12px;
 
-    background: var(--surface);
+    background: #ffffff;
 
     color: var(--text);
 
     transition:
         border-color var(--transition),
-        background var(--transition);
+        background var(--transition),
+        transform var(--transition);
 }
 
 .ai-history-item:hover {
-    border-color: rgba(49, 87, 213, 0.3);
+    border-color:
+        rgba(49,87,213,0.28);
 
     background: var(--surface-soft);
+
+    transform: translateX(2px);
 }
 
 .ai-history-item strong {
@@ -1347,6 +1877,8 @@ select:focus-visible {
     text-overflow: ellipsis;
 
     white-space: nowrap;
+
+    font-size: 0.86rem;
 }
 
 .ai-history-item span {
@@ -1354,12 +1886,49 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.75rem;
+    font-size: 0.72rem;
+}
+
+.ai-history-empty,
+.ai-empty {
+    padding: 25px;
+
+    text-align: center;
+
+    color: var(--text-soft);
+
+    border:
+        1px dashed var(--border);
+
+    border-radius: var(--radius-md);
+
+    background: #fafbfc;
+}
+
+.ai-loading {
+    color: var(--text-soft);
+
+    font-size: 0.86rem;
+
+    animation:
+        aiPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes aiPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 
 /* =========================================================
-   17. QUIZ
+   20. QUIZ
    ========================================================= */
 
 .quiz-container {
@@ -1369,13 +1938,14 @@ select:focus-visible {
 }
 
 .quiz-card {
-    padding: 28px;
+    padding: 30px;
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-md);
 }
@@ -1383,13 +1953,17 @@ select:focus-visible {
 .quiz-top {
     display: flex;
 
+    align-items: center;
+
     justify-content: space-between;
 
     gap: 20px;
 
     color: var(--text-soft);
 
-    font-size: 0.9rem;
+    font-size: 0.82rem;
+
+    font-weight: 700;
 }
 
 .quiz-question {
@@ -1397,7 +1971,11 @@ select:focus-visible {
 
     font-size: 1.5rem;
 
-    font-weight: 750;
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    letter-spacing: -0.02em;
 }
 
 .quiz-options {
@@ -1409,20 +1987,24 @@ select:focus-visible {
 .quiz-option {
     width: 100%;
 
-    padding: 15px;
+    padding: 15px 16px;
 
     text-align: left;
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: 12px;
+    border-radius: 13px;
 
     background: #ffffff;
+
+    color: var(--text);
 
     transition:
         border-color var(--transition),
         background var(--transition),
-        transform var(--transition);
+        transform var(--transition),
+        box-shadow var(--transition);
 }
 
 .quiz-option:hover {
@@ -1431,18 +2013,25 @@ select:focus-visible {
     background: #f8faff;
 
     transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px rgba(49,87,213,0.06);
 }
 
 .quiz-option.correct {
-    background: #dcfce7;
+    background: var(--success-soft);
 
     border-color: #86efac;
+
+    color: #166534;
 }
 
 .quiz-option.incorrect {
-    background: #fee2e2;
+    background: var(--danger-soft);
 
     border-color: #fca5a5;
+
+    color: #991b1b;
 }
 
 .quiz-footer {
@@ -1469,11 +2058,18 @@ select:focus-visible {
 
 .quiz-progress-bar {
     width: 0;
+
     height: 100%;
 
-    background: var(--primary);
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
 
-    transition: width 0.3s ease;
+    transition:
+        width 0.35s ease;
 }
 
 .quiz-result {
@@ -1485,9 +2081,10 @@ select:focus-visible {
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-md);
 }
@@ -1498,7 +2095,7 @@ select:focus-visible {
 
 
 /* =========================================================
-   18. DASHBOARD / PROGRESS
+   21. DASHBOARD STATS
    ========================================================= */
 
 .progress-dashboard,
@@ -1525,17 +2122,35 @@ select:focus-visible {
 
     min-width: 0;
 
-    padding: 22px;
-
     overflow: hidden;
+
+    padding: 22px;
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius-lg);
 
     box-shadow: var(--shadow-sm);
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition);
+}
+
+.progress-card:hover,
+.stat-card:hover,
+.progress-stat-card:hover,
+.dashboard-stat-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: var(--shadow-md);
+
+    border-color:
+        rgba(49,87,213,0.16);
 }
 
 .stat-card::after,
@@ -1545,16 +2160,16 @@ select:focus-visible {
 
     position: absolute;
 
-    right: -25px;
-    bottom: -35px;
+    right: -30px;
+    bottom: -40px;
 
-    width: 90px;
-    height: 90px;
+    width: 105px;
+    height: 105px;
 
     border-radius: 50%;
 
     background:
-        rgba(49, 87, 213, 0.05);
+        rgba(49,87,213,0.045);
 }
 
 .progress-card span,
@@ -1565,12 +2180,13 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 0.7rem;
+
+    font-weight: 800;
 
     text-transform: uppercase;
 
-    letter-spacing: 0.05em;
+    letter-spacing: 0.07em;
 }
 
 .progress-card strong,
@@ -1579,14 +2195,17 @@ select:focus-visible {
 .dashboard-stat-value {
     display: block;
 
-    margin-top: 5px;
+    margin-top: 6px;
 
     color: var(--text);
 
     font-size: 1.8rem;
-    font-weight: 800;
+
+    font-weight: 900;
 
     line-height: 1.1;
+
+    letter-spacing: -0.03em;
 }
 
 .stat-icon,
@@ -1598,21 +2217,26 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     margin-bottom: 15px;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
     background:
-        rgba(49, 87, 213, 0.09);
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f1efff
+        );
 
-    font-size: 1.3rem;
+    font-size: 1.25rem;
 }
 
 
 /* =========================================================
-   19. LEVEL PROGRESS
+   22. LEVEL PROGRESS
    ========================================================= */
 
 .progress-main-card,
@@ -1624,20 +2248,25 @@ select:focus-visible {
     padding: 28px;
 
     background:
+        radial-gradient(
+            circle at top right,
+            rgba(108,99,255,0.07),
+            transparent 32%
+        ),
         linear-gradient(
             135deg,
-            #ffffff 0%,
-            #f8faff 100%
+            #ffffff,
+            #f8faff
         );
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-sm);
 }
 
-.progress-title,
 .level-progress-top {
     display: flex;
 
@@ -1648,31 +2277,20 @@ select:focus-visible {
     gap: 20px;
 }
 
-.progress-title h2,
-.level-progress-title {
-    margin: 3px 0 0;
-
-    color: var(--text);
-}
-
-.progress-title span,
-.level-progress-subtitle {
-    color: var(--text-soft);
-
-    font-size: 0.8rem;
-}
-
 .level-progress-title {
     margin: 0 0 5px;
 
     font-size: 1.2rem;
-    font-weight: 800;
+
+    font-weight: 850;
 }
 
 .level-progress-subtitle {
     margin: 0;
 
-    font-size: 0.88rem;
+    color: var(--text-soft);
+
+    font-size: 0.85rem;
 }
 
 .level-badge {
@@ -1680,33 +2298,44 @@ select:focus-visible {
 
     padding: 8px 13px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
     background:
-        rgba(49, 87, 213, 0.09);
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f1efff
+        );
 
     color: var(--primary);
 
-    font-size: 0.8rem;
-    font-weight: 800;
+    font-size: 0.78rem;
+
+    font-weight: 900;
+
+    border:
+        1px solid #dfe5ff;
 }
 
 .level-progress-meta {
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 15px;
 
-    margin-bottom: 9px;
+    margin:
+        24px 0 9px;
 }
 
 .level-progress-meta span {
     color: var(--text-soft);
 
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+
+    font-weight: 700;
 }
 
 .large-progress,
@@ -1736,13 +2365,11 @@ select:focus-visible {
 
     border-radius: inherit;
 
-    transition: width 0.5s ease;
+    transition:
+        width 0.5s ease;
 }
 
-.progress-fill {
-    width: 0;
-}
-
+.progress-fill,
 #progressBar {
     width: 0;
 }
@@ -1752,7 +2379,7 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.8rem;
+    font-size: 0.78rem;
 }
 
 .progress-main-card p {
@@ -1761,7 +2388,7 @@ select:focus-visible {
 
 
 /* =========================================================
-   20. PROGRESS OVERVIEW
+   23. PROGRESS OVERVIEW
    ========================================================= */
 
 .progress-overview,
@@ -1785,7 +2412,8 @@ select:focus-visible {
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius-lg);
 
@@ -1797,8 +2425,9 @@ select:focus-visible {
 
     color: var(--text);
 
-    font-size: 1.1rem;
-    font-weight: 800;
+    font-size: 1.08rem;
+
+    font-weight: 850;
 }
 
 .panel-description {
@@ -1806,14 +2435,14 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.87rem;
+    font-size: 0.85rem;
 
-    line-height: 1.55;
+    line-height: 1.6;
 }
 
 
 /* =========================================================
-   21. MEMBERSHIP
+   24. MEMBERSHIP
    ========================================================= */
 
 .membership-card,
@@ -1829,7 +2458,8 @@ select:focus-visible {
             #f8faff
         );
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius-lg);
 
@@ -1839,7 +2469,7 @@ select:focus-visible {
 .membership-card.premium,
 .premium-access-card.premium {
     border-color:
-        rgba(124, 58, 237, 0.25);
+        rgba(124,58,237,0.25);
 
     background:
         linear-gradient(
@@ -1860,8 +2490,9 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.72rem;
-    font-weight: 800;
+    font-size: 0.7rem;
+
+    font-weight: 900;
 
     text-transform: uppercase;
 
@@ -1874,7 +2505,7 @@ select:focus-visible {
 
     color: var(--text);
 
-    font-size: 1.25rem;
+    font-size: 1.22rem;
 }
 
 .membership-card p,
@@ -1883,14 +2514,14 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.88rem;
+    font-size: 0.86rem;
 
-    line-height: 1.6;
+    line-height: 1.65;
 }
 
 
 /* =========================================================
-   22. QUICK ACTIONS
+   25. QUICK ACTIONS
    ========================================================= */
 
 .quick-actions {
@@ -1916,21 +2547,29 @@ select:focus-visible {
 
     color: var(--text);
 
-    background: var(--surface-soft);
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #ffffff
+        );
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: 12px;
 
-    font-size: 0.86rem;
-    font-weight: 700;
+    font-size: 0.84rem;
+
+    font-weight: 800;
 
     cursor: pointer;
 
     transition:
         transform var(--transition),
         border-color var(--transition),
-        background var(--transition);
+        background var(--transition),
+        box-shadow var(--transition);
 }
 
 .quick-action:hover,
@@ -1938,14 +2577,16 @@ select:focus-visible {
     transform: translateY(-2px);
 
     border-color:
-        rgba(49, 87, 213, 0.3);
+        rgba(49,87,213,0.3);
 
     background: #ffffff;
+
+    box-shadow: var(--shadow-xs);
 }
 
 
 /* =========================================================
-   23. DASHBOARD CONTENT
+   26. DASHBOARD CONTENT
    ========================================================= */
 
 .dashboard-grid {
@@ -1966,7 +2607,8 @@ select:focus-visible {
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius-lg);
 
@@ -1988,7 +2630,7 @@ select:focus-visible {
 
     color: var(--text);
 
-    font-size: 1.05rem;
+    font-size: 1.04rem;
 }
 
 .dashboard-card p {
@@ -1996,7 +2638,7 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.86rem;
+    font-size: 0.85rem;
 
     line-height: 1.6;
 }
@@ -2006,6 +2648,7 @@ select:focus-visible {
     display: inline-flex;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 8px;
@@ -2018,15 +2661,15 @@ select:focus-visible {
 
     border-radius: 11px;
 
-    font-size: 0.85rem;
-    font-weight: 800;
+    font-size: 0.83rem;
+
+    font-weight: 850;
 
     cursor: pointer;
 
     transition:
         transform var(--transition),
-        box-shadow var(--transition),
-        opacity var(--transition);
+        box-shadow var(--transition);
 }
 
 .dashboard-button:hover,
@@ -2050,7 +2693,7 @@ select:focus-visible {
 
 
 /* =========================================================
-   24. ACHIEVEMENTS
+   27. ACHIEVEMENTS
    ========================================================= */
 
 .achievements-section {
@@ -2062,9 +2705,10 @@ select:focus-visible {
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-sm);
 }
@@ -2073,6 +2717,7 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 20px;
@@ -2087,10 +2732,13 @@ select:focus-visible {
 
     color: var(--primary);
 
-    font-size: 0.72rem;
-    font-weight: 800;
+    font-size: 0.7rem;
+
+    font-weight: 900;
 
     letter-spacing: 0.12em;
+
+    text-transform: uppercase;
 }
 
 .achievements-header h2 {
@@ -2099,6 +2747,8 @@ select:focus-visible {
     color: var(--text);
 
     font-size: 1.45rem;
+
+    letter-spacing: -0.025em;
 }
 
 .achievements-header p {
@@ -2106,9 +2756,9 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.88rem;
+    font-size: 0.86rem;
 
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
 .achievement-counter {
@@ -2120,9 +2770,15 @@ select:focus-visible {
 
     text-align: center;
 
-    background: var(--surface-soft);
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #ffffff
+        );
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: 14px;
 }
@@ -2133,19 +2789,22 @@ select:focus-visible {
     color: var(--primary);
 
     font-size: 1.45rem;
-    font-weight: 800;
+
+    font-weight: 900;
 }
 
 .achievement-counter small {
     color: var(--text-soft);
 
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.67rem;
+
+    font-weight: 800;
 
     text-transform: uppercase;
 }
 
-.achievements-grid {
+.achievements-grid,
+.achievement-grid {
     display: grid;
 
     grid-template-columns:
@@ -2165,13 +2824,17 @@ select:focus-visible {
 
     overflow: hidden;
 
-    background: var(--surface);
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #fafbfc
+        );
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: 16px;
-
-    box-shadow: none;
+    border-radius: 17px;
 
     transition:
         transform var(--transition),
@@ -2180,18 +2843,25 @@ select:focus-visible {
 }
 
 .achievement-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
 
     box-shadow: var(--shadow-md);
 }
 
 .achievement-card.unlocked {
     border-color:
-        rgba(49, 87, 213, 0.28);
+        rgba(49,87,213,0.28);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f8faff
+        );
 }
 
 .achievement-card.locked {
-    opacity: 0.65;
+    opacity: 0.62;
 }
 
 .achievement-icon {
@@ -2201,20 +2871,33 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     margin-bottom: 17px;
 
     border-radius: 14px;
 
-    background: var(--surface-soft);
+    background:
+        var(--surface-muted);
 
     font-size: 1.55rem;
+
+    transition:
+        transform var(--transition);
+}
+
+.achievement-card:hover .achievement-icon {
+    transform: scale(1.06);
 }
 
 .achievement-card.unlocked .achievement-icon {
     background:
-        rgba(49, 87, 213, 0.09);
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f1efff
+        );
 }
 
 .achievement-card h3 {
@@ -2222,7 +2905,7 @@ select:focus-visible {
 
     color: var(--text);
 
-    font-size: 0.98rem;
+    font-size: 0.97rem;
 
     line-height: 1.3;
 }
@@ -2234,7 +2917,7 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.82rem;
+    font-size: 0.8rem;
 
     line-height: 1.55;
 }
@@ -2248,30 +2931,31 @@ select:focus-visible {
 
     padding: 6px 10px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
-    font-size: 0.7rem;
+    font-size: 0.68rem;
 
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .achievement-status.unlocked {
     color: var(--success);
 
     background:
-        rgba(22, 163, 74, 0.09);
+        rgba(22,163,74,0.09);
 }
 
 .achievement-status.locked {
     color: var(--text-soft);
 
-    background: var(--surface-soft);
+    background: var(--surface-muted);
 }
 
 .achievement-check {
     position: absolute;
 
     top: 15px;
+
     right: 15px;
 
     font-size: 0.82rem;
@@ -2286,22 +2970,25 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    border: 1px dashed var(--border);
+    border:
+        1px dashed var(--border);
 
     border-radius: var(--radius-md);
+
+    background: #fafbfc;
 }
 
 
 /* =========================================================
-   25. PREMIUM
+   28. PREMIUM PAGE
    ========================================================= */
 
 .premium-section {
     background:
         radial-gradient(
             circle at top,
-            #f5f3ff,
-            transparent 45%
+            rgba(124,58,237,0.07),
+            transparent 42%
         );
 }
 
@@ -2321,17 +3008,32 @@ select:focus-visible {
 
     line-height: 1.05;
 
-    letter-spacing: -0.045em;
+    letter-spacing: -0.05em;
 }
 
 .premium-hero h1 span {
     color: var(--premium);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--premium),
+            var(--chem-violet)
+        );
+
+    -webkit-background-clip: text;
+
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
 }
 
 .premium-hero p {
     color: var(--text-soft);
 
-    font-size: 1.08rem;
+    font-size: 1.05rem;
+
+    line-height: 1.7;
 }
 
 .premium-features {
@@ -2352,11 +3054,22 @@ select:focus-visible {
 
     background: #ffffff;
 
-    border: 1px solid #e9d5ff;
+    border:
+        1px solid var(--premium-border);
 
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
 
     box-shadow: var(--shadow-sm);
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+
+.premium-feature:hover {
+    transform: translateY(-4px);
+
+    box-shadow: var(--shadow-md);
 }
 
 .premium-feature span {
@@ -2371,6 +3084,8 @@ select:focus-visible {
     margin: 0;
 
     color: var(--text-soft);
+
+    font-size: 0.86rem;
 }
 
 .premium-experiment-list {
@@ -2388,9 +3103,10 @@ select:focus-visible {
 
     background: #ffffff;
 
-    border: 1px solid #ddd6fe;
+    border:
+        1px solid var(--premium-border);
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-sm);
 }
@@ -2402,13 +3118,19 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     flex-shrink: 0;
 
     border-radius: 18px;
 
-    background: var(--premium-soft);
+    background:
+        linear-gradient(
+            135deg,
+            #f3e8ff,
+            #ede9fe
+        );
 
     font-size: 2rem;
 }
@@ -2421,6 +3143,8 @@ select:focus-visible {
 
 .premium-experiment-info h2 {
     margin: 8px 0 4px;
+
+    font-size: 1.2rem;
 }
 
 .premium-experiment-info p {
@@ -2440,14 +3164,24 @@ select:focus-visible {
 
     color: var(--premium);
 
-    font-weight: 800;
+    font-weight: 850;
 
     white-space: nowrap;
+
+    transition:
+        transform var(--transition),
+        background var(--transition);
+}
+
+.premium-experiment-button:hover {
+    transform: translateY(-2px);
+
+    background: #ead7ff;
 }
 
 
 /* =========================================================
-   26. PRICING
+   29. PRICING
    ========================================================= */
 
 .pricing-section {
@@ -2468,58 +3202,90 @@ select:focus-visible {
 .premium-plan-card {
     position: relative;
 
-    padding: 28px;
+    padding: 30px;
 
     background: #ffffff;
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-md);
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+
+.premium-plan-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: var(--shadow-lg);
 }
 
 .featured-plan {
-    border: 2px solid var(--premium);
+    border:
+        2px solid var(--premium);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #fcf9ff
+        );
 }
 
 .plan-popular {
     position: absolute;
 
     top: -13px;
+
     right: 20px;
 
-    padding: 5px 10px;
+    padding: 5px 11px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
-    background: var(--premium);
+    background:
+        linear-gradient(
+            135deg,
+            var(--premium),
+            var(--chem-violet)
+        );
 
     color: #ffffff;
 
-    font-size: 0.7rem;
-    font-weight: 800;
+    font-size: 0.68rem;
+
+    font-weight: 900;
 }
 
 .plan-header span {
     color: var(--text-soft);
 
-    font-size: 0.78rem;
-    font-weight: 800;
+    font-size: 0.75rem;
+
+    font-weight: 900;
 
     letter-spacing: 0.08em;
+
+    text-transform: uppercase;
 }
 
 .plan-header h3 {
     margin: 8px 0 15px;
 
     font-size: 2.1rem;
+
+    letter-spacing: -0.04em;
 }
 
 .plan-header small {
     color: var(--text-soft);
 
-    font-size: 0.9rem;
+    font-size: 0.86rem;
+
     font-weight: 500;
 }
 
@@ -2535,6 +3301,8 @@ select:focus-visible {
     padding: 8px 0;
 
     color: var(--text-soft);
+
+    font-size: 0.88rem;
 }
 
 .premium-plan-button {
@@ -2546,26 +3314,38 @@ select:focus-visible {
 
     padding: 13px;
 
-    background: var(--premium);
+    background:
+        linear-gradient(
+            135deg,
+            var(--premium),
+            var(--chem-violet)
+        );
 
     color: #ffffff;
 
-    font-weight: 800;
+    font-weight: 850;
+
+    box-shadow:
+        0 7px 18px rgba(124,58,237,0.16);
 
     transition:
         transform var(--transition),
+        box-shadow var(--transition),
         filter var(--transition);
 }
 
 .premium-plan-button:hover {
     transform: translateY(-2px);
 
-    filter: brightness(0.95);
+    box-shadow:
+        0 10px 24px rgba(124,58,237,0.22);
+
+    filter: brightness(0.97);
 }
 
 
 /* =========================================================
-   27. ADVANCED TITRATION
+   30. ADVANCED TITRATION
    ========================================================= */
 
 .advanced-lab-layout {
@@ -2595,30 +3375,36 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 0.82rem;
+
+    font-weight: 800;
 }
 
 .input-grid input {
     width: 100%;
 
-    padding: 11px;
+    padding: 11px 12px;
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
-    border-radius: 9px;
+    border-radius: 10px;
 
     outline: none;
 
     background: #ffffff;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
 }
 
 .input-grid input:focus {
     border-color: var(--primary);
 
     box-shadow:
-        0 0 0 3px
-        rgba(49, 87, 213, 0.08);
+        0 0 0 4px
+        rgba(49,87,213,0.08);
 }
 
 .advanced-controls {
@@ -2626,7 +3412,7 @@ select:focus-visible {
 
     grid-template-columns:
         auto
-        1fr
+        minmax(0, 1fr)
         auto;
 
     align-items: center;
@@ -2646,6 +3432,7 @@ select:focus-visible {
     display: flex;
 
     align-items: flex-end;
+
     justify-content: center;
 
     gap: 90px;
@@ -2656,18 +3443,20 @@ select:focus-visible {
 
     color: var(--premium);
 
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .advanced-burette-body {
     position: relative;
 
     width: 65px;
+
     height: 290px;
 
     overflow: hidden;
 
-    border: 3px solid #98a2b3;
+    border:
+        3px solid #98a2b3;
 
     border-radius: 9px;
 
@@ -2686,20 +3475,24 @@ select:focus-visible {
     background:
         linear-gradient(
             to top,
-            #c4b5fd,
+            #a78bfa,
             #ddd6fe
         );
 
-    transition: height 0.3s ease;
+    transition:
+        height 0.35s ease;
 }
 
 .advanced-flask {
     position: relative;
 
     width: 190px;
+
     height: 220px;
 
-    border: 4px solid #98a2b3;
+    border:
+        4px solid #98a2b3;
+
     border-top: 0;
 
     clip-path:
@@ -2725,21 +3518,28 @@ select:focus-visible {
     height: 55%;
 
     background:
-        rgba(196, 181, 253, 0.7);
+        linear-gradient(
+            to top,
+            rgba(167,139,250,0.78),
+            rgba(221,214,254,0.72)
+        );
 
     border-radius:
         0 0 50px 50px;
 
-    transition: height 0.3s ease;
+    transition:
+        height 0.35s ease;
 }
 
 .equivalence-indicator {
     position: absolute;
 
     width: 14px;
+
     height: 14px;
 
     top: 35%;
+
     left: 50%;
 
     transform:
@@ -2750,6 +3550,10 @@ select:focus-visible {
     background: var(--danger);
 
     opacity: 0.5;
+
+    box-shadow:
+        0 0 0 6px
+        rgba(220,38,38,0.08);
 }
 
 .status-box,
@@ -2762,9 +3566,19 @@ select:focus-visible {
 
     border-radius: var(--radius-md);
 
-    background: #f8fafc;
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #ffffff
+        );
+
+    border:
+        1px solid var(--border);
 
     color: var(--text-soft);
+
+    font-size: 0.87rem;
 }
 
 .advanced-analysis {
@@ -2788,6 +3602,8 @@ select:focus-visible {
     background: #f8fafc;
 
     color: var(--text-soft);
+
+    font-size: 0.83rem;
 }
 
 .explanation-panel {
@@ -2801,11 +3617,18 @@ select:focus-visible {
 
     background: #f8fafc;
 
+    border:
+        1px solid var(--border);
+
     color: var(--text-soft);
 
     white-space: pre-wrap;
 
     overflow-wrap: anywhere;
+
+    font-size: 0.88rem;
+
+    line-height: 1.7;
 }
 
 .chart-panel {
@@ -2816,17 +3639,19 @@ select:focus-visible {
     position: relative;
 
     width: 100%;
+
     height: 320px;
 }
 
 .chart-container canvas {
     width: 100% !important;
+
     height: 100% !important;
 }
 
 
 /* =========================================================
-   28. AUTH / ACCOUNT / PREMIUM MODALS
+   31. AUTH / ACCOUNT / PREMIUM MODALS
    ========================================================= */
 
 .auth-modal,
@@ -2841,15 +3666,16 @@ select:focus-visible {
     display: none;
 
     align-items: center;
+
     justify-content: center;
 
     padding: 20px;
 
     background:
-        rgba(15, 23, 42, 0.58);
+        rgba(15,23,42,0.62);
 
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
 }
 
 .auth-modal.active,
@@ -2863,7 +3689,8 @@ select:focus-visible {
 .premium-modal-content {
     position: relative;
 
-    width: min(460px, 100%);
+    width:
+        min(460px, 100%);
 
     max-height:
         calc(100vh - 40px);
@@ -2874,20 +3701,23 @@ select:focus-visible {
 
     background: #ffffff;
 
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-lg);
 
-    animation: modalIn 0.25s ease;
+    animation:
+        modalEnter 0.25s ease;
 }
 
 .premium-modal-content {
-    width: min(560px, 100%);
+    width:
+        min(560px, 100%);
 
     text-align: center;
 }
 
-@keyframes modalIn {
+@keyframes modalEnter {
+
     from {
         opacity: 0;
 
@@ -2909,51 +3739,78 @@ select:focus-visible {
     position: absolute;
 
     top: 13px;
+
     right: 15px;
 
     width: 34px;
+
     height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
 
     border: 0;
 
     border-radius: 50%;
 
-    background: #f2f4f7;
+    background: var(--surface-muted);
 
     color: #475467;
 
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+
+    transition:
+        background var(--transition),
+        transform var(--transition);
 }
 
 .modal-close:hover {
     background: #e4e7ec;
+
+    transform: rotate(4deg);
 }
 
 .auth-icon,
 .account-avatar,
 .premium-modal-icon {
     width: 62px;
+
     height: 62px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     margin-bottom: 15px;
 
     border-radius: 17px;
 
-    background: #eef2ff;
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f1efff
+        );
 
     font-size: 2rem;
 }
 
 .premium-modal-icon {
     margin-left: auto;
+
     margin-right: auto;
 
-    background: var(--premium-soft);
+    background:
+        linear-gradient(
+            135deg,
+            #f3e8ff,
+            #ede9fe
+        );
 }
 
 .auth-modal-content h2,
@@ -2962,6 +3819,8 @@ select:focus-visible {
     margin: 0 0 7px;
 
     font-size: 1.7rem;
+
+    letter-spacing: -0.035em;
 }
 
 .auth-modal-content > p,
@@ -2969,11 +3828,13 @@ select:focus-visible {
     margin: 0 0 20px;
 
     color: var(--text-soft);
+
+    font-size: 0.9rem;
 }
 
 
 /* =========================================================
-   29. FORMS
+   32. FORMS
    ========================================================= */
 
 .form-group {
@@ -2985,30 +3846,40 @@ select:focus-visible {
 
     margin-bottom: 6px;
 
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 0.82rem;
+
+    font-weight: 800;
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea,
+.form-group select {
     width: 100%;
 
     padding: 12px 13px;
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: 10px;
 
     outline: none;
 
     background: #ffffff;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
     border-color: var(--primary);
 
     box-shadow:
-        0 0 0 3px
-        rgba(49, 87, 213, 0.1);
+        0 0 0 4px
+        rgba(49,87,213,0.08);
 }
 
 .auth-submit {
@@ -3024,7 +3895,7 @@ select:focus-visible {
 
     color: var(--danger);
 
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .auth-switch {
@@ -3038,7 +3909,7 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.9rem;
+    font-size: 0.86rem;
 }
 
 .auth-switch button {
@@ -3050,12 +3921,12 @@ select:focus-visible {
 
     color: var(--primary);
 
-    font-weight: 700;
+    font-weight: 800;
 }
 
 
 /* =========================================================
-   30. ACCOUNT
+   33. ACCOUNT
    ========================================================= */
 
 .account-information {
@@ -3070,23 +3941,36 @@ select:focus-visible {
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 20px;
 
-    padding: 12px;
+    padding: 12px 14px;
 
-    border-radius: 10px;
+    border-radius: 11px;
 
-    background: #f8fafc;
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #ffffff
+        );
+
+    border:
+        1px solid var(--border);
 }
 
 .account-information span {
     color: var(--text-soft);
+
+    font-size: 0.83rem;
 }
 
 .account-information strong {
     text-align: right;
+
+    font-size: 0.85rem;
 }
 
 .premium-account-status {
@@ -3102,13 +3986,21 @@ select:focus-visible {
 
     border-radius: 12px;
 
-    background: #f8fafc;
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #ffffff
+        );
+
+    border:
+        1px solid var(--border);
 }
 
 .premium-account-status span {
     color: var(--text-soft);
 
-    font-size: 0.9rem;
+    font-size: 0.84rem;
 }
 
 .premium-details {
@@ -3121,6 +4013,9 @@ select:focus-visible {
     background: var(--premium-soft);
 
     color: var(--premium);
+
+    border:
+        1px solid var(--premium-border);
 }
 
 .premium-details p {
@@ -3136,7 +4031,7 @@ select:focus-visible {
 
 
 /* =========================================================
-   31. PREMIUM MODAL
+   34. PREMIUM MODAL
    ========================================================= */
 
 .premium-modal-plans {
@@ -3151,39 +4046,50 @@ select:focus-visible {
 }
 
 .premium-modal-plans .premium-plan-button {
-    min-height: 140px;
+    min-height: 145px;
 
     display: flex;
 
     flex-direction: column;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 4px;
 
-    background: #f8fafc;
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #fafbfc
+        );
 
-    border: 2px solid var(--border);
+    border:
+        2px solid var(--border);
 
     color: var(--text);
 
     transition:
         border-color var(--transition),
-        background var(--transition);
+        background var(--transition),
+        transform var(--transition);
 }
 
 .premium-modal-plans .premium-plan-button:hover {
     border-color: var(--premium);
 
     background: #faf5ff;
+
+    transform: translateY(-2px);
 }
 
 .premium-modal-plans .premium-plan-button span {
     color: var(--text-soft);
 
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-size: 0.72rem;
+
+    font-weight: 900;
 }
 
 .premium-modal-plans .premium-plan-button strong {
@@ -3194,6 +4100,8 @@ select:focus-visible {
 
 .premium-modal-plans .premium-plan-button small {
     color: var(--text-soft);
+
+    font-size: 0.75rem;
 }
 
 #startPremiumButton {
@@ -3205,23 +4113,25 @@ select:focus-visible {
 
     color: var(--text-soft);
 
-    font-size: 0.8rem;
+    font-size: 0.78rem;
 }
 
 
 /* =========================================================
-   32. NOTIFICATIONS
+   35. NOTIFICATIONS
    ========================================================= */
 
 .notification-container {
     position: fixed;
 
     left: 50%;
+
     bottom: 25px;
 
     z-index: 9999;
 
-    width: min(450px, calc(100% - 30px));
+    width:
+        min(450px, calc(100% - 30px));
 
     display: flex;
 
@@ -3229,25 +4139,33 @@ select:focus-visible {
 
     gap: 10px;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 }
 
 .eduvora-notification,
 .chemlab-notification {
     padding: 13px 17px;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
-    background: #101828;
+    background:
+        linear-gradient(
+            135deg,
+            #101828,
+            #1d2939
+        );
 
     color: #ffffff;
 
     box-shadow: var(--shadow-md);
 
-    animation: notificationIn 0.25s ease;
+    animation:
+        notificationEnter 0.25s ease;
 }
 
-@keyframes notificationIn {
+@keyframes notificationEnter {
+
     from {
         opacity: 0;
 
@@ -3265,7 +4183,43 @@ select:focus-visible {
 
 
 /* =========================================================
-   33. TABLET
+   36. UTILITY CLASSES
+   ========================================================= */
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-premium {
+    color: var(--premium) !important;
+}
+
+.bg-soft {
+    background: var(--surface-soft) !important;
+}
+
+.card {
+    background: var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* =========================================================
+   37. TABLET
    ========================================================= */
 
 @media (max-width: 1000px) {
@@ -3288,7 +4242,8 @@ select:focus-visible {
             repeat(2, minmax(0, 1fr));
     }
 
-    .achievements-grid {
+    .achievements-grid,
+    .achievement-grid {
         grid-template-columns:
             repeat(3, minmax(0, 1fr));
     }
@@ -3309,6 +4264,8 @@ select:focus-visible {
         grid-template-columns: 1fr;
 
         text-align: center;
+
+        gap: 45px;
     }
 
     .hero-content {
@@ -3317,17 +4274,22 @@ select:focus-visible {
 
     .hero p {
         margin-left: auto;
+
         margin-right: auto;
     }
 
     .hero-buttons {
         justify-content: center;
     }
+
+    .hero-visual {
+        padding-bottom: 20px;
+    }
 }
 
 
 /* =========================================================
-   34. MOBILE
+   38. MOBILE
    ========================================================= */
 
 @media (max-width: 700px) {
@@ -3355,7 +4317,7 @@ select:focus-visible {
     .nav-links button {
         flex-shrink: 0;
 
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
 
     .login-button {
@@ -3365,7 +4327,8 @@ select:focus-visible {
     .page,
     #progress,
     #dashboard {
-        width: calc(100% - 28px);
+        width:
+            calc(100% - 28px);
 
         padding:
             30px 0 60px;
@@ -3381,16 +4344,21 @@ select:focus-visible {
 
     .hero h1 {
         font-size:
-            clamp(2.2rem, 12vw, 3.5rem);
+            clamp(2.25rem, 12vw, 3.5rem);
+    }
+
+    .hero p {
+        font-size: 0.98rem;
     }
 
     .chemistry-orb {
-        width: 250px;
-        height: 250px;
+        width: 255px;
+
+        height: 255px;
     }
 
     .orb-symbol {
-        font-size: 4.5rem;
+        font-size: 4.4rem;
     }
 
     .feature-grid,
@@ -3400,7 +4368,8 @@ select:focus-visible {
         grid-template-columns: 1fr;
     }
 
-    .achievements-grid {
+    .achievements-grid,
+    .achievement-grid {
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
 
@@ -3422,21 +4391,25 @@ select:focus-visible {
 
     .burette {
         width: 45px;
+
         height: 250px;
     }
 
     .flask {
         width: 145px;
+
         height: 175px;
     }
 
     .advanced-burette-body {
         width: 50px;
+
         height: 240px;
     }
 
     .advanced-flask {
         width: 150px;
+
         height: 180px;
     }
 
@@ -3478,7 +4451,7 @@ select:focus-visible {
     }
 
     .quiz-card {
-        padding: 20px;
+        padding: 21px;
     }
 
     .quiz-question {
@@ -3545,11 +4518,25 @@ select:focus-visible {
     .premium-experiment-info {
         width: 100%;
     }
+
+    .ai-header {
+        padding: 18px;
+    }
+
+    .ai-answer {
+        min-height: 270px;
+
+        padding: 18px;
+    }
+
+    .ai-input-area {
+        padding: 15px;
+    }
 }
 
 
 /* =========================================================
-   35. SMALL PHONES
+   39. SMALL PHONES
    ========================================================= */
 
 @media (max-width: 480px) {
@@ -3565,7 +4552,7 @@ select:focus-visible {
     .login-button {
         padding: 8px 10px;
 
-        font-size: 0.8rem;
+        font-size: 0.78rem;
     }
 
     .nav-links button {
@@ -3579,21 +4566,25 @@ select:focus-visible {
 
     .flask {
         width: 125px;
+
         height: 155px;
     }
 
     .burette {
         width: 40px;
+
         height: 225px;
     }
 
     .advanced-flask {
         width: 130px;
+
         height: 160px;
     }
 
     .advanced-burette-body {
         width: 42px;
+
         height: 220px;
     }
 
@@ -3603,7 +4594,8 @@ select:focus-visible {
         grid-template-columns: 1fr;
     }
 
-    .achievements-grid {
+    .achievements-grid,
+    .achievement-grid {
         grid-template-columns: 1fr;
     }
 
@@ -3615,7 +4607,6 @@ select:focus-visible {
         width: 100%;
     }
 
-    .progress-title,
     .level-progress-top {
         flex-direction: column;
 
@@ -3627,11 +4618,27 @@ select:focus-visible {
     .account-modal-content {
         padding: 22px;
     }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .hero-buttons button {
+        width: 100%;
+    }
+
+    .measurement-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-message-content {
+        max-width: 95%;
+    }
 }
 
 
 /* =========================================================
-   36. VERY SMALL PHONES
+   40. VERY SMALL PHONES
    ========================================================= */
 
 @media (max-width: 360px) {
@@ -3639,7 +4646,8 @@ select:focus-visible {
     .page,
     #progress,
     #dashboard {
-        width: calc(100% - 20px);
+        width:
+            calc(100% - 20px);
     }
 
     .hero h1 {
@@ -3648,6 +4656,7 @@ select:focus-visible {
 
     .chemistry-orb {
         width: 210px;
+
         height: 210px;
     }
 
@@ -3662,28 +4671,40 @@ select:focus-visible {
 
     .flask {
         width: 115px;
+
         height: 145px;
     }
 
     .burette {
         width: 36px;
+
         height: 210px;
     }
 
     .advanced-flask {
         width: 120px;
+
         height: 150px;
     }
 
     .advanced-burette-body {
         width: 38px;
+
         height: 205px;
+    }
+
+    .lab-panel {
+        padding: 18px;
+    }
+
+    .quiz-card {
+        padding: 17px;
     }
 }
 
 
 /* =========================================================
-   37. REDUCED MOTION
+   41. REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -3695,8 +4716,16 @@ select:focus-visible {
     *,
     *::before,
     *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            0.01ms !important;
+
+        scroll-behavior:
+            auto !important;
     }
 }
