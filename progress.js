@@ -2,39 +2,66 @@
 
 /* =========================================================
    CHEMLAB — REAL STUDENT PROGRESS ENGINE
-   STAGE 8B
+   CLEAN REPLACEMENT
+   Compatible with:
+   - app.js
+   - auth.js
+   - achievements.js
+   - Supabase student_progress
+========================================================= */
+
+
+/* =========================================================
+   CONFIGURATION
 ========================================================= */
 
 const CHEMLAB_PROGRESS_CONFIG = {
-    supabaseUrl: "https://zscbgeaieiqwknhjxpnt.supabase.co",
+    supabaseUrl:
+        "https://zscbgeaieiqwknhjxpnt.supabase.co",
 
     supabaseKey:
         "sb_publishable_blHgcaMVR5jHAl8Ixl4u3A_JMAzLquy",
 
-    table: "student_progress",
+    table:
+        "student_progress",
 
-    saveDelay: 800
+    saveDelay:
+        800
 };
 
 
 /* =========================================================
-   LOCAL PROGRESS STATE
+   PROGRESS STATE
 ========================================================= */
 
 const chemLabProgress = {
+
     loaded: false,
+
+    loading: false,
+
     saving: false,
+
+    saveQueued: false,
+
     lastSavedSignature: "",
 
+    currentUserId: null,
+
     xp: 0,
+
     level: 1,
 
     experimentsCompleted: 0,
 
     quizzesCompleted: 0,
+
     quizScore: 0,
 
+    bestQuizPercentage: 0,
+
     streak: 0,
+
     lastActivityDate: null,
 
     achievements: []
@@ -46,6 +73,7 @@ const chemLabProgress = {
 ========================================================= */
 
 const CHEMLAB_ACHIEVEMENTS = [
+
     {
         id: "first-step",
         title: "First Step",
@@ -105,53 +133,122 @@ const CHEMLAB_ACHIEVEMENTS = [
 
 
 /* =========================================================
-   HELPERS
+   DATE HELPERS
 ========================================================= */
 
+function progressDateKey(date = new Date()) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
 function progressToday() {
-    return new Date().toISOString().slice(0, 10);
+
+    return progressDateKey();
 }
 
 
 function progressYesterday() {
-    const date = new Date();
 
-    date.setDate(date.getDate() - 1);
+    const date =
+        new Date();
 
-    return date.toISOString().slice(0, 10);
+    date.setDate(
+        date.getDate() - 1
+    );
+
+    return progressDateKey(date);
 }
 
 
-function progressNumber(value, fallback = 0) {
-    const number = Number(value);
+/* =========================================================
+   VALUE HELPERS
+========================================================= */
 
-    return Number.isFinite(number)
-        ? Math.max(0, Math.floor(number))
-        : fallback;
+function progressNumber(
+    value,
+    fallback = 0
+) {
+
+    const number =
+        Number(value);
+
+    if (!Number.isFinite(number)) {
+        return fallback;
+    }
+
+    return Math.max(
+        0,
+        Math.floor(number)
+    );
 }
 
 
 function progressSafeArray(value) {
-    return Array.isArray(value) ? value : [];
+
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return [
+        ...new Set(
+            value.filter(
+                item =>
+                    typeof item === "string"
+            )
+        )
+    ];
 }
 
 
+/* =========================================================
+   SIGNATURE
+========================================================= */
+
 function progressSignature() {
+
     return JSON.stringify({
-        xp: chemLabProgress.xp,
-        level: chemLabProgress.level,
+
+        xp:
+            chemLabProgress.xp,
+
+        level:
+            chemLabProgress.level,
+
         experimentsCompleted:
             chemLabProgress.experimentsCompleted,
+
         quizzesCompleted:
             chemLabProgress.quizzesCompleted,
+
         quizScore:
             chemLabProgress.quizScore,
+
+        bestQuizPercentage:
+            chemLabProgress.bestQuizPercentage,
+
         streak:
             chemLabProgress.streak,
+
         lastActivityDate:
             chemLabProgress.lastActivityDate,
+
         achievements:
             chemLabProgress.achievements
+
     });
 }
 
@@ -162,69 +259,171 @@ function progressSignature() {
 
 function calculateChemLabLevel(xp) {
 
-    const safeXP = progressNumber(xp);
+    const safeXP =
+        progressNumber(xp);
 
-    return Math.floor(safeXP / 100) + 1;
+    return (
+        Math.floor(
+            safeXP / 100
+        ) + 1
+    );
 }
 
 
 function getLevelProgress(xp) {
 
-    const safeXP = progressNumber(xp);
+    const safeXP =
+        progressNumber(xp);
 
-    const level = calculateChemLabLevel(safeXP);
+    const level =
+        calculateChemLabLevel(
+            safeXP
+        );
 
-    const levelStart = (level - 1) * 100;
+    const levelStart =
+        (level - 1) * 100;
 
-    const levelEnd = level * 100;
+    const levelEnd =
+        level * 100;
 
-    const current = safeXP - levelStart;
+    const current =
+        safeXP - levelStart;
 
-    const required = levelEnd - levelStart;
+    const required =
+        levelEnd - levelStart;
 
     const percentage =
-        Math.min(100, Math.round((current / required) * 100));
+        Math.min(
+            100,
+            Math.max(
+                0,
+                Math.round(
+                    (current / required) * 100
+                )
+            )
+        );
 
     return {
+
         level,
+
         current,
+
         required,
+
         percentage,
-        totalXP: safeXP
+
+        totalXP:
+            safeXP
+
     };
 }
 
 
 /* =========================================================
-   AUTH TOKEN
+   SUPABASE CLIENT
 ========================================================= */
 
-async function getChemLabProgressToken() {
+function getChemLabSupabaseClient() {
+
+    if (
+        window.supabaseClient &&
+        typeof window.supabaseClient.auth === "object"
+    ) {
+
+        return window.supabaseClient;
+    }
+
+    if (
+        window.supabase &&
+        typeof window.supabase.createClient ===
+            "function"
+    ) {
+
+        try {
+
+            const client =
+                window.supabase.createClient(
+                    CHEMLAB_PROGRESS_CONFIG.supabaseUrl,
+                    CHEMLAB_PROGRESS_CONFIG.supabaseKey
+                );
+
+            window.supabaseClient =
+                client;
+
+            return client;
+
+        } catch (error) {
+
+            console.error(
+                "ChemLab Supabase client error:",
+                error
+            );
+        }
+    }
+
+    return null;
+}
+
+
+/* =========================================================
+   CURRENT SESSION
+========================================================= */
+
+async function getChemLabProgressSession() {
 
     try {
 
         if (
-            typeof window.getAISessionToken ===
+            typeof window.getCurrentSession ===
             "function"
         ) {
 
-            const token =
-                await window.getAISessionToken();
+            const session =
+                await window.getCurrentSession();
 
-            if (token) {
-                return token;
+            if (session) {
+                return session;
             }
         }
 
     } catch (error) {
 
         console.warn(
-            "ChemLab progress token error:",
+            "Could not obtain session from auth.js:",
             error
         );
     }
 
-    return null;
+
+    const client =
+        getChemLabSupabaseClient();
+
+    if (!client) {
+        return null;
+    }
+
+
+    try {
+
+        const result =
+            await client.auth.getSession();
+
+        return (
+            result &&
+            result.data &&
+            result.data.session
+        ) || null;
+
+    } catch (error) {
+
+        console.error(
+            "Supabase session error:",
+            error
+        );
+
+        return null;
+    }
 }
 
 
@@ -234,47 +433,98 @@ async function getChemLabProgressToken() {
 
 async function getChemLabProgressUser() {
 
-    const token =
-        await getChemLabProgressToken();
-
-    if (!token) {
-        return null;
-    }
-
     try {
 
-        const response = await fetch(
-            `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}/auth/v1/user`,
-            {
-                method: "GET",
+        if (
+            typeof window.getCurrentUser ===
+            "function"
+        ) {
 
-                headers: {
-                    apikey:
-                        CHEMLAB_PROGRESS_CONFIG.supabaseKey,
+            const user =
+                await window.getCurrentUser();
 
-                    Authorization:
-                        `Bearer ${token}`
-                }
+            if (user) {
+                return user;
             }
-        );
-
-        if (!response.ok) {
-            return null;
         }
-
-        const user = await response.json();
-
-        return user || null;
 
     } catch (error) {
 
-        console.error(
-            "Could not get ChemLab user:",
+        console.warn(
+            "Could not obtain user from auth.js:",
             error
         );
-
-        return null;
     }
+
+
+    const session =
+        await getChemLabProgressSession();
+
+    if (
+        session &&
+        session.user
+    ) {
+
+        return session.user;
+    }
+
+
+    return null;
+}
+
+
+/* =========================================================
+   RESET LOCAL STATE
+========================================================= */
+
+function resetChemLabProgressState() {
+
+    chemLabProgress.loaded =
+        false;
+
+    chemLabProgress.loading =
+        false;
+
+    chemLabProgress.saving =
+        false;
+
+    chemLabProgress.saveQueued =
+        false;
+
+    chemLabProgress.lastSavedSignature =
+        "";
+
+    chemLabProgress.currentUserId =
+        null;
+
+    chemLabProgress.xp =
+        0;
+
+    chemLabProgress.level =
+        1;
+
+    chemLabProgress.experimentsCompleted =
+        0;
+
+    chemLabProgress.quizzesCompleted =
+        0;
+
+    chemLabProgress.quizScore =
+        0;
+
+    chemLabProgress.bestQuizPercentage =
+        0;
+
+    chemLabProgress.streak =
+        0;
+
+    chemLabProgress.lastActivityDate =
+        null;
+
+    chemLabProgress.achievements =
+        [];
+
+    updateProgressUI();
 }
 
 
@@ -284,29 +534,44 @@ async function getChemLabProgressUser() {
 
 async function loadStudentProgress() {
 
-    const token =
-        await getChemLabProgressToken();
-
-    if (!token) {
-
-        chemLabProgress.loaded = false;
-
+    if (chemLabProgress.loading) {
         return false;
     }
 
 
-    const user =
-        await getChemLabProgressUser();
-
-    if (!user || !user.id) {
-
-        chemLabProgress.loaded = false;
-
-        return false;
-    }
+    chemLabProgress.loading =
+        true;
 
 
     try {
+
+        const session =
+            await getChemLabProgressSession();
+
+
+        if (
+            !session ||
+            !session.access_token ||
+            !session.user
+        ) {
+
+            resetChemLabProgressState();
+
+            return false;
+        }
+
+
+        const user =
+            session.user;
+
+
+        const token =
+            session.access_token;
+
+
+        chemLabProgress.currentUserId =
+            user.id;
+
 
         const url =
             `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
@@ -315,22 +580,25 @@ async function loadStudentProgress() {
             `&select=*`;
 
 
-        const response = await fetch(url, {
+        const response =
+            await fetch(
+                url,
+                {
+                    method: "GET",
 
-            method: "GET",
+                    headers: {
 
-            headers: {
-                apikey:
-                    CHEMLAB_PROGRESS_CONFIG.supabaseKey,
+                        apikey:
+                            CHEMLAB_PROGRESS_CONFIG.supabaseKey,
 
-                Authorization:
-                    `Bearer ${token}`,
+                        Authorization:
+                            `Bearer ${token}`,
 
-                Accept:
-                    "application/json"
-            }
-
-        });
+                        Accept:
+                            "application/json"
+                    }
+                }
+            );
 
 
         if (!response.ok) {
@@ -351,81 +619,137 @@ async function loadStudentProgress() {
             await response.json();
 
 
-        if (!rows.length) {
+        if (
+            !Array.isArray(rows) ||
+            rows.length === 0
+        ) {
 
-            await createStudentProgress(
-                user.id,
-                token
+            const created =
+                await createStudentProgress(
+                    user.id,
+                    token
+                );
+
+            if (!created) {
+                return false;
+            }
+
+        } else {
+
+            const data =
+                rows[0];
+
+            applyProgressData(
+                data
             );
-
-            chemLabProgress.loaded = true;
-
-            updateProgressUI();
-
-            return true;
         }
 
 
-        const data = rows[0];
+        chemLabProgress.loaded =
+            true;
 
-
-        chemLabProgress.xp =
-            progressNumber(data.xp);
 
         chemLabProgress.level =
             calculateChemLabLevel(
                 chemLabProgress.xp
             );
 
-        chemLabProgress.experimentsCompleted =
-            progressNumber(
-                data.experiments_completed
-            );
 
-        chemLabProgress.quizzesCompleted =
-            progressNumber(
-                data.quizzes_completed
-            );
+        await registerDailyActivity(
+            false
+        );
 
-        chemLabProgress.quizScore =
-            progressNumber(
-                data.quiz_score
-            );
-
-        chemLabProgress.streak =
-            progressNumber(data.streak);
-
-        chemLabProgress.lastActivityDate =
-            data.last_activity_date || null;
-
-        chemLabProgress.achievements =
-            progressSafeArray(
-                data.achievements
-            );
-
-
-        chemLabProgress.loaded = true;
-
-        updateProgressUI();
 
         checkAchievements();
 
+        updateProgressUI();
+
+
+        chemLabProgress.lastSavedSignature =
+            progressSignature();
+
+
         console.log(
-            "ChemLab progress loaded:",
-            chemLabProgress
+            "ChemLab progress loaded."
         );
+
 
         return true;
 
     } catch (error) {
 
         console.error(
-            "ChemLab progress error:",
+            "ChemLab progress load error:",
             error
         );
 
         return false;
+
+    } finally {
+
+        chemLabProgress.loading =
+            false;
     }
+}
+
+
+/* =========================================================
+   APPLY DATABASE DATA
+========================================================= */
+
+function applyProgressData(data) {
+
+    chemLabProgress.xp =
+        progressNumber(
+            data.xp
+        );
+
+
+    chemLabProgress.level =
+        calculateChemLabLevel(
+            chemLabProgress.xp
+        );
+
+
+    chemLabProgress.experimentsCompleted =
+        progressNumber(
+            data.experiments_completed
+        );
+
+
+    chemLabProgress.quizzesCompleted =
+        progressNumber(
+            data.quizzes_completed
+        );
+
+
+    chemLabProgress.quizScore =
+        progressNumber(
+            data.quiz_score
+        );
+
+
+    chemLabProgress.bestQuizPercentage =
+        progressNumber(
+            data.best_quiz_percentage
+        );
+
+
+    chemLabProgress.streak =
+        progressNumber(
+            data.streak
+        );
+
+
+    chemLabProgress.lastActivityDate =
+        data.last_activity_date ||
+        null;
+
+
+    chemLabProgress.achievements =
+        progressSafeArray(
+            data.achievements
+        );
 }
 
 
@@ -438,61 +762,72 @@ async function createStudentProgress(
     token
 ) {
 
-    const today =
-        progressToday();
-
-
     const initialData = {
 
-        user_id: userId,
+        user_id:
+            userId,
 
-        xp: 0,
+        xp:
+            0,
 
-        level: 1,
+        level:
+            1,
 
-        experiments_completed: 0,
+        experiments_completed:
+            0,
 
-        quizzes_completed: 0,
+        quizzes_completed:
+            0,
 
-        quiz_score: 0,
+        quiz_score:
+            0,
 
-        streak: 1,
+        best_quiz_percentage:
+            0,
 
-        last_activity_date: today,
+        streak:
+            0,
 
-        achievements: []
+        last_activity_date:
+            null,
+
+        achievements:
+            []
     };
 
 
     try {
 
-        const response = await fetch(
+        const response =
+            await fetch(
 
-            `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
-            `/rest/v1/${CHEMLAB_PROGRESS_CONFIG.table}`,
+                `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
+                `/rest/v1/${CHEMLAB_PROGRESS_CONFIG.table}`,
 
-            {
-                method: "POST",
+                {
+                    method: "POST",
 
-                headers: {
+                    headers: {
 
-                    apikey:
-                        CHEMLAB_PROGRESS_CONFIG.supabaseKey,
+                        apikey:
+                            CHEMLAB_PROGRESS_CONFIG.supabaseKey,
 
-                    Authorization:
-                        `Bearer ${token}`,
+                        Authorization:
+                            `Bearer ${token}`,
 
-                    "Content-Type":
-                        "application/json",
+                        "Content-Type":
+                            "application/json",
 
-                    Prefer:
-                        "return=minimal"
-                },
+                        Prefer:
+                            "return=minimal"
+                    },
 
-                body:
-                    JSON.stringify(initialData)
-            }
-        );
+                    body:
+                        JSON.stringify(
+                            initialData
+                        )
+                }
+            );
 
 
         if (!response.ok) {
@@ -509,21 +844,14 @@ async function createStudentProgress(
         }
 
 
-        chemLabProgress.xp = 0;
+        applyProgressData(
+            initialData
+        );
 
-        chemLabProgress.level = 1;
 
-        chemLabProgress.experimentsCompleted = 0;
+        chemLabProgress.currentUserId =
+            userId;
 
-        chemLabProgress.quizzesCompleted = 0;
-
-        chemLabProgress.quizScore = 0;
-
-        chemLabProgress.streak = 1;
-
-        chemLabProgress.lastActivityDate = today;
-
-        chemLabProgress.achievements = [];
 
         return true;
 
@@ -540,23 +868,35 @@ async function createStudentProgress(
 
 
 /* =========================================================
-   SAVE PROGRESS
+   SAVE TIMER
 ========================================================= */
 
-let progressSaveTimer = null;
+let progressSaveTimer =
+    null;
 
 
 function scheduleProgressSave() {
 
-    clearTimeout(progressSaveTimer);
-
-
-    progressSaveTimer = setTimeout(
-        saveStudentProgress,
-        CHEMLAB_PROGRESS_CONFIG.saveDelay
+    clearTimeout(
+        progressSaveTimer
     );
+
+
+    progressSaveTimer =
+        setTimeout(
+            () => {
+
+                saveStudentProgress();
+
+            },
+            CHEMLAB_PROGRESS_CONFIG.saveDelay
+        );
 }
 
+
+/* =========================================================
+   SAVE PROGRESS
+========================================================= */
 
 async function saveStudentProgress() {
 
@@ -565,9 +905,24 @@ async function saveStudentProgress() {
     }
 
 
-    if (chemLabProgress.saving) {
+    if (!chemLabProgress.currentUserId) {
         return false;
     }
+
+
+    if (chemLabProgress.saving) {
+
+        chemLabProgress.saveQueued =
+            true;
+
+        return false;
+    }
+
+
+    chemLabProgress.level =
+        calculateChemLabLevel(
+            chemLabProgress.xp
+        );
 
 
     const signature =
@@ -583,34 +938,27 @@ async function saveStudentProgress() {
     }
 
 
-    const token =
-        await getChemLabProgressToken();
+    const session =
+        await getChemLabProgressSession();
 
 
-    if (!token) {
+    if (
+        !session ||
+        !session.access_token
+    ) {
+
         return false;
     }
 
 
-    const user =
-        await getChemLabProgressUser();
+    chemLabProgress.saving =
+        true;
 
-
-    if (!user || !user.id) {
-        return false;
-    }
-
-
-    chemLabProgress.saving = true;
+    chemLabProgress.saveQueued =
+        false;
 
 
     try {
-
-        chemLabProgress.level =
-            calculateChemLabLevel(
-                chemLabProgress.xp
-            );
-
 
         const payload = {
 
@@ -629,6 +977,9 @@ async function saveStudentProgress() {
             quiz_score:
                 chemLabProgress.quizScore,
 
+            best_quiz_percentage:
+                chemLabProgress.bestQuizPercentage,
+
             streak:
                 chemLabProgress.streak,
 
@@ -643,34 +994,39 @@ async function saveStudentProgress() {
         };
 
 
-        const response = await fetch(
+        const response =
+            await fetch(
 
-            `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
-            `/rest/v1/${CHEMLAB_PROGRESS_CONFIG.table}` +
-            `?user_id=eq.${encodeURIComponent(user.id)}`,
+                `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
+                `/rest/v1/${CHEMLAB_PROGRESS_CONFIG.table}` +
+                `?user_id=eq.${encodeURIComponent(
+                    chemLabProgress.currentUserId
+                )}`,
 
-            {
-                method: "PATCH",
+                {
+                    method: "PATCH",
 
-                headers: {
+                    headers: {
 
-                    apikey:
-                        CHEMLAB_PROGRESS_CONFIG.supabaseKey,
+                        apikey:
+                            CHEMLAB_PROGRESS_CONFIG.supabaseKey,
 
-                    Authorization:
-                        `Bearer ${token}`,
+                        Authorization:
+                            `Bearer ${session.access_token}`,
 
-                    "Content-Type":
-                        "application/json",
+                        "Content-Type":
+                            "application/json",
 
-                    Prefer:
-                        "return=minimal"
-                },
+                        Prefer:
+                            "return=minimal"
+                    },
 
-                body:
-                    JSON.stringify(payload)
-            }
-        );
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
 
 
         if (!response.ok) {
@@ -688,7 +1044,7 @@ async function saveStudentProgress() {
 
 
         chemLabProgress.lastSavedSignature =
-            signature;
+            progressSignature();
 
 
         console.log(
@@ -709,49 +1065,70 @@ async function saveStudentProgress() {
 
     } finally {
 
-        chemLabProgress.saving = false;
+        chemLabProgress.saving =
+            false;
+
+
+        if (
+            chemLabProgress.saveQueued
+        ) {
+
+            scheduleProgressSave();
+        }
     }
 }
 
 
 /* =========================================================
-   DAILY STREAK
+   DAILY ACTIVITY
 ========================================================= */
 
-async function registerDailyActivity() {
+async function registerDailyActivity(
+    shouldSave = true
+) {
 
     if (!chemLabProgress.loaded) {
-        return;
+        return false;
     }
 
 
     const today =
         progressToday();
 
+
     const last =
         chemLabProgress.lastActivityDate;
 
 
     if (last === today) {
-        return;
+        return false;
     }
 
 
-    const yesterday =
-        progressYesterday();
-
-
-    if (last === yesterday) {
+    if (!last) {
 
         chemLabProgress.streak =
-            Math.max(
-                1,
-                chemLabProgress.streak + 1
-            );
+            1;
 
     } else {
 
-        chemLabProgress.streak = 1;
+        const yesterday =
+            progressYesterday();
+
+
+        if (last === yesterday) {
+
+            chemLabProgress.streak =
+                Math.max(
+                    1,
+                    chemLabProgress.streak + 1
+                );
+
+        } else {
+
+            chemLabProgress.streak =
+                1;
+        }
     }
 
 
@@ -763,7 +1140,13 @@ async function registerDailyActivity() {
 
     updateProgressUI();
 
-    scheduleProgressSave();
+
+    if (shouldSave) {
+        scheduleProgressSave();
+    }
+
+
+    return true;
 }
 
 
@@ -777,7 +1160,7 @@ function awardChemLabXP(
 ) {
 
     if (!chemLabProgress.loaded) {
-        return;
+        return false;
     }
 
 
@@ -786,7 +1169,7 @@ function awardChemLabXP(
 
 
     if (xp <= 0) {
-        return;
+        return false;
     }
 
 
@@ -794,7 +1177,8 @@ function awardChemLabXP(
         chemLabProgress.level;
 
 
-    chemLabProgress.xp += xp;
+    chemLabProgress.xp +=
+        xp;
 
 
     chemLabProgress.level =
@@ -803,7 +1187,9 @@ function awardChemLabXP(
         );
 
 
-    registerDailyActivity();
+    registerDailyActivity(
+        false
+    );
 
 
     checkAchievements();
@@ -819,17 +1205,24 @@ function awardChemLabXP(
     ) {
 
         showProgressNotification(
+
             `🎉 Level ${chemLabProgress.level}!`,
+
             `You earned ${xp} XP from ${reason}.`
         );
 
     } else {
 
         showProgressNotification(
+
             `+${xp} XP`,
+
             reason
         );
     }
+
+
+    return true;
 }
 
 
@@ -838,19 +1231,53 @@ function awardChemLabXP(
 ========================================================= */
 
 function completeChemLabExperiment(
-    experimentName = "Experiment"
+    experimentName = "Experiment",
+    xpReward = 25
 ) {
 
     if (!chemLabProgress.loaded) {
-        return;
+        return false;
     }
 
 
-    chemLabProgress.experimentsCompleted += 1;
+    /*
+       Supports both:
+
+       completeChemLabExperiment("Titration")
+
+       and:
+
+       completeChemLabExperiment("Titration", 30)
+    */
+
+    if (
+        typeof experimentName !==
+        "string"
+    ) {
+
+        experimentName =
+            "Experiment";
+    }
+
+
+    xpReward =
+        progressNumber(
+            xpReward,
+            25
+        );
+
+
+    chemLabProgress.experimentsCompleted +=
+        1;
+
+
+    registerDailyActivity(
+        false
+    );
 
 
     awardChemLabXP(
-        25,
+        xpReward,
         experimentName
     );
 
@@ -860,6 +1287,9 @@ function completeChemLabExperiment(
     updateProgressUI();
 
     scheduleProgressSave();
+
+
+    return true;
 }
 
 
@@ -873,43 +1303,76 @@ function recordChemLabQuiz(
 ) {
 
     if (!chemLabProgress.loaded) {
-        return;
+        return false;
     }
 
 
     const safeScore =
-        progressNumber(score);
+        Math.min(
+            progressNumber(score),
+            Math.max(
+                1,
+                progressNumber(
+                    total,
+                    1
+                )
+            )
+        );
+
 
     const safeTotal =
         Math.max(
             1,
-            progressNumber(total, 1)
+            progressNumber(
+                total,
+                1
+            )
         );
 
 
     const percentage =
         Math.round(
-            (safeScore / safeTotal) * 100
+            (
+                safeScore /
+                safeTotal
+            ) * 100
         );
 
 
-    chemLabProgress.quizzesCompleted += 1;
+    chemLabProgress.quizzesCompleted +=
+        1;
+
 
     chemLabProgress.quizScore +=
         safeScore;
 
 
-    let xpReward = 10;
+    chemLabProgress.bestQuizPercentage =
+        Math.max(
+            chemLabProgress.bestQuizPercentage,
+            percentage
+        );
+
+
+    let xpReward =
+        10;
 
 
     if (percentage >= 80) {
 
-        xpReward = 25;
+        xpReward =
+            25;
 
     } else if (percentage >= 60) {
 
-        xpReward = 18;
+        xpReward =
+            18;
     }
+
+
+    registerDailyActivity(
+        false
+    );
 
 
     awardChemLabXP(
@@ -923,22 +1386,45 @@ function recordChemLabQuiz(
     updateProgressUI();
 
     scheduleProgressSave();
+
+
+    return true;
 }
 
 
 /* =========================================================
-   ACHIEVEMENT SYSTEM
+   ACHIEVEMENT UNLOCK
 ========================================================= */
 
 function unlockAchievement(
     achievementId
 ) {
 
+    if (!chemLabProgress.loaded) {
+        return false;
+    }
+
+
     if (
         chemLabProgress.achievements
-            .includes(achievementId)
+            .includes(
+                achievementId
+            )
     ) {
 
+        return false;
+    }
+
+
+    const achievement =
+        CHEMLAB_ACHIEVEMENTS.find(
+            item =>
+                item.id ===
+                achievementId
+        );
+
+
+    if (!achievement) {
         return false;
     }
 
@@ -948,31 +1434,26 @@ function unlockAchievement(
     );
 
 
-    const achievement =
-        CHEMLAB_ACHIEVEMENTS.find(
-            item =>
-                item.id === achievementId
-        );
+    showProgressNotification(
 
+        `${achievement.icon} Achievement Unlocked!`,
 
-    if (achievement) {
-
-        showProgressNotification(
-
-            `${achievement.icon} Achievement Unlocked!`,
-
-            `${achievement.title} — ${achievement.description}`
-        );
-    }
+        `${achievement.title} — ${achievement.description}`
+    );
 
 
     scheduleProgressSave();
 
     updateProgressUI();
 
+
     return true;
 }
 
+
+/* =========================================================
+   ACHIEVEMENT CHECKER
+========================================================= */
 
 function checkAchievements() {
 
@@ -981,7 +1462,9 @@ function checkAchievements() {
     }
 
 
-    if (chemLabProgress.xp >= 1) {
+    if (
+        chemLabProgress.xp >= 1
+    ) {
 
         unlockAchievement(
             "first-step"
@@ -1009,7 +1492,15 @@ function checkAchievements() {
     }
 
 
-    if (chemLabProgress.quizScore >= 4) {
+    /*
+       Correct quiz-master logic:
+       checks the best percentage obtained
+       on an individual quiz.
+    */
+
+    if (
+        chemLabProgress.bestQuizPercentage >= 80
+    ) {
 
         unlockAchievement(
             "quiz-master"
@@ -1017,7 +1508,9 @@ function checkAchievements() {
     }
 
 
-    if (chemLabProgress.xp >= 100) {
+    if (
+        chemLabProgress.xp >= 100
+    ) {
 
         unlockAchievement(
             "xp-100"
@@ -1025,7 +1518,9 @@ function checkAchievements() {
     }
 
 
-    if (chemLabProgress.level >= 5) {
+    if (
+        chemLabProgress.level >= 5
+    ) {
 
         unlockAchievement(
             "level-5"
@@ -1033,7 +1528,9 @@ function checkAchievements() {
     }
 
 
-    if (chemLabProgress.streak >= 3) {
+    if (
+        chemLabProgress.streak >= 3
+    ) {
 
         unlockAchievement(
             "streak-3"
@@ -1041,7 +1538,9 @@ function checkAchievements() {
     }
 
 
-    if (chemLabProgress.streak >= 7) {
+    if (
+        chemLabProgress.streak >= 7
+    ) {
 
         unlockAchievement(
             "streak-7"
@@ -1057,33 +1556,46 @@ function checkAchievements() {
 function updateProgressUI() {
 
     const xp =
-        document.getElementById("xpValue");
+        document.getElementById(
+            "xpValue"
+        );
+
 
     const streak =
-        document.getElementById("streakValue");
+        document.getElementById(
+            "streakValue"
+        );
+
 
     const level =
-        document.getElementById("levelValue");
+        document.getElementById(
+            "levelValue"
+        );
+
 
     const experiments =
         document.getElementById(
             "experimentsCompleted"
         );
 
+
     const progressLevel =
         document.getElementById(
             "progressLevel"
         );
+
 
     const progressXP =
         document.getElementById(
             "progressXP"
         );
 
+
     const progressBar =
         document.getElementById(
             "progressBar"
         );
+
 
     const progressText =
         document.getElementById(
@@ -1094,7 +1606,8 @@ function updateProgressUI() {
     if (xp) {
 
         xp.textContent =
-            chemLabProgress.xp.toLocaleString();
+            chemLabProgress.xp
+                .toLocaleString();
     }
 
 
@@ -1143,13 +1656,81 @@ function updateProgressUI() {
 
         progressBar.style.width =
             `${levelProgress.percentage}%`;
+
+        progressBar.setAttribute(
+            "aria-valuenow",
+            String(
+                levelProgress.percentage
+            )
+        );
     }
 
 
     if (progressText) {
 
         progressText.textContent =
-            `${levelProgress.percentage}% to Level ${levelProgress.level + 1}`;
+            `${levelProgress.percentage}% to Level ${
+                levelProgress.level + 1
+            }`;
+    }
+
+
+    /*
+       Optional dashboard elements.
+       These IDs are intentionally different
+       from the progress-page IDs.
+    */
+
+    const dashboardXP =
+        document.getElementById(
+            "dashboardXpValue"
+        );
+
+
+    const dashboardStreak =
+        document.getElementById(
+            "dashboardStreakValue"
+        );
+
+
+    const dashboardLevel =
+        document.getElementById(
+            "dashboardLevelValue"
+        );
+
+
+    const dashboardExperiments =
+        document.getElementById(
+            "dashboardExperimentsCompleted"
+        );
+
+
+    if (dashboardXP) {
+
+        dashboardXP.textContent =
+            chemLabProgress.xp
+                .toLocaleString();
+    }
+
+
+    if (dashboardStreak) {
+
+        dashboardStreak.textContent =
+            chemLabProgress.streak;
+    }
+
+
+    if (dashboardLevel) {
+
+        dashboardLevel.textContent =
+            chemLabProgress.level;
+    }
+
+
+    if (dashboardExperiments) {
+
+        dashboardExperiments.textContent =
+            chemLabProgress.experimentsCompleted;
     }
 }
 
@@ -1184,227 +1765,174 @@ function showProgressNotification(
 
 
 /* =========================================================
-   MONITOR EXISTING CHEMLAB STATE
+   AUTH CHANGE HANDLER
 ========================================================= */
 
-let lastDetectedXP = null;
-
-let lastDetectedExperiments = null;
-
-let lastDetectedQuizScore = null;
+let progressAuthTimer =
+    null;
 
 
-function monitorExistingChemLabState() {
+async function handleProgressAuthChange() {
 
-    if (
-        !window.chemLabState ||
-        !chemLabProgress.loaded
-    ) {
-
-        return;
-    }
+    clearTimeout(
+        progressAuthTimer
+    );
 
 
-    const state =
-        window.chemLabState;
+    progressAuthTimer =
+        setTimeout(
+            async () => {
+
+                const user =
+                    await getChemLabProgressUser();
 
 
-    const currentXP =
-        progressNumber(state.xp);
+                if (
+                    !user ||
+                    !user.id
+                ) {
+
+                    resetChemLabProgressState();
+
+                    return;
+                }
 
 
-    const currentExperiments =
-        progressNumber(
-            state.experimentsCompleted
+                if (
+                    chemLabProgress.currentUserId !==
+                    user.id
+                ) {
+
+                    resetChemLabProgressState();
+
+                    await loadStudentProgress();
+
+                } else if (
+                    !chemLabProgress.loaded
+                ) {
+
+                    await loadStudentProgress();
+                }
+
+            },
+            150
         );
-
-
-    const currentQuizScore =
-        progressNumber(
-            state.quizScore
-        );
-
-
-    if (lastDetectedXP === null) {
-
-        lastDetectedXP =
-            currentXP;
-    }
-
-
-    if (lastDetectedExperiments === null) {
-
-        lastDetectedExperiments =
-            currentExperiments;
-    }
-
-
-    if (lastDetectedQuizScore === null) {
-
-        lastDetectedQuizScore =
-            currentQuizScore;
-    }
-
-
-    /*
-       Sync XP increases from the existing
-       ChemLab application.
-    */
-
-    if (currentXP > lastDetectedXP) {
-
-        const difference =
-            currentXP - lastDetectedXP;
-
-
-        if (
-            chemLabProgress.xp <
-            currentXP
-        ) {
-
-            chemLabProgress.xp =
-                Math.max(
-                    chemLabProgress.xp,
-                    currentXP
-                );
-
-
-            chemLabProgress.level =
-                calculateChemLabLevel(
-                    chemLabProgress.xp
-                );
-
-
-            registerDailyActivity();
-
-            checkAchievements();
-
-            updateProgressUI();
-
-            scheduleProgressSave();
-        }
-    }
-
-
-    /*
-       Sync experiment completions.
-    */
-
-    if (
-        currentExperiments >
-        lastDetectedExperiments
-    ) {
-
-        const difference =
-            currentExperiments -
-            lastDetectedExperiments;
-
-
-        chemLabProgress.experimentsCompleted =
-            Math.max(
-                chemLabProgress.experimentsCompleted,
-                currentExperiments
-            );
-
-
-        registerDailyActivity();
-
-        checkAchievements();
-
-        updateProgressUI();
-
-        scheduleProgressSave();
-    }
-
-
-    /*
-       Sync quiz score.
-    */
-
-    if (
-        currentQuizScore >
-        lastDetectedQuizScore
-    ) {
-
-        chemLabProgress.quizScore =
-            Math.max(
-                chemLabProgress.quizScore,
-                currentQuizScore
-            );
-
-
-        registerDailyActivity();
-
-        checkAchievements();
-
-        updateProgressUI();
-
-        scheduleProgressSave();
-    }
-
-
-    lastDetectedXP =
-        currentXP;
-
-    lastDetectedExperiments =
-        currentExperiments;
-
-    lastDetectedQuizScore =
-        currentQuizScore;
 }
 
 
 /* =========================================================
-   AUTH STATE MONITOR
+   AUTH EVENT
 ========================================================= */
 
-let progressInitializationStarted = false;
+window.addEventListener(
+    "chemlab:auth-change",
+    handleProgressAuthChange
+);
+
+
+/* =========================================================
+   PAGE VISIBILITY
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if (
+            document.visibilityState ===
+            "hidden"
+        ) {
+
+            saveStudentProgress();
+        }
+    }
+);
+
+
+/* =========================================================
+   BROWSER CLOSE / NAVIGATION
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        /*
+           Best-effort save.
+
+           Browsers may cancel ordinary async
+           requests during unload, so this is
+           supplementary rather than the primary
+           save mechanism.
+        */
+
+        if (
+            chemLabProgress.loaded
+        ) {
+
+            saveStudentProgress();
+        }
+    }
+);
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+let progressInitializationStarted =
+    false;
 
 
 async function initializeChemLabProgress() {
 
-    if (progressInitializationStarted) {
+    if (
+        progressInitializationStarted
+    ) {
+
         return;
     }
 
 
-    progressInitializationStarted = true;
+    progressInitializationStarted =
+        true;
 
 
     /*
-       Give auth.js time to restore
-       the Supabase session.
+       First attempt immediately.
+       auth.js already owns session restoration.
     */
 
-    await new Promise(
-        resolve =>
-            setTimeout(resolve, 800)
-    );
+    await loadStudentProgress();
 
 
-    const loaded =
-        await loadStudentProgress();
+    /*
+       A second attempt handles cases where
+       Supabase session restoration finishes
+       slightly after page startup.
+    */
 
+    if (
+        !chemLabProgress.loaded
+    ) {
 
-    if (loaded) {
+        setTimeout(
+            async () => {
 
-        await registerDailyActivity();
+                if (
+                    !chemLabProgress.loaded
+                ) {
 
-        updateProgressUI();
+                    await loadStudentProgress();
+                }
 
-        checkAchievements();
+            },
+            1200
+        );
     }
 
 
-    /*
-       Keep the existing ChemLab state
-       synchronized with Supabase.
-    */
-
-    setInterval(
-        monitorExistingChemLabState,
-        1500
-    );
+    updateProgressUI();
 }
 
 
@@ -1414,6 +1942,10 @@ async function initializeChemLabProgress() {
 
 window.chemLabProgress =
     chemLabProgress;
+
+
+window.CHEMLAB_ACHIEVEMENTS =
+    CHEMLAB_ACHIEVEMENTS;
 
 
 window.loadStudentProgress =
@@ -1452,17 +1984,28 @@ window.getLevelProgress =
     getLevelProgress;
 
 
+window.calculateChemLabLevel =
+    calculateChemLabLevel;
+
+
 /* =========================================================
    START
 ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+if (
+    document.readyState ===
+    "loading"
+) {
 
-        setTimeout(
-            initializeChemLabProgress,
-            1000
-        );
-    }
-);
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeChemLabProgress,
+        {
+            once: true
+        }
+    );
+
+} else {
+
+    initializeChemLabProgress();
+}
