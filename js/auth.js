@@ -1,7 +1,7 @@
 /* =========================================================
    CHEMLAB
    STUDENT AUTHENTICATION ENGINE
-   STAGE 3.2
+   STAGE 3.2 — REVISED
    ========================================================= */
 
 (function () {
@@ -58,7 +58,8 @@
 
     function isConfigured() {
 
-        const settings = supabaseConfig();
+        const settings =
+            supabaseConfig();
 
         return Boolean(
             settings.enabled &&
@@ -70,7 +71,10 @@
 
     function log(...args) {
 
-        if (typeof window.CHEMLAB_LOG === "function") {
+        if (
+            typeof window.CHEMLAB_LOG ===
+            "function"
+        ) {
 
             window.CHEMLAB_LOG(
                 "[AUTH]",
@@ -85,7 +89,8 @@
         originalError = null
     ) {
 
-        const error = new Error(message);
+        const error =
+            new Error(message);
 
         error.originalError =
             originalError;
@@ -95,7 +100,23 @@
 
 
     /* =====================================================
-       LOAD SUPABASE
+       APPLICATION URL
+       ===================================================== */
+
+    function getApplicationUrl() {
+
+        const origin =
+            window.location.origin;
+
+        const pathname =
+            window.location.pathname || "/";
+
+        return `${origin}${pathname}`;
+    }
+
+
+    /* =====================================================
+       LOAD SUPABASE LIBRARY
        ===================================================== */
 
     function loadSupabaseLibrary() {
@@ -129,6 +150,7 @@
                         { once: true }
                     );
 
+
                     existingScript.addEventListener(
                         "error",
                         () =>
@@ -139,6 +161,7 @@
                             ),
                         { once: true }
                     );
+
 
                     return;
                 }
@@ -155,6 +178,7 @@
 
 
                 script.async = true;
+
 
                 script.dataset.chemlabSupabase =
                     "true";
@@ -214,7 +238,7 @@
         if (!isConfigured()) {
 
             throw createError(
-                "Supabase is not configured."
+                "Supabase is not configured. Check js/config.js."
             );
         }
 
@@ -232,9 +256,15 @@
                 settings.publishableKey,
                 {
                     auth: {
-                        persistSession: true,
-                        autoRefreshToken: true,
-                        detectSessionInUrl: true
+
+                        persistSession:
+                            true,
+
+                        autoRefreshToken:
+                            true,
+
+                        detectSessionInUrl:
+                            true
                     }
                 }
             );
@@ -250,10 +280,12 @@
 
 
     /* =====================================================
-       SESSION STORAGE
+       LOCAL SESSION STORAGE
        ===================================================== */
 
-    function saveSession(session) {
+    function saveSession(
+        session
+    ) {
 
         try {
 
@@ -286,7 +318,9 @@
     }
 
 
-    function saveUserProfile(profile) {
+    function saveUserProfile(
+        profile
+    ) {
 
         try {
 
@@ -337,6 +371,7 @@
                 sessionKey
             );
 
+
             localStorage.removeItem(
                 profileKey
             );
@@ -368,7 +403,9 @@
 
 
         AUTH_STATE.authenticated =
-            Boolean(session?.user);
+            Boolean(
+                session?.user
+            );
 
 
         saveSession(
@@ -381,6 +418,7 @@
                 "chemlab:auth-state",
                 {
                     detail: {
+
                         authenticated:
                             AUTH_STATE.authenticated,
 
@@ -402,7 +440,9 @@
 
     async function initialize() {
 
-        if (AUTH_STATE.initialized) {
+        if (
+            AUTH_STATE.initialized
+        ) {
 
             return getAuthState();
         }
@@ -457,7 +497,9 @@
                             "chemlab:auth-event",
                             {
                                 detail: {
+
                                     event,
+
                                     session
                                 }
                             }
@@ -520,19 +562,31 @@
 
 
         const cleanEmail =
-            String(email || "")
+            String(
+                email || ""
+            )
                 .trim()
                 .toLowerCase();
 
 
         const cleanPassword =
-            String(password || "");
+            String(
+                password || ""
+            );
 
 
         if (!cleanEmail) {
 
             throw createError(
                 "Please enter your email address."
+            );
+        }
+
+
+        if (!isValidEmail(cleanEmail)) {
+
+            throw createError(
+                "Please enter a valid email address."
             );
         }
 
@@ -545,7 +599,9 @@
         }
 
 
-        if (cleanPassword.length < 6) {
+        if (
+            cleanPassword.length < 6
+        ) {
 
             throw createError(
                 "Your password must contain at least 6 characters."
@@ -558,6 +614,14 @@
 
 
         try {
+
+            /*
+             * The confirmation redirect should return
+             * the student to the ChemLab application.
+             */
+            const redirectTo =
+                getApplicationUrl();
+
 
             const {
                 data,
@@ -573,22 +637,66 @@
 
                     options: {
 
+                        redirectTo,
+
                         data: {
 
                             full_name:
-                                metadata.full_name ||
-                                "",
+                                String(
+                                    metadata.full_name ||
+                                    ""
+                                ).trim(),
 
                             academic_level:
-                                metadata.academic_level ||
-                                "",
+                                String(
+                                    metadata.academic_level ||
+                                    ""
+                                ).trim(),
 
                             institution:
-                                metadata.institution ||
-                                ""
+                                String(
+                                    metadata.institution ||
+                                    ""
+                                ).trim()
                         }
                     }
                 });
+
+
+            /*
+             * IMPORTANT:
+             * Keep the real Supabase response in
+             * the console while we are testing.
+             *
+             * No password is logged.
+             */
+            log(
+                "Signup response:",
+                {
+                    hasUser:
+                        Boolean(data?.user),
+
+                    hasSession:
+                        Boolean(data?.session),
+
+                    userId:
+                        data?.user?.id || null,
+
+                    email:
+                        data?.user?.email || null,
+
+                    confirmedAt:
+                        data?.user?.email_confirmed_at ||
+                        null,
+
+                    confirmationSentAt:
+                        data?.user?.confirmation_sent_at ||
+                        null,
+
+                    error:
+                        error || null
+                }
+            );
 
 
             if (error) {
@@ -597,18 +705,56 @@
             }
 
 
+            if (!data?.user) {
+
+                throw createError(
+                    "Supabase did not return a student account. Please try again."
+                );
+            }
+
+
+            /*
+             * If Supabase returns a session,
+             * the student is already authenticated.
+             */
             if (data?.session) {
 
                 updateState(
                     data.session
                 );
 
-            } else {
 
-                updateState(
-                    null
-                );
+                return {
+
+                    success:
+                        true,
+
+                    user:
+                        data.user,
+
+                    session:
+                        data.session,
+
+                    requiresEmailConfirmation:
+                        false,
+
+                    confirmationSent:
+                        false
+                };
             }
+
+
+            /*
+             * Supabase returns a user with no session
+             * when email confirmation is required.
+             */
+            const confirmationRequired =
+                !data.user.email_confirmed_at;
+
+
+            updateState(
+                null
+            );
 
 
             return {
@@ -617,16 +763,27 @@
                     true,
 
                 user:
-                    data?.user || null,
+                    data.user,
 
                 session:
-                    data?.session || null,
+                    null,
 
                 requiresEmailConfirmation:
-                    !data?.session
+                    confirmationRequired,
+
+                confirmationSent:
+                    Boolean(
+                        data.user.confirmation_sent_at
+                    )
             };
 
         } catch (error) {
+
+            log(
+                "Signup failed:",
+                error
+            );
+
 
             throw createError(
                 getReadableAuthError(
@@ -656,19 +813,31 @@
 
 
         const cleanEmail =
-            String(email || "")
+            String(
+                email || ""
+            )
                 .trim()
                 .toLowerCase();
 
 
         const cleanPassword =
-            String(password || "");
+            String(
+                password || ""
+            );
 
 
         if (!cleanEmail) {
 
             throw createError(
                 "Please enter your email address."
+            );
+        }
+
+
+        if (!isValidEmail(cleanEmail)) {
+
+            throw createError(
+                "Please enter a valid email address."
             );
         }
 
@@ -691,14 +860,15 @@
                 data,
                 error
             } =
-                await supabaseClient.auth.signInWithPassword({
+                await supabaseClient.auth
+                    .signInWithPassword({
 
-                    email:
-                        cleanEmail,
+                        email:
+                            cleanEmail,
 
-                    password:
-                        cleanPassword
-                });
+                        password:
+                            cleanPassword
+                    });
 
 
             if (error) {
@@ -725,6 +895,12 @@
             };
 
         } catch (error) {
+
+            log(
+                "Sign in failed:",
+                error
+            );
+
 
             throw createError(
                 getReadableAuthError(
@@ -782,6 +958,7 @@
 
 
             return {
+
                 success:
                     true
             };
@@ -859,7 +1036,9 @@
                 error.message &&
                 error.message
                     .toLowerCase()
-                    .includes("not authenticated")
+                    .includes(
+                        "not authenticated"
+                    )
             ) {
 
                 return null;
@@ -886,7 +1065,9 @@
 
 
         const cleanEmail =
-            String(email || "")
+            String(
+                email || ""
+            )
                 .trim()
                 .toLowerCase();
 
@@ -899,8 +1080,16 @@
         }
 
 
+        if (!isValidEmail(cleanEmail)) {
+
+            throw createError(
+                "Please enter a valid email address."
+            );
+        }
+
+
         const redirectUrl =
-            `${window.location.origin}${window.location.pathname}`;
+            getApplicationUrl();
 
 
         try {
@@ -925,6 +1114,7 @@
 
 
             return {
+
                 success:
                     true
             };
@@ -942,6 +1132,19 @@
 
 
     /* =====================================================
+       EMAIL VALIDATION
+       ===================================================== */
+
+    function isValidEmail(
+        email
+    ) {
+
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            .test(email);
+    }
+
+
+    /* =====================================================
        AUTH ERROR TRANSLATION
        ===================================================== */
 
@@ -951,7 +1154,9 @@
 
         if (!error) {
 
-            return "An unknown authentication error occurred.";
+            return (
+                "An unknown authentication error occurred."
+            );
         }
 
 
@@ -973,7 +1178,9 @@
             )
         ) {
 
-            return "The email or password is incorrect.";
+            return (
+                "The email or password is incorrect."
+            );
         }
 
 
@@ -983,7 +1190,9 @@
             )
         ) {
 
-            return "Please confirm your email address before signing in.";
+            return (
+                "Please confirm your email address before signing in."
+            );
         }
 
 
@@ -993,7 +1202,9 @@
             )
         ) {
 
-            return "An account with this email already exists.";
+            return (
+                "An account with this email already exists."
+            );
         }
 
 
@@ -1003,7 +1214,9 @@
             )
         ) {
 
-            return "Your password does not meet the minimum requirements.";
+            return (
+                "Your password does not meet the minimum requirements."
+            );
         }
 
 
@@ -1013,7 +1226,36 @@
             )
         ) {
 
-            return "Too many attempts. Please wait a moment and try again.";
+            return (
+                "Too many attempts. Please wait a moment and try again."
+            );
+        }
+
+
+        if (
+            lower.includes(
+                "email rate limit"
+            )
+        ) {
+
+            return (
+                "Too many confirmation emails were requested. Please wait before trying again."
+            );
+        }
+
+
+        if (
+            lower.includes(
+                "redirect"
+            ) &&
+            lower.includes(
+                "not allowed"
+            )
+        ) {
+
+            return (
+                "ChemLab's confirmation redirect URL is not allowed by Supabase. Check the Supabase URL Configuration."
+            );
         }
 
 
@@ -1026,7 +1268,9 @@
             )
         ) {
 
-            return "Unable to connect to the authentication service. Check your internet connection.";
+            return (
+                "Unable to connect to the authentication service. Check your internet connection."
+            );
         }
 
 
