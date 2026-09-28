@@ -1,7 +1,7 @@
 /* =========================================================
    CHEMLAB
    APPLICATION CONTROLLER
-   Stage 1 — Foundation
+   Stage 3 — Authentication & Profile Integration
    ========================================================= */
 
 (function () {
@@ -22,7 +22,11 @@
 
         isReady: false,
 
-        error: null
+        error: null,
+
+        authInitialized: false,
+
+        profileInitialized: false
 
     };
 
@@ -93,11 +97,6 @@
             "true"
         );
 
-
-        /*
-         * Remove it from visual interaction after
-         * the transition has completed.
-         */
 
         setTimeout(() => {
 
@@ -268,10 +267,14 @@
 
         } catch (error) {
 
-            CHEMLAB_LOG(
-                "Unable to save theme.",
-                error
-            );
+            if (typeof CHEMLAB_LOG === "function") {
+
+                CHEMLAB_LOG(
+                    "Unable to save theme.",
+                    error
+                );
+
+            }
 
         }
 
@@ -310,7 +313,164 @@
 
 
     /* =====================================================
+       AUTHENTICATION INITIALIZATION
+       ===================================================== */
+
+    async function initializeAuthentication() {
+
+        if (
+            !window.CHEMLAB_AUTH ||
+            typeof window.CHEMLAB_AUTH.initialize !==
+                "function"
+        ) {
+
+            CHEMLAB_LOG(
+                "Authentication module is unavailable."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            await window.CHEMLAB_AUTH.initialize();
+
+            APP_STATE.authInitialized = true;
+
+
+            CHEMLAB_LOG(
+                "Authentication system initialized."
+            );
+
+
+            /*
+             * Notify the rest of the application.
+             */
+
+            document.dispatchEvent(
+                new CustomEvent(
+                    "chemlab:auth-initialized",
+                    {
+                        detail: {
+                            state:
+                                window.CHEMLAB_AUTH
+                                    .getAuthState
+                                    ? window.CHEMLAB_AUTH
+                                        .getAuthState()
+                                    : null
+                        }
+                    }
+                )
+            );
+
+
+        } catch (error) {
+
+            handleApplicationError(
+                error,
+                "Authentication Initialization"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
        PROFILE INITIALIZATION
+       ===================================================== */
+
+    async function initializeStudentProfile() {
+
+        if (
+            !window.CHEMLAB_PROFILE ||
+            typeof window.CHEMLAB_PROFILE.loadProfile !==
+                "function"
+        ) {
+
+            CHEMLAB_LOG(
+                "Profile module is unavailable."
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Only attempt to load a profile
+         * when the student is authenticated.
+         */
+
+        if (
+            !window.CHEMLAB_AUTH ||
+            typeof window.CHEMLAB_AUTH.isAuthenticated !==
+                "function"
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !window.CHEMLAB_AUTH.isAuthenticated()
+        ) {
+
+            CHEMLAB_LOG(
+                "No authenticated student. Profile loading skipped."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            await window.CHEMLAB_PROFILE.loadProfile();
+
+            APP_STATE.profileInitialized = true;
+
+
+            CHEMLAB_LOG(
+                "Student profile initialized."
+            );
+
+
+            document.dispatchEvent(
+                new CustomEvent(
+                    "chemlab:profile-initialized",
+                    {
+                        detail: {
+                            profile:
+                                window.CHEMLAB_PROFILE
+                                    .getProfile
+                                    ? window.CHEMLAB_PROFILE
+                                        .getProfile()
+                                    : null
+                        }
+                    }
+                )
+            );
+
+
+        } catch (error) {
+
+            handleApplicationError(
+                error,
+                "Student Profile Initialization"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       PROFILE UI
        ===================================================== */
 
     function initializeProfileUI() {
@@ -326,28 +486,259 @@
 
 
         /*
-         * Stage 1 does not authenticate users yet.
-         * Therefore we display the default student
-         * interface until the authentication system
-         * is implemented.
+         * Default unauthenticated state.
+         */
+
+        let name = "Student";
+
+        let email = "ChemLab Student";
+
+        let avatar = "S";
+
+
+        /*
+         * Read authenticated user.
+         */
+
+        if (
+            window.CHEMLAB_AUTH &&
+            typeof window.CHEMLAB_AUTH.isAuthenticated ===
+                "function" &&
+            window.CHEMLAB_AUTH.isAuthenticated()
+        ) {
+
+            const authState =
+                typeof window.CHEMLAB_AUTH.getAuthState ===
+                    "function"
+                    ? window.CHEMLAB_AUTH.getAuthState()
+                    : null;
+
+
+            const user =
+                authState?.user || null;
+
+
+            if (user) {
+
+                email =
+                    user.email ||
+                    "ChemLab Student";
+
+
+                const metadata =
+                    user.user_metadata ||
+                    {};
+
+
+                name =
+                    metadata.full_name ||
+                    user.email?.split("@")[0] ||
+                    "Student";
+
+            }
+
+        }
+
+
+        /*
+         * Prefer the Supabase profile
+         * when it exists.
+         */
+
+        if (
+            window.CHEMLAB_PROFILE &&
+            typeof window.CHEMLAB_PROFILE.getProfile ===
+                "function"
+        ) {
+
+            const profile =
+                window.CHEMLAB_PROFILE.getProfile();
+
+
+            if (profile) {
+
+                name =
+                    profile.full_name ||
+                    name;
+
+
+                if (
+                    profile.avatar_url
+                ) {
+
+                    avatar =
+                        profile.avatar_url;
+
+                }
+
+            }
+
+        }
+
+
+        /*
+         * Generate avatar initials when
+         * no image URL is available.
+         */
+
+        if (
+            avatar === "S" &&
+            name
+        ) {
+
+            const words =
+                name
+                    .trim()
+                    .split(/\s+/)
+                    .filter(Boolean);
+
+
+            if (words.length >= 2) {
+
+                avatar =
+                    (
+                        words[0][0] +
+                        words[words.length - 1][0]
+                    ).toUpperCase();
+
+            } else if (words.length === 1) {
+
+                avatar =
+                    words[0]
+                        .substring(0, 2)
+                        .toUpperCase();
+
+            }
+
+        }
+
+
+        /*
+         * Update DOM.
          */
 
         if (profileName) {
+
             profileName.textContent =
-                "Student";
+                name;
+
         }
 
 
         if (profileEmail) {
+
             profileEmail.textContent =
-                "ChemLab Student";
+                email;
+
         }
 
 
         if (profileAvatar) {
-            profileAvatar.textContent =
-                "S";
+
+            /*
+             * If avatar is an image URL,
+             * use it as an image.
+             */
+
+            if (
+                typeof avatar === "string" &&
+                (
+                    avatar.startsWith("http://") ||
+                    avatar.startsWith("https://")
+                )
+            ) {
+
+                profileAvatar.textContent = "";
+
+                profileAvatar.style.backgroundImage =
+                    `url("${avatar}")`;
+
+                profileAvatar.style.backgroundSize =
+                    "cover";
+
+                profileAvatar.style.backgroundPosition =
+                    "center";
+
+            } else {
+
+                profileAvatar.style.backgroundImage =
+                    "";
+
+                profileAvatar.textContent =
+                    avatar;
+
+            }
+
         }
+
+    }
+
+
+    /* =====================================================
+       AUTH STATE EVENTS
+       ===================================================== */
+
+    function handleAuthStateChange(event) {
+
+        const detail =
+            event.detail || {};
+
+
+        CHEMLAB_LOG(
+            "Authentication state changed.",
+            detail
+        );
+
+
+        /*
+         * Refresh profile information.
+         */
+
+        initializeProfileUI();
+
+
+        /*
+         * If a student has just signed in,
+         * load their profile.
+         */
+
+        if (
+            window.CHEMLAB_AUTH &&
+            typeof window.CHEMLAB_AUTH.isAuthenticated ===
+                "function" &&
+            window.CHEMLAB_AUTH.isAuthenticated()
+        ) {
+
+            initializeStudentProfile()
+                .then(() => {
+
+                    initializeProfileUI();
+
+                })
+                .catch((error) => {
+
+                    handleApplicationError(
+                        error,
+                        "Authentication Profile Refresh"
+                    );
+
+                });
+
+        }
+
+    }
+
+
+    function handleProfileLoaded() {
+
+        initializeProfileUI();
+
+    }
+
+
+    function handleProfileUpdated() {
+
+        initializeProfileUI();
 
     }
 
@@ -396,10 +787,6 @@
 
         }
 
-
-        /*
-         * Initial search results.
-         */
 
         window.CHEMLAB_UI.search.render(
             ""
@@ -460,9 +847,7 @@
        NAVIGATION EVENTS
        ===================================================== */
 
-    function handleNavigation(
-        event
-    ) {
+    function handleNavigation(event) {
 
         const detail =
             event.detail;
@@ -485,9 +870,7 @@
        PAGE ENTER EVENTS
        ===================================================== */
 
-    function handlePageEnter(
-        event
-    ) {
+    function handlePageEnter(event) {
 
         const detail =
             event.detail;
@@ -507,16 +890,6 @@
         }
 
 
-        /*
-         * Give every page a small
-         * initialization hook.
-         *
-         * Later stages can attach
-         * experiment-specific logic
-         * here without changing the
-         * core application controller.
-         */
-
         page.classList.add(
             "page-ready"
         );
@@ -528,9 +901,7 @@
        PAGE EXIT EVENTS
        ===================================================== */
 
-    function handlePageExit(
-        event
-    ) {
+    function handlePageExit(event) {
 
         const detail =
             event.detail;
@@ -570,6 +941,7 @@
                 if (!event.error) {
                     return;
                 }
+
 
                 handleApplicationError(
                     event.error,
@@ -628,6 +1000,38 @@
             handlePageExit
         );
 
+
+        /*
+         * Authentication events.
+         */
+
+        document.addEventListener(
+            "chemlab:auth-state",
+            handleAuthStateChange
+        );
+
+
+        document.addEventListener(
+            "chemlab:auth-event",
+            handleAuthStateChange
+        );
+
+
+        /*
+         * Profile events.
+         */
+
+        document.addEventListener(
+            "chemlab:profile-loaded",
+            handleProfileLoaded
+        );
+
+
+        document.addEventListener(
+            "chemlab:profile-updated",
+            handleProfileUpdated
+        );
+
     }
 
 
@@ -650,17 +1054,39 @@
             "----------------------------------------"
         );
 
+
         CHEMLAB_LOG(
             `${config.app.name} initialized`
         );
+
 
         CHEMLAB_LOG(
             `Version: ${config.app.version}`
         );
 
+
         CHEMLAB_LOG(
             `Environment: ${config.app.environment}`
         );
+
+
+        CHEMLAB_LOG(
+            `Authentication: ${
+                APP_STATE.authInitialized
+                    ? "Ready"
+                    : "Unavailable"
+            }`
+        );
+
+
+        CHEMLAB_LOG(
+            `Profile: ${
+                APP_STATE.profileInitialized
+                    ? "Ready"
+                    : "Not loaded"
+            }`
+        );
+
 
         CHEMLAB_LOG(
             "----------------------------------------"
@@ -673,7 +1099,7 @@
        APPLICATION INITIALIZATION
        ===================================================== */
 
-    function initializeApplication() {
+    async function initializeApplication() {
 
         if (APP_STATE.initialized) {
             return;
@@ -682,6 +1108,7 @@
 
         APP_STATE.initialized = true;
 
+
         APP_STATE.startedAt =
             performance.now();
 
@@ -689,35 +1116,70 @@
         try {
 
             /*
-             * Make sure the loader is visible
-             * while the application initializes.
+             * Keep the application loader visible
+             * while the complete startup sequence
+             * is running.
              */
 
             showLoader();
 
 
-            /*
-             * Core UI.
-             */
+            /* ---------------------------------------------
+               CORE SYSTEMS
+               --------------------------------------------- */
 
             initializeTheme();
-
-            initializeProfileUI();
-
-            initializeNavigation();
-
-            initializeSearch();
-
-            initializeResponsiveBehavior();
 
             initializeErrorHandling();
 
             bindApplicationEvents();
 
 
+            /* ---------------------------------------------
+               AUTHENTICATION
+               --------------------------------------------- */
+
+            await initializeAuthentication();
+
+
+            /* ---------------------------------------------
+               STUDENT PROFILE
+               --------------------------------------------- */
+
+            await initializeStudentProfile();
+
+
+            /* ---------------------------------------------
+               PROFILE UI
+               --------------------------------------------- */
+
+            initializeProfileUI();
+
+
+            /* ---------------------------------------------
+               NAVIGATION
+               --------------------------------------------- */
+
+            initializeNavigation();
+
+
+            /* ---------------------------------------------
+               SEARCH
+               --------------------------------------------- */
+
+            initializeSearch();
+
+
+            /* ---------------------------------------------
+               RESPONSIVE BEHAVIOR
+               --------------------------------------------- */
+
+            initializeResponsiveBehavior();
+
+
             /*
-             * Allow the browser to render the
-             * application before removing loader.
+             * Allow the browser to render the complete
+             * application before removing the loader.
              */
 
             requestAnimationFrame(() => {
@@ -755,10 +1217,13 @@
 
         state: APP_STATE,
 
+
         initialize:
             initializeApplication,
 
+
         theme: {
+
             apply:
                 applyTheme,
 
@@ -767,14 +1232,37 @@
 
             getStored:
                 getStoredTheme
+
         },
 
+
         loader: {
+
             show:
                 showLoader,
 
             hide:
                 hideLoader
+
+        },
+
+
+        authentication: {
+
+            initialize:
+                initializeAuthentication
+
+        },
+
+
+        profile: {
+
+            initialize:
+                initializeStudentProfile,
+
+            refreshUI:
+                initializeProfileUI
+
         }
 
     };
