@@ -1,524 +1,691 @@
-"use strict";
-
 /* =========================================================
-   CHEMLAB — ACHIEVEMENTS UI
-   CLEAN REPLACEMENT
-   Works with:
-   - progress.js
-   - app.js
-   - auth.js
-========================================================= */
+   CHEMLAB
+   ACHIEVEMENTS ENGINE
+   Version 4.0
+   ========================================================= */
+
+(function () {
+    "use strict";
+
+    /* =====================================================
+       CONFIGURATION
+       ===================================================== */
+
+    const CONFIG = {
+        gridId: "achievementsGrid",
+        countId: "achievementUnlockedCount"
+    };
 
 
-/* =========================================================
-   ACHIEVEMENT DEFINITIONS
-========================================================= */
+    /* =====================================================
+       FALLBACK ACHIEVEMENTS
+       Uses the same achievement source as progress.js
+       ===================================================== */
 
-const CHEMLAB_ACHIEVEMENT_UI_DEFINITIONS = [
-
-    {
-        id: "first-step",
-        title: "First Step",
-        description: "Earn your first XP",
-        icon: "🚀"
-    },
-
-    {
-        id: "first-experiment",
-        title: "Lab Explorer",
-        description: "Complete your first experiment",
-        icon: "🧪"
-    },
-
-    {
-        id: "first-quiz",
-        title: "Quiz Starter",
-        description: "Complete your first quiz",
-        icon: "📝"
-    },
-
-    {
-        id: "quiz-master",
-        title: "Quiz Master",
-        description: "Reach 80% or higher on a quiz",
-        icon: "🏆"
-    },
-
-    {
-        id: "xp-100",
-        title: "Century Chemist",
-        description: "Reach 100 XP",
-        icon: "💯"
-    },
-
-    {
-        id: "level-5",
-        title: "Rising Chemist",
-        description: "Reach Level 5",
-        icon: "⭐"
-    },
-
-    {
-        id: "streak-3",
-        title: "Getting Consistent",
-        description: "Reach a 3-day streak",
-        icon: "🔥"
-    },
-
-    {
-        id: "streak-7",
-        title: "One Week Strong",
-        description: "Reach a 7-day streak",
-        icon: "🔥"
-    }
-
-];
+    const FALLBACK_ACHIEVEMENTS = [
+        {
+            id: "first-step",
+            title: "First Step",
+            description: "Complete your first chemistry activity.",
+            icon: "🚀"
+        },
+        {
+            id: "lab-explorer",
+            title: "Lab Explorer",
+            description: "Complete your first virtual experiment.",
+            icon: "🧪"
+        },
+        {
+            id: "quiz-starter",
+            title: "Quiz Starter",
+            description: "Complete your first chemistry quiz.",
+            icon: "📝"
+        },
+        {
+            id: "quiz-master",
+            title: "Quiz Master",
+            description: "Score at least 80% on a chemistry quiz.",
+            icon: "🏆"
+        },
+        {
+            id: "xp-100",
+            title: "Century of XP",
+            description: "Earn 100 XP.",
+            icon: "⚡"
+        },
+        {
+            id: "xp-500",
+            title: "Chemistry Pro",
+            description: "Earn 500 XP.",
+            icon: "🔥"
+        },
+        {
+            id: "streak-7",
+            title: "7-Day Streak",
+            description: "Study chemistry for 7 consecutive days.",
+            icon: "🔥"
+        },
+        {
+            id: "experiment-master",
+            title: "Experiment Master",
+            description: "Complete 5 virtual experiments.",
+            icon: "🔬"
+        }
+    ];
 
 
-/* =========================================================
-   GET ACHIEVEMENT DEFINITIONS
-========================================================= */
+    /* =====================================================
+       GET ACHIEVEMENT DEFINITIONS
+       ===================================================== */
 
-function getChemLabAchievementDefinitions() {
+    function getDefinitions() {
 
-    /*
-       progress.js is the main owner of the
-       achievement definitions.
+        if (
+            Array.isArray(window.CHEMLAB_ACHIEVEMENTS) &&
+            window.CHEMLAB_ACHIEVEMENTS.length
+        ) {
+            return window.CHEMLAB_ACHIEVEMENTS;
+        }
 
-       Use those definitions when available.
-    */
-
-    if (
-        Array.isArray(
-            window.CHEMLAB_ACHIEVEMENTS
-        ) &&
-        window.CHEMLAB_ACHIEVEMENTS.length
-    ) {
-
-        return window.CHEMLAB_ACHIEVEMENTS;
+        return FALLBACK_ACHIEVEMENTS;
     }
 
 
-    return CHEMLAB_ACHIEVEMENT_UI_DEFINITIONS;
-}
+    /* =====================================================
+       GET CURRENT PROGRESS
+       ===================================================== */
 
+    function getProgress() {
 
-/* =========================================================
-   SAFE HTML
-========================================================= */
-
-function escapeAchievementHTML(value) {
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
-/* =========================================================
-   GET CURRENT PROGRESS
-========================================================= */
-
-function getAchievementProgress() {
-
-    const progress =
-        window.chemLabProgress;
-
-
-    if (
-        !progress ||
-        !progress.loaded
-    ) {
+        if (
+            window.chemLabProgress &&
+            typeof window.chemLabProgress === "object"
+        ) {
+            return window.chemLabProgress;
+        }
 
         return null;
     }
 
 
-    return progress;
-}
+    /* =====================================================
+       SAFE TEXT
+       ===================================================== */
 
+    function escapeHTML(value) {
 
-/* =========================================================
-   RENDER ACHIEVEMENTS
-========================================================= */
-
-function renderChemLabAchievements() {
-
-    const grid =
-        document.getElementById(
-            "achievementsGrid"
-        );
-
-
-    const counter =
-        document.getElementById(
-            "achievementUnlockedCount"
-        );
-
-
-    /*
-       The achievements page may not exist
-       on every page/state.
-
-       Simply do nothing if its container
-       is not present.
-    */
-
-    if (!grid) {
-        return;
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
 
-    const definitions =
-        getChemLabAchievementDefinitions();
+    /* =====================================================
+       CHECK UNLOCKED STATE
+       ===================================================== */
 
+    function isUnlocked(achievement, progress) {
 
-    const progress =
-        getAchievementProgress();
-
-
-    /*
-       Not signed in / progress not loaded.
-    */
-
-    if (!progress) {
-
-        if (counter) {
-
-            counter.textContent =
-                `0/${definitions.length}`;
+        if (!progress) {
+            return false;
         }
 
+        const unlocked =
+            Array.isArray(progress.achievements)
+                ? progress.achievements
+                : [];
 
-        grid.innerHTML = `
+        return unlocked.includes(achievement.id);
+    }
 
-            <div class="achievements-empty">
 
-                <div
-                    class="achievements-empty-icon"
-                    aria-hidden="true"
-                >
-                    🏆
-                </div>
+    /* =====================================================
+       GET UNLOCK DATE
+       ===================================================== */
 
-                <strong>
-                    Sign in to track achievements
-                </strong>
+    function getUnlockDate(achievement, progress) {
+
+        if (!progress) {
+            return null;
+        }
+
+        const dates =
+            progress.achievementDates ||
+            progress.achievementUnlockDates ||
+            {};
+
+        return dates[achievement.id] || null;
+    }
+
+
+    /* =====================================================
+       FORMAT DATE
+       ===================================================== */
+
+    function formatDate(dateValue) {
+
+        if (!dateValue) {
+            return "";
+        }
+
+        const date = new Date(dateValue);
+
+        if (Number.isNaN(date.getTime())) {
+            return "";
+        }
+
+        try {
+            return date.toLocaleDateString(undefined, {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+        } catch (error) {
+            return "";
+        }
+    }
+
+
+    /* =====================================================
+       RENDER EMPTY / LOGIN STATE
+       ===================================================== */
+
+    function renderGuestState(container, countElement) {
+
+        if (countElement) {
+            countElement.textContent = "0";
+        }
+
+        container.innerHTML = `
+            <div class="achievement-empty-state">
+                <div class="achievement-empty-icon">🏆</div>
+
+                <h3>Start your chemistry journey</h3>
 
                 <p>
-                    Complete experiments, quizzes,
-                    and other ChemLab activities
-                    to unlock achievements.
+                    Sign in and complete activities to unlock
+                    achievements, earn XP and build your chemistry profile.
                 </p>
 
+                <button
+                    type="button"
+                    class="primary-button"
+                    onclick="openAuthModal('login')"
+                >
+                    Sign In
+                </button>
+            </div>
+        `;
+    }
+
+
+    /* =====================================================
+       RENDER ACHIEVEMENTS
+       ===================================================== */
+
+    function renderAchievements() {
+
+        const container =
+            document.getElementById(CONFIG.gridId);
+
+        if (!container) {
+            return;
+        }
+
+        const countElement =
+            document.getElementById(CONFIG.countId);
+
+        const progress = getProgress();
+
+        if (!progress) {
+            renderGuestState(container, countElement);
+            return;
+        }
+
+        const definitions = getDefinitions();
+
+        if (!definitions.length) {
+            container.innerHTML = `
+                <div class="achievement-empty-state">
+                    <div class="achievement-empty-icon">🏆</div>
+                    <h3>No achievements yet</h3>
+                    <p>New achievements will appear here.</p>
+                </div>
+            `;
+
+            if (countElement) {
+                countElement.textContent = "0";
+            }
+
+            return;
+        }
+
+        let unlockedCount = 0;
+
+        const cards = definitions.map((achievement) => {
+
+            const unlocked =
+                isUnlocked(achievement, progress);
+
+            if (unlocked) {
+                unlockedCount++;
+            }
+
+            const unlockDate =
+                unlocked
+                    ? formatDate(
+                        getUnlockDate(
+                            achievement,
+                            progress
+                        )
+                    )
+                    : "";
+
+            const icon =
+                achievement.icon ||
+                achievement.emoji ||
+                "🏆";
+
+            return `
+                <article
+                    class="
+                        achievement-card
+                        ${unlocked ? "is-unlocked" : "is-locked"}
+                    "
+                    data-achievement-id="${escapeHTML(
+                        achievement.id
+                    )}"
+                >
+
+                    <div class="achievement-icon-wrap">
+                        <span class="achievement-icon">
+                            ${escapeHTML(icon)}
+                        </span>
+
+                        ${
+                            unlocked
+                                ? `
+                                    <span
+                                        class="achievement-check"
+                                        aria-label="Unlocked"
+                                    >
+                                        ✓
+                                    </span>
+                                  `
+                                : `
+                                    <span
+                                        class="achievement-lock"
+                                        aria-label="Locked"
+                                    >
+                                        🔒
+                                    </span>
+                                  `
+                        }
+                    </div>
+
+
+                    <div class="achievement-card-content">
+
+                        <h3 class="achievement-title">
+                            ${escapeHTML(
+                                achievement.title ||
+                                "Achievement"
+                            )}
+                        </h3>
+
+                        <p class="achievement-description">
+                            ${escapeHTML(
+                                achievement.description ||
+                                "Complete this achievement."
+                            )}
+                        </p>
+
+
+                        ${
+                            unlocked
+                                ? `
+                                    <div class="achievement-status unlocked">
+                                        <span>✓ Unlocked</span>
+
+                                        ${
+                                            unlockDate
+                                                ? `
+                                                    <small>
+                                                        ${escapeHTML(
+                                                            unlockDate
+                                                        )}
+                                                    </small>
+                                                  `
+                                                : ""
+                                        }
+                                    </div>
+                                  `
+                                : `
+                                    <div class="achievement-status locked">
+                                        <span>🔒 Locked</span>
+                                    </div>
+                                  `
+                        }
+
+                    </div>
+
+                </article>
+            `;
+        }).join("");
+
+        container.innerHTML = cards;
+
+        if (countElement) {
+            countElement.textContent =
+                `${unlockedCount}`;
+        }
+    }
+
+
+    /* =====================================================
+       REFRESH
+       ===================================================== */
+
+    function refreshAchievements() {
+
+        try {
+            renderAchievements();
+        } catch (error) {
+            console.error(
+                "ChemLab achievements render error:",
+                error
+            );
+        }
+    }
+
+
+    /* =====================================================
+       SHOW ACHIEVEMENT NOTIFICATION
+       ===================================================== */
+
+    function showAchievementNotification(achievement) {
+
+        if (!achievement) {
+            return;
+        }
+
+        const title =
+            achievement.title ||
+            "Achievement Unlocked";
+
+        const icon =
+            achievement.icon ||
+            achievement.emoji ||
+            "🏆";
+
+        const description =
+            achievement.description ||
+            "You unlocked a new achievement!";
+
+        if (
+            typeof window.showNotification === "function"
+        ) {
+            window.showNotification(
+                `${icon} ${title}: ${description}`,
+                "success"
+            );
+
+            return;
+        }
+
+        const container =
+            document.getElementById(
+                "notificationContainer"
+            );
+
+        if (!container) {
+            return;
+        }
+
+        const notification =
+            document.createElement("div");
+
+        notification.className =
+            "notification notification-success achievement-notification";
+
+        notification.innerHTML = `
+            <div class="notification-icon">
+                ${escapeHTML(icon)}
             </div>
 
+            <div class="notification-content">
+                <strong>
+                    ${escapeHTML(title)}
+                </strong>
+
+                <span>
+                    ${escapeHTML(description)}
+                </span>
+            </div>
+
+            <button
+                type="button"
+                class="notification-close"
+                aria-label="Close notification"
+            >
+                ×
+            </button>
         `;
 
-        return;
+        container.appendChild(notification);
+
+        const closeButton =
+            notification.querySelector(
+                ".notification-close"
+            );
+
+        if (closeButton) {
+            closeButton.addEventListener(
+                "click",
+                () => notification.remove()
+            );
+        }
+
+        setTimeout(() => {
+
+            if (notification.isConnected) {
+                notification.classList.add(
+                    "notification-hide"
+                );
+
+                setTimeout(
+                    () => notification.remove(),
+                    300
+                );
+            }
+
+        }, 5000);
     }
 
 
-    const unlocked =
-        Array.isArray(
-            progress.achievements
-        )
-            ? progress.achievements
-            : [];
+    /* =====================================================
+       FIND NEW ACHIEVEMENTS
+       ===================================================== */
+
+    let previousUnlocked = new Set();
 
 
-    const unlockedCount =
-        definitions.filter(
-            achievement =>
-                unlocked.includes(
-                    achievement.id
-                )
-        ).length;
+    function checkForNewAchievements() {
 
+        const progress = getProgress();
 
-    if (counter) {
+        if (!progress) {
+            previousUnlocked = new Set();
+            return;
+        }
 
-        counter.textContent =
-            `${unlockedCount}/${definitions.length}`;
-    }
+        const unlocked =
+            Array.isArray(progress.achievements)
+                ? progress.achievements
+                : [];
 
+        const currentUnlocked =
+            new Set(unlocked);
 
-    /*
-       Render every achievement.
-    */
+        if (previousUnlocked.size > 0) {
 
-    grid.innerHTML =
-        definitions
-            .map(
-                achievement => {
+            currentUnlocked.forEach((achievementId) => {
 
-                    const isUnlocked =
-                        unlocked.includes(
-                            achievement.id
+                if (
+                    !previousUnlocked.has(
+                        achievementId
+                    )
+                ) {
+
+                    const achievement =
+                        getDefinitions().find(
+                            item =>
+                                item.id ===
+                                achievementId
                         );
 
-
-                    const statusClass =
-                        isUnlocked
-                            ? "unlocked"
-                            : "locked";
-
-
-                    const statusText =
-                        isUnlocked
-                            ? "✓ Unlocked"
-                            : "🔒 Locked";
-
-
-                    const checkIcon =
-                        isUnlocked
-                            ? "✓"
-                            : "🔒";
-
-
-                    return `
-
-                        <article
-                            class="
-                                achievement-card
-                                ${statusClass}
-                            "
-                            data-achievement-id="${escapeAchievementHTML(
-                                achievement.id
-                            )}"
-                            aria-label="${escapeAchievementHTML(
-                                achievement.title
-                            )}"
-                        >
-
-                            <div
-                                class="achievement-check"
-                                aria-hidden="true"
-                            >
-                                ${checkIcon}
-                            </div>
-
-
-                            <div
-                                class="achievement-icon"
-                                aria-hidden="true"
-                            >
-                                ${achievement.icon}
-                            </div>
-
-
-                            <h3>
-                                ${escapeAchievementHTML(
-                                    achievement.title
-                                )}
-                            </h3>
-
-
-                            <p>
-                                ${escapeAchievementHTML(
-                                    achievement.description
-                                )}
-                            </p>
-
-
-                            <span
-                                class="
-                                    achievement-status
-                                    ${statusClass}
-                                "
-                            >
-                                ${statusText}
-                            </span>
-
-                        </article>
-
-                    `;
+                    if (achievement) {
+                        showAchievementNotification(
+                            achievement
+                        );
+                    }
                 }
-            )
-            .join("");
-}
+            });
+        }
 
-
-/* =========================================================
-   REFRESH
-========================================================= */
-
-function refreshAchievementsUI() {
-
-    renderChemLabAchievements();
-}
-
-
-/* =========================================================
-   REFRESH AFTER PROGRESS CHANGES
-========================================================= */
-
-function handleAchievementProgressChange() {
-
-    /*
-       Progress may update several values
-       during one action, so schedule one
-       render instead of rendering repeatedly.
-    */
-
-    if (
-        window.chemLabAchievementRenderTimer
-    ) {
-
-        clearTimeout(
-            window.chemLabAchievementRenderTimer
-        );
+        previousUnlocked =
+            currentUnlocked;
     }
 
 
-    window.chemLabAchievementRenderTimer =
-        setTimeout(
-            () => {
+    /* =====================================================
+       INITIALIZE PREVIOUS STATE
+       ===================================================== */
 
-                window.chemLabAchievementRenderTimer =
-                    null;
+    function initializeAchievementState() {
 
-                renderChemLabAchievements();
+        const progress = getProgress();
 
-            },
-            50
-        );
-}
+        if (!progress) {
+            previousUnlocked = new Set();
+            return;
+        }
 
-
-/* =========================================================
-   AUTH CHANGE
-========================================================= */
-
-function handleAchievementAuthChange() {
-
-    handleAchievementProgressChange();
-}
+        previousUnlocked =
+            new Set(
+                Array.isArray(progress.achievements)
+                    ? progress.achievements
+                    : []
+            );
+    }
 
 
-/* =========================================================
-   CUSTOM EVENTS
-========================================================= */
+    /* =====================================================
+       PROGRESS EVENT
+       ===================================================== */
 
-window.addEventListener(
-    "chemlab:auth-change",
-    handleAchievementAuthChange
-);
+    function handleProgressChange() {
 
+        checkForNewAchievements();
 
-/* =========================================================
-   OBSERVE PROGRESS OBJECT
-========================================================= */
-
-/*
-   progress.js exposes window.chemLabProgress.
-
-   Because the object itself is mutated rather than
-   replaced, we do not use an expensive polling loop.
-
-   Instead, progress.js and app.js can explicitly call
-   refreshAchievementsUI() whenever needed.
-*/
+        refreshAchievements();
+    }
 
 
-/* =========================================================
-   PAGE VISIBILITY
-========================================================= */
+    /* =====================================================
+       AUTH EVENT
+       ===================================================== */
 
-document.addEventListener(
-    "visibilitychange",
-    () => {
+    function handleAuthChange() {
+
+        setTimeout(() => {
+
+            initializeAchievementState();
+
+            refreshAchievements();
+
+        }, 100);
+    }
+
+
+    /* =====================================================
+       VISIBILITY
+       ===================================================== */
+
+    function handleVisibilityChange() {
 
         if (
             document.visibilityState ===
             "visible"
         ) {
-
-            handleAchievementProgressChange();
+            refreshAchievements();
         }
     }
-);
 
 
-/* =========================================================
-   INITIALIZATION
-========================================================= */
-
-let achievementsInitialized =
-    false;
-
-
-function initializeChemLabAchievements() {
-
-    if (achievementsInitialized) {
-        return;
-    }
-
-
-    achievementsInitialized =
-        true;
-
-
-    renderChemLabAchievements();
-}
-
-
-/* =========================================================
-   PUBLIC API
-========================================================= */
-
-window.renderChemLabAchievements =
-    renderChemLabAchievements;
-
-
-window.refreshAchievementsUI =
-    refreshAchievementsUI;
-
-
-window.getChemLabAchievementDefinitions =
-    getChemLabAchievementDefinitions;
-
-
-window.initializeChemLabAchievements =
-    initializeChemLabAchievements;
-
-
-/* =========================================================
-   START
-========================================================= */
-
-if (
-    document.readyState ===
-    "loading"
-) {
+    /* =====================================================
+       PAGE EVENTS
+       ===================================================== */
 
     document.addEventListener(
-        "DOMContentLoaded",
-        initializeChemLabAchievements,
-        {
-            once: true
-        }
+        "chemlab:progress-change",
+        handleProgressChange
     );
 
-} else {
+    document.addEventListener(
+        "chemlab:auth-change",
+        handleAuthChange
+    );
 
-    initializeChemLabAchievements();
-}
+    document.addEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+    );
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    function initialize() {
+
+        initializeAchievementState();
+
+        refreshAchievements();
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initialize,
+            { once: true }
+        );
+
+    } else {
+
+        initialize();
+    }
+
+
+    /* =====================================================
+       PUBLIC API
+       ===================================================== */
+
+    window.renderChemLabAchievements =
+        renderAchievements;
+
+    window.refreshChemLabAchievements =
+        refreshAchievements;
+
+    window.showChemLabAchievementNotification =
+        showAchievementNotification;
+
+})();
