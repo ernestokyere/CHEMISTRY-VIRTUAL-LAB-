@@ -1,0 +1,745 @@
+/* =========================================================
+   CHEMLAB
+   PROFESSIONAL RESPONSIVE SYSTEM
+   Stage 1 — Foundation
+   ========================================================= */
+
+
+/* =========================================================
+   01. LARGE TABLETS / SMALL DESKTOP
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    :root {
+        --sidebar-width: 240px;
+    }
+
+    .page-container {
+        padding: 28px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-grid > .card-wide {
+        grid-column: auto;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .workflow-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .quick-access-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   02. TABLET
+   ========================================================= */
+
+@media (max-width: 992px) {
+
+    /* -----------------------------------------------------
+       APPLICATION SHELL
+       ----------------------------------------------------- */
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 1000;
+    }
+
+    .sidebar.is-open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    .sidebar-overlay.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+
+    /* -----------------------------------------------------
+       MOBILE SIDEBAR BUTTON
+       ----------------------------------------------------- */
+
+    .mobile-sidebar-button {
+        display: inline-flex;
+    }
+
+
+    /* -----------------------------------------------------
+       TOPBAR
+       ----------------------------------------------------- */
+
+    .topbar {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .breadcrumb {
+        display: none;
+    }
+
+    .topbar-actions {
+        margin-left: auto;
+    }
+
+
+    /* -----------------------------------------------------
+       PAGE
+       ----------------------------------------------------- */
+
+    .page-container {
+        padding: 24px;
+    }
+
+
+    /* -----------------------------------------------------
+       PAGE HEADER
+       ----------------------------------------------------- */
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    .page-header-actions {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------------------
+       DASHBOARD
+       ----------------------------------------------------- */
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-grid > * {
+        min-width: 0;
+    }
+
+
+    /* -----------------------------------------------------
+       WORKFLOW
+       ----------------------------------------------------- */
+
+    .workflow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+
+    /* -----------------------------------------------------
+       LAB FOUNDATION
+       ----------------------------------------------------- */
+
+    .lab-surface {
+        min-height: 420px;
+    }
+
+
+    /* -----------------------------------------------------
+       MODALS
+       ----------------------------------------------------- */
+
+    .modal {
+        width: min(92vw, 680px);
+    }
+
+    .search-modal {
+        width: min(92vw, 680px);
+    }
+
+
+    /* -----------------------------------------------------
+       PANELS
+       ----------------------------------------------------- */
+
+    .notification-panel,
+    .profile-panel {
+        width: min(92vw, 380px);
+    }
+
+}
+
+
+/* =========================================================
+   03. MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    /* -----------------------------------------------------
+       ROOT
+       ----------------------------------------------------- */
+
+    :root {
+        --page-padding: 18px;
+    }
+
+
+    /* -----------------------------------------------------
+       TOPBAR
+       ----------------------------------------------------- */
+
+    .topbar {
+        height: 68px;
+        padding: 0 16px;
+        gap: 10px;
+    }
+
+    .topbar-actions {
+        gap: 6px;
+    }
+
+    .topbar .icon-button {
+        width: 38px;
+        height: 38px;
+    }
+
+    .profile-trigger {
+        padding: 4px;
+    }
+
+    .profile-trigger .profile-details {
+        display: none;
+    }
+
+
+    /* -----------------------------------------------------
+       PAGE CONTAINER
+       ----------------------------------------------------- */
+
+    .page-container {
+        padding: 20px 16px 32px;
+    }
+
+
+    /* -----------------------------------------------------
+       PAGE HEADER
+       ----------------------------------------------------- */
+
+    .page-header {
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 1.65rem;
+        line-height: 1.2;
+    }
+
+    .page-description {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .page-header-actions {
+        flex-wrap: wrap;
+    }
+
+
+    /* -----------------------------------------------------
+       STATS
+       ----------------------------------------------------- */
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-value {
+        font-size: 1.45rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+
+    /* -----------------------------------------------------
+       CARDS
+       ----------------------------------------------------- */
+
+    .card {
+        border-radius: 14px;
+    }
+
+    .card-header {
+        padding: 16px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .card-footer {
+        padding: 14px 16px;
+    }
+
+
+    /* -----------------------------------------------------
+       WORKFLOW
+       ----------------------------------------------------- */
+
+    .workflow-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .workflow-step {
+        padding: 16px;
+    }
+
+
+    /* -----------------------------------------------------
+       QUICK ACCESS
+       ----------------------------------------------------- */
+
+    .quick-access-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* -----------------------------------------------------
+       SECTION HEADINGS
+       ----------------------------------------------------- */
+
+    .section-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+
+    /* -----------------------------------------------------
+       FORMS
+       ----------------------------------------------------- */
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-actions .button {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------------------
+       BUTTONS
+       ----------------------------------------------------- */
+
+    .button {
+        min-height: 44px;
+    }
+
+    .button-group {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+
+    /* -----------------------------------------------------
+       TABLES
+       ----------------------------------------------------- */
+
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table {
+        min-width: 620px;
+    }
+
+
+    /* -----------------------------------------------------
+       LAB SURFACE
+       ----------------------------------------------------- */
+
+    .lab-surface {
+        min-height: 360px;
+        padding: 16px;
+    }
+
+
+    /* -----------------------------------------------------
+       SEARCH
+       ----------------------------------------------------- */
+
+    .search-modal {
+        width: calc(100vw - 24px);
+        max-height: calc(100vh - 48px);
+        border-radius: 16px;
+    }
+
+    .search-input {
+        font-size: 0.95rem;
+    }
+
+    .search-result {
+        padding: 12px;
+    }
+
+
+    /* -----------------------------------------------------
+       NOTIFICATION / PROFILE PANELS
+       ----------------------------------------------------- */
+
+    .notification-panel,
+    .profile-panel {
+        position: fixed;
+        top: 72px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        max-height: calc(100vh - 88px);
+    }
+
+
+    /* -----------------------------------------------------
+       EMPTY STATES
+       ----------------------------------------------------- */
+
+    .empty-state {
+        padding: 32px 20px;
+    }
+
+
+    /* -----------------------------------------------------
+       ALERTS
+       ----------------------------------------------------- */
+
+    .alert {
+        align-items: flex-start;
+    }
+
+
+    /* -----------------------------------------------------
+       TOAST
+       ----------------------------------------------------- */
+
+    .toast-container {
+        left: 12px;
+        right: 12px;
+        bottom: 16px;
+    }
+
+    .toast {
+        width: 100%;
+        max-width: none;
+    }
+
+}
+
+
+/* =========================================================
+   04. SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    /* -----------------------------------------------------
+       TOPBAR
+       ----------------------------------------------------- */
+
+    .topbar {
+        height: 64px;
+        padding: 0 12px;
+    }
+
+    .topbar-actions {
+        gap: 3px;
+    }
+
+    .topbar .icon-button {
+        width: 36px;
+        height: 36px;
+    }
+
+
+    /* -----------------------------------------------------
+       PAGE
+       ----------------------------------------------------- */
+
+    .page-container {
+        padding: 18px 12px 28px;
+    }
+
+
+    /* -----------------------------------------------------
+       TYPOGRAPHY
+       ----------------------------------------------------- */
+
+    .page-title {
+        font-size: 1.45rem;
+    }
+
+    .section-title {
+        font-size: 1.05rem;
+    }
+
+
+    /* -----------------------------------------------------
+       STATS
+       ----------------------------------------------------- */
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       WORKFLOW
+       ----------------------------------------------------- */
+
+    .workflow-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* -----------------------------------------------------
+       CARDS
+       ----------------------------------------------------- */
+
+    .card-header,
+    .card-body,
+    .card-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       BUTTONS
+       ----------------------------------------------------- */
+
+    .button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .button-group .button {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------------------
+       MODALS
+       ----------------------------------------------------- */
+
+    .modal {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+        border-radius: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       PANELS
+       ----------------------------------------------------- */
+
+    .notification-panel,
+    .profile-panel {
+        top: 68px;
+        left: 8px;
+        right: 8px;
+        max-height: calc(100vh - 80px);
+    }
+
+
+    /* -----------------------------------------------------
+       LAB
+       ----------------------------------------------------- */
+
+    .lab-surface {
+        min-height: 320px;
+        padding: 12px;
+    }
+
+
+    /* -----------------------------------------------------
+       FORM CONTROLS
+       ----------------------------------------------------- */
+
+    .input,
+    .select,
+    .textarea {
+        font-size: 16px;
+    }
+
+}
+
+
+/* =========================================================
+   05. VERY SMALL DEVICES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .topbar-actions .search-button {
+        display: none;
+    }
+
+    .topbar-actions {
+        margin-left: auto;
+    }
+
+    .page-title {
+        font-size: 1.3rem;
+    }
+
+    .page-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+}
+
+
+/* =========================================================
+   06. LANDSCAPE MOBILE
+   ========================================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .sidebar {
+        overflow-y: auto;
+    }
+
+    .modal {
+        max-height: 92vh;
+        overflow-y: auto;
+    }
+
+    .notification-panel,
+    .profile-panel {
+        max-height: 82vh;
+        overflow-y: auto;
+    }
+
+}
+
+
+/* =========================================================
+   07. TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .button,
+    .icon-button,
+    .nav-link,
+    .search-result,
+    .dropdown-item {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .button {
+        min-height: 44px;
+    }
+
+}
+
+
+/* =========================================================
+   08. REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+}
+
+
+/* =========================================================
+   09. PRINT
+   ========================================================= */
+
+@media print {
+
+    .sidebar,
+    .topbar,
+    .sidebar-overlay,
+    .notification-panel,
+    .profile-panel,
+    .modal,
+    .toast-container {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .page-container {
+        padding: 0 !important;
+        max-width: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        break-inside: avoid;
+    }
+
+}
