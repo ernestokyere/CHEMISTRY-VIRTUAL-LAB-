@@ -403,39 +403,55 @@
                 </button>
 
 
-                <!-- Profile -->
+              <!-- =================================================
+     AUTHENTICATION
+     ================================================= -->
 
-                <button
-                    type="button"
-                    class="profile-trigger"
-                    data-profile-toggle
-                    aria-label="Open student profile"
-                >
+<button
+    type="button"
+    class="button button-primary"
+    data-auth-action="signin"
+    onclick="CHEMLAB_AUTH_UI.open('login')"
+>
+    Sign In
+</button>
 
-                    <span
-                        class="avatar avatar-sm"
-                        id="topbarAvatar"
-                    >
-                        S
-                    </span>
 
-                    <span class="profile-trigger-copy">
+<!-- =================================================
+     PROFILE
+     ================================================= -->
 
-                        <strong id="topbarStudentName">
-                            Student
-                        </strong>
+<button
+    type="button"
+    class="profile-trigger"
+    data-profile-toggle
+    aria-label="Open student profile"
+>
 
-                        <small>
-                            Student account
-                        </small>
+    <span
+        class="avatar avatar-sm"
+        id="topbarAvatar"
+    >
+        S
+    </span>
 
-                    </span>
+    <span class="profile-trigger-copy">
 
-                    <span class="profile-chevron">
-                        ˅
-                    </span>
+        <strong id="topbarStudentName">
+            Student
+        </strong>
 
-                </button>
+        <small>
+            Student account
+        </small>
+
+    </span>
+
+    <span class="profile-chevron">
+        ˅
+    </span>
+
+</button>
 
             </div>
 
