@@ -1,12 +1,11 @@
 /* =========================================================
    CHEMLAB
    PROFESSIONAL APPLICATION CONTROLLER
-   Version 5.0
+   Version 5.1
    ========================================================= */
 
 (function () {
     "use strict";
-
 
     /* =====================================================
        CONFIGURATION
@@ -42,28 +41,39 @@
 
         if (
             typeof window.supabase === "undefined" ||
-            typeof window.supabase.createClient !==
-                "function"
+            typeof window.supabase.createClient !== "function"
         ) {
             console.error(
-                "ChemLab: Supabase library not available."
+                "ChemLab: Supabase library is not available."
             );
 
             return null;
         }
 
-        window.supabaseClient =
-            window.supabase.createClient(
-                CONFIG.supabaseUrl,
-                CONFIG.supabaseKey
+        try {
+
+            window.supabaseClient =
+                window.supabase.createClient(
+                    CONFIG.supabaseUrl,
+                    CONFIG.supabaseKey
+                );
+
+            return window.supabaseClient;
+
+        } catch (error) {
+
+            console.error(
+                "ChemLab: Could not create Supabase client.",
+                error
             );
 
-        return window.supabaseClient;
+            return null;
+        }
     }
 
 
     /* =====================================================
-       GLOBAL STATE
+       STATE
        ===================================================== */
 
     const state = {
@@ -81,6 +91,9 @@
             null,
 
         aiMessages:
+            [],
+
+        aiConversations:
             [],
 
         quiz: {
@@ -154,11 +167,12 @@
     };
 
 
-    window.chemLabState = state;
+    window.chemLabState =
+        state;
 
 
     /* =====================================================
-       UTILITY FUNCTIONS
+       HELPERS
        ===================================================== */
 
     function $(id) {
@@ -166,23 +180,16 @@
     }
 
 
-    function setText(id, value) {
+    function setText(
+        id,
+        value
+    ) {
 
-        const element = $(id);
+        const element =
+            $(id);
 
         if (element) {
             element.textContent =
-                value;
-        }
-    }
-
-
-    function setValue(id, value) {
-
-        const element = $(id);
-
-        if (element) {
-            element.value =
                 value;
         }
     }
@@ -194,9 +201,16 @@
         max
     ) {
 
+        const number =
+            Number(value);
+
+        if (!Number.isFinite(number)) {
+            return min;
+        }
+
         return Math.min(
             Math.max(
-                Number(value) || 0,
+                number,
                 min
             ),
             max
@@ -222,14 +236,33 @@
     }
 
 
-    function escapeHTML(value) {
+    function escapeHTML(
+        value
+    ) {
 
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        return String(
+            value ?? ""
+        )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
     }
 
 
@@ -246,6 +279,7 @@
             typeof window.showNotification ===
             "function"
         ) {
+
             window.showNotification(
                 message,
                 type
@@ -276,7 +310,7 @@
 
             <button
                 type="button"
-                aria-label="Close"
+                aria-label="Close notification"
             >
                 ×
             </button>
@@ -286,30 +320,40 @@
             notification
         );
 
-        const close =
+        const closeButton =
             notification.querySelector(
                 "button"
             );
 
-        if (close) {
-            close.onclick = () =>
-                notification.remove();
+        if (closeButton) {
+
+            closeButton.addEventListener(
+                "click",
+                () => notification.remove()
+            );
         }
 
-        setTimeout(() => {
+        setTimeout(
+            () => {
 
-            if (
-                notification.isConnected
-            ) {
-                notification.remove();
-            }
+                if (
+                    notification.isConnected
+                ) {
+                    notification.remove();
+                }
 
-        }, 5000);
+            },
+            5000
+        );
     }
 
 
+    window.chemLabNotify =
+        notify;
+
+
     /* =====================================================
-       NAVIGATION
+       PAGE NAVIGATION
        ===================================================== */
 
     function showPage(
@@ -325,13 +369,19 @@
                 ".page"
             );
 
-        pages.forEach(page => {
+        if (!pages.length) {
+            return;
+        }
 
-            page.classList.toggle(
-                "active",
-                page.id === pageId
-            );
-        });
+        pages.forEach(
+            page => {
+
+                page.classList.toggle(
+                    "active",
+                    page.id === pageId
+                );
+            }
+        );
 
 
         const navButtons =
@@ -339,14 +389,16 @@
                 "[data-page]"
             );
 
-        navButtons.forEach(button => {
+        navButtons.forEach(
+            button => {
 
-            button.classList.toggle(
-                "active",
-                button.dataset.page ===
+                button.classList.toggle(
+                    "active",
+                    button.dataset.page ===
                     pageId
-            );
-        });
+                );
+            }
+        );
 
 
         state.currentPage =
@@ -357,6 +409,7 @@
             pageId ===
             "dashboard"
         ) {
+
             updateProgressUI();
         }
 
@@ -365,12 +418,14 @@
             pageId ===
             "progress"
         ) {
+
             updateProgressUI();
 
             if (
                 typeof window.refreshChemLabAchievements ===
                 "function"
             ) {
+
                 window.refreshChemLabAchievements();
             }
         }
@@ -380,7 +435,21 @@
             pageId ===
             "ai"
         ) {
+
             loadAIConversations();
+        }
+
+
+        if (
+            pageId ===
+            "quiz"
+        ) {
+
+            if (
+                !state.quiz.finished
+            ) {
+                loadQuizQuestion();
+            }
         }
 
 
@@ -388,17 +457,20 @@
             pageId ===
             "advancedTitrationPage"
         ) {
+
             initializeAdvancedTitration();
         }
 
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
-
         closeMobileNavigation();
+
+
+        window.scrollTo({
+            top:
+                0,
+            behavior:
+                "smooth"
+        });
     }
 
 
@@ -435,6 +507,7 @@
             $("mobileNavigation");
 
         if (navigation) {
+
             navigation.classList.remove(
                 "active"
             );
@@ -491,13 +564,9 @@
             baseMoles;
 
 
-        const epsilon =
-            1e-10;
-
-
         if (
             Math.abs(difference) <
-            epsilon
+            1e-12
         ) {
             return 7;
         }
@@ -507,25 +576,29 @@
             difference > 0
         ) {
 
-            const h =
+            const hydrogen =
                 difference /
                 totalVolume;
 
             return clamp(
-                -Math.log10(h),
+                -Math.log10(
+                    hydrogen
+                ),
                 0,
                 14
             );
         }
 
 
-        const excessOH =
-            Math.abs(difference) /
+        const hydroxide =
+            Math.abs(
+                difference
+            ) /
             totalVolume;
 
         const pOH =
             -Math.log10(
-                excessOH
+                hydroxide
             );
 
         return clamp(
@@ -545,12 +618,14 @@
                 pH - 7
             ) < 0.01
         ) {
+
             return "Neutral";
         }
 
         if (
             pH < 7
         ) {
+
             return "Acidic";
         }
 
@@ -632,15 +707,11 @@
                 "endpoint"
             );
 
-            if (atEquivalence) {
-                solution.classList.add(
-                    "endpoint"
-                );
-            } else {
-                solution.classList.add(
-                    status.toLowerCase()
-                );
-            }
+            solution.classList.add(
+                atEquivalence
+                    ? "endpoint"
+                    : status.toLowerCase()
+            );
         }
 
 
@@ -649,18 +720,12 @@
 
         if (burette) {
 
-            const percentage =
-                clamp(
-                    (
-                        experiment.baseVolume /
-                        100
-                    ) * 100,
+            burette.style.height =
+                `${clamp(
+                    experiment.baseVolume,
                     0,
                     100
-                );
-
-            burette.style.height =
-                `${percentage}%`;
+                )}%`;
         }
     }
 
@@ -675,6 +740,7 @@
         if (
             experiment.completed
         ) {
+
             notify(
                 "This experiment is complete. Reset it to try again.",
                 "info"
@@ -733,14 +799,9 @@
 
         updateTitrationUI();
 
-        setText(
-            "endpointMessage",
-            "Continue adding titrant."
-        );
-
-        setText(
-            "titrationObservation",
-            "The flask is ready for titration."
+        notify(
+            "Titration experiment reset.",
+            "info"
         );
     }
 
@@ -794,135 +855,13 @@
     window.resetTitration =
         resetTitration;
 
+    window.calculateTitrationPH =
+        calculateTitrationPH;
+
 
     /* =====================================================
        ADVANCED TITRATION
        ===================================================== */
-
-    function initializeAdvancedTitration() {
-
-        const experiment =
-            state.advancedTitration;
-
-        const volumeSlider =
-            $("advancedVolumeSlider");
-
-        const naohVolume =
-            $("advancedNaohVolume");
-
-        const hclConcentration =
-            $("advancedHclConcentration");
-
-        const naohConcentration =
-            $("advancedNaohConcentration");
-
-
-        if (
-            experiment.initialized
-        ) {
-            updateAdvancedTitrationUI();
-            return;
-        }
-
-
-        if (volumeSlider) {
-
-            volumeSlider.min =
-                "0";
-
-            volumeSlider.max =
-                String(
-                    experiment.maxVolume
-                );
-
-            volumeSlider.step =
-                "0.1";
-
-            volumeSlider.value =
-                String(
-                    experiment.baseVolume
-                );
-
-            volumeSlider.addEventListener(
-                "input",
-                () => {
-
-                    experiment.baseVolume =
-                        clamp(
-                            volumeSlider.value,
-                            0,
-                            experiment.maxVolume
-                        );
-
-                    updateAdvancedTitrationUI();
-                }
-            );
-        }
-
-
-        if (naohVolume) {
-
-            naohVolume.value =
-                String(
-                    experiment.baseVolume
-                );
-        }
-
-
-        if (hclConcentration) {
-
-            hclConcentration.value =
-                String(
-                    experiment.acidConcentration
-                );
-
-            hclConcentration.addEventListener(
-                "input",
-                () => {
-
-                    experiment.acidConcentration =
-                        Number(
-                            hclConcentration.value
-                        ) || 0.1;
-
-                    recalculateAdvancedEquivalence();
-
-                    updateAdvancedTitrationUI();
-                }
-            );
-        }
-
-
-        if (naohConcentration) {
-
-            naohConcentration.value =
-                String(
-                    experiment.baseConcentration
-                );
-
-            naohConcentration.addEventListener(
-                "input",
-                () => {
-
-                    experiment.baseConcentration =
-                        Number(
-                            naohConcentration.value
-                        ) || 0.1;
-
-                    recalculateAdvancedEquivalence();
-
-                    updateAdvancedTitrationUI();
-                }
-            );
-        }
-
-
-        experiment.initialized =
-            true;
-
-        updateAdvancedTitrationUI();
-    }
-
 
     function recalculateAdvancedEquivalence() {
 
@@ -932,8 +871,13 @@
         if (
             experiment.baseConcentration <= 0
         ) {
+
+            experiment.equivalenceVolume =
+                experiment.maxVolume;
+
             return;
         }
+
 
         experiment.equivalenceVolume =
             (
@@ -969,7 +913,7 @@
         if (
             totalVolume <= 0
         ) {
-            return 1;
+            return 7;
         }
 
 
@@ -978,13 +922,9 @@
             baseMoles;
 
 
-        const epsilon =
-            1e-10;
-
-
         if (
             Math.abs(difference) <
-            epsilon
+            1e-12
         ) {
             return 7;
         }
@@ -994,27 +934,30 @@
             difference > 0
         ) {
 
-            const h =
-                difference /
-                totalVolume;
-
             return clamp(
-                -Math.log10(h),
+                -Math.log10(
+                    difference /
+                    totalVolume
+                ),
                 0,
                 14
             );
         }
 
 
-        const oh =
-            Math.abs(difference) /
+        const hydroxide =
+            Math.abs(
+                difference
+            ) /
             totalVolume;
 
-        const pOH =
-            -Math.log10(oh);
-
         return clamp(
-            14 - pOH,
+            14 -
+            (
+                -Math.log10(
+                    hydroxide
+                )
+            ),
             0,
             14
         );
@@ -1025,6 +968,9 @@
 
         const experiment =
             state.advancedTitration;
+
+        recalculateAdvancedEquivalence();
+
 
         const pH =
             calculateAdvancedPH();
@@ -1045,22 +991,17 @@
                 experiment.baseVolume
             ) / 1000;
 
-
         const difference =
             acidMoles -
             baseMoles;
 
 
-        let hPlus =
-            0;
-
-        let ohMinus =
-            0;
+        let hPlus;
+        let ohMinus;
 
 
         if (
-            difference > 0 &&
-            totalVolume > 0
+            difference > 0
         ) {
 
             hPlus =
@@ -1072,12 +1013,13 @@
                 hPlus;
 
         } else if (
-            difference < 0 &&
-            totalVolume > 0
+            difference < 0
         ) {
 
             ohMinus =
-                Math.abs(difference) /
+                Math.abs(
+                    difference
+                ) /
                 totalVolume;
 
             hPlus =
@@ -1157,7 +1099,10 @@
             "advancedEquivalenceStatus",
             atEquivalence
                 ? "Equivalence point reached"
-                : "Before equivalence"
+                : experiment.baseVolume <
+                    experiment.equivalenceVolume
+                    ? "Before equivalence"
+                    : "After equivalence"
         );
 
 
@@ -1204,6 +1149,7 @@
             $("advancedProgressBar");
 
         if (progressBar) {
+
             progressBar.style.width =
                 `${progress}%`;
         }
@@ -1239,9 +1185,14 @@
             $("advancedVolumeSlider");
 
         if (slider) {
+
             slider.value =
                 String(
-                    experiment.baseVolume
+                    clamp(
+                        experiment.baseVolume,
+                        0,
+                        experiment.maxVolume
+                    )
                 );
         }
 
@@ -1266,20 +1217,182 @@
         }
 
 
-        if (atEquivalence) {
+        const flask =
+            $("advancedSolution");
 
-            if (
-                !experiment.completed
-            ) {
+        if (flask) {
 
-                experiment.completed =
-                    true;
+            flask.classList.remove(
+                "acidic",
+                "neutral",
+                "basic",
+                "endpoint"
+            );
 
-                completeExperiment(
-                    "advanced-titration"
+            flask.classList.add(
+                atEquivalence
+                    ? "endpoint"
+                    : pH < 7
+                        ? "acidic"
+                        : "basic"
+            );
+        }
+
+
+        if (
+            atEquivalence &&
+            !experiment.completed
+        ) {
+
+            experiment.completed =
+                true;
+
+            completeExperiment(
+                "advanced-titration"
+            );
+
+            notify(
+                "Advanced titration completed!",
+                "success"
+            );
+        }
+    }
+
+
+    function initializeAdvancedTitration() {
+
+        const experiment =
+            state.advancedTitration;
+
+        const slider =
+            $("advancedVolumeSlider");
+
+        const hclInput =
+            $("advancedHclConcentration");
+
+        const naohInput =
+            $("advancedNaohConcentration");
+
+        const volumeDisplay =
+            $("advancedNaohVolume");
+
+
+        if (
+            !experiment.initialized
+        ) {
+
+            if (slider) {
+
+                slider.min =
+                    "0";
+
+                slider.max =
+                    String(
+                        experiment.maxVolume
+                    );
+
+                slider.step =
+                    "0.1";
+
+                slider.value =
+                    String(
+                        experiment.baseVolume
+                    );
+
+                slider.addEventListener(
+                    "input",
+                    () => {
+
+                        experiment.baseVolume =
+                            clamp(
+                                slider.value,
+                                0,
+                                experiment.maxVolume
+                            );
+
+                        updateAdvancedTitrationUI();
+                    }
                 );
             }
+
+
+            if (hclInput) {
+
+                hclInput.value =
+                    experiment.acidConcentration;
+
+                hclInput.addEventListener(
+                    "input",
+                    () => {
+
+                        const value =
+                            Number(
+                                hclInput.value
+                            );
+
+                        if (
+                            Number.isFinite(value) &&
+                            value > 0
+                        ) {
+
+                            experiment.acidConcentration =
+                                value;
+
+                            updateAdvancedTitrationUI();
+                        }
+                    }
+                );
+            }
+
+
+            if (naohInput) {
+
+                naohInput.value =
+                    experiment.baseConcentration;
+
+                naohInput.addEventListener(
+                    "input",
+                    () => {
+
+                        const value =
+                            Number(
+                                naohInput.value
+                            );
+
+                        if (
+                            Number.isFinite(value) &&
+                            value > 0
+                        ) {
+
+                            experiment.baseConcentration =
+                                value;
+
+                            updateAdvancedTitrationUI();
+                        }
+                    }
+                );
+            }
+
+
+            experiment.initialized =
+                true;
         }
+
+
+        if (volumeDisplay) {
+
+            if (
+                volumeDisplay.tagName ===
+                "INPUT"
+            ) {
+
+                volumeDisplay.value =
+                    experiment.baseVolume;
+            }
+        }
+
+
+        updateAdvancedTitrationUI();
     }
 
 
@@ -1291,18 +1404,18 @@
         const slider =
             $("advancedVolumeSlider");
 
-        const amount =
+        const step =
             slider
                 ? Number(
-                    slider.step || 0.1
-                )
+                    slider.step
+                ) || 0.1
                 : 0.1;
 
 
         experiment.baseVolume =
             clamp(
                 experiment.baseVolume +
-                amount,
+                step,
                 0,
                 experiment.maxVolume
             );
@@ -1324,6 +1437,11 @@
             false;
 
         updateAdvancedTitrationUI();
+
+        notify(
+            "Advanced titration reset.",
+            "info"
+        );
     }
 
 
@@ -1345,6 +1463,7 @@
                     typeof window.openAuthModal ===
                     "function"
                 ) {
+
                     window.openAuthModal(
                         "login"
                     );
@@ -1427,9 +1546,12 @@
     window.resetAdvancedTitration =
         resetAdvancedTitration;
 
+    window.calculateAdvancedPH =
+        calculateAdvancedPH;
+
 
     /* =====================================================
-       PREMIUM PAGE
+       PREMIUM
        ===================================================== */
 
     function showPremiumSection() {
@@ -1445,7 +1567,7 @@
 
 
     /* =====================================================
-       PROGRESS INTEGRATION
+       PROGRESS
        ===================================================== */
 
     function addXP(
@@ -1477,15 +1599,12 @@
             "function"
         ) {
 
-            window.completeChemLabExperiment(
+            return window.completeChemLabExperiment(
                 experimentId
             );
-
-            return;
         }
 
-
-        addXP(
+        return addXP(
             50,
             `Completed ${experimentId}`
         );
@@ -1502,57 +1621,71 @@
         }
 
 
+        const xp =
+            Number(
+                progress.xp
+            ) || 0;
+
+        const streak =
+            Number(
+                progress.streak
+            ) || 0;
+
+        const level =
+            Number(
+                progress.level
+            ) || 1;
+
+        const experiments =
+            Number(
+                progress.experimentsCompleted
+            ) || 0;
+
+
         setText(
             "dashboardXpValue",
-            progress.xp || 0
+            xp
         );
-
 
         setText(
             "dashboardStreakValue",
-            progress.streak || 0
+            streak
         );
-
 
         setText(
             "dashboardLevelValue",
-            progress.level || 1
+            level
         );
-
 
         setText(
             "dashboardExperimentsCompleted",
-            progress.experimentsCompleted || 0
+            experiments
         );
 
 
         setText(
             "progressLevel",
-            progress.level || 1
+            level
         );
-
 
         setText(
             "progressXP",
-            `${progress.xp || 0} XP`
+            `${xp} XP`
         );
-
 
         setText(
             "xpValue",
-            progress.xp || 0
+            xp
         );
-
 
         setText(
             "streakValue",
-            progress.streak || 0
+            streak
         );
-
 
         setText(
             "experimentsCompleted",
-            progress.experimentsCompleted || 0
+            experiments
         );
 
 
@@ -1563,51 +1696,55 @@
                 : null;
 
 
-        if (levelProgress) {
-
-            const percent =
-                clamp(
-                    levelProgress.percent,
-                    0,
-                    100
-                );
-
-
-            const progressBar =
-                $("dashboardProgressBar");
-
-            if (progressBar) {
-                progressBar.style.width =
-                    `${percent}%`;
-            }
-
-
-            const mainProgressBar =
-                $("progressBar");
-
-            if (mainProgressBar) {
-                mainProgressBar.style.width =
-                    `${percent}%`;
-            }
-
-
-            setText(
-                "dashboardProgressText",
-                `${formatNumber(
-                    percent,
-                    0
-                )}% to next level`
-            );
-
-
-            setText(
-                "progressText",
-                `${formatNumber(
-                    percent,
-                    0
-                )}% to next level`
-            );
+        if (!levelProgress) {
+            return;
         }
+
+
+        const percent =
+            clamp(
+                levelProgress.percent,
+                0,
+                100
+            );
+
+
+        const dashboardBar =
+            $("dashboardProgressBar");
+
+        if (dashboardBar) {
+
+            dashboardBar.style.width =
+                `${percent}%`;
+        }
+
+
+        const progressBar =
+            $("progressBar");
+
+        if (progressBar) {
+
+            progressBar.style.width =
+                `${percent}%`;
+        }
+
+
+        setText(
+            "dashboardProgressText",
+            `${formatNumber(
+                percent,
+                0
+            )}% to next level`
+        );
+
+
+        setText(
+            "progressText",
+            `${formatNumber(
+                percent,
+                0
+            )}% to next level`
+        );
     }
 
 
@@ -1616,7 +1753,7 @@
 
 
     /* =====================================================
-       QUIZ DATA
+       QUIZ
        ===================================================== */
 
     const quizQuestions = [
@@ -1698,10 +1835,6 @@
     ];
 
 
-    /* =====================================================
-       QUIZ ENGINE
-       ===================================================== */
-
     function loadQuizQuestion() {
 
         const quiz =
@@ -1714,7 +1847,9 @@
 
 
         if (!question) {
+
             finishQuiz();
+
             return;
         }
 
@@ -1754,11 +1889,13 @@
                         option,
                         index
                     ) => `
+
                         <button
                             type="button"
                             class="quiz-option"
                             data-answer="${index}"
                         >
+
                             <span class="quiz-option-letter">
                                 ${String.fromCharCode(
                                     65 + index
@@ -1770,6 +1907,7 @@
                                     option
                                 )}
                             </span>
+
                         </button>
                     `
                 )
@@ -1780,20 +1918,22 @@
             .querySelectorAll(
                 "[data-answer]"
             )
-            .forEach(button => {
+            .forEach(
+                button => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                    button.addEventListener(
+                        "click",
+                        () => {
 
-                        answerQuiz(
-                            Number(
-                                button.dataset.answer
-                            )
-                        );
-                    }
-                );
-            });
+                            answerQuiz(
+                                Number(
+                                    button.dataset.answer
+                                )
+                            );
+                        }
+                    );
+                }
+            );
 
 
         const progress =
@@ -1817,6 +1957,7 @@
             $("quizResult");
 
         if (result) {
+
             result.classList.add(
                 "hidden"
             );
@@ -1844,7 +1985,6 @@
                 quiz.currentQuestion
             ];
 
-
         if (!question) {
             return;
         }
@@ -1862,45 +2002,45 @@
         const options =
             $("quizOptions");
 
-
         if (options) {
 
-            const buttons =
-                options.querySelectorAll(
+            options
+                .querySelectorAll(
                     "[data-answer]"
+                )
+                .forEach(
+                    button => {
+
+                        const index =
+                            Number(
+                                button.dataset.answer
+                            );
+
+                        button.disabled =
+                            true;
+
+                        if (
+                            index ===
+                            question.answer
+                        ) {
+
+                            button.classList.add(
+                                "correct"
+                            );
+                        }
+
+                        if (
+                            index ===
+                            selectedIndex &&
+                            !correct
+                        ) {
+
+                            button.classList.add(
+                                "incorrect"
+                            );
+                        }
+                    }
                 );
-
-            buttons.forEach(
-                button => {
-
-                    const index =
-                        Number(
-                            button.dataset.answer
-                        );
-
-                    button.disabled =
-                        true;
-
-                    if (
-                        index ===
-                        question.answer
-                    ) {
-                        button.classList.add(
-                            "correct"
-                        );
-                    }
-
-                    if (
-                        index ===
-                        selectedIndex &&
-                        !correct
-                    ) {
-                        button.classList.add(
-                            "incorrect"
-                        );
-                    }
-                }
-            );
         }
 
 
@@ -1971,7 +2111,6 @@
 
         const score =
             quiz.score;
-
 
         const percentage =
             Math.round(
@@ -2056,22 +2195,8 @@
 
 
     /* =====================================================
-       AI TUTOR
+       AUTH / USER
        ===================================================== */
-
-    function getCurrentUser() {
-
-        if (
-            typeof window.getChemLabCurrentUser ===
-            "function"
-        ) {
-
-            return window.getChemLabCurrentUser();
-        }
-
-        return getCurrentUserFromSupabase();
-    }
-
 
     async function getCurrentUserFromSupabase() {
 
@@ -2083,21 +2208,59 @@
         }
 
 
-        const {
-            data,
-            error
-        } =
-            await supabase.auth.getUser();
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabase.auth.getUser();
 
 
-        if (error) {
+            if (error) {
+                return null;
+            }
+
+
+            return data?.user || null;
+
+        } catch {
+
             return null;
+        }
+    }
+
+
+    async function getCurrentUser() {
+
+        if (
+            typeof window.getChemLabCurrentUser ===
+            "function"
+        ) {
+
+            const result =
+                window.getChemLabCurrentUser();
+
+            if (
+                result &&
+                typeof result.then ===
+                "function"
+            ) {
+
+                return await result;
+            }
+
+            return result || null;
         }
 
 
-        return data?.user || null;
+        return getCurrentUserFromSupabase();
     }
 
+
+    /* =====================================================
+       AI EXPERIMENT CONTEXT
+       ===================================================== */
 
     function getExperimentStateForAI() {
 
@@ -2107,6 +2270,7 @@
         ) {
 
             return {
+
                 type:
                     "acid-base-titration",
 
@@ -2134,6 +2298,7 @@
         ) {
 
             return {
+
                 type:
                     "advanced-acid-base-titration",
 
@@ -2149,6 +2314,9 @@
                 baseVolume:
                     state.advancedTitration.baseVolume,
 
+                equivalenceVolume:
+                    state.advancedTitration.equivalenceVolume,
+
                 pH:
                     calculateAdvancedPH()
             };
@@ -2156,11 +2324,16 @@
 
 
         return {
+
             type:
                 "general-chemistry"
         };
     }
 
+
+    /* =====================================================
+       AI CHAT UI
+       ===================================================== */
 
     function appendAIMessage(
         role,
@@ -2168,8 +2341,13 @@
     ) {
 
         state.aiMessages.push({
-            role,
-            content,
+
+            role:
+                role,
+
+            content:
+                content,
+
             timestamp:
                 new Date().toISOString()
         });
@@ -2183,6 +2361,16 @@
         }
 
 
+        const emptyState =
+            history.querySelector(
+                ".ai-empty-state"
+            );
+
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+
         const message =
             document.createElement(
                 "div"
@@ -2191,13 +2379,12 @@
         message.className =
             `ai-message ai-message-${role}`;
 
-
         message.innerHTML = `
+
             <div class="ai-message-content">
-                ${escapeHTML(
-                    content
-                )}
+                ${escapeHTML(content)}
             </div>
+
         `;
 
 
@@ -2258,6 +2445,7 @@
                 typeof window.openAuthModal ===
                 "function"
             ) {
+
                 window.openAuthModal(
                     "login"
                 );
@@ -2275,6 +2463,7 @@
             $("askAIButton");
 
         if (button) {
+
             button.disabled =
                 true;
 
@@ -2310,23 +2499,28 @@
                 getSupabase();
 
 
-            const sessionResult =
-                supabase
-                    ? await supabase.auth.getSession()
-                    : null;
+            let token =
+                null;
 
 
-            const token =
-                sessionResult
-                    ?.data
-                    ?.session
-                    ?.access_token;
+            if (supabase) {
+
+                const {
+                    data
+                } =
+                    await supabase.auth.getSession();
+
+                token =
+                    data?.session?.access_token ||
+                    null;
+            }
 
 
             const response =
                 await fetch(
                     CONFIG.chemistryAIUrl,
                     {
+
                         method:
                             "POST",
 
@@ -2374,9 +2568,12 @@
 
 
             try {
+
                 result =
                     await response.json();
+
             } catch {
+
                 result =
                     null;
             }
@@ -2435,6 +2632,7 @@
             const message =
                 "I couldn't connect to ChemLab AI right now. Please try again.";
 
+
             appendAIMessage(
                 "assistant",
                 message
@@ -2492,7 +2690,9 @@
         if (history) {
 
             history.innerHTML = `
+
                 <div class="ai-empty-state">
+
                     <div class="ai-empty-icon">
                         🧪
                     </div>
@@ -2506,6 +2706,7 @@
                         experiments, calculations,
                         reactions and concepts.
                     </p>
+
                 </div>
             `;
         }
@@ -2568,6 +2769,7 @@
                             "ai_conversations"
                         )
                         .insert({
+
                             user_id:
                                 user.id,
 
@@ -2584,6 +2786,7 @@
 
 
                 if (error) {
+
                     console.warn(
                         "AI conversation creation failed:",
                         error
@@ -2598,41 +2801,53 @@
             }
 
 
-            await supabase
-                .from(
-                    "ai_messages"
-                )
-                .insert([
+            const {
+                error
+            } =
+                await supabase
+                    .from(
+                        "ai_messages"
+                    )
+                    .insert([
 
-                    {
-                        conversation_id:
-                            state.aiConversationId,
+                        {
+                            conversation_id:
+                                state.aiConversationId,
 
-                        user_id:
-                            user.id,
+                            user_id:
+                                user.id,
 
-                        role:
-                            "user",
+                            role:
+                                "user",
 
-                        content:
-                            question
-                    },
+                            content:
+                                question
+                        },
 
-                    {
-                        conversation_id:
-                            state.aiConversationId,
+                        {
+                            conversation_id:
+                                state.aiConversationId,
 
-                        user_id:
-                            user.id,
+                            user_id:
+                                user.id,
 
-                        role:
-                            "assistant",
+                            role:
+                                "assistant",
 
-                        content:
-                            answer
-                    }
+                            content:
+                                answer
+                        }
 
-                ]);
+                    ]);
+
+
+            if (error) {
+
+                console.warn(
+                    "AI message persistence failed:",
+                    error
+                );
+            }
 
         } catch (error) {
 
@@ -2703,10 +2918,13 @@
                                 false
                         }
                     )
-                    .limit(20);
+                    .limit(
+                        20
+                    );
 
 
             if (error) {
+
                 console.warn(
                     "AI conversations could not be loaded:",
                     error
@@ -2736,12 +2954,10 @@
         newAIChat;
 
 
-    /* =====================================================
-       AI SUGGESTIONS
-       ===================================================== */
-
     window.askAISuggestion =
-        function (question) {
+        function (
+            question
+        ) {
 
             const input =
                 $("mainAIInput");
@@ -2761,7 +2977,19 @@
        EVENT BINDINGS
        ===================================================== */
 
+    let eventsBound =
+        false;
+
+
     function bindEvents() {
+
+        if (eventsBound) {
+            return;
+        }
+
+        eventsBound =
+            true;
+
 
         /* Navigation */
 
@@ -2769,23 +2997,25 @@
             .querySelectorAll(
                 "[data-page]"
             )
-            .forEach(button => {
+            .forEach(
+                button => {
 
-                button.addEventListener(
-                    "click",
-                    event => {
+                    button.addEventListener(
+                        "click",
+                        event => {
 
-                        const page =
-                            event.currentTarget
-                                .dataset
-                                .page;
+                            const page =
+                                event.currentTarget
+                                    .dataset
+                                    .page;
 
-                        if (page) {
-                            showPage(page);
+                            if (page) {
+                                showPage(page);
+                            }
                         }
-                    }
-                );
-            });
+                    );
+                }
+            );
 
 
         /* Mobile menu */
@@ -2802,19 +3032,19 @@
         }
 
 
-        const closeMobileMenuButton =
+        const closeMobileMenu =
             $("closeMobileMenu");
 
-        if (closeMobileMenuButton) {
+        if (closeMobileMenu) {
 
-            closeMobileMenuButton.addEventListener(
+            closeMobileMenu.addEventListener(
                 "click",
                 closeMobileNavigation
             );
         }
 
 
-        /* Titration */
+        /* Basic titration */
 
         const add1ml =
             $("add1ml");
@@ -2902,8 +3132,7 @@
                 event => {
 
                     if (
-                        event.key ===
-                        "Enter" &&
+                        event.key === "Enter" &&
                         !event.shiftKey
                     ) {
 
@@ -2950,107 +3179,4 @@
         if (explainButton) {
 
             explainButton.addEventListener(
-                "click",
-                () => {
-
-                    const explanation =
-                        $("advancedExplanation");
-
-                    if (explanation) {
-
-                        explanation.classList.toggle(
-                            "hidden"
-                        );
-                    }
-                }
-            );
-        }
-
-
-        /* Escape */
-
-        document.addEventListener(
-            "keydown",
-            event => {
-
-                if (
-                    event.key ===
-                    "Escape"
-                ) {
-
-                    closeMobileNavigation();
-                }
-            }
-        );
-    }
-
-
-    /* =====================================================
-       AUTH CHANGE
-       ===================================================== */
-
-    document.addEventListener(
-        "chemlab:auth-change",
-        () => {
-
-            updateProgressUI();
-
-            if (
-                state.currentPage ===
-                "ai"
-            ) {
-                loadAIConversations();
-            }
-        }
-    );
-
-
-    /* =====================================================
-       PROGRESS CHANGE
-       ===================================================== */
-
-    document.addEventListener(
-        "chemlab:progress-change",
-        () => {
-
-            updateProgressUI();
-        }
-    );
-
-
-    /* =====================================================
-       INITIALIZATION
-       ===================================================== */
-
-    function initializeApp() {
-
-        bindEvents();
-
-        updateTitrationUI();
-
-        initializeAdvancedTitration();
-
-        updateProgressUI();
-
-        /*
-         * Start on the home page.
-         */
-        showPage(
-            CONFIG.defaultPage
-        );
-
-
-        /*
-         * Initialize quiz.
-         */
-        loadQuizQuestion();
-
-
-        console.log(
-            "ChemLab application initialized successfully."
-        );
-    }
-
-
-    if (
-       
+                "
