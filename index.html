@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <!-- =====================================================
+         CHEMLAB — PROFESSIONAL DIGITAL CHEMISTRY LABORATORY
+         Stage 2.1 — Professional UI/UX
+         ===================================================== -->
+
     <meta charset="UTF-8">
 
     <meta
@@ -18,1044 +24,1627 @@
         content="#3157d5"
     >
 
+    <meta
+        name="color-scheme"
+        content="light"
+    >
+
     <title>ChemLab | Digital Chemistry Laboratory</title>
 
     <!-- =====================================================
-         STAGE 1 FOUNDATION
-         CSS files will be created in the next steps.
-    ====================================================== -->
+         STYLESHEETS
+         ===================================================== -->
 
     <link rel="stylesheet" href="css/core.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/responsive.css">
+
 </head>
+
 
 <body>
 
+<!-- =========================================================
+     APPLICATION
+     ========================================================= -->
+
+<div id="app" class="app-shell">
+
+
     <!-- =====================================================
-         APPLICATION
-    ====================================================== -->
+         MOBILE SIDEBAR OVERLAY
+         ===================================================== -->
 
-    <div id="app" class="app-shell">
-
-
-        <!-- =================================================
-             MOBILE OVERLAY
-        ================================================== -->
-
-        <div
-            id="sidebarOverlay"
-            class="sidebar-overlay"
-            aria-hidden="true"
-        ></div>
+    <div
+        class="sidebar-overlay"
+        data-sidebar-overlay
+        aria-hidden="true"
+    ></div>
 
 
-        <!-- =================================================
-             SIDEBAR
-        ================================================== -->
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
 
-        <aside
-            id="sidebar"
-            class="sidebar"
-            aria-label="Main navigation"
-        >
+    <aside
+        class="sidebar"
+        id="mainSidebar"
+        aria-label="Main navigation"
+    >
 
-            <!-- Brand -->
+        <!-- Brand -->
 
-            <div class="sidebar-brand">
+        <div class="sidebar-brand">
+
+            <a
+                href="#dashboard"
+                class="brand"
+                data-route="dashboard"
+                aria-label="ChemLab Dashboard"
+            >
+
+                <span class="brand-mark">
+                    <span class="brand-flask">⚗</span>
+                </span>
+
+                <span class="brand-copy">
+
+                    <strong>ChemLab</strong>
+
+                    <small>
+                        Digital Laboratory
+                    </small>
+
+                </span>
+
+            </a>
+
+
+            <button
+                type="button"
+                class="icon-button sidebar-close"
+                data-sidebar-close
+                aria-label="Close navigation"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- Workspace Navigation -->
+
+        <div class="sidebar-section">
+
+            <span class="sidebar-section-label">
+                Workspace
+            </span>
+
+
+            <nav class="sidebar-nav">
 
                 <a
                     href="#dashboard"
-                    class="brand"
+                    class="nav-link active"
                     data-route="dashboard"
-                    aria-label="ChemLab Dashboard"
+                    data-nav-route="dashboard"
                 >
-
-                    <div class="brand-mark">
-                        <span>⚗</span>
-                    </div>
-
-                    <div class="brand-text">
-                        <strong>ChemLab</strong>
-                        <small>Digital Laboratory</small>
-                    </div>
-
+                    <span class="nav-icon">⌂</span>
+                    <span class="nav-label">Dashboard</span>
                 </a>
 
 
-                <button
-                    id="sidebarClose"
-                    class="icon-button mobile-only"
-                    type="button"
-                    aria-label="Close navigation"
+                <a
+                    href="#laboratory"
+                    class="nav-link"
+                    data-route="laboratory"
+                    data-nav-route="laboratory"
                 >
-                    ×
-                </button>
-
-            </div>
-
-
-            <!-- Main Navigation -->
-
-            <nav class="sidebar-navigation">
-
-                <div class="navigation-section">
-
-                    <span class="navigation-label">
-                        Workspace
-                    </span>
-
-                    <a
-                        href="#dashboard"
-                        class="nav-item active"
-                        data-route="dashboard"
-                    >
-                        <span class="nav-icon">⌂</span>
-                        <span>Dashboard</span>
-                    </a>
-
-                    <a
-                        href="#laboratory"
-                        class="nav-item"
-                        data-route="laboratory"
-                    >
-                        <span class="nav-icon">⚗</span>
-                        <span>Laboratory</span>
-                    </a>
-
-                    <a
-                        href="#experiments"
-                        class="nav-item"
-                        data-route="experiments"
-                    >
-                        <span class="nav-icon">◈</span>
-                        <span>Experiments</span>
-                    </a>
-
-                    <a
-                        href="#analysis"
-                        class="nav-item"
-                        data-route="analysis"
-                    >
-                        <span class="nav-icon">⌁</span>
-                        <span>Analysis</span>
-                    </a>
-
-                </div>
+                    <span class="nav-icon">⚗</span>
+                    <span class="nav-label">Laboratory</span>
+                    <span class="nav-badge">Lab</span>
+                </a>
 
 
-                <div class="navigation-section">
-
-                    <span class="navigation-label">
-                        Learning
-                    </span>
-
-                    <a
-                        href="#learn"
-                        class="nav-item"
-                        data-route="learn"
-                    >
-                        <span class="nav-icon">▤</span>
-                        <span>Learn</span>
-                    </a>
-
-                    <a
-                        href="#ai-tutor"
-                        class="nav-item"
-                        data-route="ai-tutor"
-                    >
-                        <span class="nav-icon">✦</span>
-                        <span>AI Tutor</span>
-                        <span class="nav-badge">AI</span>
-                    </a>
-
-                    <a
-                        href="#assessments"
-                        class="nav-item"
-                        data-route="assessments"
-                    >
-                        <span class="nav-icon">✓</span>
-                        <span>Assessments</span>
-                    </a>
-
-                </div>
+                <a
+                    href="#experiments"
+                    class="nav-link"
+                    data-route="experiments"
+                    data-nav-route="experiments"
+                >
+                    <span class="nav-icon">◈</span>
+                    <span class="nav-label">Experiments</span>
+                </a>
 
 
-                <div class="navigation-section">
-
-                    <span class="navigation-label">
-                        Academic
-                    </span>
-
-                    <a
-                        href="#notebook"
-                        class="nav-item"
-                        data-route="notebook"
-                    >
-                        <span class="nav-icon">▱</span>
-                        <span>Lab Notebook</span>
-                    </a>
-
-                    <a
-                        href="#progress"
-                        class="nav-item"
-                        data-route="progress"
-                    >
-                        <span class="nav-icon">↗</span>
-                        <span>My Progress</span>
-                    </a>
-
-                </div>
+                <a
+                    href="#analysis"
+                    class="nav-link"
+                    data-route="analysis"
+                    data-nav-route="analysis"
+                >
+                    <span class="nav-icon">⌁</span>
+                    <span class="nav-label">Analysis</span>
+                </a>
 
             </nav>
 
+        </div>
 
-            <!-- Premium -->
 
-            <div class="sidebar-premium">
+        <!-- Learning Navigation -->
 
-                <div class="premium-icon">
-                    ✦
-                </div>
+        <div class="sidebar-section">
 
-                <div class="premium-content">
+            <span class="sidebar-section-label">
+                Learning
+            </span>
 
-                    <strong>
-                        ChemLab Premium
-                    </strong>
 
-                    <p>
-                        Unlock advanced laboratories,
-                        analysis tools and AI capabilities.
-                    </p>
+            <nav class="sidebar-nav">
 
-                    <a
-                        href="#premium"
-                        class="premium-link"
-                        data-route="premium"
+                <a
+                    href="#learn"
+                    class="nav-link"
+                    data-route="learn"
+                    data-nav-route="learn"
+                >
+                    <span class="nav-icon">▣</span>
+                    <span class="nav-label">Learn</span>
+                </a>
+
+
+                <a
+                    href="#ai"
+                    class="nav-link"
+                    data-route="ai"
+                    data-nav-route="ai"
+                >
+                    <span class="nav-icon">✦</span>
+                    <span class="nav-label">AI Tutor</span>
+                    <span class="nav-live-dot"></span>
+                </a>
+
+
+                <a
+                    href="#assessments"
+                    class="nav-link"
+                    data-route="assessments"
+                    data-nav-route="assessments"
+                >
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-label">Assessments</span>
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- Academic Navigation -->
+
+        <div class="sidebar-section">
+
+            <span class="sidebar-section-label">
+                Academic
+            </span>
+
+
+            <nav class="sidebar-nav">
+
+                <a
+                    href="#notebook"
+                    class="nav-link"
+                    data-route="notebook"
+                    data-nav-route="notebook"
+                >
+                    <span class="nav-icon">▤</span>
+                    <span class="nav-label">Lab Notebook</span>
+                </a>
+
+
+                <a
+                    href="#progress"
+                    class="nav-link"
+                    data-route="progress"
+                    data-nav-route="progress"
+                >
+                    <span class="nav-icon">↗</span>
+                    <span class="nav-label">My Progress</span>
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- Premium -->
+
+        <div class="sidebar-premium">
+
+            <div class="premium-icon">
+                ✦
+            </div>
+
+            <div class="premium-copy">
+
+                <strong>
+                    ChemLab Premium
+                </strong>
+
+                <span>
+                    Advanced laboratory tools
+                </span>
+
+            </div>
+
+            <a
+                href="#premium"
+                data-route="premium"
+                class="premium-link"
+            >
+                Explore
+            </a>
+
+        </div>
+
+
+        <!-- Sidebar Footer -->
+
+        <div class="sidebar-footer">
+
+            <a
+                href="#settings"
+                class="nav-link"
+                data-route="settings"
+                data-nav-route="settings"
+            >
+                <span class="nav-icon">⚙</span>
+                <span class="nav-label">Settings</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN APPLICATION
+         ===================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOPBAR
+             ================================================= -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    class="icon-button mobile-menu-button"
+                    data-sidebar-open
+                    aria-label="Open navigation"
+                >
+                    ☰
+                </button>
+
+
+                <div class="breadcrumb">
+
+                    <span class="breadcrumb-root">
+                        ChemLab
+                    </span>
+
+                    <span class="breadcrumb-separator">
+                        /
+                    </span>
+
+                    <span
+                        class="breadcrumb-current"
+                        id="breadcrumbCurrent"
                     >
-                        Explore Premium
-                        <span>→</span>
-                    </a>
+                        Dashboard
+                    </span>
 
                 </div>
 
             </div>
 
 
-            <!-- Sidebar Footer -->
+            <div class="topbar-actions">
 
-            <div class="sidebar-footer">
+
+                <!-- Search -->
 
                 <button
                     type="button"
-                    class="sidebar-footer-item"
-                    id="settingsButton"
+                    class="topbar-action"
+                    data-search-open
+                    aria-label="Search ChemLab"
+                    title="Search"
                 >
-                    <span>⚙</span>
-                    <span>Settings</span>
+
+                    <span>
+                        ⌕
+                    </span>
+
+                    <kbd>
+                        Ctrl K
+                    </kbd>
+
+                </button>
+
+
+                <!-- Notifications -->
+
+                <button
+                    type="button"
+                    class="icon-button notification-button"
+                    data-notifications-toggle
+                    aria-label="Notifications"
+                    title="Notifications"
+                >
+
+                    <span>
+                        ♢
+                    </span>
+
+                    <span
+                        class="notification-indicator"
+                        aria-hidden="true"
+                    ></span>
+
+                </button>
+
+
+                <!-- Profile -->
+
+                <button
+                    type="button"
+                    class="profile-trigger"
+                    data-profile-toggle
+                    aria-label="Open student profile"
+                >
+
+                    <span
+                        class="avatar avatar-sm"
+                        id="topbarAvatar"
+                    >
+                        S
+                    </span>
+
+                    <span class="profile-trigger-copy">
+
+                        <strong id="topbarStudentName">
+                            Student
+                        </strong>
+
+                        <small>
+                            Student account
+                        </small>
+
+                    </span>
+
+                    <span class="profile-chevron">
+                        ˅
+                    </span>
+
                 </button>
 
             </div>
 
-        </aside>
+        </header>
+
 
 
         <!-- =================================================
-             MAIN APPLICATION
-        ================================================== -->
+             PAGE CONTAINER
+             ================================================= -->
 
-        <main class="main-content">
-
-
-            <!-- =============================================
-                 TOPBAR
-            ============================================== -->
-
-            <header class="topbar">
-
-                <div class="topbar-left">
-
-                    <button
-                        id="sidebarOpen"
-                        class="icon-button mobile-only"
-                        type="button"
-                        aria-label="Open navigation"
-                    >
-                        ☰
-                    </button>
+        <div class="page-container">
 
 
-                    <div class="breadcrumb">
+            <!-- =================================================
+                 DASHBOARD
+                 ================================================= -->
 
-                        <span class="breadcrumb-root">
-                            ChemLab
+            <section
+                class="app-page active"
+                data-page="dashboard"
+            >
+
+
+                <!-- Page Header -->
+
+                <div class="page-header dashboard-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            CHEMLAB WORKSPACE
                         </span>
 
-                        <span class="breadcrumb-divider">
-                            /
-                        </span>
+                        <h1>
+                            Your Chemistry Workspace
+                        </h1>
 
-                        <span
-                            id="breadcrumbCurrent"
-                            class="breadcrumb-current"
+                        <p>
+                            Learn concepts, conduct experiments,
+                            analyze evidence, and build scientific mastery.
+                        </p>
+
+                    </div>
+
+
+                    <div class="page-header-actions">
+
+                        <a
+                            href="#laboratory"
+                            class="button button-primary"
+                            data-route="laboratory"
                         >
-                            Dashboard
-                        </span>
+                            <span>⚗</span>
+                            Open Laboratory
+                        </a>
+
+                        <a
+                            href="#learn"
+                            class="button button-secondary"
+                            data-route="learn"
+                        >
+                            Continue Learning
+                        </a>
 
                     </div>
 
                 </div>
 
 
-                <div class="topbar-actions">
 
-                    <!-- Search -->
+                <!-- Academic Status -->
 
-                    <button
-                        id="globalSearchButton"
-                        class="topbar-button"
-                        type="button"
-                        aria-label="Search ChemLab"
-                    >
-                        <span>⌕</span>
-                        <span class="desktop-only">
-                            Search
-                        </span>
+                <div class="dashboard-status-card">
 
-                        <kbd class="desktop-only">
-                            /
-                        </kbd>
-                    </button>
+                    <div class="status-card-main">
 
-
-                    <!-- Notifications -->
-
-                    <button
-                        id="notificationButton"
-                        class="topbar-icon-button"
-                        type="button"
-                        aria-label="Notifications"
-                    >
-                        <span>♢</span>
-                        <span
-                            id="notificationIndicator"
-                            class="notification-indicator"
-                            hidden
-                        ></span>
-                    </button>
-
-
-                    <!-- Student Profile -->
-
-                    <button
-                        id="profileButton"
-                        class="student-profile"
-                        type="button"
-                        aria-label="Open student profile"
-                    >
-
-                        <span
-                            id="profileAvatar"
-                            class="profile-avatar"
-                        >
-                            S
-                        </span>
-
-                        <span class="profile-info desktop-only">
-
-                            <strong id="profileName">
-                                Student
-                            </strong>
-
-                            <small id="profileLevel">
-                                Foundation Level
-                            </small>
-
-                        </span>
-
-                        <span class="profile-arrow desktop-only">
-                            ▾
-                        </span>
-
-                    </button>
-
-                </div>
-
-            </header>
-
-
-            <!-- =============================================
-                 PAGE CONTAINER
-            ============================================== -->
-
-            <div
-                id="pageContainer"
-                class="page-container"
-            >
-
-
-                <!-- =========================================
-                     DASHBOARD
-                ========================================== -->
-
-                <section
-                    id="page-dashboard"
-                    class="page active"
-                    data-page="dashboard"
-                >
-
-                    <div class="page-header">
+                        <div class="status-icon">
+                            ◈
+                        </div>
 
                         <div>
 
-                            <span class="eyebrow">
-                                STUDENT WORKSPACE
+                            <span class="status-label">
+                                CURRENT ACADEMIC LEVEL
                             </span>
 
-                            <h1>
-                                Welcome to ChemLab.
-                            </h1>
+                            <h3>
+                                Foundation Chemistry
+                            </h3>
 
                             <p>
-                                Learn chemistry, investigate phenomena,
-                                perform experiments and develop real
-                                laboratory skills.
+                                Your learning path will adapt as your mastery develops.
                             </p>
 
                         </div>
 
-                        <div class="page-header-actions">
+                    </div>
 
-                            <button
-                                class="button button-secondary"
-                                data-action="open-learning"
+
+                    <div class="status-card-progress">
+
+                        <div class="progress-heading">
+
+                            <span>
+                                Overall mastery
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+
+                            <span
+                                class="progress-fill"
+                                style="width: 0%"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            Begin your first learning module to start building mastery.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Statistics -->
+
+                <div class="stats-grid">
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-card-top">
+
+                            <span class="stat-icon">
+                                ◈
+                            </span>
+
+                            <span class="stat-label">
+                                EXPERIMENTS
+                            </span>
+
+                        </div>
+
+                        <div class="stat-value">
+                            0
+                        </div>
+
+                        <div class="stat-footer">
+                            <span>
+                                Completed
+                            </span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-card-top">
+
+                            <span class="stat-icon">
+                                ✦
+                            </span>
+
+                            <span class="stat-label">
+                                MASTERY
+                            </span>
+
+                        </div>
+
+                        <div class="stat-value">
+                            0%
+                        </div>
+
+                        <div class="stat-footer">
+                            <span>
+                                Across all topics
+                            </span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-card-top">
+
+                            <span class="stat-icon">
+                                ✓
+                            </span>
+
+                            <span class="stat-label">
+                                ASSESSMENTS
+                            </span>
+
+                        </div>
+
+                        <div class="stat-value">
+                            0
+                        </div>
+
+                        <div class="stat-footer">
+                            <span>
+                                Completed
+                            </span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-card-top">
+
+                            <span class="stat-icon">
+                                XP
+                            </span>
+
+                            <span class="stat-label">
+                                SCIENCE XP
+                            </span>
+
+                        </div>
+
+                        <div class="stat-value">
+                            0
+                        </div>
+
+                        <div class="stat-footer">
+                            <span>
+                                Earned through learning
+                            </span>
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+
+                <!-- Main Dashboard Grid -->
+
+                <div class="dashboard-grid">
+
+
+                    <!-- Continue Learning -->
+
+                    <article class="card dashboard-learning-card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <span class="card-eyebrow">
+                                    LEARNING PATH
+                                </span>
+
+                                <h2>
+                                    Continue Learning
+                                </h2>
+
+                            </div>
+
+                            <a
+                                href="#learn"
+                                data-route="learn"
+                                class="text-link"
                             >
-                                <span>▤</span>
-                                Continue Learning
-                            </button>
+                                View Academy →
+                            </a>
+
+                        </div>
+
+
+                        <div class="learning-feature">
+
+                            <div class="learning-feature-icon">
+                                ∑
+                            </div>
+
+                            <div class="learning-feature-content">
+
+                                <span class="subject-tag">
+                                    FOUNDATIONS
+                                </span>
+
+                                <h3>
+                                    Measurements & Scientific Units
+                                </h3>
+
+                                <p>
+                                    Build a strong foundation in measurements,
+                                    SI units, significant figures and scientific notation.
+                                </p>
+
+                                <div class="learning-meta">
+
+                                    <span>
+                                        ○ Beginner
+                                    </span>
+
+                                    <span>
+                                        ○ 6 lessons
+                                    </span>
+
+                                    <span>
+                                        ○ Practical
+                                    </span>
+
+                                </div>
+
+                            </div>
 
                             <button
+                                type="button"
                                 class="button button-primary"
-                                data-action="open-laboratory"
                             >
-                                <span>⚗</span>
-                                Enter Laboratory
+                                Start
                             </button>
 
                         </div>
 
-                    </div>
+                    </article>
 
 
-                    <!-- Academic Overview -->
+
+                    <!-- Laboratory -->
+
+                    <article class="card dashboard-lab-card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <span class="card-eyebrow">
+                                    LABORATORY
+                                </span>
+
+                                <h2>
+                                    Digital Laboratory
+                                </h2>
+
+                            </div>
+
+                            <a
+                                href="#laboratory"
+                                data-route="laboratory"
+                                class="text-link"
+                            >
+                                Open Lab →
+                            </a>
+
+                        </div>
+
+
+                        <div class="lab-preview">
+
+                            <div class="lab-preview-grid">
+
+                                <div class="lab-preview-cell">
+
+                                    <span class="lab-preview-icon">
+                                        ⚗
+                                    </span>
+
+                                    <strong>
+                                        Guided
+                                    </strong>
+
+                                    <small>
+                                        Structured experiments
+                                    </small>
+
+                                </div>
+
+
+                                <div class="lab-preview-cell">
+
+                                    <span class="lab-preview-icon">
+                                        ◇
+                                    </span>
+
+                                    <strong>
+                                        Open Lab
+                                    </strong>
+
+                                    <small>
+                                        Build your own setup
+                                    </small>
+
+                                </div>
+
+
+                                <div class="lab-preview-cell">
+
+                                    <span class="lab-preview-icon">
+                                        ⌁
+                                    </span>
+
+                                    <strong>
+                                        Analysis
+                                    </strong>
+
+                                    <small>
+                                        Work with evidence
+                                    </small>
+
+                                </div>
+
+
+                                <div class="lab-preview-cell">
+
+                                    <span class="lab-preview-icon">
+                                        ✦
+                                    </span>
+
+                                    <strong>
+                                        AI Guidance
+                                    </strong>
+
+                                    <small>
+                                        Scientific assistance
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+
+                <!-- Scientific Workflow -->
+
+                <section class="section-block">
 
                     <div class="section-heading">
 
                         <div>
+
+                            <span class="section-eyebrow">
+                                SCIENTIFIC METHOD
+                            </span>
+
                             <h2>
-                                Academic Overview
+                                Think Like a Scientist
                             </h2>
 
                             <p>
-                                Your learning and laboratory activity.
+                                ChemLab follows the complete scientific learning cycle.
                             </p>
+
                         </div>
 
                     </div>
 
 
-                    <div class="stats-grid">
-
-                        <article class="stat-card">
-
-                            <div class="stat-card-icon">
-                                ◈
-                            </div>
-
-                            <div class="stat-card-content">
-
-                                <span>
-                                    Experiments
-                                </span>
-
-                                <strong>
-                                    0
-                                </strong>
-
-                                <small>
-                                    No experiments completed yet
-                                </small>
-
-                            </div>
-
-                        </article>
+                    <div class="workflow-grid">
 
 
-                        <article class="stat-card">
+                        <div class="workflow-step">
 
-                            <div class="stat-card-icon">
+                            <span class="workflow-number">
+                                01
+                            </span>
+
+                            <span class="workflow-icon">
+                                ◉
+                            </span>
+
+                            <strong>
+                                Learn
+                            </strong>
+
+                            <p>
+                                Understand the chemistry behind the experiment.
+                            </p>
+
+                        </div>
+
+
+                        <div class="workflow-step">
+
+                            <span class="workflow-number">
+                                02
+                            </span>
+
+                            <span class="workflow-icon">
+                                ?
+                            </span>
+
+                            <strong>
+                                Predict
+                            </strong>
+
+                            <p>
+                                Form a hypothesis before collecting evidence.
+                            </p>
+
+                        </div>
+
+
+                        <div class="workflow-step">
+
+                            <span class="workflow-number">
+                                03
+                            </span>
+
+                            <span class="workflow-icon">
+                                ⚗
+                            </span>
+
+                            <strong>
+                                Experiment
+                            </strong>
+
+                            <p>
+                                Work with chemicals and laboratory apparatus.
+                            </p>
+
+                        </div>
+
+
+                        <div class="workflow-step">
+
+                            <span class="workflow-number">
+                                04
+                            </span>
+
+                            <span class="workflow-icon">
+                                ◫
+                            </span>
+
+                            <strong>
+                                Measure
+                            </strong>
+
+                            <p>
+                                Record observations and quantitative data.
+                            </p>
+
+                        </div>
+
+
+                        <div class="workflow-step">
+
+                            <span class="workflow-number">
+                                05
+                            </span>
+
+                            <span class="workflow-icon">
+                                ∑
+                            </span>
+
+                            <strong>
+                                Analyze
+                            </strong>
+
+                            <p>
+                                Calculate, graph and interpret your results.
+                            </p>
+
+                        </div>
+
+
+                        <div class="workflow-step">
+
+                            <span class="workflow-number">
+                                06
+                            </span>
+
+                            <span class="workflow-icon">
                                 ✓
-                            </div>
+                            </span>
 
-                            <div class="stat-card-content">
+                            <strong>
+                                Conclude
+                            </strong>
 
-                                <span>
-                                    Learning Progress
-                                </span>
+                            <p>
+                                Explain what the evidence tells you.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- Quick Access -->
+
+                <section class="section-block">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="section-eyebrow">
+                                QUICK ACCESS
+                            </span>
+
+                            <h2>
+                                Your Chemistry Toolkit
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quick-access-grid">
+
+
+                        <a
+                            href="#laboratory"
+                            class="quick-card"
+                            data-route="laboratory"
+                        >
+
+                            <span class="quick-card-icon">
+                                ⚗
+                            </span>
+
+                            <span class="quick-card-content">
 
                                 <strong>
-                                    0%
+                                    Laboratory
                                 </strong>
 
                                 <small>
-                                    Begin your learning path
+                                    Conduct virtual experiments
                                 </small>
 
-                            </div>
+                            </span>
 
-                        </article>
+                            <span class="quick-arrow">
+                                →
+                            </span>
+
+                        </a>
 
 
-                        <article class="stat-card">
+                        <a
+                            href="#analysis"
+                            class="quick-card"
+                            data-route="analysis"
+                        >
 
-                            <div class="stat-card-icon">
+                            <span class="quick-card-icon">
+                                ⌁
+                            </span>
+
+                            <span class="quick-card-content">
+
+                                <strong>
+                                    Scientific Analysis
+                                </strong>
+
+                                <small>
+                                    Analyze measurements and results
+                                </small>
+
+                            </span>
+
+                            <span class="quick-arrow">
+                                →
+                            </span>
+
+                        </a>
+
+
+                        <a
+                            href="#ai"
+                            class="quick-card"
+                            data-route="ai"
+                        >
+
+                            <span class="quick-card-icon">
                                 ✦
-                            </div>
+                            </span>
 
-                            <div class="stat-card-content">
-
-                                <span>
-                                    AI Sessions
-                                </span>
+                            <span class="quick-card-content">
 
                                 <strong>
-                                    0
+                                    AI Chemistry Tutor
                                 </strong>
 
                                 <small>
-                                    Ask ChemLab AI for guidance
+                                    Get context-aware guidance
                                 </small>
 
-                            </div>
+                            </span>
 
-                        </article>
+                            <span class="quick-arrow">
+                                →
+                            </span>
+
+                        </a>
 
 
-                        <article class="stat-card">
+                        <a
+                            href="#notebook"
+                            class="quick-card"
+                            data-route="notebook"
+                        >
 
-                            <div class="stat-card-icon">
-                                ↗
-                            </div>
+                            <span class="quick-card-icon">
+                                ▤
+                            </span>
 
-                            <div class="stat-card-content">
-
-                                <span>
-                                    Mastery
-                                </span>
+                            <span class="quick-card-content">
 
                                 <strong>
-                                    —
+                                    Lab Notebook
                                 </strong>
 
                                 <small>
-                                    Mastery develops with activity
+                                    Record and organize your work
                                 </small>
 
-                            </div>
+                            </span>
 
-                        </article>
+                            <span class="quick-arrow">
+                                →
+                            </span>
 
-                    </div>
-
-
-                    <!-- Main Dashboard Grid -->
-
-                    <div class="dashboard-grid">
-
-
-                        <!-- Continue Learning -->
-
-                        <article class="dashboard-card learning-card">
-
-                            <div class="card-header">
-
-                                <div>
-
-                                    <span class="card-label">
-                                        LEARNING PATH
-                                    </span>
-
-                                    <h2>
-                                        Start Your Chemistry Journey
-                                    </h2>
-
-                                </div>
-
-                                <span class="card-icon">
-                                    ▤
-                                </span>
-
-                            </div>
-
-
-                            <div class="learning-placeholder">
-
-                                <div class="placeholder-illustration">
-                                    ⚗
-                                </div>
-
-                                <div>
-
-                                    <h3>
-                                        Your learning path starts here
-                                    </h3>
-
-                                    <p>
-                                        Explore chemistry from foundational
-                                        concepts through advanced university-level
-                                        topics.
-                                    </p>
-
-                                    <button
-                                        class="text-button"
-                                        data-action="open-learning"
-                                    >
-                                        Explore Learning Academy →
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        </article>
-
-
-                        <!-- Laboratory -->
-
-                        <article class="dashboard-card laboratory-card">
-
-                            <div class="card-header">
-
-                                <div>
-
-                                    <span class="card-label">
-                                        VIRTUAL LABORATORY
-                                    </span>
-
-                                    <h2>
-                                        Digital Laboratory
-                                    </h2>
-
-                                </div>
-
-                                <span class="card-icon">
-                                    ⚗
-                                </span>
-
-                            </div>
-
-
-                            <div class="laboratory-preview">
-
-                                <div class="lab-status">
-
-                                    <span class="status-dot"></span>
-
-                                    <span>
-                                        Laboratory ready
-                                    </span>
-
-                                </div>
-
-
-                                <p>
-                                    Design investigations, select chemicals
-                                    and apparatus, perform measurements,
-                                    analyze results and draw scientific
-                                    conclusions.
-                                </p>
-
-
-                                <button
-                                    class="button button-primary button-full"
-                                    data-action="open-laboratory"
-                                >
-                                    Enter Laboratory
-                                </button>
-
-                            </div>
-
-                        </article>
+                        </a>
 
                     </div>
-
-
-                    <!-- Scientific Workflow -->
-
-                    <section class="workflow-section">
-
-                        <div class="section-heading">
-
-                            <div>
-
-                                <span class="eyebrow">
-                                    SCIENTIFIC METHOD
-                                </span>
-
-                                <h2>
-                                    Learn Through Investigation
-                                </h2>
-
-                                <p>
-                                    ChemLab is built around the way
-                                    real scientific investigation works.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="workflow-grid">
-
-                            <div class="workflow-step">
-
-                                <span class="workflow-number">
-                                    01
-                                </span>
-
-                                <div>
-                                    <strong>Learn</strong>
-                                    <p>
-                                        Build the scientific knowledge
-                                        needed for the investigation.
-                                    </p>
-                                </div>
-
-                            </div>
-
-
-                            <div class="workflow-step">
-
-                                <span class="workflow-number">
-                                    02
-                                </span>
-
-                                <div>
-                                    <strong>Predict</strong>
-                                    <p>
-                                        Form a hypothesis and predict
-                                        what should happen.
-                                    </p>
-                                </div>
-
-                            </div>
-
-
-                            <div class="workflow-step">
-
-                                <span class="workflow-number">
-                                    03
-                                </span>
-
-                                <div>
-                                    <strong>Experiment</strong>
-                                    <p>
-                                        Select materials and conduct
-                                        a scientific investigation.
-                                    </p>
-                                </div>
-
-                            </div>
-
-
-                            <div class="workflow-step">
-
-                                <span class="workflow-number">
-                                    04
-                                </span>
-
-                                <div>
-                                    <strong>Measure</strong>
-                                    <p>
-                                        Record observations and
-                                        quantitative measurements.
-                                    </p>
-                                </div>
-
-                            </div>
-
-
-                            <div class="workflow-step">
-
-                                <span class="workflow-number">
-                                    05
-                                </span>
-
-                                <div>
-                                    <strong>Analyze</strong>
-                                    <p>
-                                        Work with data, equations,
-                                        graphs and uncertainty.
-                                    </p>
-                                </div>
-
-                            </div>
-
-
-                            <div class="workflow-step">
-
-                                <span class="workflow-number">
-                                    06
-                                </span>
-
-                                <div>
-                                    <strong>Conclude</strong>
-                                    <p>
-                                        Explain the evidence and
-                                        evaluate your hypothesis.
-                                    </p>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- Quick Access -->
-
-                    <section class="quick-access-section">
-
-                        <div class="section-heading">
-
-                            <div>
-
-                                <h2>
-                                    Explore ChemLab
-                                </h2>
-
-                                <p>
-                                    Your scientific workspace.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="quick-access-grid">
-
-
-                            <button
-                                class="quick-access-card"
-                                data-action="open-learning"
-                            >
-
-                                <span class="quick-access-icon">
-                                    ▤
-                                </span>
-
-                                <span>
-                                    <strong>
-                                        Learning Academy
-                                    </strong>
-
-                                    <small>
-                                        Chemistry theory and concepts
-                                    </small>
-                                </span>
-
-                                <span class="quick-arrow">
-                                    →
-                                </span>
-
-                            </button>
-
-
-                            <button
-                                class="quick-access-card"
-                                data-action="open-laboratory"
-                            >
-
-                                <span class="quick-access-icon">
-                                    ⚗
-                                </span>
-
-                                <span>
-                                    <strong>
-                                        Laboratory
-                                    </strong>
-
-                                    <small>
-                                        Perform digital experiments
-                                    </small>
-                                </span>
-
-                                <span class="quick-arrow">
-                                    →
-                                </span>
-
-                            </button>
-
-
-                            <button
-                                class="quick-access-card"
-                                data-action="open-ai"
-                            >
-
-                                <span class="quick-access-icon">
-                                    ✦
-                                </span>
-
-                                <span>
-                                    <strong>
-                                        AI Chemistry Tutor
-                                    </strong>
-
-                                    <small>
-                                        Learn with intelligent guidance
-                                    </small>
-                                </span>
-
-                                <span class="quick-arrow">
-                                    →
-                                </span>
-
-                            </button>
-
-
-                            <button
-                                class="quick-access-card"
-                                data-action="open-notebook"
-                            >
-
-                                <span class="quick-access-icon">
-                                    ▱
-                                </span>
-
-                                <span>
-                                    <strong>
-                                        Laboratory Notebook
-                                    </strong>
-
-                                    <small>
-                                        Record and analyze your work
-                                    </small>
-                                </span>
-
-                                <span class="quick-arrow">
-                                    →
-                                </span>
-
-                            </button>
-
-                        </div>
-
-                    </section>
 
                 </section>
 
+            </section>
 
-                <!-- =========================================
-                     LEARNING
-                ========================================== -->
 
-                <section
-                    id="page-learn"
-                    class="page"
-                    data-page="learn"
-                >
 
-                    <div class="page-placeholder">
+            <!-- =================================================
+                 LEARN
+                 ================================================= -->
 
-                        <span class="placeholder-icon">
-                            ▤
-                        </span>
+            <section
+                class="app-page"
+                data-page="learn"
+            >
+
+                <div class="page-header">
+
+                    <div>
 
                         <span class="eyebrow">
-                            LEARNING ACADEMY
+                            CHEMISTRY ACADEMY
                         </span>
 
                         <h1>
-                            Chemistry Learning
+                            Learn Chemistry
                         </h1>
 
                         <p>
-                            The complete chemistry curriculum will be
-                            built here, from foundational chemistry through
-                            advanced university-level study.
+                            Build knowledge from fundamentals to advanced chemistry.
                         </p>
-
-                        <span class="coming-badge">
-                            Stage 5
-                        </span>
 
                     </div>
 
-                </section>
+                </div>
 
 
-                <!-- =========================================
-                     LABORATORY
-                ========================================== -->
+                <div class="academy-hero card">
 
-                <section
-                    id="page-laboratory"
-                    class="page"
-                    data-page="laboratory"
-                >
+                    <div>
 
-                    <div class="page-placeholder">
+                        <span class="card-eyebrow">
+                            PERSONALIZED LEARNING
+                        </span>
 
-                        <span class="placeholder-icon">
+                        <h2>
+                            Build knowledge that transfers to the laboratory.
+                        </h2>
+
+                        <p>
+                            Study concepts, solve problems, test your understanding,
+                            then apply what you learn experimentally.
+                        </p>
+
+                    </div>
+
+                    <div class="academy-hero-symbol">
+                        ∑
+                    </div>
+
+                </div>
+
+
+                <div class="subject-grid">
+
+                    <article class="subject-card">
+
+                        <span class="subject-icon">
+                            ∑
+                        </span>
+
+                        <span class="subject-level">
+                            FOUNDATION
+                        </span>
+
+                        <h3>
+                            General Chemistry
+                        </h3>
+
+                        <p>
+                            Atoms, molecules, equations, moles, stoichiometry and solutions.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Explore
+                        </button>
+
+                    </article>
+
+
+                    <article class="subject-card">
+
+                        <span class="subject-icon">
+                            ◇
+                        </span>
+
+                        <span class="subject-level">
+                            CORE
+                        </span>
+
+                        <h3>
+                            Inorganic Chemistry
+                        </h3>
+
+                        <p>
+                            Periodic trends, bonding, acids, bases, redox and coordination chemistry.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Explore
+                        </button>
+
+                    </article>
+
+
+                    <article class="subject-card">
+
+                        <span class="subject-icon">
+                            ⌬
+                        </span>
+
+                        <span class="subject-level">
+                            CORE
+                        </span>
+
+                        <h3>
+                            Organic Chemistry
+                        </h3>
+
+                        <p>
+                            Structures, functional groups, reactions, mechanisms and spectroscopy.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Explore
+                        </button>
+
+                    </article>
+
+
+                    <article class="subject-card">
+
+                        <span class="subject-icon">
+                            Δ
+                        </span>
+
+                        <span class="subject-level">
+                            ADVANCED
+                        </span>
+
+                        <h3>
+                            Physical Chemistry
+                        </h3>
+
+                        <p>
+                            Thermodynamics, equilibrium, kinetics, electrochemistry and quantum concepts.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Explore
+                        </button>
+
+                    </article>
+
+
+                    <article class="subject-card">
+
+                        <span class="subject-icon">
+                            ◫
+                        </span>
+
+                        <span class="subject-level">
+                            APPLIED
+                        </span>
+
+                        <h3>
+                            Analytical Chemistry
+                        </h3>
+
+                        <p>
+                            Measurement, uncertainty, titration, calibration and instrumental analysis.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Explore
+                        </button>
+
+                    </article>
+
+
+                    <article class="subject-card">
+
+                        <span class="subject-icon">
+                            ⬡
+                        </span>
+
+                        <span class="subject-level">
+                            LIFE SCIENCE
+                        </span>
+
+                        <h3>
+                            Biochemistry
+                        </h3>
+
+                        <p>
+                            Proteins, enzymes, carbohydrates, lipids and biochemical systems.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Explore
+                        </button>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LABORATORY
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="laboratory"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            DIGITAL LABORATORY
+                        </span>
+
+                        <h1>
+                            Laboratory
+                        </h1>
+
+                        <p>
+                            Design experiments, work with apparatus, collect evidence and analyze results.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="lab-mode-grid">
+
+
+                    <article class="lab-mode-card featured">
+
+                        <div class="lab-mode-icon">
                             ⚗
+                        </div>
+
+                        <span class="card-eyebrow">
+                            RECOMMENDED
                         </span>
 
-                        <span class="eyebrow">
-                            VIRTUAL LABORATORY
-                        </span>
-
-                        <h1>
-                            Digital Laboratory
-                        </h1>
+                        <h2>
+                            Guided Laboratory
+                        </h2>
 
                         <p>
-                            A complete scientific workspace where students
-                            will select chemicals, apparatus and instruments,
-                            design investigations and collect experimental data.
+                            Follow structured experiments while learning the scientific reasoning
+                            behind every stage.
                         </p>
 
-                        <span class="coming-badge">
-                            Stage 8
+                        <ul>
+                            <li>Structured experiment objectives</li>
+                            <li>Interactive apparatus</li>
+                            <li>Measurements and observations</li>
+                            <li>Post-lab analysis</li>
+                        </ul>
+
+                        <button class="button button-primary">
+                            Enter Guided Lab
+                        </button>
+
+                    </article>
+
+
+                    <article class="lab-mode-card">
+
+                        <div class="lab-mode-icon">
+                            ◇
+                        </div>
+
+                        <span class="card-eyebrow">
+                            FLEXIBLE
                         </span>
+
+                        <h2>
+                            Open Laboratory
+                        </h2>
+
+                        <p>
+                            Select your own chemicals, apparatus and variables to construct
+                            an experimental setup.
+                        </p>
+
+                        <ul>
+                            <li>Choose apparatus</li>
+                            <li>Select chemicals</li>
+                            <li>Define variables</li>
+                            <li>Collect your own data</li>
+                        </ul>
+
+                        <button class="button button-secondary">
+                            Open Workspace
+                        </button>
+
+                    </article>
+
+
+                    <article class="lab-mode-card premium-card">
+
+                        <div class="lab-mode-icon">
+                            ✦
+                        </div>
+
+                        <span class="card-eyebrow">
+                            PREMIUM
+                        </span>
+
+                        <h2>
+                            Research Laboratory
+                        </h2>
+
+                        <p>
+                            Explore research-style experimental design, advanced analysis
+                            and deeper scientific workflows.
+                        </p>
+
+                        <ul>
+                            <li>Research-style experiments</li>
+                            <li>Advanced instruments</li>
+                            <li>Advanced analysis tools</li>
+                            <li>Scientific reporting</li>
+                        </ul>
+
+                        <a
+                            href="#premium"
+                            class="button button-premium"
+                            data-route="premium"
+                        >
+                            Explore Premium
+                        </a>
+
+                    </article>
+
+                </div>
+
+
+                <div class="card laboratory-library-preview">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-eyebrow">
+                                LABORATORY LIBRARY
+                            </span>
+
+                            <h2>
+                                Chemicals & Apparatus
+                            </h2>
+
+                            <p>
+                                Your laboratory will eventually contain a searchable scientific library.
+                            </p>
+
+                        </div>
 
                     </div>
 
-                </section>
+
+                    <div class="library-preview-grid">
+
+                        <div class="library-preview-item">
+
+                            <span>⚗</span>
+
+                            <strong>
+                                Chemicals
+                            </strong>
+
+                            <small>
+                                Reagents, solutions and materials
+                            </small>
+
+                        </div>
 
 
-                <!-- =========================================
-                     EXPERIMENTS
-                ========================================== -->
+                        <div class="library-preview-item">
 
-                <section
-                    id="page-experiments"
-                    class="page"
-                    data-page="experiments"
-                >
+                            <span>◫</span>
 
-                    <div class="page-placeholder">
+                            <strong>
+                                Glassware
+                            </strong>
 
-                        <span class="placeholder-icon">
-                            ◈
-                        </span>
+                            <small>
+                                Beakers, flasks, tubes and funnels
+                            </small>
+
+                        </div>
+
+
+                        <div class="library-preview-item">
+
+                            <span>⌁</span>
+
+                            <strong>
+                                Instruments
+                            </strong>
+
+                            <small>
+                                Analytical and measurement equipment
+                            </small>
+
+                        </div>
+
+
+                        <div class="library-preview-item">
+
+                            <span>◇</span>
+
+                            <strong>
+                                Apparatus
+                            </strong>
+
+                            <small>
+                                Heating, separation and experimental equipment
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 EXPERIMENTS
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="experiments"
+            >
+
+                <div class="page-header">
+
+                    <div>
 
                         <span class="eyebrow">
-                            EXPERIMENT ENGINE
+                            EXPERIMENT LIBRARY
                         </span>
 
                         <h1>
@@ -1063,37 +1652,253 @@
                         </h1>
 
                         <p>
-                            Guided, open and research laboratory investigations
-                            will be available here.
+                            Learn chemistry by planning, performing and analyzing experiments.
                         </p>
-
-                        <span class="coming-badge">
-                            Stage 9
-                        </span>
 
                     </div>
 
-                </section>
+
+                    <button
+                        type="button"
+                        class="button button-secondary"
+                    >
+                        Browse Categories
+                    </button>
+
+                </div>
 
 
-                <!-- =========================================
-                     ANALYSIS
-                ========================================== -->
+                <div class="experiment-toolbar card">
 
-                <section
-                    id="page-analysis"
-                    class="page"
-                    data-page="analysis"
-                >
+                    <div class="search-field">
 
-                    <div class="page-placeholder">
-
-                        <span class="placeholder-icon">
-                            ⌁
+                        <span>
+                            ⌕
                         </span>
 
+                        <input
+                            type="search"
+                            placeholder="Search experiments..."
+                            aria-label="Search experiments"
+                        >
+
+                    </div>
+
+
+                    <div class="filter-row">
+
+                        <button class="filter-chip active">
+                            All
+                        </button>
+
+                        <button class="filter-chip">
+                            Foundation
+                        </button>
+
+                        <button class="filter-chip">
+                            Undergraduate
+                        </button>
+
+                        <button class="filter-chip">
+                            Advanced
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="experiment-grid">
+
+
+                    <article class="experiment-card">
+
+                        <div class="experiment-visual">
+                            ⚗
+                        </div>
+
+                        <div class="experiment-content">
+
+                            <span class="experiment-category">
+                                ANALYTICAL
+                            </span>
+
+                            <h3>
+                                Acid–Base Titration
+                            </h3>
+
+                            <p>
+                                Explore concentration, neutralization,
+                                equivalence and quantitative analysis.
+                            </p>
+
+                            <div class="experiment-meta">
+
+                                <span>
+                                    Beginner
+                                </span>
+
+                                <span>
+                                    30–45 min
+                                </span>
+
+                            </div>
+
+                            <button class="button button-primary">
+                                View Experiment
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="experiment-card">
+
+                        <div class="experiment-visual">
+                            Δ
+                        </div>
+
+                        <div class="experiment-content">
+
+                            <span class="experiment-category">
+                                PHYSICAL
+                            </span>
+
+                            <h3>
+                                Reaction Rate Study
+                            </h3>
+
+                            <p>
+                                Investigate how experimental conditions affect
+                                reaction behavior and measured rates.
+                            </p>
+
+                            <div class="experiment-meta">
+
+                                <span>
+                                    Intermediate
+                                </span>
+
+                                <span>
+                                    45–60 min
+                                </span>
+
+                            </div>
+
+                            <button class="button button-primary">
+                                View Experiment
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="experiment-card">
+
+                        <div class="experiment-visual">
+                            ⌬
+                        </div>
+
+                        <div class="experiment-content">
+
+                            <span class="experiment-category">
+                                ORGANIC
+                            </span>
+
+                            <h3>
+                                Organic Functional Groups
+                            </h3>
+
+                            <p>
+                                Investigate structure, properties and chemical
+                                behavior of common organic functional groups.
+                            </p>
+
+                            <div class="experiment-meta">
+
+                                <span>
+                                    Intermediate
+                                </span>
+
+                                <span>
+                                    40–50 min
+                                </span>
+
+                            </div>
+
+                            <button class="button button-primary">
+                                View Experiment
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="experiment-card">
+
+                        <div class="experiment-visual">
+                            ◈
+                        </div>
+
+                        <div class="experiment-content">
+
+                            <span class="experiment-category">
+                                ELECTROCHEMISTRY
+                            </span>
+
+                            <h3>
+                                Electrochemical Cells
+                            </h3>
+
+                            <p>
+                                Explore oxidation, reduction, electrodes,
+                                cell potential and electrochemical systems.
+                            </p>
+
+                            <div class="experiment-meta">
+
+                                <span>
+                                    Advanced
+                                </span>
+
+                                <span>
+                                    50–70 min
+                                </span>
+
+                            </div>
+
+                            <button class="button button-primary">
+                                View Experiment
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ANALYSIS
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="analysis"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
                         <span class="eyebrow">
-                            SCIENTIFIC ANALYSIS
+                            SCIENTIFIC DATA
                         </span>
 
                         <h1>
@@ -1101,37 +1906,151 @@
                         </h1>
 
                         <p>
-                            Analyze measurements, equations, graphs,
-                            uncertainty, statistics and experimental trends.
+                            Turn experimental measurements into scientific evidence.
                         </p>
-
-                        <span class="coming-badge">
-                            Stage 10
-                        </span>
 
                     </div>
 
-                </section>
+                </div>
 
 
-                <!-- =========================================
-                     AI TUTOR
-                ========================================== -->
+                <div class="analysis-grid">
 
-                <section
-                    id="page-ai-tutor"
-                    class="page"
-                    data-page="ai-tutor"
-                >
 
-                    <div class="page-placeholder">
+                    <article class="analysis-tool-card">
 
-                        <span class="placeholder-icon">
-                            ✦
+                        <span class="analysis-tool-icon">
+                            ∑
                         </span>
 
+                        <h3>
+                            Calculations
+                        </h3>
+
+                        <p>
+                            Work with units, equations, significant figures
+                            and scientific calculations.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Open Calculator
+                        </button>
+
+                    </article>
+
+
+                    <article class="analysis-tool-card">
+
+                        <span class="analysis-tool-icon">
+                            ⌁
+                        </span>
+
+                        <h3>
+                            Graphing
+                        </h3>
+
+                        <p>
+                            Visualize experimental data and investigate relationships
+                            between variables.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Create Graph
+                        </button>
+
+                    </article>
+
+
+                    <article class="analysis-tool-card">
+
+                        <span class="analysis-tool-icon">
+                            ±
+                        </span>
+
+                        <h3>
+                            Uncertainty
+                        </h3>
+
+                        <p>
+                            Examine uncertainty, error, precision and
+                            experimental reliability.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Analyze Data
+                        </button>
+
+                    </article>
+
+
+                    <article class="analysis-tool-card">
+
+                        <span class="analysis-tool-icon">
+                            ◫
+                        </span>
+
+                        <h3>
+                            Data Tables
+                        </h3>
+
+                        <p>
+                            Organize measurements and prepare them for
+                            scientific interpretation.
+                        </p>
+
+                        <button class="button button-secondary">
+                            Open Data Table
+                        </button>
+
+                    </article>
+
+                </div>
+
+
+                <div class="analysis-empty card">
+
+                    <div class="empty-state-icon">
+                        ⌁
+                    </div>
+
+                    <h2>
+                        No experimental dataset yet
+                    </h2>
+
+                    <p>
+                        Complete an experiment and your measurements will appear here
+                        for scientific analysis.
+                    </p>
+
+                    <a
+                        href="#laboratory"
+                        data-route="laboratory"
+                        class="button button-primary"
+                    >
+                        Go to Laboratory
+                    </a>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 AI TUTOR
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="ai"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
                         <span class="eyebrow">
-                            CHEMLAB AI
+                            CHEMLAB INTELLIGENCE
                         </span>
 
                         <h1>
@@ -1139,76 +2058,311 @@
                         </h1>
 
                         <p>
-                            An intelligent chemistry tutor that will understand
-                            your learning level, questions and laboratory context.
+                            Ask questions, analyze chemistry and receive guidance
+                            based on your learning context.
                         </p>
-
-                        <span class="coming-badge">
-                            Stage 11
-                        </span>
 
                     </div>
 
-                </section>
+                    <span class="status-pill status-online">
+                        <span class="status-dot"></span>
+                        AI Ready
+                    </span>
+
+                </div>
 
 
-                <!-- =========================================
-                     NOTEBOOK
-                ========================================== -->
+                <div class="ai-workspace card">
 
-                <section
-                    id="page-notebook"
-                    class="page"
-                    data-page="notebook"
-                >
+                    <div class="ai-sidebar">
 
-                    <div class="page-placeholder">
+                        <div class="ai-profile">
 
-                        <span class="placeholder-icon">
-                            ▱
-                        </span>
+                            <div class="ai-avatar">
+                                ✦
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    ChemLab AI
+                                </strong>
+
+                                <small>
+                                    Chemistry learning assistant
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ai-capabilities">
+
+                            <span>
+                                Concept explanations
+                            </span>
+
+                            <span>
+                                Problem guidance
+                            </span>
+
+                            <span>
+                                Lab assistance
+                            </span>
+
+                            <span>
+                                Data interpretation
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="ai-main">
+
+                        <div class="ai-welcome">
+
+                            <div class="ai-welcome-icon">
+                                ✦
+                            </div>
+
+                            <h2>
+                                What are you working on?
+                            </h2>
+
+                            <p>
+                                Ask a chemistry question or bring your current
+                                experiment into the conversation.
+                            </p>
+
+                        </div>
+
+
+                        <div class="ai-suggestions">
+
+                            <button class="ai-suggestion">
+                                Explain a chemistry concept
+                            </button>
+
+                            <button class="ai-suggestion">
+                                Help me understand this calculation
+                            </button>
+
+                            <button class="ai-suggestion">
+                                Analyze my experiment results
+                            </button>
+
+                        </div>
+
+
+                        <div class="ai-input-area">
+
+                            <textarea
+                                id="mainAIInput"
+                                placeholder="Ask your chemistry question..."
+                                rows="3"
+                            ></textarea>
+
+                            <div class="ai-input-footer">
+
+                                <span>
+                                    AI guidance should support your reasoning.
+                                </span>
+
+                                <button
+                                    type="button"
+                                    class="button button-primary"
+                                >
+                                    Ask ChemLab AI
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 NOTEBOOK
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="notebook"
+            >
+
+                <div class="page-header">
+
+                    <div>
 
                         <span class="eyebrow">
-                            DIGITAL LAB NOTEBOOK
+                            SCIENTIFIC RECORD
                         </span>
 
                         <h1>
-                            Laboratory Notebook
+                            Lab Notebook
                         </h1>
 
                         <p>
-                            Record objectives, hypotheses, materials,
-                            procedures, raw data, calculations, results,
-                            discussion and conclusions.
+                            Record hypotheses, observations, measurements,
+                            calculations and conclusions.
                         </p>
-
-                        <span class="coming-badge">
-                            Stage 10
-                        </span>
 
                     </div>
 
-                </section>
+
+                    <button
+                        type="button"
+                        class="button button-primary"
+                    >
+                        + New Entry
+                    </button>
+
+                </div>
 
 
-                <!-- =========================================
-                     ASSESSMENTS
-                ========================================== -->
+                <div class="notebook-layout">
 
-                <section
-                    id="page-assessments"
-                    class="page"
-                    data-page="assessments"
-                >
 
-                    <div class="page-placeholder">
+                    <aside class="notebook-sidebar card">
 
-                        <span class="placeholder-icon">
-                            ✓
-                        </span>
+                        <div class="notebook-sidebar-header">
+
+                            <strong>
+                                Entries
+                            </strong>
+
+                            <span>
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <div class="notebook-empty">
+
+                            <span>
+                                ▤
+                            </span>
+
+                            <p>
+                                Your laboratory records will appear here.
+                            </p>
+
+                        </div>
+
+                    </aside>
+
+
+                    <article class="notebook-editor card">
+
+                        <div class="notebook-editor-header">
+
+                            <div>
+
+                                <span class="card-eyebrow">
+                                    NEW LAB RECORD
+                                </span>
+
+                                <h2>
+                                    Untitled Experiment
+                                </h2>
+
+                            </div>
+
+                            <span class="draft-status">
+                                Draft
+                            </span>
+
+                        </div>
+
+
+                        <div class="notebook-sections">
+
+                            <div class="notebook-section">
+
+                                <label>
+                                    Objective
+                                </label>
+
+                                <textarea
+                                    placeholder="What are you trying to investigate?"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="notebook-section">
+
+                                <label>
+                                    Hypothesis
+                                </label>
+
+                                <textarea
+                                    placeholder="What do you predict will happen?"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="notebook-section">
+
+                                <label>
+                                    Observations & Data
+                                </label>
+
+                                <textarea
+                                    placeholder="Record observations and measurements..."
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="notebook-section">
+
+                                <label>
+                                    Conclusion
+                                </label>
+
+                                <textarea
+                                    placeholder="What does your evidence show?"
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ASSESSMENTS
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="assessments"
+            >
+
+                <div class="page-header">
+
+                    <div>
 
                         <span class="eyebrow">
-                            ASSESSMENT ENGINE
+                            KNOWLEDGE CHECK
                         </span>
 
                         <h1>
@@ -1216,38 +2370,149 @@
                         </h1>
 
                         <p>
-                            Experiment-specific quizzes, practical reasoning,
-                            calculations, data interpretation and adaptive
-                            assessments will appear here.
+                            Test understanding and identify areas that need further practice.
                         </p>
-
-                        <span class="coming-badge">
-                            Stage 12
-                        </span>
 
                     </div>
 
-                </section>
+                </div>
 
 
-                <!-- =========================================
-                     PROGRESS
-                ========================================== -->
+                <div class="assessment-overview-grid">
 
-                <section
-                    id="page-progress"
-                    class="page"
-                    data-page="progress"
-                >
+                    <article class="assessment-summary card">
 
-                    <div class="page-placeholder">
-
-                        <span class="placeholder-icon">
-                            ↗
+                        <span class="card-eyebrow">
+                            OVERALL
                         </span>
 
+                        <div class="assessment-score">
+                            —
+                        </div>
+
+                        <h3>
+                            No assessment completed
+                        </h3>
+
+                        <p>
+                            Complete your first assessment to establish your baseline.
+                        </p>
+
+                    </article>
+
+
+                    <article class="assessment-summary card">
+
+                        <span class="card-eyebrow">
+                            AVAILABLE
+                        </span>
+
+                        <div class="assessment-score">
+                            0
+                        </div>
+
+                        <h3>
+                            Assessments
+                        </h3>
+
+                        <p>
+                            Your experiment-specific and learning assessments will appear here.
+                        </p>
+
+                    </article>
+
+
+                    <article class="assessment-summary card">
+
+                        <span class="card-eyebrow">
+                            MASTERY
+                        </span>
+
+                        <div class="assessment-score">
+                            0%
+                        </div>
+
+                        <h3>
+                            Chemistry Mastery
+                        </h3>
+
+                        <p>
+                            Mastery will develop as you learn, practice and demonstrate understanding.
+                        </p>
+
+                    </article>
+
+                </div>
+
+
+                <div class="assessment-types card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-eyebrow">
+                                ASSESSMENT ENGINE
+                            </span>
+
+                            <h2>
+                                How ChemLab Assesses You
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="assessment-type-grid">
+
+                        <div>
+                            <span>01</span>
+                            <strong>Concepts</strong>
+                            <small>Check conceptual understanding.</small>
+                        </div>
+
+                        <div>
+                            <span>02</span>
+                            <strong>Calculations</strong>
+                            <small>Apply equations and quantitative reasoning.</small>
+                        </div>
+
+                        <div>
+                            <span>03</span>
+                            <strong>Data Interpretation</strong>
+                            <small>Reason from tables, graphs and observations.</small>
+                        </div>
+
+                        <div>
+                            <span>04</span>
+                            <strong>Practical Reasoning</strong>
+                            <small>Apply chemistry to experimental situations.</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PROGRESS
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="progress"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
                         <span class="eyebrow">
-                            ACADEMIC PROGRESS
+                            ACADEMIC DEVELOPMENT
                         </span>
 
                         <h1>
@@ -1255,204 +2520,608 @@
                         </h1>
 
                         <p>
-                            Track chemistry mastery, laboratory technique,
-                            assessment performance and recommended next steps.
+                            Track your chemistry mastery and identify your next area of growth.
                         </p>
-
-                        <span class="coming-badge">
-                            Stage 13
-                        </span>
 
                     </div>
 
-                </section>
+                </div>
 
 
-                <!-- =========================================
-                     PREMIUM
-                ========================================== -->
+                <div class="progress-overview card">
 
-                <section
-                    id="page-premium"
-                    class="page"
-                    data-page="premium"
-                >
+                    <div class="progress-main-score">
 
-                    <div class="page-placeholder premium-placeholder">
-
-                        <span class="placeholder-icon">
-                            ✦
+                        <span class="card-eyebrow">
+                            OVERALL MASTERY
                         </span>
 
-                        <span class="eyebrow">
+                        <strong>
+                            0%
+                        </strong>
+
+                        <p>
+                            Begin learning to establish your academic progress.
+                        </p>
+
+                    </div>
+
+
+                    <div class="progress-main-bar">
+
+                        <div class="progress-heading">
+
+                            <span>
+                                Chemistry mastery
+                            </span>
+
+                            <strong>
+                                0 / 100
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar large">
+
+                            <span
+                                class="progress-fill"
+                                style="width: 0%"
+                            ></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mastery-grid">
+
+
+                    <article class="mastery-card">
+
+                        <div class="mastery-header">
+
+                            <span>
+                                Foundations
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+                            <span
+                                class="progress-fill"
+                                style="width:0%"
+                            ></span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="mastery-card">
+
+                        <div class="mastery-header">
+
+                            <span>
+                                Inorganic Chemistry
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+                            <span
+                                class="progress-fill"
+                                style="width:0%"
+                            ></span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="mastery-card">
+
+                        <div class="mastery-header">
+
+                            <span>
+                                Organic Chemistry
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+                            <span
+                                class="progress-fill"
+                                style="width:0%"
+                            ></span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="mastery-card">
+
+                        <div class="mastery-header">
+
+                            <span>
+                                Physical Chemistry
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+                            <span
+                                class="progress-fill"
+                                style="width:0%"
+                            ></span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="mastery-card">
+
+                        <div class="mastery-header">
+
+                            <span>
+                                Analytical Chemistry
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+                            <span
+                                class="progress-fill"
+                                style="width:0%"
+                            ></span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="mastery-card">
+
+                        <div class="mastery-header">
+
+                            <span>
+                                Biochemistry
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+                            <span
+                                class="progress-fill"
+                                style="width:0%"
+                            ></span>
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PREMIUM
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="premium"
+            >
+
+                <div class="premium-hero">
+
+                    <div class="premium-hero-content">
+
+                        <span class="premium-label">
                             CHEMLAB PREMIUM
                         </span>
 
                         <h1>
-                            Advanced Chemistry Workspace
+                            Go deeper into chemistry.
                         </h1>
 
                         <p>
-                            Premium will unlock advanced laboratory systems,
-                            deeper scientific analysis, advanced AI capabilities,
-                            expanded experiments and additional academic tools.
+                            Unlock advanced laboratory environments,
+                            scientific analysis tools and deeper learning capabilities.
                         </p>
 
-                        <span class="coming-badge">
-                            Stage 14
-                        </span>
+                        <div class="premium-hero-actions">
+
+                            <button
+                                type="button"
+                                class="button button-premium"
+                            >
+                                View Plans
+                            </button>
+
+                            <a
+                                href="#laboratory"
+                                data-route="laboratory"
+                                class="button button-ghost-light"
+                            >
+                                Explore Laboratory
+                            </a>
+
+                        </div>
 
                     </div>
 
-                </section>
 
+                    <div class="premium-hero-symbol">
+                        ✦
+                    </div>
 
-            </div>
-
-
-            <!-- =============================================
-                 FOOTER
-            ============================================== -->
-
-            <footer class="app-footer">
-
-                <div>
-                    <strong>
-                        ChemLab
-                    </strong>
-
-                    <span>
-                        Digital Chemistry Laboratory
-                    </span>
                 </div>
 
-                <span>
-                    Foundation • Stage 1
-                </span>
 
-            </footer>
+                <div class="premium-feature-grid">
 
-        </main>
+                    <div class="premium-feature">
+                        <span>⚗</span>
+                        <strong>Advanced Laboratories</strong>
+                        <small>Explore deeper experimental environments.</small>
+                    </div>
+
+                    <div class="premium-feature">
+                        <span>✦</span>
+                        <strong>Advanced AI</strong>
+                        <small>More powerful chemistry learning assistance.</small>
+                    </div>
+
+                    <div class="premium-feature">
+                        <span>⌁</span>
+                        <strong>Scientific Analysis</strong>
+                        <small>Advanced graphs, statistics and data tools.</small>
+                    </div>
+
+                    <div class="premium-feature">
+                        <span>◈</span>
+                        <strong>Research Workflows</strong>
+                        <small>Build more advanced scientific investigations.</small>
+                    </div>
+
+                </div>
 
 
-        <!-- =================================================
-             GLOBAL SEARCH MODAL
-        ================================================== -->
+                <div class="pricing-grid">
 
-        <div
-            id="searchModal"
-            class="modal"
-            aria-hidden="true"
-        >
 
-            <div class="modal-backdrop"></div>
+                    <article class="pricing-card">
 
-            <div
-                class="modal-dialog search-dialog"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="searchTitle"
+                        <span class="pricing-label">
+                            MONTHLY
+                        </span>
+
+                        <h2>
+                            GHS 35
+                        </h2>
+
+                        <span class="pricing-period">
+                            per month
+                        </span>
+
+                        <ul>
+                            <li>Advanced laboratory access</li>
+                            <li>Expanded chemistry library</li>
+                            <li>Advanced analysis tools</li>
+                            <li>Enhanced AI capabilities</li>
+                        </ul>
+
+                        <button class="button button-secondary">
+                            Choose Monthly
+                        </button>
+
+                    </article>
+
+
+                    <article class="pricing-card featured">
+
+                        <span class="pricing-popular">
+                            FEATURED
+                        </span>
+
+                        <span class="pricing-label">
+                            YEARLY
+                        </span>
+
+                        <h2>
+                            GHS 420
+                        </h2>
+
+                        <span class="pricing-period">
+                            per year
+                        </span>
+
+                        <ul>
+                            <li>Everything in Monthly</li>
+                            <li>Advanced experiment library</li>
+                            <li>Research laboratory workflows</li>
+                            <li>Advanced scientific tools</li>
+                        </ul>
+
+                        <button class="button button-premium">
+                            Choose Yearly
+                        </button>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SETTINGS
+                 ================================================= -->
+
+            <section
+                class="app-page"
+                data-page="settings"
             >
 
-                <div class="modal-header">
+                <div class="page-header">
 
                     <div>
 
                         <span class="eyebrow">
-                            CHEMLAB SEARCH
+                            APPLICATION
                         </span>
 
-                        <h2 id="searchTitle">
-                            Search ChemLab
-                        </h2>
-
-                    </div>
-
-                    <button
-                        id="searchModalClose"
-                        class="icon-button"
-                        type="button"
-                        aria-label="Close search"
-                    >
-                        ×
-                    </button>
-
-                </div>
-
-
-                <div class="search-input-wrapper">
-
-                    <span>
-                        ⌕
-                    </span>
-
-                    <input
-                        id="globalSearchInput"
-                        type="search"
-                        placeholder="Search lessons, experiments, chemicals..."
-                        autocomplete="off"
-                    >
-
-                    <kbd>
-                        ESC
-                    </kbd>
-
-                </div>
-
-
-                <div
-                    id="searchResults"
-                    class="search-results"
-                >
-
-                    <div class="search-empty">
-
-                        <span>
-                            ⌕
-                        </span>
+                        <h1>
+                            Settings
+                        </h1>
 
                         <p>
-                            Search across ChemLab
+                            Manage your ChemLab workspace preferences.
                         </p>
 
                     </div>
 
                 </div>
 
-            </div>
+
+                <div class="settings-grid">
+
+
+                    <article class="settings-card card">
+
+                        <div class="settings-card-header">
+
+                            <div class="settings-icon">
+                                ◉
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Account
+                                </h2>
+
+                                <p>
+                                    Student account information
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="settings-row">
+
+                            <span>
+                                Account status
+                            </span>
+
+                            <strong>
+                                Local workspace
+                            </strong>
+
+                        </div>
+
+
+                        <div class="settings-row">
+
+                            <span>
+                                Academic level
+                            </span>
+
+                            <strong>
+                                Foundation
+                            </strong>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="settings-card card">
+
+                        <div class="settings-card-header">
+
+                            <div class="settings-icon">
+                                ◐
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Appearance
+                                </h2>
+
+                                <p>
+                                    Customize your workspace appearance
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="settings-row">
+
+                            <span>
+                                Interface
+                            </span>
+
+                            <button
+                                type="button"
+                                class="toggle"
+                                data-theme-toggle
+                                aria-label="Toggle appearance"
+                            >
+                                <span></span>
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="settings-card card">
+
+                        <div class="settings-card-header">
+
+                            <div class="settings-icon">
+                                ?
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    About ChemLab
+                                </h2>
+
+                                <p>
+                                    Digital Chemistry Laboratory
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="settings-row">
+
+                            <span>
+                                Version
+                            </span>
+
+                            <strong>
+                                2.0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="settings-row">
+
+                            <span>
+                                Platform
+                            </span>
+
+                            <strong>
+                                ChemLab
+                            </strong>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
 
         </div>
 
 
+
         <!-- =================================================
-             NOTIFICATION PANEL
-        ================================================== -->
+             FOOTER
+             ================================================= -->
 
-        <div
-            id="notificationPanel"
-            class="notification-panel"
-            aria-hidden="true"
-        >
+        <footer class="app-footer">
 
-            <div class="notification-panel-header">
+            <span>
+                © ChemLab
+            </span>
+
+            <span>
+                Digital Chemistry Laboratory
+            </span>
+
+            <span>
+                Learn · Experiment · Analyze
+            </span>
+
+        </footer>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         GLOBAL SEARCH
+         ===================================================== -->
+
+    <div
+        class="modal search-modal"
+        id="globalSearchModal"
+        data-modal="search"
+        aria-hidden="true"
+    >
+
+        <div class="modal-backdrop"></div>
+
+        <div class="search-dialog">
+
+            <div class="search-dialog-header">
 
                 <div>
 
-                    <strong>
-                        Notifications
-                    </strong>
+                    <span class="card-eyebrow">
+                        CHEMLAB SEARCH
+                    </span>
 
-                    <small>
-                        Your ChemLab activity
-                    </small>
+                    <h2>
+                        Search your workspace
+                    </h2>
 
                 </div>
 
                 <button
-                    id="notificationClose"
-                    class="icon-button"
                     type="button"
-                    aria-label="Close notifications"
+                    class="icon-button"
+                    data-search-close
+                    aria-label="Close search"
                 >
                     ×
                 </button>
@@ -1460,146 +3129,41 @@
             </div>
 
 
-            <div class="notification-empty">
+            <div class="search-input-wrapper">
 
                 <span>
-                    ♢
+                    ⌕
                 </span>
 
-                <strong>
-                    You're all caught up
-                </strong>
-
-                <p>
-                    New learning activity and laboratory
-                    notifications will appear here.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PROFILE PANEL
-        ================================================== -->
-
-        <div
-            id="profilePanel"
-            class="profile-panel"
-            aria-hidden="true"
-        >
-
-            <div class="profile-panel-header">
-
-                <span
-                    id="profilePanelAvatar"
-                    class="profile-avatar large"
+                <input
+                    type="search"
+                    id="globalSearchInput"
+                    placeholder="Search lessons, experiments, tools..."
+                    autocomplete="off"
                 >
-                    S
-                </span>
 
-                <div>
-
-                    <strong id="profilePanelName">
-                        Student
-                    </strong>
-
-                    <small id="profilePanelLevel">
-                        Foundation Level
-                    </small>
-
-                </div>
+                <kbd>
+                    ESC
+                </kbd>
 
             </div>
 
 
-            <div class="profile-panel-divider"></div>
-
-
-            <button
-                type="button"
-                class="profile-menu-item"
-                data-profile-action="profile"
+            <div
+                class="search-results"
+                id="searchResults"
             >
-                <span>◉</span>
-                My Profile
-            </button>
 
+                <div class="search-empty">
 
-            <button
-                type="button"
-                class="profile-menu-item"
-                data-profile-action="settings"
-            >
-                <span>⚙</span>
-                Settings
-            </button>
+                    <span>
+                        ⌕
+                    </span>
 
+                    <p>
+                        Start typing to search ChemLab.
+                    </p>
 
-            <button
-                type="button"
-                class="profile-menu-item"
-                data-profile-action="help"
-            >
-                <span>?</span>
-                Help & Support
-            </button>
-
-
-            <div class="profile-panel-divider"></div>
-
-
-            <button
-                type="button"
-                class="profile-menu-item danger"
-                id="signOutButton"
-            >
-                <span>↪</span>
-                Sign Out
-            </button>
-
-        </div>
-
-
-        <!-- =================================================
-             TOAST CONTAINER
-        ================================================== -->
-
-        <div
-            id="toastContainer"
-            class="toast-container"
-            aria-live="polite"
-            aria-atomic="true"
-        ></div>
-
-
-        <!-- =================================================
-             APPLICATION LOADING
-        ================================================== -->
-
-        <div
-            id="appLoader"
-            class="app-loader"
-            aria-hidden="true"
-        >
-
-            <div class="loader-content">
-
-                <div class="loader-logo">
-                    ⚗
-                </div>
-
-                <strong>
-                    ChemLab
-                </strong>
-
-                <span>
-                    Preparing your laboratory...
-                </span>
-
-                <div class="loader-bar">
-                    <span></span>
                 </div>
 
             </div>
@@ -1609,15 +3173,198 @@
     </div>
 
 
-    <!-- =====================================================
-         JAVASCRIPT
-         Files will be created during Stage 1.
-    ====================================================== -->
 
-    <script src="js/config.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/router.js"></script>
-    <script src="js/app.js"></script>
+    <!-- =====================================================
+         NOTIFICATION PANEL
+         ===================================================== -->
+
+    <aside
+        class="side-panel notification-panel"
+        id="notificationPanel"
+        aria-hidden="true"
+    >
+
+        <div class="side-panel-header">
+
+            <div>
+
+                <span class="card-eyebrow">
+                    UPDATES
+                </span>
+
+                <h2>
+                    Notifications
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="icon-button"
+                data-notifications-close
+                aria-label="Close notifications"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="notification-list">
+
+            <div class="notification-empty">
+
+                <span>
+                    ♢
+                </span>
+
+                <h3>
+                    You're all caught up
+                </h3>
+
+                <p>
+                    New learning and laboratory updates will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         PROFILE PANEL
+         ===================================================== -->
+
+    <aside
+        class="side-panel profile-panel"
+        id="profilePanel"
+        aria-hidden="true"
+    >
+
+        <div class="side-panel-header">
+
+            <div>
+
+                <span class="card-eyebrow">
+                    STUDENT
+                </span>
+
+                <h2>
+                    Profile
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="icon-button"
+                data-profile-close
+                aria-label="Close profile"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="profile-panel-main">
+
+            <span
+                class="avatar avatar-lg"
+                id="profilePanelAvatar"
+            >
+                S
+            </span>
+
+            <h3 id="profilePanelName">
+                Student
+            </h3>
+
+            <p>
+                ChemLab Student
+            </p>
+
+        </div>
+
+
+        <div class="profile-panel-actions">
+
+            <a
+                href="#settings"
+                data-route="settings"
+                class="button button-secondary"
+            >
+                Account Settings
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         TOAST SYSTEM
+         ===================================================== -->
+
+    <div
+        class="toast-container"
+        id="toastContainer"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
+
+
+
+    <!-- =====================================================
+         APPLICATION LOADER
+         ===================================================== -->
+
+    <div
+        class="app-loader"
+        id="appLoader"
+        aria-hidden="true"
+    >
+
+        <div class="loader-mark">
+            ⚗
+        </div>
+
+        <div class="loader-copy">
+
+            <strong>
+                ChemLab
+            </strong>
+
+            <span>
+                Preparing your laboratory...
+            </span>
+
+        </div>
+
+        <div class="loader-progress">
+            <span></span>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/router.js"></script>
+<script src="js/app.js"></script>
+
 
 </body>
 </html>
