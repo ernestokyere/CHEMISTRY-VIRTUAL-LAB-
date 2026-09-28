@@ -1,12 +1,42 @@
 /* =========================================================
    CHEMLAB
    PROFESSIONAL RESPONSIVE SYSTEM
-   Stage 1 — Foundation
+   STAGE 2.5
+   responsive.css
    ========================================================= */
 
 
 /* =========================================================
-   01. LARGE TABLETS / SMALL DESKTOP
+   01. LARGE DESKTOP
+   ========================================================= */
+
+@media (min-width: 1440px) {
+
+    .page-container {
+        max-width: 1480px;
+        margin-inline: auto;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: minmax(0, 2fr) minmax(340px, 1fr);
+    }
+
+    .quick-access-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .workflow-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+}
+
+
+/* =========================================================
+   02. DESKTOP / LAPTOP
    ========================================================= */
 
 @media (max-width: 1200px) {
@@ -15,19 +45,23 @@
         --sidebar-width: 240px;
     }
 
-    .page-container {
-        padding: 28px;
+    .sidebar {
+        width: var(--sidebar-width);
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-width);
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
 
-    .dashboard-grid > .card-wide {
-        grid-column: auto;
-    }
-
-    .stats-grid {
+    .quick-access-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -35,27 +69,39 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .quick-access-grid {
+    .learning-feature-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .experiment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .analysis-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .premium-feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 
 /* =========================================================
-   02. TABLET
+   03. TABLET / SMALL LAPTOP
    ========================================================= */
 
 @media (max-width: 992px) {
 
-    /* -----------------------------------------------------
-       APPLICATION SHELL
-       ----------------------------------------------------- */
+    :root {
+        --sidebar-width: 250px;
+    }
 
     .sidebar {
         transform: translateX(-100%);
-        transition: transform 0.25s ease;
-        z-index: 1000;
+        transition: transform var(--transition-base);
+        box-shadow: var(--shadow-xl);
+        z-index: 1200;
     }
 
     .sidebar.is-open {
@@ -64,7 +110,10 @@
 
     .main-content {
         margin-left: 0;
-        width: 100%;
+    }
+
+    .mobile-menu-button {
+        display: inline-flex !important;
     }
 
     .sidebar-overlay {
@@ -73,8 +122,8 @@
         visibility: hidden;
         pointer-events: none;
         transition:
-            opacity 0.25s ease,
-            visibility 0.25s ease;
+            opacity var(--transition-base),
+            visibility var(--transition-base);
     }
 
     .sidebar-overlay.is-visible {
@@ -83,591 +132,517 @@
         pointer-events: auto;
     }
 
-
-    /* -----------------------------------------------------
-       MOBILE SIDEBAR BUTTON
-       ----------------------------------------------------- */
-
-    .mobile-sidebar-button {
-        display: inline-flex;
+    .topbar {
+        padding-inline: var(--space-5);
     }
 
+    .page-container {
+        padding-inline: var(--space-5);
+    }
 
-    /* -----------------------------------------------------
-       TOPBAR
-       ----------------------------------------------------- */
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .learning-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .laboratory-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .laboratory-sidebar {
+        order: 2;
+    }
+
+    .laboratory-main {
+        order: 1;
+    }
+
+    .ai-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-sidebar {
+        order: 2;
+    }
+
+    .ai-main {
+        order: 1;
+    }
+
+    .notebook-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .notebook-sidebar {
+        position: static;
+    }
+
+    .analysis-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .mastery-item {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+    }
+
+    .mastery-value {
+        text-align: left;
+    }
+
+    .lab-readout {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* =========================================================
+   04. TABLET
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    :root {
+        --space-page: 18px;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
 
     .topbar {
-        padding-left: 20px;
-        padding-right: 20px;
+        height: 68px;
+        padding-inline: var(--space-4);
+    }
+
+    .topbar-search {
+        display: none;
+    }
+
+    .topbar-actions {
+        margin-left: auto;
+    }
+
+    .breadcrumb {
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .profile-meta {
+        display: none;
+    }
+
+    .page-container {
+        padding: var(--space-5) var(--space-4);
+    }
+
+    .page-header-title {
+        font-size: var(--text-2xl);
+    }
+
+    .page-header-description {
+        max-width: 100%;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .quick-access-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .workflow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .learning-feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .subject-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .experiment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .premium-feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .premium-pricing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lab-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lab-toolbar-group {
+        width: 100%;
+    }
+
+    .lab-toolbar .btn {
+        flex: 1;
+    }
+
+    .lab-surface {
+        min-height: 400px;
+    }
+
+    .ai-message {
+        max-width: 100%;
+    }
+
+    .ai-message-content {
+        max-width: calc(100vw - 100px);
+    }
+
+    .notebook-section {
+        padding: var(--space-4);
+    }
+
+    .card-header {
+        padding: var(--space-4);
+    }
+
+    .card-body {
+        padding: var(--space-4);
+    }
+
+    .card-footer {
+        padding: var(--space-4);
+    }
+
+    .card-header,
+    .card-footer {
+        flex-wrap: wrap;
+    }
+
+    .table-wrap {
+        margin-inline: -1px;
+    }
+}
+
+
+/* =========================================================
+   05. LARGE PHONE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    :root {
+        --space-page: 16px;
+    }
+
+    .topbar {
+        height: 62px;
+        padding-inline: 12px;
+    }
+
+    .topbar-actions {
+        gap: 4px;
+    }
+
+    .icon-button {
+        width: 38px;
+        height: 38px;
+    }
+
+    .profile-avatar {
+        width: 36px;
+        height: 36px;
     }
 
     .breadcrumb {
         display: none;
     }
 
-    .topbar-actions {
-        margin-left: auto;
-    }
-
-
-    /* -----------------------------------------------------
-       PAGE
-       ----------------------------------------------------- */
-
     .page-container {
-        padding: 24px;
+        padding: var(--space-4) 12px;
     }
-
-
-    /* -----------------------------------------------------
-       PAGE HEADER
-       ----------------------------------------------------- */
 
     .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 18px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-5);
     }
 
-    .page-header-actions {
-        width: 100%;
-    }
-
-
-    /* -----------------------------------------------------
-       DASHBOARD
-       ----------------------------------------------------- */
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-grid > * {
-        min-width: 0;
-    }
-
-
-    /* -----------------------------------------------------
-       WORKFLOW
-       ----------------------------------------------------- */
-
-    .workflow-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-
-    /* -----------------------------------------------------
-       LAB FOUNDATION
-       ----------------------------------------------------- */
-
-    .lab-surface {
-        min-height: 420px;
-    }
-
-
-    /* -----------------------------------------------------
-       MODALS
-       ----------------------------------------------------- */
-
-    .modal {
-        width: min(92vw, 680px);
-    }
-
-    .search-modal {
-        width: min(92vw, 680px);
-    }
-
-
-    /* -----------------------------------------------------
-       PANELS
-       ----------------------------------------------------- */
-
-    .notification-panel,
-    .profile-panel {
-        width: min(92vw, 380px);
-    }
-
-}
-
-
-/* =========================================================
-   03. MOBILE
-   ========================================================= */
-
-@media (max-width: 768px) {
-
-    /* -----------------------------------------------------
-       ROOT
-       ----------------------------------------------------- */
-
-    :root {
-        --page-padding: 18px;
-    }
-
-
-    /* -----------------------------------------------------
-       TOPBAR
-       ----------------------------------------------------- */
-
-    .topbar {
-        height: 68px;
-        padding: 0 16px;
-        gap: 10px;
-    }
-
-    .topbar-actions {
-        gap: 6px;
-    }
-
-    .topbar .icon-button {
-        width: 38px;
-        height: 38px;
-    }
-
-    .profile-trigger {
-        padding: 4px;
-    }
-
-    .profile-trigger .profile-details {
-        display: none;
-    }
-
-
-    /* -----------------------------------------------------
-       PAGE CONTAINER
-       ----------------------------------------------------- */
-
-    .page-container {
-        padding: 20px 16px 32px;
-    }
-
-
-    /* -----------------------------------------------------
-       PAGE HEADER
-       ----------------------------------------------------- */
-
-    .page-header {
-        margin-bottom: 24px;
-    }
-
-    .page-title {
-        font-size: 1.65rem;
+    .page-header-title {
+        font-size: 24px;
         line-height: 1.2;
     }
 
-    .page-description {
-        font-size: 0.9rem;
-        line-height: 1.6;
+    .page-header-description {
+        font-size: var(--text-sm);
     }
 
     .page-header-actions {
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
     }
 
+    .page-header-actions .btn {
+        width: 100%;
+    }
 
-    /* -----------------------------------------------------
-       STATS
-       ----------------------------------------------------- */
-
-    .stats-grid {
+    .dashboard-stats {
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        gap: 10px;
     }
 
     .stat-card {
-        padding: 16px;
+        padding: var(--space-4);
     }
 
-    .stat-value {
-        font-size: 1.45rem;
+    .stat-card-value {
+        font-size: 24px;
     }
 
-    .stat-label {
-        font-size: 0.75rem;
+    .stat-card-label {
+        font-size: 11px;
     }
 
-
-    /* -----------------------------------------------------
-       CARDS
-       ----------------------------------------------------- */
-
-    .card {
-        border-radius: 14px;
-    }
-
-    .card-header {
-        padding: 16px;
-    }
-
-    .card-body {
-        padding: 16px;
-    }
-
-    .card-footer {
-        padding: 14px 16px;
-    }
-
-
-    /* -----------------------------------------------------
-       WORKFLOW
-       ----------------------------------------------------- */
-
-    .workflow-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .workflow-step {
-        padding: 16px;
-    }
-
-
-    /* -----------------------------------------------------
-       QUICK ACCESS
-       ----------------------------------------------------- */
-
-    .quick-access-grid {
-        grid-template-columns: 1fr;
-    }
-
-
-    /* -----------------------------------------------------
-       SECTION HEADINGS
-       ----------------------------------------------------- */
-
-    .section-heading {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-
-    /* -----------------------------------------------------
-       FORMS
-       ----------------------------------------------------- */
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-row {
-        flex-direction: column;
-    }
-
-    .form-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .form-actions .button {
-        width: 100%;
-    }
-
-
-    /* -----------------------------------------------------
-       BUTTONS
-       ----------------------------------------------------- */
-
-    .button {
-        min-height: 44px;
-    }
-
-    .button-group {
-        width: 100%;
-        flex-wrap: wrap;
-    }
-
-
-    /* -----------------------------------------------------
-       TABLES
-       ----------------------------------------------------- */
-
-    .table-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .data-table {
-        min-width: 620px;
-    }
-
-
-    /* -----------------------------------------------------
-       LAB SURFACE
-       ----------------------------------------------------- */
-
-    .lab-surface {
-        min-height: 360px;
-        padding: 16px;
-    }
-
-
-    /* -----------------------------------------------------
-       SEARCH
-       ----------------------------------------------------- */
-
-    .search-modal {
-        width: calc(100vw - 24px);
-        max-height: calc(100vh - 48px);
-        border-radius: 16px;
-    }
-
-    .search-input {
-        font-size: 0.95rem;
-    }
-
-    .search-result {
-        padding: 12px;
-    }
-
-
-    /* -----------------------------------------------------
-       NOTIFICATION / PROFILE PANELS
-       ----------------------------------------------------- */
-
-    .notification-panel,
-    .profile-panel {
-        position: fixed;
-        top: 72px;
-        right: 12px;
-        left: 12px;
-        width: auto;
-        max-height: calc(100vh - 88px);
-    }
-
-
-    /* -----------------------------------------------------
-       EMPTY STATES
-       ----------------------------------------------------- */
-
-    .empty-state {
-        padding: 32px 20px;
-    }
-
-
-    /* -----------------------------------------------------
-       ALERTS
-       ----------------------------------------------------- */
-
-    .alert {
-        align-items: flex-start;
-    }
-
-
-    /* -----------------------------------------------------
-       TOAST
-       ----------------------------------------------------- */
-
-    .toast-container {
-        left: 12px;
-        right: 12px;
-        bottom: 16px;
-    }
-
-    .toast {
-        width: 100%;
-        max-width: none;
-    }
-
-}
-
-
-/* =========================================================
-   04. SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 576px) {
-
-    /* -----------------------------------------------------
-       TOPBAR
-       ----------------------------------------------------- */
-
-    .topbar {
-        height: 64px;
-        padding: 0 12px;
-    }
-
-    .topbar-actions {
-        gap: 3px;
-    }
-
-    .topbar .icon-button {
+    .stat-card-icon {
         width: 36px;
         height: 36px;
     }
 
+    .section-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
 
-    /* -----------------------------------------------------
-       PAGE
-       ----------------------------------------------------- */
+    .section-heading-action {
+        width: 100%;
+    }
+
+    .workflow-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .workflow-step {
+        min-height: auto;
+    }
+
+    .subject-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .learning-hero {
+        padding: var(--space-5);
+    }
+
+    .learning-hero-title {
+        font-size: 26px;
+    }
+
+    .learning-hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .learning-hero-actions .btn {
+        width: 100%;
+    }
+
+    .experiment-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .experiment-toolbar-left,
+    .experiment-toolbar-right {
+        width: 100%;
+    }
+
+    .experiment-toolbar-right {
+        justify-content: flex-start;
+    }
+
+    .experiment-card {
+        min-width: 0;
+    }
+
+    .lab-readout {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .lab-readout-item {
+        padding: var(--space-3);
+    }
+
+    .lab-readout-value {
+        font-size: var(--text-lg);
+    }
+
+    .lab-control-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
+
+    .lab-control {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chemical-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-message {
+        gap: 8px;
+    }
+
+    .ai-message-avatar {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .ai-message-content {
+        max-width: calc(100vw - 72px);
+        padding: 12px;
+    }
+
+    .ai-input-area {
+        padding: 10px;
+    }
+
+    .ai-suggestions {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 4px;
+    }
+
+    .ai-suggestion {
+        flex: 0 0 auto;
+    }
+
+    .notebook-section-title {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .notebook-section-title .btn {
+        width: 100%;
+    }
+
+    .assessment-option {
+        padding: 12px;
+    }
+
+    .assessment-option-indicator {
+        width: 24px;
+        height: 24px;
+        flex-basis: 24px;
+    }
+
+    .premium-price {
+        font-size: 30px;
+    }
+
+    .premium-card {
+        padding: var(--space-5);
+    }
+
+    .notification-panel,
+    .profile-panel {
+        width: min(100%, 360px);
+    }
+
+    .search-modal {
+        width: calc(100% - 24px);
+        margin-inline: 12px;
+    }
+}
+
+
+/* =========================================================
+   06. SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 380px) {
 
     .page-container {
-        padding: 18px 12px 28px;
+        padding-inline: 10px;
     }
 
-
-    /* -----------------------------------------------------
-       TYPOGRAPHY
-       ----------------------------------------------------- */
-
-    .page-title {
-        font-size: 1.45rem;
+    .topbar {
+        padding-inline: 8px;
     }
 
-    .section-title {
-        font-size: 1.05rem;
-    }
-
-
-    /* -----------------------------------------------------
-       STATS
-       ----------------------------------------------------- */
-
-    .stats-grid {
+    .dashboard-stats {
         grid-template-columns: 1fr;
     }
 
     .stat-card {
         display: flex;
         align-items: center;
-        gap: 14px;
+        justify-content: space-between;
+        gap: var(--space-3);
     }
 
+    .stat-card-content {
+        flex: 1;
+    }
 
-    /* -----------------------------------------------------
-       WORKFLOW
-       ----------------------------------------------------- */
+    .stat-card-icon {
+        order: 2;
+    }
 
-    .workflow-grid {
+    .lab-readout {
         grid-template-columns: 1fr;
     }
 
-
-    /* -----------------------------------------------------
-       CARDS
-       ----------------------------------------------------- */
-
-    .card-header,
-    .card-body,
-    .card-footer {
-        padding-left: 14px;
-        padding-right: 14px;
+    .lab-control-group {
+        grid-template-columns: 1fr;
     }
 
-
-    /* -----------------------------------------------------
-       BUTTONS
-       ----------------------------------------------------- */
-
-    .button-group {
-        flex-direction: column;
-        align-items: stretch;
+    .btn {
+        min-height: 44px;
     }
 
-    .button-group .button {
-        width: 100%;
+    .btn-sm {
+        min-height: 40px;
     }
 
-
-    /* -----------------------------------------------------
-       MODALS
-       ----------------------------------------------------- */
-
-    .modal {
-        width: calc(100vw - 20px);
-        max-height: calc(100vh - 20px);
-        border-radius: 14px;
+    .page-header-title {
+        font-size: 22px;
     }
 
-
-    /* -----------------------------------------------------
-       PANELS
-       ----------------------------------------------------- */
-
-    .notification-panel,
-    .profile-panel {
-        top: 68px;
-        left: 8px;
-        right: 8px;
-        max-height: calc(100vh - 80px);
+    .learning-hero-title {
+        font-size: 23px;
     }
 
-
-    /* -----------------------------------------------------
-       LAB
-       ----------------------------------------------------- */
-
-    .lab-surface {
-        min-height: 320px;
-        padding: 12px;
+    .ai-message-content {
+        max-width: calc(100vw - 62px);
     }
-
-
-    /* -----------------------------------------------------
-       FORM CONTROLS
-       ----------------------------------------------------- */
-
-    .input,
-    .select,
-    .textarea {
-        font-size: 16px;
-    }
-
-}
-
-
-/* =========================================================
-   05. VERY SMALL DEVICES
-   ========================================================= */
-
-@media (max-width: 380px) {
-
-    .topbar-actions .search-button {
-        display: none;
-    }
-
-    .topbar-actions {
-        margin-left: auto;
-    }
-
-    .page-title {
-        font-size: 1.3rem;
-    }
-
-    .page-container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .stat-card {
-        padding: 14px;
-    }
-
-}
-
-
-/* =========================================================
-   06. LANDSCAPE MOBILE
-   ========================================================= */
-
-@media (max-height: 500px) and (orientation: landscape) {
-
-    .sidebar {
-        overflow-y: auto;
-    }
-
-    .modal {
-        max-height: 92vh;
-        overflow-y: auto;
-    }
-
-    .notification-panel,
-    .profile-panel {
-        max-height: 82vh;
-        overflow-y: auto;
-    }
-
 }
 
 
@@ -677,23 +652,114 @@
 
 @media (hover: none) and (pointer: coarse) {
 
-    .button,
-    .icon-button,
-    .nav-link,
+    .btn,
+    .lab-control,
+    .quick-action,
+    .equipment-item,
+    .assessment-option,
     .search-result,
     .dropdown-item {
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .button {
         min-height: 44px;
     }
 
+    .btn:hover,
+    .card-hover:hover,
+    .quick-action:hover,
+    .equipment-item:hover {
+        transform: none;
+    }
+
+    .tooltip::after {
+        display: none;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
 }
 
 
 /* =========================================================
-   08. REDUCED MOTION
+   08. LANDSCAPE PHONES
+   ========================================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .topbar {
+        height: 56px;
+    }
+
+    .page-container {
+        padding-top: var(--space-4);
+        padding-bottom: var(--space-4);
+    }
+
+    .lab-surface {
+        min-height: 320px;
+    }
+
+    .modal {
+        max-height: 90vh;
+    }
+}
+
+
+/* =========================================================
+   09. PRINT
+   ========================================================= */
+
+@media print {
+
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    .sidebar,
+    .topbar,
+    .mobile-menu-button,
+    .sidebar-overlay,
+    .page-header-actions,
+    .notification-panel,
+    .profile-panel,
+    .modal-backdrop,
+    .toast-container,
+    .app-loader {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .page-container {
+        max-width: none !important;
+        padding: 0 !important;
+    }
+
+    .card,
+    .notebook-section,
+    .lab-surface {
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    a {
+        color: #000000 !important;
+        text-decoration: none !important;
+    }
+
+    .data-table {
+        min-width: 0;
+    }
+}
+
+
+/* =========================================================
+   10. REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -706,40 +772,21 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
-
 }
 
 
 /* =========================================================
-   09. PRINT
+   11. DARK MODE PREPARATION
    ========================================================= */
 
-@media print {
+@media (prefers-color-scheme: dark) {
 
-    .sidebar,
-    .topbar,
-    .sidebar-overlay,
-    .notification-panel,
-    .profile-panel,
-    .modal,
-    .toast-container {
-        display: none !important;
-    }
+    /*
+       ChemLab currently uses the controlled application theme
+       defined in core.css.
 
-    .main-content {
-        margin-left: 0 !important;
-        width: 100% !important;
-    }
-
-    .page-container {
-        padding: 0 !important;
-        max-width: none !important;
-    }
-
-    .card {
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-        break-inside: avoid;
-    }
+       This section intentionally does not force dark mode.
+       It reserves the responsive layer for future theme support.
+    */
 
 }
