@@ -1,21 +1,27 @@
-"use strict";
+/* =========================================================
+   CHEMLAB
+   REAL STUDENT PROGRESS ENGINE
+   Version 4.0
+   =========================================================
+
+   Handles:
+   - XP
+   - Levels
+   - Daily streaks
+   - Experiment completion
+   - Quiz statistics
+   - Achievement state
+   - Supabase persistence
+   - Dashboard synchronization
+   ========================================================= */
+
 
 /* =========================================================
-   CHEMLAB — REAL STUDENT PROGRESS ENGINE
-   CLEAN REPLACEMENT
-   Compatible with:
-   - app.js
-   - auth.js
-   - achievements.js
-   - Supabase student_progress
-========================================================= */
-
-
-/* =========================================================
-   CONFIGURATION
+   01. CONFIG
 ========================================================= */
 
 const CHEMLAB_PROGRESS_CONFIG = {
+
     supabaseUrl:
         "https://zscbgeaieiqwknhjxpnt.supabase.co",
 
@@ -27,155 +33,278 @@ const CHEMLAB_PROGRESS_CONFIG = {
 
     saveDelay:
         800
+
 };
 
 
 /* =========================================================
-   PROGRESS STATE
-========================================================= */
-
-const chemLabProgress = {
-
-    loaded: false,
-
-    loading: false,
-
-    saving: false,
-
-    saveQueued: false,
-
-    lastSavedSignature: "",
-
-    currentUserId: null,
-
-    xp: 0,
-
-    level: 1,
-
-    experimentsCompleted: 0,
-
-    quizzesCompleted: 0,
-
-    quizScore: 0,
-
-    bestQuizPercentage: 0,
-
-    streak: 0,
-
-    lastActivityDate: null,
-
-    achievements: []
-};
-
-
-/* =========================================================
-   ACHIEVEMENTS
+   02. ACHIEVEMENTS
 ========================================================= */
 
 const CHEMLAB_ACHIEVEMENTS = [
 
     {
-        id: "first-step",
-        title: "First Step",
-        description: "Earn your first XP",
-        icon: "🚀"
+        id:
+            "first-step",
+
+        icon:
+            "🚀",
+
+        title:
+            "First Step",
+
+        description:
+            "Start your ChemLab learning journey.",
+
+        condition:
+            progress =>
+                progress.xp > 0
     },
 
-    {
-        id: "first-experiment",
-        title: "Lab Explorer",
-        description: "Complete your first experiment",
-        icon: "🧪"
-    },
 
     {
-        id: "first-quiz",
-        title: "Quiz Starter",
-        description: "Complete your first quiz",
-        icon: "📝"
+        id:
+            "first-experiment",
+
+        icon:
+            "⚗️",
+
+        title:
+            "First Experiment",
+
+        description:
+            "Complete your first chemistry experiment.",
+
+        condition:
+            progress =>
+                progress.experimentsCompleted >= 1
     },
 
-    {
-        id: "quiz-master",
-        title: "Quiz Master",
-        description: "Reach 80% or higher on a quiz",
-        icon: "🏆"
-    },
 
     {
-        id: "xp-100",
-        title: "Century Chemist",
-        description: "Reach 100 XP",
-        icon: "💯"
+        id:
+            "first-quiz",
+
+        icon:
+            "🧠",
+
+        title:
+            "Quiz Starter",
+
+        description:
+            "Complete your first chemistry quiz.",
+
+        condition:
+            progress =>
+                progress.quizzesCompleted >= 1
     },
 
-    {
-        id: "level-5",
-        title: "Rising Chemist",
-        description: "Reach Level 5",
-        icon: "⭐"
-    },
 
     {
-        id: "streak-3",
-        title: "Getting Consistent",
-        description: "Reach a 3-day streak",
-        icon: "🔥"
+        id:
+            "quiz-master",
+
+        icon:
+            "🏆",
+
+        title:
+            "Quiz Master",
+
+        description:
+            "Score 100% on a chemistry quiz.",
+
+        condition:
+            progress =>
+                progress.bestQuizPercentage >= 100
     },
 
+
     {
-        id: "streak-7",
-        title: "One Week Strong",
-        description: "Reach a 7-day streak",
-        icon: "🔥"
+        id:
+            "xp-100",
+
+        icon:
+            "⭐",
+
+        title:
+            "100 XP",
+
+        description:
+            "Earn your first 100 XP.",
+
+        condition:
+            progress =>
+                progress.xp >= 100
+    },
+
+
+    {
+        id:
+            "level-5",
+
+        icon:
+            "🔥",
+
+        title:
+            "Level 5",
+
+        description:
+            "Reach Level 5.",
+
+        condition:
+            progress =>
+                progress.level >= 5
+    },
+
+
+    {
+        id:
+            "streak-3",
+
+        icon:
+            "📅",
+
+        title:
+            "3-Day Streak",
+
+        description:
+            "Learn chemistry for three days in a row.",
+
+        condition:
+            progress =>
+                progress.streak >= 3
+    },
+
+
+    {
+        id:
+            "streak-7",
+
+        icon:
+            "🔥",
+
+        title:
+            "7-Day Streak",
+
+        description:
+            "Maintain a seven-day learning streak.",
+
+        condition:
+            progress =>
+                progress.streak >= 7
     }
+
 ];
 
 
+window.CHEMLAB_ACHIEVEMENTS =
+    CHEMLAB_ACHIEVEMENTS;
+
+
 /* =========================================================
-   DATE HELPERS
+   03. STATE
 ========================================================= */
 
-function progressDateKey(date = new Date()) {
+const chemLabProgress = {
 
-    const year =
-        date.getFullYear();
+    loaded:
+        false,
 
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
+    loading:
+        false,
 
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
+    saving:
+        false,
 
-    return `${year}-${month}-${day}`;
-}
+    saveQueued:
+        false,
+
+    currentUserId:
+        null,
+
+    lastSavedSignature:
+        "",
+
+    xp:
+        0,
+
+    level:
+        1,
+
+    experimentsCompleted:
+        0,
+
+    quizzesCompleted:
+        0,
+
+    quizScore:
+        0,
+
+    bestQuizPercentage:
+        0,
+
+    streak:
+        0,
+
+    lastActivityDate:
+        null,
+
+    achievements:
+        []
+
+};
 
 
-function progressToday() {
-
-    return progressDateKey();
-}
+window.chemLabProgress =
+    chemLabProgress;
 
 
-function progressYesterday() {
+/* =========================================================
+   04. SUPABASE
+========================================================= */
 
-    const date =
-        new Date();
+function getProgressClient() {
 
-    date.setDate(
-        date.getDate() - 1
-    );
+    if (
+        window.supabaseClient
+    ) {
 
-    return progressDateKey(date);
+        return window.supabaseClient;
+
+    }
+
+
+    if (
+        typeof window.supabase ===
+        "undefined"
+    ) {
+
+        return null;
+
+    }
+
+
+    window.supabaseClient =
+        window.supabase.createClient(
+            CHEMLAB_PROGRESS_CONFIG.supabaseUrl,
+            CHEMLAB_PROGRESS_CONFIG.supabaseKey,
+            {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            }
+        );
+
+
+    return window.supabaseClient;
+
 }
 
 
 /* =========================================================
-   VALUE HELPERS
+   05. SAFE HELPERS
 ========================================================= */
 
 function progressNumber(
@@ -186,37 +315,24 @@ function progressNumber(
     const number =
         Number(value);
 
-    if (!Number.isFinite(number)) {
-        return fallback;
-    }
 
-    return Math.max(
-        0,
-        Math.floor(number)
-    );
+    return Number.isFinite(number)
+        ? number
+        : fallback;
+
 }
 
 
-function progressSafeArray(value) {
+function progressArray(
+    value
+) {
 
-    if (!Array.isArray(value)) {
-        return [];
-    }
+    return Array.isArray(value)
+        ? value
+        : [];
 
-    return [
-        ...new Set(
-            value.filter(
-                item =>
-                    typeof item === "string"
-            )
-        )
-    ];
 }
 
-
-/* =========================================================
-   SIGNATURE
-========================================================= */
 
 function progressSignature() {
 
@@ -250,154 +366,207 @@ function progressSignature() {
             chemLabProgress.achievements
 
     });
+
 }
 
 
 /* =========================================================
-   LEVEL SYSTEM
+   06. DATE HELPERS
 ========================================================= */
 
-function calculateChemLabLevel(xp) {
+function getTodayString() {
+
+    const date =
+        new Date();
+
+
+    return [
+
+        date.getFullYear(),
+
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ),
+
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        )
+
+    ].join("-");
+
+}
+
+
+function getYesterdayString() {
+
+    const date =
+        new Date();
+
+
+    date.setDate(
+        date.getDate() - 1
+    );
+
+
+    return [
+
+        date.getFullYear(),
+
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ),
+
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        )
+
+    ].join("-");
+
+}
+
+
+/* =========================================================
+   07. LEVEL SYSTEM
+========================================================= */
+
+function calculateChemLabLevel(
+    xp
+) {
 
     const safeXP =
-        progressNumber(xp);
+        Math.max(
+            0,
+            progressNumber(
+                xp,
+                0
+            )
+        );
+
 
     return (
         Math.floor(
             safeXP / 100
         ) + 1
     );
+
 }
 
 
-function getLevelProgress(xp) {
+function getLevelProgress(
+    xp
+) {
 
     const safeXP =
-        progressNumber(xp);
+        Math.max(
+            0,
+            progressNumber(
+                xp,
+                0
+            )
+        );
+
 
     const level =
         calculateChemLabLevel(
             safeXP
         );
 
-    const levelStart =
+
+    const currentLevelXP =
         (level - 1) * 100;
 
-    const levelEnd =
+
+    const nextLevelXP =
         level * 100;
 
-    const current =
-        safeXP - levelStart;
 
-    const required =
-        levelEnd - levelStart;
+    const progressXP =
+        safeXP -
+        currentLevelXP;
+
+
+    const requiredXP =
+        nextLevelXP -
+        currentLevelXP;
+
 
     const percentage =
         Math.min(
             100,
-            Math.max(
-                0,
-                Math.round(
-                    (current / required) * 100
-                )
+            Math.round(
+                (
+                    progressXP /
+                    requiredXP
+                ) * 100
             )
         );
+
 
     return {
 
         level,
 
-        current,
+        currentLevelXP,
 
-        required,
+        nextLevelXP,
 
-        percentage,
+        progressXP,
 
-        totalXP:
-            safeXP
+        requiredXP,
+
+        percentage
 
     };
+
 }
 
 
+window.calculateChemLabLevel =
+    calculateChemLabLevel;
+
+window.getLevelProgress =
+    getLevelProgress;
+
+
 /* =========================================================
-   SUPABASE CLIENT
+   08. CURRENT USER
 ========================================================= */
 
-function getChemLabSupabaseClient() {
+async function getProgressUser() {
 
     if (
-        window.supabaseClient &&
-        typeof window.supabaseClient.auth === "object"
-    ) {
-
-        return window.supabaseClient;
-    }
-
-    if (
-        window.supabase &&
-        typeof window.supabase.createClient ===
-            "function"
+        typeof window.getCurrentUser ===
+        "function"
     ) {
 
         try {
 
-            const client =
-                window.supabase.createClient(
-                    CHEMLAB_PROGRESS_CONFIG.supabaseUrl,
-                    CHEMLAB_PROGRESS_CONFIG.supabaseKey
-                );
+            return await window.getCurrentUser();
 
-            window.supabaseClient =
-                client;
+        } catch {
 
-            return client;
+            /* fallback below */
 
-        } catch (error) {
-
-            console.error(
-                "ChemLab Supabase client error:",
-                error
-            );
-        }
-    }
-
-    return null;
-}
-
-
-/* =========================================================
-   CURRENT SESSION
-========================================================= */
-
-async function getChemLabProgressSession() {
-
-    try {
-
-        if (
-            typeof window.getCurrentSession ===
-            "function"
-        ) {
-
-            const session =
-                await window.getCurrentSession();
-
-            if (session) {
-                return session;
-            }
         }
 
-    } catch (error) {
-
-        console.warn(
-            "Could not obtain session from auth.js:",
-            error
-        );
     }
 
 
     const client =
-        getChemLabSupabaseClient();
+        getProgressClient();
+
 
     if (!client) {
         return null;
@@ -406,78 +575,29 @@ async function getChemLabProgressSession() {
 
     try {
 
-        const result =
-            await client.auth.getSession();
+        const {
+            data
+        } =
+            await client.auth.getUser();
 
-        return (
-            result &&
-            result.data &&
-            result.data.session
-        ) || null;
 
-    } catch (error) {
+        return data?.user ||
+            null;
 
-        console.error(
-            "Supabase session error:",
-            error
-        );
+    } catch {
 
         return null;
+
     }
+
 }
 
 
 /* =========================================================
-   CURRENT USER
+   09. RESET LOCAL STATE
 ========================================================= */
 
-async function getChemLabProgressUser() {
-
-    try {
-
-        if (
-            typeof window.getCurrentUser ===
-            "function"
-        ) {
-
-            const user =
-                await window.getCurrentUser();
-
-            if (user) {
-                return user;
-            }
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Could not obtain user from auth.js:",
-            error
-        );
-    }
-
-
-    const session =
-        await getChemLabProgressSession();
-
-    if (
-        session &&
-        session.user
-    ) {
-
-        return session.user;
-    }
-
-
-    return null;
-}
-
-
-/* =========================================================
-   RESET LOCAL STATE
-========================================================= */
-
-function resetChemLabProgressState() {
+function resetProgressState() {
 
     chemLabProgress.loaded =
         false;
@@ -491,11 +611,11 @@ function resetChemLabProgressState() {
     chemLabProgress.saveQueued =
         false;
 
-    chemLabProgress.lastSavedSignature =
-        "";
-
     chemLabProgress.currentUserId =
         null;
+
+    chemLabProgress.lastSavedSignature =
+        "";
 
     chemLabProgress.xp =
         0;
@@ -524,184 +644,26 @@ function resetChemLabProgressState() {
     chemLabProgress.achievements =
         [];
 
+
     updateProgressUI();
+
+    emitProgressChange();
+
 }
 
 
 /* =========================================================
-   LOAD PROGRESS
+   10. APPLY DATABASE DATA
 ========================================================= */
 
-async function loadStudentProgress() {
-
-    if (chemLabProgress.loading) {
-        return false;
-    }
-
-
-    chemLabProgress.loading =
-        true;
-
-
-    try {
-
-        const session =
-            await getChemLabProgressSession();
-
-
-        if (
-            !session ||
-            !session.access_token ||
-            !session.user
-        ) {
-
-            resetChemLabProgressState();
-
-            return false;
-        }
-
-
-        const user =
-            session.user;
-
-
-        const token =
-            session.access_token;
-
-
-        chemLabProgress.currentUserId =
-            user.id;
-
-
-        const url =
-            `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
-            `/rest/v1/${CHEMLAB_PROGRESS_CONFIG.table}` +
-            `?user_id=eq.${encodeURIComponent(user.id)}` +
-            `&select=*`;
-
-
-        const response =
-            await fetch(
-                url,
-                {
-                    method: "GET",
-
-                    headers: {
-
-                        apikey:
-                            CHEMLAB_PROGRESS_CONFIG.supabaseKey,
-
-                        Authorization:
-                            `Bearer ${token}`,
-
-                        Accept:
-                            "application/json"
-                    }
-                }
-            );
-
-
-        if (!response.ok) {
-
-            const errorText =
-                await response.text();
-
-            console.error(
-                "Progress load failed:",
-                errorText
-            );
-
-            return false;
-        }
-
-
-        const rows =
-            await response.json();
-
-
-        if (
-            !Array.isArray(rows) ||
-            rows.length === 0
-        ) {
-
-            const created =
-                await createStudentProgress(
-                    user.id,
-                    token
-                );
-
-            if (!created) {
-                return false;
-            }
-
-        } else {
-
-            const data =
-                rows[0];
-
-            applyProgressData(
-                data
-            );
-        }
-
-
-        chemLabProgress.loaded =
-            true;
-
-
-        chemLabProgress.level =
-            calculateChemLabLevel(
-                chemLabProgress.xp
-            );
-
-
-        await registerDailyActivity(
-            false
-        );
-
-
-        checkAchievements();
-
-        updateProgressUI();
-
-
-        chemLabProgress.lastSavedSignature =
-            progressSignature();
-
-
-        console.log(
-            "ChemLab progress loaded."
-        );
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "ChemLab progress load error:",
-            error
-        );
-
-        return false;
-
-    } finally {
-
-        chemLabProgress.loading =
-            false;
-    }
-}
-
-
-/* =========================================================
-   APPLY DATABASE DATA
-========================================================= */
-
-function applyProgressData(data) {
+function applyProgressData(
+    data
+) {
 
     chemLabProgress.xp =
         progressNumber(
-            data.xp
+            data?.xp,
+            0
         );
 
 
@@ -713,54 +675,73 @@ function applyProgressData(data) {
 
     chemLabProgress.experimentsCompleted =
         progressNumber(
-            data.experiments_completed
+            data?.experiments_completed,
+            0
         );
 
 
     chemLabProgress.quizzesCompleted =
         progressNumber(
-            data.quizzes_completed
+            data?.quizzes_completed,
+            0
         );
 
 
     chemLabProgress.quizScore =
         progressNumber(
-            data.quiz_score
+            data?.quiz_score,
+            0
         );
 
 
     chemLabProgress.bestQuizPercentage =
         progressNumber(
-            data.best_quiz_percentage
+            data?.best_quiz_percentage,
+            0
         );
 
 
     chemLabProgress.streak =
         progressNumber(
-            data.streak
+            data?.streak,
+            0
         );
 
 
     chemLabProgress.lastActivityDate =
-        data.last_activity_date ||
+        data?.last_activity_date ||
         null;
 
 
     chemLabProgress.achievements =
-        progressSafeArray(
-            data.achievements
+        progressArray(
+            data?.achievements
         );
+
 }
 
 
 /* =========================================================
-   CREATE INITIAL PROGRESS
+   11. CREATE PROGRESS ROW
 ========================================================= */
 
-async function createStudentProgress(
-    userId,
-    token
+async function createProgressRow(
+    userId
 ) {
+
+    const client =
+        getProgressClient();
+
+
+    if (
+        !client ||
+        !userId
+    ) {
+
+        return null;
+
+    }
+
 
     const initialData = {
 
@@ -793,136 +774,269 @@ async function createStudentProgress(
 
         achievements:
             []
+
     };
 
 
     try {
 
-        const response =
-            await fetch(
-
-                `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
-                `/rest/v1/${CHEMLAB_PROGRESS_CONFIG.table}`,
-
-                {
-                    method: "POST",
-
-                    headers: {
-
-                        apikey:
-                            CHEMLAB_PROGRESS_CONFIG.supabaseKey,
-
-                        Authorization:
-                            `Bearer ${token}`,
-
-                        "Content-Type":
-                            "application/json",
-
-                        Prefer:
-                            "return=minimal"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            initialData
-                        )
-                }
-            );
+        const {
+            data,
+            error
+        } =
+            await client
+                .from(
+                    CHEMLAB_PROGRESS_CONFIG.table
+                )
+                .insert(
+                    initialData
+                )
+                .select("*")
+                .single();
 
 
-        if (!response.ok) {
+        if (!error) {
 
-            const errorText =
-                await response.text();
+            return data;
 
-            console.error(
-                "Could not create progress:",
-                errorText
-            );
-
-            return false;
         }
 
 
-        applyProgressData(
-            initialData
-        );
+        /*
+           Another request may have created
+           the row. Fetch it again.
+        */
+
+        const retry =
+            await client
+                .from(
+                    CHEMLAB_PROGRESS_CONFIG.table
+                )
+                .select("*")
+                .eq(
+                    "user_id",
+                    userId
+                )
+                .limit(1);
 
 
-        chemLabProgress.currentUserId =
-            userId;
-
-
-        return true;
+        return retry.data?.[0] ||
+            null;
 
     } catch (error) {
 
         console.error(
-            "Create progress error:",
+            "ChemLab progress creation error:",
             error
         );
 
-        return false;
+        return null;
+
     }
+
 }
 
 
 /* =========================================================
-   SAVE TIMER
+   12. LOAD PROGRESS
 ========================================================= */
 
-let progressSaveTimer =
-    null;
+async function loadStudentProgress() {
+
+    if (
+        chemLabProgress.loading
+    ) {
+
+        return;
+
+    }
 
 
-function scheduleProgressSave() {
-
-    clearTimeout(
-        progressSaveTimer
-    );
+    const user =
+        await getProgressUser();
 
 
-    progressSaveTimer =
-        setTimeout(
-            () => {
+    if (!user) {
 
-                saveStudentProgress();
+        resetProgressState();
 
-            },
-            CHEMLAB_PROGRESS_CONFIG.saveDelay
+        return;
+
+    }
+
+
+    chemLabProgress.loading =
+        true;
+
+
+    try {
+
+        const client =
+            getProgressClient();
+
+
+        if (!client) {
+
+            return;
+
+        }
+
+
+        let {
+            data,
+            error
+        } =
+            await client
+                .from(
+                    CHEMLAB_PROGRESS_CONFIG.table
+                )
+                .select("*")
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .limit(1);
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (
+            !data ||
+            !data.length
+        ) {
+
+            const created =
+                await createProgressRow(
+                    user.id
+                );
+
+
+            data =
+                created
+                    ? [created]
+                    : [];
+
+        }
+
+
+        if (!data.length) {
+
+            throw new Error(
+                "Could not create student progress."
+            );
+
+        }
+
+
+        chemLabProgress.currentUserId =
+            user.id;
+
+
+        applyProgressData(
+            data[0]
         );
+
+
+        chemLabProgress.loaded =
+            true;
+
+
+        /*
+           Mark the current day as activity.
+           Save afterward so the streak is
+           actually persisted.
+        */
+
+        const signatureBeforeActivity =
+            progressSignature();
+
+
+        await registerDailyActivity(
+            false
+        );
+
+
+        chemLabProgress.lastSavedSignature =
+            signatureBeforeActivity;
+
+
+        checkAchievements();
+
+        updateProgressUI();
+
+        emitProgressChange();
+
+
+        /*
+           If daily activity changed the data,
+           persist it.
+        */
+
+        if (
+            progressSignature() !==
+            signatureBeforeActivity
+        ) {
+
+            scheduleProgressSave();
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "ChemLab progress loading error:",
+            error
+        );
+
+
+    } finally {
+
+        chemLabProgress.loading =
+            false;
+
+    }
+
 }
 
 
+window.loadStudentProgress =
+    loadStudentProgress;
+
+
 /* =========================================================
-   SAVE PROGRESS
+   13. SAVE PROGRESS
 ========================================================= */
 
-async function saveStudentProgress() {
+async function saveStudentProgress(
+    immediate = false
+) {
 
-    if (!chemLabProgress.loaded) {
+    if (
+        !chemLabProgress.loaded ||
+        !chemLabProgress.currentUserId
+    ) {
+
         return false;
+
     }
 
 
-    if (!chemLabProgress.currentUserId) {
-        return false;
-    }
-
-
-    if (chemLabProgress.saving) {
+    if (
+        chemLabProgress.saving
+    ) {
 
         chemLabProgress.saveQueued =
             true;
 
         return false;
+
     }
-
-
-    chemLabProgress.level =
-        calculateChemLabLevel(
-            chemLabProgress.xp
-        );
 
 
     const signature =
@@ -930,32 +1044,29 @@ async function saveStudentProgress() {
 
 
     if (
+        !immediate &&
         signature ===
         chemLabProgress.lastSavedSignature
     ) {
 
         return true;
+
     }
 
 
-    const session =
-        await getChemLabProgressSession();
+    const client =
+        getProgressClient();
 
 
-    if (
-        !session ||
-        !session.access_token
-    ) {
+    if (!client) {
 
         return false;
+
     }
 
 
     chemLabProgress.saving =
         true;
-
-    chemLabProgress.saveQueued =
-        false;
 
 
     try {
@@ -987,69 +1098,36 @@ async function saveStudentProgress() {
                 chemLabProgress.lastActivityDate,
 
             achievements:
-                chemLabProgress.achievements,
+                chemLabProgress.achievements
 
-            updated_at:
-                new Date().toISOString()
         };
 
 
-        const response =
-            await fetch(
-
-                `${CHEMLAB_PROGRESS_CONFIG.supabaseUrl}` +
-                `/rest/v1/${CHEMLAB_PROGRESS_CONFIG.table}` +
-                `?user_id=eq.${encodeURIComponent(
+        const {
+            error
+        } =
+            await client
+                .from(
+                    CHEMLAB_PROGRESS_CONFIG.table
+                )
+                .update(
+                    payload
+                )
+                .eq(
+                    "user_id",
                     chemLabProgress.currentUserId
-                )}`,
-
-                {
-                    method: "PATCH",
-
-                    headers: {
-
-                        apikey:
-                            CHEMLAB_PROGRESS_CONFIG.supabaseKey,
-
-                        Authorization:
-                            `Bearer ${session.access_token}`,
-
-                        "Content-Type":
-                            "application/json",
-
-                        Prefer:
-                            "return=minimal"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            payload
-                        )
-                }
-            );
+                );
 
 
-        if (!response.ok) {
+        if (error) {
 
-            const errorText =
-                await response.text();
+            throw error;
 
-            console.error(
-                "Progress save failed:",
-                errorText
-            );
-
-            return false;
         }
 
 
         chemLabProgress.lastSavedSignature =
-            progressSignature();
-
-
-        console.log(
-            "ChemLab progress saved."
-        );
+            signature;
 
 
         return true;
@@ -1057,7 +1135,7 @@ async function saveStudentProgress() {
     } catch (error) {
 
         console.error(
-            "Progress save error:",
+            "ChemLab progress save error:",
             error
         );
 
@@ -1073,66 +1151,110 @@ async function saveStudentProgress() {
             chemLabProgress.saveQueued
         ) {
 
+            chemLabProgress.saveQueued =
+                false;
+
             scheduleProgressSave();
+
         }
+
     }
+
 }
 
 
 /* =========================================================
-   DAILY ACTIVITY
+   14. DEBOUNCED SAVE
+========================================================= */
+
+let progressSaveTimer =
+    null;
+
+
+function scheduleProgressSave() {
+
+    clearTimeout(
+        progressSaveTimer
+    );
+
+
+    progressSaveTimer =
+        setTimeout(
+            () => {
+
+                saveStudentProgress();
+
+            },
+            CHEMLAB_PROGRESS_CONFIG
+                .saveDelay
+        );
+
+}
+
+
+/* =========================================================
+   15. DAILY ACTIVITY
 ========================================================= */
 
 async function registerDailyActivity(
     shouldSave = true
 ) {
 
-    if (!chemLabProgress.loaded) {
-        return false;
+    if (
+        !chemLabProgress.loaded
+    ) {
+
+        return;
+
     }
 
 
     const today =
-        progressToday();
+        getTodayString();
 
 
-    const last =
-        chemLabProgress.lastActivityDate;
+    if (
+        chemLabProgress
+            .lastActivityDate ===
+        today
+    ) {
 
+        return;
 
-    if (last === today) {
-        return false;
     }
 
 
-    if (!last) {
+    const yesterday =
+        getYesterdayString();
+
+
+    if (
+        !chemLabProgress
+            .lastActivityDate
+    ) {
 
         chemLabProgress.streak =
             1;
 
+    } else if (
+        chemLabProgress
+            .lastActivityDate ===
+        yesterday
+    ) {
+
+        chemLabProgress.streak +=
+            1;
+
     } else {
 
-        const yesterday =
-            progressYesterday();
+        chemLabProgress.streak =
+            1;
 
-
-        if (last === yesterday) {
-
-            chemLabProgress.streak =
-                Math.max(
-                    1,
-                    chemLabProgress.streak + 1
-                );
-
-        } else {
-
-            chemLabProgress.streak =
-                1;
-        }
     }
 
 
-    chemLabProgress.lastActivityDate =
+    chemLabProgress
+        .lastActivityDate =
         today;
 
 
@@ -1140,36 +1262,58 @@ async function registerDailyActivity(
 
     updateProgressUI();
 
+    emitProgressChange();
+
 
     if (shouldSave) {
+
         scheduleProgressSave();
+
     }
 
-
-    return true;
 }
 
 
 /* =========================================================
-   ADD XP
+   16. AWARD XP
 ========================================================= */
 
-function awardChemLabXP(
+async function awardChemLabXP(
     amount,
-    reason = "ChemLab activity"
+    reason = ""
 ) {
 
-    if (!chemLabProgress.loaded) {
-        return false;
+    if (
+        !chemLabProgress.loaded
+    ) {
+
+        console.warn(
+            "ChemLab XP award ignored because progress has not loaded."
+        );
+
+        return;
+
     }
 
 
-    const xp =
-        progressNumber(amount);
+    const xpAmount =
+        Math.max(
+            0,
+            Math.round(
+                progressNumber(
+                    amount,
+                    0
+                )
+            )
+        );
 
 
-    if (xp <= 0) {
-        return false;
+    if (
+        xpAmount <= 0
+    ) {
+
+        return;
+
     }
 
 
@@ -1178,7 +1322,7 @@ function awardChemLabXP(
 
 
     chemLabProgress.xp +=
-        xp;
+        xpAmount;
 
 
     chemLabProgress.level =
@@ -1187,7 +1331,7 @@ function awardChemLabXP(
         );
 
 
-    registerDailyActivity(
+    await registerDailyActivity(
         false
     );
 
@@ -1195,6 +1339,8 @@ function awardChemLabXP(
     checkAchievements();
 
     updateProgressUI();
+
+    emitProgressChange();
 
     scheduleProgressSave();
 
@@ -1204,118 +1350,147 @@ function awardChemLabXP(
         previousLevel
     ) {
 
-        showProgressNotification(
+        if (
+            typeof window.showNotification ===
+            "function"
+        ) {
 
-            `🎉 Level ${chemLabProgress.level}!`,
+            window.showNotification(
+                `Level up! You reached Level ${chemLabProgress.level}.`,
+                "success",
+                5000
+            );
 
-            `You earned ${xp} XP from ${reason}.`
+        }
+
+    } else if (
+        reason &&
+        typeof window.showNotification ===
+        "function"
+    ) {
+
+        window.showNotification(
+            `+${xpAmount} XP — ${reason}`,
+            "success"
         );
 
-    } else {
-
-        showProgressNotification(
-
-            `+${xp} XP`,
-
-            reason
-        );
     }
 
-
-    return true;
 }
 
 
+window.awardChemLabXP =
+    awardChemLabXP;
+
+
 /* =========================================================
-   EXPERIMENT COMPLETION
+   17. COMPLETE EXPERIMENT
 ========================================================= */
 
-function completeChemLabExperiment(
-    experimentName = "Experiment",
+async function completeChemLabExperiment(
+    name,
     xpReward = 25
 ) {
 
-    if (!chemLabProgress.loaded) {
-        return false;
-    }
-
-
-    /*
-       Supports both:
-
-       completeChemLabExperiment("Titration")
-
-       and:
-
-       completeChemLabExperiment("Titration", 30)
-    */
-
     if (
-        typeof experimentName !==
-        "string"
+        !chemLabProgress.loaded
     ) {
 
-        experimentName =
-            "Experiment";
+        return;
+
     }
 
 
-    xpReward =
-        progressNumber(
-            xpReward,
-            25
-        );
-
-
-    chemLabProgress.experimentsCompleted +=
+    chemLabProgress
+        .experimentsCompleted +=
         1;
 
 
-    registerDailyActivity(
+    await registerDailyActivity(
         false
     );
 
 
-    awardChemLabXP(
-        xpReward,
-        experimentName
-    );
+    /*
+       Award XP directly here rather than
+       calling awardChemLabXP, because we
+       need exactly one completion update.
+    */
+
+    const reward =
+        Math.max(
+            0,
+            Math.round(
+                progressNumber(
+                    xpReward,
+                    25
+                )
+            )
+        );
+
+
+    chemLabProgress.xp +=
+        reward;
+
+
+    chemLabProgress.level =
+        calculateChemLabLevel(
+            chemLabProgress.xp
+        );
 
 
     checkAchievements();
 
     updateProgressUI();
 
+    emitProgressChange();
+
     scheduleProgressSave();
 
 
-    return true;
+    if (
+        typeof window.showNotification ===
+        "function"
+    ) {
+
+        window.showNotification(
+            `${name} completed! +${reward} XP`,
+            "success"
+        );
+
+    }
+
 }
 
 
+window.completeChemLabExperiment =
+    completeChemLabExperiment;
+
+
 /* =========================================================
-   QUIZ COMPLETION
+   18. RECORD QUIZ
 ========================================================= */
 
-function recordChemLabQuiz(
+async function recordChemLabQuiz(
     score,
     total
 ) {
 
-    if (!chemLabProgress.loaded) {
-        return false;
+    if (
+        !chemLabProgress.loaded
+    ) {
+
+        return;
+
     }
 
 
     const safeScore =
-        Math.min(
-            progressNumber(score),
-            Math.max(
-                1,
-                progressNumber(
-                    total,
-                    1
-                )
+        Math.max(
+            0,
+            progressNumber(
+                score,
+                0
             )
         );
 
@@ -1339,410 +1514,69 @@ function recordChemLabQuiz(
         );
 
 
-    chemLabProgress.quizzesCompleted +=
+    chemLabProgress
+        .quizzesCompleted +=
         1;
 
 
-    chemLabProgress.quizScore +=
+    chemLabProgress
+        .quizScore +=
         safeScore;
 
 
-    chemLabProgress.bestQuizPercentage =
+    chemLabProgress
+        .bestQuizPercentage =
         Math.max(
-            chemLabProgress.bestQuizPercentage,
+            chemLabProgress
+                .bestQuizPercentage,
             percentage
         );
 
 
-    let xpReward =
+    let reward =
         10;
 
 
-    if (percentage >= 80) {
+    if (
+        percentage >= 80
+    ) {
 
-        xpReward =
+        reward =
             25;
 
-    } else if (percentage >= 60) {
+    } else if (
+        percentage >= 60
+    ) {
 
-        xpReward =
+        reward =
             18;
+
     }
 
 
-    registerDailyActivity(
+    await registerDailyActivity(
         false
     );
 
 
-    awardChemLabXP(
-        xpReward,
-        `Quiz — ${percentage}%`
-    );
+    chemLabProgress.xp +=
+        reward;
+
+
+    chemLabProgress.level =
+        calculateChemLabLevel(
+            chemLabProgress.xp
+        );
 
 
     checkAchievements();
 
     updateProgressUI();
 
-    scheduleProgressSave();
-
-
-    return true;
-}
-
-
-/* =========================================================
-   ACHIEVEMENT UNLOCK
-========================================================= */
-
-function unlockAchievement(
-    achievementId
-) {
-
-    if (!chemLabProgress.loaded) {
-        return false;
-    }
-
-
-    if (
-        chemLabProgress.achievements
-            .includes(
-                achievementId
-            )
-    ) {
-
-        return false;
-    }
-
-
-    const achievement =
-        CHEMLAB_ACHIEVEMENTS.find(
-            item =>
-                item.id ===
-                achievementId
-        );
-
-
-    if (!achievement) {
-        return false;
-    }
-
-
-    chemLabProgress.achievements.push(
-        achievementId
-    );
-
-
-    showProgressNotification(
-
-        `${achievement.icon} Achievement Unlocked!`,
-
-        `${achievement.title} — ${achievement.description}`
-    );
-
+    emitProgressChange();
 
     scheduleProgressSave();
 
-    updateProgressUI();
-
-
-    return true;
-}
-
-
-/* =========================================================
-   ACHIEVEMENT CHECKER
-========================================================= */
-
-function checkAchievements() {
-
-    if (!chemLabProgress.loaded) {
-        return;
-    }
-
-
-    if (
-        chemLabProgress.xp >= 1
-    ) {
-
-        unlockAchievement(
-            "first-step"
-        );
-    }
-
-
-    if (
-        chemLabProgress.experimentsCompleted >= 1
-    ) {
-
-        unlockAchievement(
-            "first-experiment"
-        );
-    }
-
-
-    if (
-        chemLabProgress.quizzesCompleted >= 1
-    ) {
-
-        unlockAchievement(
-            "first-quiz"
-        );
-    }
-
-
-    /*
-       Correct quiz-master logic:
-       checks the best percentage obtained
-       on an individual quiz.
-    */
-
-    if (
-        chemLabProgress.bestQuizPercentage >= 80
-    ) {
-
-        unlockAchievement(
-            "quiz-master"
-        );
-    }
-
-
-    if (
-        chemLabProgress.xp >= 100
-    ) {
-
-        unlockAchievement(
-            "xp-100"
-        );
-    }
-
-
-    if (
-        chemLabProgress.level >= 5
-    ) {
-
-        unlockAchievement(
-            "level-5"
-        );
-    }
-
-
-    if (
-        chemLabProgress.streak >= 3
-    ) {
-
-        unlockAchievement(
-            "streak-3"
-        );
-    }
-
-
-    if (
-        chemLabProgress.streak >= 7
-    ) {
-
-        unlockAchievement(
-            "streak-7"
-        );
-    }
-}
-
-
-/* =========================================================
-   PROGRESS UI
-========================================================= */
-
-function updateProgressUI() {
-
-    const xp =
-        document.getElementById(
-            "xpValue"
-        );
-
-
-    const streak =
-        document.getElementById(
-            "streakValue"
-        );
-
-
-    const level =
-        document.getElementById(
-            "levelValue"
-        );
-
-
-    const experiments =
-        document.getElementById(
-            "experimentsCompleted"
-        );
-
-
-    const progressLevel =
-        document.getElementById(
-            "progressLevel"
-        );
-
-
-    const progressXP =
-        document.getElementById(
-            "progressXP"
-        );
-
-
-    const progressBar =
-        document.getElementById(
-            "progressBar"
-        );
-
-
-    const progressText =
-        document.getElementById(
-            "progressText"
-        );
-
-
-    if (xp) {
-
-        xp.textContent =
-            chemLabProgress.xp
-                .toLocaleString();
-    }
-
-
-    if (streak) {
-
-        streak.textContent =
-            chemLabProgress.streak;
-    }
-
-
-    if (level) {
-
-        level.textContent =
-            chemLabProgress.level;
-    }
-
-
-    if (experiments) {
-
-        experiments.textContent =
-            chemLabProgress.experimentsCompleted;
-    }
-
-
-    const levelProgress =
-        getLevelProgress(
-            chemLabProgress.xp
-        );
-
-
-    if (progressLevel) {
-
-        progressLevel.textContent =
-            `Level ${levelProgress.level}`;
-    }
-
-
-    if (progressXP) {
-
-        progressXP.textContent =
-            `${levelProgress.current} / ${levelProgress.required} XP`;
-    }
-
-
-    if (progressBar) {
-
-        progressBar.style.width =
-            `${levelProgress.percentage}%`;
-
-        progressBar.setAttribute(
-            "aria-valuenow",
-            String(
-                levelProgress.percentage
-            )
-        );
-    }
-
-
-    if (progressText) {
-
-        progressText.textContent =
-            `${levelProgress.percentage}% to Level ${
-                levelProgress.level + 1
-            }`;
-    }
-
-
-    /*
-       Optional dashboard elements.
-       These IDs are intentionally different
-       from the progress-page IDs.
-    */
-
-    const dashboardXP =
-        document.getElementById(
-            "dashboardXpValue"
-        );
-
-
-    const dashboardStreak =
-        document.getElementById(
-            "dashboardStreakValue"
-        );
-
-
-    const dashboardLevel =
-        document.getElementById(
-            "dashboardLevelValue"
-        );
-
-
-    const dashboardExperiments =
-        document.getElementById(
-            "dashboardExperimentsCompleted"
-        );
-
-
-    if (dashboardXP) {
-
-        dashboardXP.textContent =
-            chemLabProgress.xp
-                .toLocaleString();
-    }
-
-
-    if (dashboardStreak) {
-
-        dashboardStreak.textContent =
-            chemLabProgress.streak;
-    }
-
-
-    if (dashboardLevel) {
-
-        dashboardLevel.textContent =
-            chemLabProgress.level;
-    }
-
-
-    if (dashboardExperiments) {
-
-        dashboardExperiments.textContent =
-            chemLabProgress.experimentsCompleted;
-    }
-}
-
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-
-function showProgressNotification(
-    title,
-    message
-) {
 
     if (
         typeof window.showNotification ===
@@ -1750,88 +1584,387 @@ function showProgressNotification(
     ) {
 
         window.showNotification(
-            `${title} — ${message}`,
+            `Quiz completed! +${reward} XP`,
             "success"
         );
 
+    }
+
+}
+
+
+window.recordChemLabQuiz =
+    recordChemLabQuiz;
+
+
+/* =========================================================
+   19. ACHIEVEMENTS
+========================================================= */
+
+function checkAchievements() {
+
+    if (
+        !chemLabProgress.loaded
+    ) {
+
         return;
+
     }
 
 
-    console.log(
-        `${title}: ${message}`
-    );
-}
-
-
-/* =========================================================
-   AUTH CHANGE HANDLER
-========================================================= */
-
-let progressAuthTimer =
-    null;
-
-
-async function handleProgressAuthChange() {
-
-    clearTimeout(
-        progressAuthTimer
-    );
-
-
-    progressAuthTimer =
-        setTimeout(
-            async () => {
-
-                const user =
-                    await getChemLabProgressUser();
-
-
-                if (
-                    !user ||
-                    !user.id
-                ) {
-
-                    resetChemLabProgressState();
-
-                    return;
-                }
-
-
-                if (
-                    chemLabProgress.currentUserId !==
-                    user.id
-                ) {
-
-                    resetChemLabProgressState();
-
-                    await loadStudentProgress();
-
-                } else if (
-                    !chemLabProgress.loaded
-                ) {
-
-                    await loadStudentProgress();
-                }
-
-            },
-            150
+    const unlocked =
+        progressArray(
+            chemLabProgress.achievements
         );
+
+
+    CHEMLAB_ACHIEVEMENTS.forEach(
+        achievement => {
+
+            if (
+                unlocked.includes(
+                    achievement.id
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            let passed =
+                false;
+
+
+            try {
+
+                passed =
+                    Boolean(
+                        achievement.condition(
+                            chemLabProgress
+                        )
+                    );
+
+            } catch {
+
+                passed =
+                    false;
+
+            }
+
+
+            if (
+                passed
+            ) {
+
+                unlockAchievement(
+                    achievement
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+function unlockAchievement(
+    achievement
+) {
+
+    if (
+        chemLabProgress
+            .achievements
+            .includes(
+                achievement.id
+            )
+    ) {
+
+        return;
+
+    }
+
+
+    chemLabProgress
+        .achievements
+        .push(
+            achievement.id
+        );
+
+
+    if (
+        typeof window.showNotification ===
+        "function"
+    ) {
+
+        window.showNotification(
+            `Achievement unlocked: ${achievement.title}`,
+            "success",
+            5000
+        );
+
+    }
+
+
+    scheduleProgressSave();
+
+    emitProgressChange(
+        achievement.id
+    );
+
+}
+
+
+window.checkChemLabAchievements =
+    checkAchievements;
+
+
+/* =========================================================
+   20. PROGRESS UI
+========================================================= */
+
+function updateProgressUI() {
+
+    const levelData =
+        getLevelProgress(
+            chemLabProgress.xp
+        );
+
+
+    chemLabProgress.level =
+        levelData.level;
+
+
+    /*
+       Main progress
+    */
+
+    setProgressText(
+        "xpValue",
+        chemLabProgress.xp
+    );
+
+
+    setProgressText(
+        "streakValue",
+        chemLabProgress.streak
+    );
+
+
+    setProgressText(
+        "levelValue",
+        chemLabProgress.level
+    );
+
+
+    setProgressText(
+        "experimentsCompleted",
+        chemLabProgress
+            .experimentsCompleted
+    );
+
+
+    /*
+       Progress page
+    */
+
+    setProgressText(
+        "progressLevel",
+        `Level ${levelData.level}`
+    );
+
+
+    setProgressText(
+        "progressXP",
+        `${levelData.progressXP} / ${levelData.requiredXP} XP`
+    );
+
+
+    setProgressWidth(
+        "progressBar",
+        levelData.percentage
+    );
+
+
+    setProgressText(
+        "progressText",
+        `${levelData.percentage}% to Level ${levelData.level + 1}`
+    );
+
+
+    /*
+       Dashboard
+    */
+
+    setProgressText(
+        "dashboardXpValue",
+        chemLabProgress.xp
+    );
+
+
+    setProgressText(
+        "dashboardStreakValue",
+        chemLabProgress.streak
+    );
+
+
+    setProgressText(
+        "dashboardLevelValue",
+        chemLabProgress.level
+    );
+
+
+    setProgressText(
+        "dashboardExperimentsCompleted",
+        chemLabProgress
+            .experimentsCompleted
+    );
+
+
+    setProgressText(
+        "dashboardProgressLevel",
+        `Level ${levelData.level}`
+    );
+
+
+    setProgressText(
+        "dashboardProgressXP",
+        `${levelData.progressXP} / ${levelData.requiredXP} XP`
+    );
+
+
+    setProgressWidth(
+        "dashboardProgressBar",
+        levelData.percentage
+    );
+
+
+    setProgressText(
+        "dashboardProgressText",
+        `${levelData.percentage}% to Level ${levelData.level + 1}`
+    );
+
+
+    /*
+       Achievement count
+    */
+
+    setProgressText(
+        "achievementUnlockedCount",
+        `${chemLabProgress.achievements.length}/${CHEMLAB_ACHIEVEMENTS.length}`
+    );
+
+}
+
+
+function setProgressText(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.textContent =
+            value ?? "";
+
+    }
+
+}
+
+
+function setProgressWidth(
+    id,
+    percentage
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.style.width =
+            `${Math.max(
+                0,
+                Math.min(
+                    100,
+                    percentage
+                )
+            )}%`;
+
+    }
+
+}
+
+
+window.updateProgressUI =
+    updateProgressUI;
+
+
+/* =========================================================
+   21. PROGRESS EVENT
+========================================================= */
+
+function emitProgressChange(
+    achievementId = null
+) {
+
+    document.dispatchEvent(
+        new CustomEvent(
+            "chemlab:progress-change",
+            {
+
+                detail: {
+
+                    progress:
+                        chemLabProgress,
+
+                    achievementId
+
+                }
+
+            }
+        )
+    );
+
 }
 
 
 /* =========================================================
-   AUTH EVENT
+   22. AUTH CHANGE
 ========================================================= */
 
-window.addEventListener(
+document.addEventListener(
     "chemlab:auth-change",
-    handleProgressAuthChange
+    async event => {
+
+        const user =
+            event?.detail?.user ||
+            null;
+
+
+        if (!user) {
+
+            resetProgressState();
+
+            return;
+
+        }
+
+
+        await loadStudentProgress();
+
+    }
 );
 
 
 /* =========================================================
-   PAGE VISIBILITY
+   23. PAGE VISIBILITY
 ========================================================= */
 
 document.addEventListener(
@@ -1844,152 +1977,107 @@ document.addEventListener(
         ) {
 
             saveStudentProgress();
+
         }
+
     }
 );
 
-
-/* =========================================================
-   BROWSER CLOSE / NAVIGATION
-========================================================= */
 
 window.addEventListener(
-    "beforeunload",
+    "pagehide",
     () => {
 
-        /*
-           Best-effort save.
+        saveStudentProgress();
 
-           Browsers may cancel ordinary async
-           requests during unload, so this is
-           supplementary rather than the primary
-           save mechanism.
-        */
-
-        if (
-            chemLabProgress.loaded
-        ) {
-
-            saveStudentProgress();
-        }
     }
 );
 
 
 /* =========================================================
-   INITIALIZATION
+   24. INITIALIZATION
 ========================================================= */
-
-let progressInitializationStarted =
-    false;
-
 
 async function initializeChemLabProgress() {
 
     if (
-        progressInitializationStarted
+        window.__CHEMLAB_PROGRESS_INITIALIZED
     ) {
 
         return;
+
     }
 
 
-    progressInitializationStarted =
+    window.__CHEMLAB_PROGRESS_INITIALIZED =
         true;
 
 
-    /*
-       First attempt immediately.
-       auth.js already owns session restoration.
-    */
-
-    await loadStudentProgress();
+    updateProgressUI();
 
 
-    /*
-       A second attempt handles cases where
-       Supabase session restoration finishes
-       slightly after page startup.
-    */
+    const user =
+        await getProgressUser();
 
-    if (
-        !chemLabProgress.loaded
-    ) {
 
-        setTimeout(
-            async () => {
+    if (user) {
 
-                if (
-                    !chemLabProgress.loaded
-                ) {
+        await loadStudentProgress();
 
-                    await loadStudentProgress();
-                }
-
-            },
-            1200
-        );
     }
 
 
-    updateProgressUI();
+    /*
+       Auth may initialize slightly
+       after this script.
+    */
+
+    setTimeout(
+        async () => {
+
+            if (
+                !chemLabProgress.loaded
+            ) {
+
+                const currentUser =
+                    await getProgressUser();
+
+
+                if (currentUser) {
+
+                    await loadStudentProgress();
+
+                }
+
+            }
+
+        },
+        1200
+    );
+
 }
 
 
 /* =========================================================
-   PUBLIC API
+   25. PUBLIC API
 ========================================================= */
 
-window.chemLabProgress =
-    chemLabProgress;
-
-
-window.CHEMLAB_ACHIEVEMENTS =
-    CHEMLAB_ACHIEVEMENTS;
-
-
-window.loadStudentProgress =
-    loadStudentProgress;
-
+window.initializeChemLabProgress =
+    initializeChemLabProgress;
 
 window.saveStudentProgress =
     saveStudentProgress;
 
+window.registerDailyActivity =
+    registerDailyActivity;
 
-window.awardChemLabXP =
-    awardChemLabXP;
-
-
-window.completeChemLabExperiment =
-    completeChemLabExperiment;
-
-
-window.recordChemLabQuiz =
-    recordChemLabQuiz;
-
-
-window.unlockAchievement =
-    unlockAchievement;
-
-
-window.checkAchievements =
-    checkAchievements;
-
-
-window.updateProgressUI =
-    updateProgressUI;
-
-
-window.getLevelProgress =
-    getLevelProgress;
-
-
-window.calculateChemLabLevel =
-    calculateChemLabLevel;
+window.getChemLabProgress =
+    () =>
+        chemLabProgress;
 
 
 /* =========================================================
-   START
+   26. DOM READY
 ========================================================= */
 
 if (
@@ -2008,4 +2096,5 @@ if (
 } else {
 
     initializeChemLabProgress();
+
 }
