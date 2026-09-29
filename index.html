@@ -464,743 +464,965 @@
              ================================================= -->
 
         <div class="page-container">
+<!-- =========================================================
+     DASHBOARD
+     CHEMLAB PROFESSIONAL STUDENT WORKSPACE
+     ========================================================= -->
+
+<section
+    id="dashboard"
+    class="page-section"
+    data-page="dashboard"
+>
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <div class="dashboard-hero">
+
+        <div class="dashboard-hero-content">
+
+            <div class="dashboard-hero-eyebrow">
+                <span>🧪</span>
+                <span>CHEMLAB STUDENT WORKSPACE</span>
+            </div>
+
+            <h1 class="dashboard-hero-title">
+                Welcome back,
+                <span data-dashboard-name>
+                    Chemistry Student
+                </span>
+            </h1>
+
+            <p class="dashboard-hero-description">
+                Continue building your chemistry knowledge through
+                structured learning, virtual laboratory work,
+                scientific analysis, and assessment.
+            </p>
+
+            <div class="dashboard-hero-actions">
+
+                <button
+                    type="button"
+                    class="button button-primary"
+                    data-route="laboratory"
+                >
+                    🧪 Start Laboratory
+                </button>
+
+                <button
+                    type="button"
+                    class="button button-secondary"
+                    data-route="learn"
+                >
+                    📚 Continue Learning
+                </button>
+
+            </div>
+
+        </div>
 
 
-            <!-- =================================================
-                 DASHBOARD
-                 ================================================= -->
+        <div
+            class="dashboard-hero-visual"
+            aria-hidden="true"
+        >
 
-            <section
-                class="app-page active"
-                data-page="dashboard"
+            <div class="dashboard-orbit">
+
+                <div class="dashboard-orbit-core">
+                    ⚗️
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STUDENT STATUS
+         ===================================================== -->
+
+    <div
+        class="dashboard-stat-grid"
+        aria-label="Student statistics"
+    >
+
+        <!-- Experiments -->
+
+        <article class="dashboard-stat-card">
+
+            <div class="dashboard-stat-top">
+
+                <span class="dashboard-stat-label">
+                    Experiments
+                </span>
+
+                <span
+                    class="dashboard-stat-icon"
+                    aria-hidden="true"
+                >
+                    🧪
+                </span>
+
+            </div>
+
+            <div
+                class="dashboard-stat-value"
+                id="dashboardExperimentsCompleted"
             >
+                0
+            </div>
+
+            <div class="dashboard-stat-meta">
+                Laboratory sessions completed
+            </div>
+
+        </article>
 
 
-                <!-- Page Header -->
+        <!-- Mastery -->
 
-                <div class="page-header dashboard-header">
+        <article class="dashboard-stat-card">
 
-                    <div>
+            <div class="dashboard-stat-top">
 
-                        <span class="eyebrow">
-                            CHEMLAB WORKSPACE
-                        </span>
+                <span class="dashboard-stat-label">
+                    Chemistry Mastery
+                </span>
 
-                        <h1>
-                            Your Chemistry Workspace
-                        </h1>
+                <span
+                    class="dashboard-stat-icon"
+                    aria-hidden="true"
+                >
+                    📊
+                </span>
 
-                        <p>
-                            Learn concepts, conduct experiments,
-                            analyze evidence, and build scientific mastery.
+            </div>
+
+            <div
+                class="dashboard-stat-value"
+                id="dashboardMasteryValue"
+            >
+                0%
+            </div>
+
+            <div class="dashboard-stat-meta">
+                Overall learning mastery
+            </div>
+
+            <div class="dashboard-stat-progress">
+
+                <div
+                    class="dashboard-stat-progress-bar"
+                    id="dashboardMasteryProgress"
+                    style="width: 0%;"
+                ></div>
+
+            </div>
+
+        </article>
+
+
+        <!-- Assessments -->
+
+        <article class="dashboard-stat-card">
+
+            <div class="dashboard-stat-top">
+
+                <span class="dashboard-stat-label">
+                    Assessments
+                </span>
+
+                <span
+                    class="dashboard-stat-icon"
+                    aria-hidden="true"
+                >
+                    📝
+                </span>
+
+            </div>
+
+            <div
+                class="dashboard-stat-value"
+                id="dashboardAssessmentsCompleted"
+            >
+                0
+            </div>
+
+            <div class="dashboard-stat-meta">
+                Assessments completed
+            </div>
+
+        </article>
+
+
+        <!-- XP -->
+
+        <article class="dashboard-stat-card">
+
+            <div class="dashboard-stat-top">
+
+                <span class="dashboard-stat-label">
+                    Science XP
+                </span>
+
+                <span
+                    class="dashboard-stat-icon"
+                    aria-hidden="true"
+                >
+                    ⚡
+                </span>
+
+            </div>
+
+            <div
+                class="dashboard-stat-value"
+                id="dashboardScienceXP"
+            >
+                0
+            </div>
+
+            <div class="dashboard-stat-meta">
+                Progress earned through learning
+            </div>
+
+        </article>
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN DASHBOARD GRID
+         ===================================================== -->
+
+    <div class="dashboard-content-grid">
+
+
+        <!-- =================================================
+             LEFT COLUMN
+             ================================================= -->
+
+        <div class="dashboard-column">
+
+
+            <!-- =============================================
+                 CONTINUE LEARNING
+                 ============================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div class="dashboard-section-heading">
+
+                        <h2 class="dashboard-section-title">
+                            Continue Learning
+                        </h2>
+
+                        <p class="dashboard-section-description">
+                            Pick up where your chemistry studies
+                            left off.
                         </p>
 
                     </div>
 
+                    <a
+                        href="#learn"
+                        class="dashboard-section-link"
+                        data-route="learn"
+                    >
+                        View Academy
+                    </a>
 
-                    <div class="page-header-actions">
+                </div>
 
-                        <a
-                            href="#laboratory"
-                            class="button button-primary"
-                            data-route="laboratory"
-                        >
-                            <span>⚗</span>
-                            Open Laboratory
-                        </a>
 
-                        <a
-                            href="#learn"
-                            class="button button-secondary"
+                <div class="dashboard-learning-card">
+
+                    <div
+                        class="dashboard-learning-icon"
+                        aria-hidden="true"
+                    >
+                        📐
+                    </div>
+
+
+                    <div class="dashboard-learning-content">
+
+                        <h3 class="dashboard-learning-title">
+                            Measurements & Scientific Units
+                        </h3>
+
+                        <div class="dashboard-learning-meta">
+                            Foundation Chemistry • Core Concepts
+                        </div>
+
+                        <div class="dashboard-learning-progress">
+
+                            <div
+                                class="dashboard-learning-progress-bar"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-learning-action">
+
+                        <button
+                            type="button"
+                            class="button button-primary button-small"
                             data-route="learn"
                         >
-                            Continue Learning
-                        </a>
+                            Continue
+                        </button>
 
                     </div>
 
                 </div>
-
-
-
-                <!-- Academic Status -->
-
-                <div class="dashboard-status-card">
-
-                    <div class="status-card-main">
-
-                        <div class="status-icon">
-                            ◈
-                        </div>
-
-                        <div>
-
-                            <span class="status-label">
-                                CURRENT ACADEMIC LEVEL
-                            </span>
-
-                            <h3>
-                                Foundation Chemistry
-                            </h3>
-
-                            <p>
-                                Your learning path will adapt as your mastery develops.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="status-card-progress">
-
-                        <div class="progress-heading">
-
-                            <span>
-                                Overall mastery
-                            </span>
-
-                            <strong>
-                                0%
-                            </strong>
-
-                        </div>
-
-                        <div class="progress-bar">
-
-                            <span
-                                class="progress-fill"
-                                style="width: 0%"
-                            ></span>
-
-                        </div>
-
-                        <small>
-                            Begin your first learning module to start building mastery.
-                        </small>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Statistics -->
-
-                <div class="stats-grid">
-
-
-                    <article class="stat-card">
-
-                        <div class="stat-card-top">
-
-                            <span class="stat-icon">
-                                ◈
-                            </span>
-
-                            <span class="stat-label">
-                                EXPERIMENTS
-                            </span>
-
-                        </div>
-
-                        <div class="stat-value">
-                            0
-                        </div>
-
-                        <div class="stat-footer">
-                            <span>
-                                Completed
-                            </span>
-                        </div>
-
-                    </article>
-
-
-                    <article class="stat-card">
-
-                        <div class="stat-card-top">
-
-                            <span class="stat-icon">
-                                ✦
-                            </span>
-
-                            <span class="stat-label">
-                                MASTERY
-                            </span>
-
-                        </div>
-
-                        <div class="stat-value">
-                            0%
-                        </div>
-
-                        <div class="stat-footer">
-                            <span>
-                                Across all topics
-                            </span>
-                        </div>
-
-                    </article>
-
-
-                    <article class="stat-card">
-
-                        <div class="stat-card-top">
-
-                            <span class="stat-icon">
-                                ✓
-                            </span>
-
-                            <span class="stat-label">
-                                ASSESSMENTS
-                            </span>
-
-                        </div>
-
-                        <div class="stat-value">
-                            0
-                        </div>
-
-                        <div class="stat-footer">
-                            <span>
-                                Completed
-                            </span>
-                        </div>
-
-                    </article>
-
-
-                    <article class="stat-card">
-
-                        <div class="stat-card-top">
-
-                            <span class="stat-icon">
-                                XP
-                            </span>
-
-                            <span class="stat-label">
-                                SCIENCE XP
-                            </span>
-
-                        </div>
-
-                        <div class="stat-value">
-                            0
-                        </div>
-
-                        <div class="stat-footer">
-                            <span>
-                                Earned through learning
-                            </span>
-                        </div>
-
-                    </article>
-
-                </div>
-
-
-
-                <!-- Main Dashboard Grid -->
-
-                <div class="dashboard-grid">
-
-
-                    <!-- Continue Learning -->
-
-                    <article class="card dashboard-learning-card">
-
-                        <div class="card-header">
-
-                            <div>
-
-                                <span class="card-eyebrow">
-                                    LEARNING PATH
-                                </span>
-
-                                <h2>
-                                    Continue Learning
-                                </h2>
-
-                            </div>
-
-                            <a
-                                href="#learn"
-                                data-route="learn"
-                                class="text-link"
-                            >
-                                View Academy →
-                            </a>
-
-                        </div>
-
-
-                        <div class="learning-feature">
-
-                            <div class="learning-feature-icon">
-                                ∑
-                            </div>
-
-                            <div class="learning-feature-content">
-
-                                <span class="subject-tag">
-                                    FOUNDATIONS
-                                </span>
-
-                                <h3>
-                                    Measurements & Scientific Units
-                                </h3>
-
-                                <p>
-                                    Build a strong foundation in measurements,
-                                    SI units, significant figures and scientific notation.
-                                </p>
-
-                                <div class="learning-meta">
-
-                                    <span>
-                                        ○ Beginner
-                                    </span>
-
-                                    <span>
-                                        ○ 6 lessons
-                                    </span>
-
-                                    <span>
-                                        ○ Practical
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            <button
-                                type="button"
-                                class="button button-primary"
-                            >
-                                Start
-                            </button>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- Laboratory -->
-
-                    <article class="card dashboard-lab-card">
-
-                        <div class="card-header">
-
-                            <div>
-
-                                <span class="card-eyebrow">
-                                    LABORATORY
-                                </span>
-
-                                <h2>
-                                    Digital Laboratory
-                                </h2>
-
-                            </div>
-
-                            <a
-                                href="#laboratory"
-                                data-route="laboratory"
-                                class="text-link"
-                            >
-                                Open Lab →
-                            </a>
-
-                        </div>
-
-
-                        <div class="lab-preview">
-
-                            <div class="lab-preview-grid">
-
-                                <div class="lab-preview-cell">
-
-                                    <span class="lab-preview-icon">
-                                        ⚗
-                                    </span>
-
-                                    <strong>
-                                        Guided
-                                    </strong>
-
-                                    <small>
-                                        Structured experiments
-                                    </small>
-
-                                </div>
-
-
-                                <div class="lab-preview-cell">
-
-                                    <span class="lab-preview-icon">
-                                        ◇
-                                    </span>
-
-                                    <strong>
-                                        Open Lab
-                                    </strong>
-
-                                    <small>
-                                        Build your own setup
-                                    </small>
-
-                                </div>
-
-
-                                <div class="lab-preview-cell">
-
-                                    <span class="lab-preview-icon">
-                                        ⌁
-                                    </span>
-
-                                    <strong>
-                                        Analysis
-                                    </strong>
-
-                                    <small>
-                                        Work with evidence
-                                    </small>
-
-                                </div>
-
-
-                                <div class="lab-preview-cell">
-
-                                    <span class="lab-preview-icon">
-                                        ✦
-                                    </span>
-
-                                    <strong>
-                                        AI Guidance
-                                    </strong>
-
-                                    <small>
-                                        Scientific assistance
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </article>
-
-                </div>
-
-
-
-                <!-- Scientific Workflow -->
-
-                <section class="section-block">
-
-                    <div class="section-heading">
-
-                        <div>
-
-                            <span class="section-eyebrow">
-                                SCIENTIFIC METHOD
-                            </span>
-
-                            <h2>
-                                Think Like a Scientist
-                            </h2>
-
-                            <p>
-                                ChemLab follows the complete scientific learning cycle.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="workflow-grid">
-
-
-                        <div class="workflow-step">
-
-                            <span class="workflow-number">
-                                01
-                            </span>
-
-                            <span class="workflow-icon">
-                                ◉
-                            </span>
-
-                            <strong>
-                                Learn
-                            </strong>
-
-                            <p>
-                                Understand the chemistry behind the experiment.
-                            </p>
-
-                        </div>
-
-
-                        <div class="workflow-step">
-
-                            <span class="workflow-number">
-                                02
-                            </span>
-
-                            <span class="workflow-icon">
-                                ?
-                            </span>
-
-                            <strong>
-                                Predict
-                            </strong>
-
-                            <p>
-                                Form a hypothesis before collecting evidence.
-                            </p>
-
-                        </div>
-
-
-                        <div class="workflow-step">
-
-                            <span class="workflow-number">
-                                03
-                            </span>
-
-                            <span class="workflow-icon">
-                                ⚗
-                            </span>
-
-                            <strong>
-                                Experiment
-                            </strong>
-
-                            <p>
-                                Work with chemicals and laboratory apparatus.
-                            </p>
-
-                        </div>
-
-
-                        <div class="workflow-step">
-
-                            <span class="workflow-number">
-                                04
-                            </span>
-
-                            <span class="workflow-icon">
-                                ◫
-                            </span>
-
-                            <strong>
-                                Measure
-                            </strong>
-
-                            <p>
-                                Record observations and quantitative data.
-                            </p>
-
-                        </div>
-
-
-                        <div class="workflow-step">
-
-                            <span class="workflow-number">
-                                05
-                            </span>
-
-                            <span class="workflow-icon">
-                                ∑
-                            </span>
-
-                            <strong>
-                                Analyze
-                            </strong>
-
-                            <p>
-                                Calculate, graph and interpret your results.
-                            </p>
-
-                        </div>
-
-
-                        <div class="workflow-step">
-
-                            <span class="workflow-number">
-                                06
-                            </span>
-
-                            <span class="workflow-icon">
-                                ✓
-                            </span>
-
-                            <strong>
-                                Conclude
-                            </strong>
-
-                            <p>
-                                Explain what the evidence tells you.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- Quick Access -->
-
-                <section class="section-block">
-
-                    <div class="section-heading">
-
-                        <div>
-
-                            <span class="section-eyebrow">
-                                QUICK ACCESS
-                            </span>
-
-                            <h2>
-                                Your Chemistry Toolkit
-                            </h2>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="quick-access-grid">
-
-
-                        <a
-                            href="#laboratory"
-                            class="quick-card"
-                            data-route="laboratory"
-                        >
-
-                            <span class="quick-card-icon">
-                                ⚗
-                            </span>
-
-                            <span class="quick-card-content">
-
-                                <strong>
-                                    Laboratory
-                                </strong>
-
-                                <small>
-                                    Conduct virtual experiments
-                                </small>
-
-                            </span>
-
-                            <span class="quick-arrow">
-                                →
-                            </span>
-
-                        </a>
-
-
-                        <a
-                            href="#analysis"
-                            class="quick-card"
-                            data-route="analysis"
-                        >
-
-                            <span class="quick-card-icon">
-                                ⌁
-                            </span>
-
-                            <span class="quick-card-content">
-
-                                <strong>
-                                    Scientific Analysis
-                                </strong>
-
-                                <small>
-                                    Analyze measurements and results
-                                </small>
-
-                            </span>
-
-                            <span class="quick-arrow">
-                                →
-                            </span>
-
-                        </a>
-
-
-                        <a
-                            href="#ai"
-                            class="quick-card"
-                            data-route="ai"
-                        >
-
-                            <span class="quick-card-icon">
-                                ✦
-                            </span>
-
-                            <span class="quick-card-content">
-
-                                <strong>
-                                    AI Chemistry Tutor
-                                </strong>
-
-                                <small>
-                                    Get context-aware guidance
-                                </small>
-
-                            </span>
-
-                            <span class="quick-arrow">
-                                →
-                            </span>
-
-                        </a>
-
-
-                        <a
-                            href="#notebook"
-                            class="quick-card"
-                            data-route="notebook"
-                        >
-
-                            <span class="quick-card-icon">
-                                ▤
-                            </span>
-
-                            <span class="quick-card-content">
-
-                                <strong>
-                                    Lab Notebook
-                                </strong>
-
-                                <small>
-                                    Record and organize your work
-                                </small>
-
-                            </span>
-
-                            <span class="quick-arrow">
-                                →
-                            </span>
-
-                        </a>
-
-                    </div>
-
-                </section>
 
             </section>
 
+
+            <!-- =============================================
+                 SCIENTIFIC WORKFLOW
+                 ============================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div class="dashboard-section-heading">
+
+                        <h2 class="dashboard-section-title">
+                            Think Like a Scientist
+                        </h2>
+
+                        <p class="dashboard-section-description">
+                            ChemLab follows the scientific process
+                            from prediction to evidence-based
+                            conclusion.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-workflow">
+
+
+                    <article class="dashboard-workflow-step">
+
+                        <div class="dashboard-workflow-number">
+                            01
+                        </div>
+
+                        <div class="dashboard-workflow-title">
+                            Predict
+                        </div>
+
+                        <div class="dashboard-workflow-text">
+                            Form a hypothesis before beginning
+                            the investigation.
+                        </div>
+
+                    </article>
+
+
+                    <article class="dashboard-workflow-step">
+
+                        <div class="dashboard-workflow-number">
+                            02
+                        </div>
+
+                        <div class="dashboard-workflow-title">
+                            Experiment
+                        </div>
+
+                        <div class="dashboard-workflow-text">
+                            Interact with chemicals,
+                            apparatus, and instruments.
+                        </div>
+
+                    </article>
+
+
+                    <article class="dashboard-workflow-step">
+
+                        <div class="dashboard-workflow-number">
+                            03
+                        </div>
+
+                        <div class="dashboard-workflow-title">
+                            Analyze
+                        </div>
+
+                        <div class="dashboard-workflow-text">
+                            Measure, calculate, graph, and
+                            interpret your results.
+                        </div>
+
+                    </article>
+
+
+                    <article class="dashboard-workflow-step">
+
+                        <div class="dashboard-workflow-number">
+                            04
+                        </div>
+
+                        <div class="dashboard-workflow-title">
+                            Conclude
+                        </div>
+
+                        <div class="dashboard-workflow-text">
+                            Connect your evidence to the
+                            original scientific question.
+                        </div>
+
+                    </article>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =============================================
+                 QUICK ACCESS
+                 ============================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div class="dashboard-section-heading">
+
+                        <h2 class="dashboard-section-title">
+                            Quick Access
+                        </h2>
+
+                        <p class="dashboard-section-description">
+                            Jump directly into a ChemLab workspace.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-quick-grid">
+
+
+                    <a
+                        href="#laboratory"
+                        class="dashboard-quick-card"
+                        data-route="laboratory"
+                    >
+
+                        <div
+                            class="dashboard-quick-icon"
+                            aria-hidden="true"
+                        >
+                            🧪
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-quick-title">
+                                Virtual Laboratory
+                            </div>
+
+                            <div class="dashboard-quick-description">
+                                Run chemistry experiments
+                            </div>
+
+                        </div>
+
+                    </a>
+
+
+                    <a
+                        href="#experiments"
+                        class="dashboard-quick-card"
+                        data-route="experiments"
+                    >
+
+                        <div
+                            class="dashboard-quick-icon"
+                            aria-hidden="true"
+                        >
+                            ⚗️
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-quick-title">
+                                Experiments
+                            </div>
+
+                            <div class="dashboard-quick-description">
+                                Explore practical investigations
+                            </div>
+
+                        </div>
+
+                    </a>
+
+
+                    <a
+                        href="#analysis"
+                        class="dashboard-quick-card"
+                        data-route="analysis"
+                    >
+
+                        <div
+                            class="dashboard-quick-icon"
+                            aria-hidden="true"
+                        >
+                            📈
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-quick-title">
+                                Scientific Analysis
+                            </div>
+
+                            <div class="dashboard-quick-description">
+                                Analyze chemistry data
+                            </div>
+
+                        </div>
+
+                    </a>
+
+
+                    <a
+                        href="#ai"
+                        class="dashboard-quick-card"
+                        data-route="ai"
+                    >
+
+                        <div
+                            class="dashboard-quick-icon"
+                            aria-hidden="true"
+                        >
+                            🤖
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-quick-title">
+                                AI Chemistry Tutor
+                            </div>
+
+                            <div class="dashboard-quick-description">
+                                Get chemistry guidance
+                            </div>
+
+                        </div>
+
+                    </a>
+
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+
+        <!-- =================================================
+             RIGHT COLUMN
+             ================================================= -->
+
+        <div class="dashboard-column">
+
+
+            <!-- =============================================
+                 STUDENT PROGRESS
+                 ============================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div class="dashboard-section-heading">
+
+                        <h2 class="dashboard-section-title">
+                            Your Progress
+                        </h2>
+
+                        <p class="dashboard-section-description">
+                            Your learning journey at a glance.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="#progress"
+                        class="dashboard-section-link"
+                        data-route="progress"
+                    >
+                        Details
+                    </a>
+
+                </div>
+
+
+                <div class="dashboard-achievement">
+
+                    <div
+                        class="dashboard-achievement-icon"
+                        aria-hidden="true"
+                    >
+                        🎓
+                    </div>
+
+                    <div>
+
+                        <div class="dashboard-achievement-title">
+                            Academic Level
+                        </div>
+
+                        <div
+                            class="dashboard-achievement-text"
+                            data-dashboard-level
+                        >
+                            Foundation Chemistry
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    style="height: 16px;"
+                    aria-hidden="true"
+                ></div>
+
+
+                <div class="dashboard-mastery-list">
+
+
+                    <div class="dashboard-mastery-item">
+
+                        <div class="dashboard-mastery-name">
+                            General Chemistry
+                        </div>
+
+                        <div class="dashboard-mastery-track">
+
+                            <div
+                                class="dashboard-mastery-fill"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+                        <div class="dashboard-mastery-value">
+                            0%
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-mastery-item">
+
+                        <div class="dashboard-mastery-name">
+                            Inorganic Chemistry
+                        </div>
+
+                        <div class="dashboard-mastery-track">
+
+                            <div
+                                class="dashboard-mastery-fill"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+                        <div class="dashboard-mastery-value">
+                            0%
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-mastery-item">
+
+                        <div class="dashboard-mastery-name">
+                            Organic Chemistry
+                        </div>
+
+                        <div class="dashboard-mastery-track">
+
+                            <div
+                                class="dashboard-mastery-fill"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+                        <div class="dashboard-mastery-value">
+                            0%
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-mastery-item">
+
+                        <div class="dashboard-mastery-name">
+                            Physical Chemistry
+                        </div>
+
+                        <div class="dashboard-mastery-track">
+
+                            <div
+                                class="dashboard-mastery-fill"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+                        <div class="dashboard-mastery-value">
+                            0%
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-mastery-item">
+
+                        <div class="dashboard-mastery-name">
+                            Analytical Chemistry
+                        </div>
+
+                        <div class="dashboard-mastery-track">
+
+                            <div
+                                class="dashboard-mastery-fill"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+                        <div class="dashboard-mastery-value">
+                            0%
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =============================================
+                 RECOMMENDATION
+                 ============================================= -->
+
+            <section class="dashboard-recommendation">
+
+                <div class="dashboard-recommendation-label">
+                    Recommended Next
+                </div>
+
+                <div class="dashboard-recommendation-title">
+                    Build Your Scientific Foundation
+                </div>
+
+                <p class="dashboard-recommendation-text">
+                    Start with measurements, units, significant
+                    figures, and dimensional analysis before
+                    progressing into quantitative chemistry.
+                </p>
+
+                <div class="dashboard-recommendation-action">
+
+                    <button
+                        type="button"
+                        class="button button-primary button-small"
+                        data-route="learn"
+                    >
+                        Start Topic
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =============================================
+                 RECENT ACTIVITY
+                 ============================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div class="dashboard-section-heading">
+
+                        <h2 class="dashboard-section-title">
+                            Recent Activity
+                        </h2>
+
+                        <p class="dashboard-section-description">
+                            Your latest ChemLab activity.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-activity-list">
+
+
+                    <div class="dashboard-activity-item">
+
+                        <div
+                            class="dashboard-activity-icon"
+                            aria-hidden="true"
+                        >
+                            📚
+                        </div>
+
+                        <div class="dashboard-activity-content">
+
+                            <div class="dashboard-activity-title">
+                                Chemistry Academy ready
+                            </div>
+
+                            <div class="dashboard-activity-meta">
+                                Explore your learning topics
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-activity-item">
+
+                        <div
+                            class="dashboard-activity-icon"
+                            aria-hidden="true"
+                        >
+                            🧪
+                        </div>
+
+                        <div class="dashboard-activity-content">
+
+                            <div class="dashboard-activity-title">
+                                Virtual Laboratory ready
+                            </div>
+
+                            <div class="dashboard-activity-meta">
+                                Begin your first experiment
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-activity-item">
+
+                        <div
+                            class="dashboard-activity-icon"
+                            aria-hidden="true"
+                        >
+                            🤖
+                        </div>
+
+                        <div class="dashboard-activity-content">
+
+                            <div class="dashboard-activity-title">
+                                AI Chemistry Tutor available
+                            </div>
+
+                            <div class="dashboard-activity-meta">
+                                Ask questions while you learn
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =============================================
+                 ACHIEVEMENT
+                 ============================================= -->
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-section-header">
+
+                    <div class="dashboard-section-heading">
+
+                        <h2 class="dashboard-section-title">
+                            Your Next Milestone
+                        </h2>
+
+                        <p class="dashboard-section-description">
+                            Build consistent scientific learning
+                            habits.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-achievement">
+
+                    <div
+                        class="dashboard-achievement-icon"
+                        aria-hidden="true"
+                    >
+                        🏆
+                    </div>
+
+                    <div>
+
+                        <div class="dashboard-achievement-title">
+                            First Laboratory Investigation
+                        </div>
+
+                        <div class="dashboard-achievement-text">
+                            Complete your first virtual experiment
+                            to begin your laboratory journey.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </div>
+
+</section>
 
 
             <!-- =================================================
