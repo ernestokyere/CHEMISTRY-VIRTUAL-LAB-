@@ -3904,7 +3904,19 @@
 <script src="js/auth.js"></script>
 <script src="js/profile.js"></script>
 <script src="js/auth-ui.js"></script>
+<script src="js/dashboard.js"></script>
 <script src="js/app.js"></script>
 
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (
+        window.CHEMLAB_DASHBOARD &&
+        typeof window.CHEMLAB_DASHBOARD.initialize === "function"
+    ) {
+        window.CHEMLAB_DASHBOARD.initialize();
+    }
+});
+</script>
+    
 </body>
 </html>
