@@ -1,15 +1,16 @@
 /* =========================================================
    CHEMLAB
-   LEARNING ACADEMY ENGINE
-   Stage 5.1
+   PROFESSIONAL CHEMISTRY ACADEMY
+   Stage 5.3 — Subject Explorer & Topic Learning Interface
    ========================================================= */
 
 (function () {
+
     "use strict";
 
 
     /* =====================================================
-       ACADEMY STATE
+       01. STATE
        ===================================================== */
 
     const ACADEMY_STATE = {
@@ -24,7 +25,15 @@
 
         filteredSubjects: [],
 
+        filteredTopics: [],
+
         searchQuery: "",
+
+        topicSearchQuery: "",
+
+        currentLevel: "all",
+
+        view: "subjects",
 
         loading: false
 
@@ -32,7 +41,7 @@
 
 
     /* =====================================================
-       ACADEMY CURRICULUM
+       02. CURRICULUM
        ===================================================== */
 
     const ACADEMY_CURRICULUM = [
@@ -44,187 +53,117 @@
 
             shortName: "Foundations",
 
-            category: "foundation",
+            category: "Foundation Chemistry",
 
-            icon: "◈",
+            icon: "∑",
 
             description:
-                "Build the core scientific and chemical knowledge needed for advanced study.",
+                "Build the essential scientific and mathematical foundations required for chemistry.",
 
-            level: "Foundation",
+            level: "foundation",
 
-            colorClass: "academy-foundations",
+            colorClass: "blue",
 
             topics: [
 
                 {
-                    id: "measurements",
-
-                    title:
-                        "Measurements & Scientific Units",
-
+                    id: "measurements-scientific-units",
+                    title: "Measurements & Scientific Units",
                     description:
-                        "Learn SI units, laboratory measurements, precision and scientific notation.",
-
-                    lessons: 6,
-
+                        "Understand SI units, measurements, unit conversions and scientific notation.",
+                    lessons: 4,
                     difficulty: "Beginner",
-
-                    duration: "45 min"
-
+                    duration: 25
                 },
 
                 {
                     id: "significant-figures",
-
-                    title:
-                        "Significant Figures",
-
+                    title: "Significant Figures",
                     description:
-                        "Understand precision, rounding and significant figures in chemical calculations.",
-
-                    lessons: 5,
-
+                        "Learn how significant figures communicate measurement precision.",
+                    lessons: 4,
                     difficulty: "Beginner",
-
-                    duration: "35 min"
-
+                    duration: 25
                 },
 
                 {
                     id: "dimensional-analysis",
-
-                    title:
-                        "Dimensional Analysis",
-
+                    title: "Dimensional Analysis",
                     description:
-                        "Use units and conversion factors to solve quantitative chemistry problems.",
-
+                        "Use units and conversion factors to solve chemistry calculations.",
                     lessons: 5,
-
                     difficulty: "Beginner",
-
-                    duration: "40 min"
-
+                    duration: 30
                 },
 
                 {
                     id: "atomic-structure",
-
-                    title:
-                        "Atomic Structure",
-
+                    title: "Atomic Structure",
                     description:
                         "Explore protons, neutrons, electrons, isotopes and atomic models.",
-
-                    lessons: 7,
-
+                    lessons: 6,
                     difficulty: "Beginner",
-
-                    duration: "50 min"
-
+                    duration: 35
                 },
 
                 {
                     id: "periodic-table",
-
-                    title:
-                        "The Periodic Table",
-
+                    title: "The Periodic Table",
                     description:
-                        "Understand groups, periods, periodic trends and chemical behavior.",
-
-                    lessons: 8,
-
+                        "Understand periodic organization, groups, periods and element properties.",
+                    lessons: 5,
                     difficulty: "Beginner",
-
-                    duration: "60 min"
-
+                    duration: 30
                 },
 
                 {
-                    id: "chemical-formulas",
-
-                    title:
-                        "Chemical Formulas & Equations",
-
+                    id: "chemical-formulas-equations",
+                    title: "Chemical Formulas & Equations",
                     description:
-                        "Read formulas, write equations and represent chemical reactions.",
-
-                    lessons: 7,
-
-                    difficulty: "Beginner",
-
-                    duration: "55 min"
-
+                        "Read chemical formulas and represent chemical changes using equations.",
+                    lessons: 6,
+                    difficulty: "Intermediate",
+                    duration: 35
                 },
 
                 {
                     id: "mole-concept",
-
-                    title:
-                        "The Mole Concept",
-
+                    title: "The Mole Concept",
                     description:
-                        "Connect particles, moles, molar mass and chemical quantities.",
-
-                    lessons: 8,
-
+                        "Understand the mole, Avogadro's constant and chemical quantities.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                    duration: 40
                 },
 
                 {
                     id: "stoichiometry",
-
-                    title:
-                        "Stoichiometry",
-
+                    title: "Stoichiometry",
                     description:
                         "Use balanced equations to calculate quantities of reactants and products.",
-
-                    lessons: 9,
-
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "75 min"
-
+                    duration: 45
                 },
 
                 {
-                    id: "solutions",
-
-                    title:
-                        "Concentration & Solutions",
-
+                    id: "concentration-solutions",
+                    title: "Concentration & Solutions",
                     description:
-                        "Study molarity, dilution, solution preparation and concentration calculations.",
-
-                    lessons: 8,
-
-                    difficulty: "Intermediate",
-
-                    duration: "60 min"
-
-                },
-
-                {
-                    id: "uncertainty",
-
-                    title:
-                        "Measurement Uncertainty",
-
-                    description:
-                        "Understand uncertainty, experimental error and reliable measurements.",
-
+                        "Understand molarity, solution preparation, dilution and concentration.",
                     lessons: 6,
-
                     difficulty: "Intermediate",
+                    duration: 40
+                },
 
-                    duration: "50 min"
-
+                {
+                    id: "measurement-uncertainty",
+                    title: "Measurement Uncertainty",
+                    description:
+                        "Explore uncertainty, precision, accuracy and reporting measurements.",
+                    lessons: 5,
+                    difficulty: "Intermediate",
+                    duration: 35
                 }
 
             ]
@@ -243,136 +182,87 @@
 
             shortName: "Inorganic",
 
-            category: "inorganic",
+            category: "Core Chemistry",
 
             icon: "◇",
 
             description:
-                "Study elements, compounds, bonding, coordination chemistry and inorganic reactions.",
+                "Explore the chemistry of elements, compounds, bonding, acids, bases and coordination systems.",
 
-            level: "Undergraduate",
+            level: "undergraduate",
 
-            colorClass: "academy-inorganic",
+            colorClass: "purple",
 
             topics: [
 
                 {
                     id: "periodic-trends",
-
-                    title:
-                        "Periodic Trends",
-
+                    title: "Periodic Trends",
                     description:
-                        "Explore atomic radius, ionization energy, electron affinity and electronegativity.",
-
-                    lessons: 7,
-
+                        "Analyze atomic radius, ionization energy, electron affinity and electronegativity.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "55 min"
-
+                    duration: 40
                 },
 
                 {
                     id: "chemical-bonding",
-
-                    title:
-                        "Chemical Bonding",
-
+                    title: "Chemical Bonding",
                     description:
                         "Study ionic, covalent and metallic bonding and their properties.",
-
-                    lessons: 9,
-
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "70 min"
-
+                    duration: 45
                 },
 
                 {
                     id: "molecular-structure",
-
-                    title:
-                        "Molecular Structure",
-
+                    title: "Molecular Structure",
                     description:
-                        "Understand Lewis structures, VSEPR theory, polarity and molecular geometry.",
-
-                    lessons: 8,
-
+                        "Explore Lewis structures, molecular geometry, polarity and bonding theories.",
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                    duration: 45
                 },
 
                 {
                     id: "acids-bases",
-
-                    title:
-                        "Acids & Bases",
-
+                    title: "Acids & Bases",
                     description:
-                        "Study acid-base theories, pH, buffers and acid-base equilibria.",
-
-                    lessons: 10,
-
-                    difficulty: "Intermediate",
-
-                    duration: "80 min"
-
-                },
-
-                {
-                    id: "redox",
-
-                    title:
-                        "Oxidation-Reduction Chemistry",
-
-                    description:
-                        "Understand oxidation states, electron transfer and redox reactions.",
-
+                        "Understand acid-base theories, pH, pOH, buffers and neutralization.",
                     lessons: 8,
-
                     difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                    duration: 50
                 },
 
                 {
-                    id: "coordination",
-
-                    title:
-                        "Coordination Chemistry",
-
+                    id: "oxidation-reduction",
+                    title: "Oxidation-Reduction Chemistry",
                     description:
-                        "Explore metal complexes, ligands, coordination numbers and geometry.",
-
-                    lessons: 9,
-
-                    difficulty: "Advanced",
-
-                    duration: "75 min"
-
+                        "Study oxidation states, electron transfer and redox reactions.",
+                    lessons: 7,
+                    difficulty: "Intermediate",
+                    duration: 45
                 },
 
                 {
-                    id: "qualitative-analysis",
-
-                    title:
-                        "Qualitative Inorganic Analysis",
-
+                    id: "coordination-chemistry",
+                    title: "Coordination Chemistry",
                     description:
-                        "Learn the principles used to identify inorganic ions and compounds.",
-
-                    lessons: 9,
-
+                        "Explore metal complexes, ligands, coordination numbers and structures.",
+                    lessons: 8,
                     difficulty: "Advanced",
+                    duration: 55
+                },
 
-                    duration: "80 min"
-
+                {
+                    id: "qualitative-inorganic-analysis",
+                    title: "Qualitative Inorganic Analysis",
+                    description:
+                        "Learn the principles behind identifying inorganic ions and compounds.",
+                    lessons: 7,
+                    difficulty: "Advanced",
+                    duration: 50
                 }
 
             ]
@@ -391,170 +281,107 @@
 
             shortName: "Organic",
 
-            category: "organic",
+            category: "Core Chemistry",
 
             icon: "⌬",
 
             description:
-                "Study carbon compounds, functional groups, mechanisms, reactions and synthesis.",
+                "Study carbon chemistry, structures, functional groups, reactions and mechanisms.",
 
-            level: "Undergraduate",
+            level: "undergraduate",
 
-            colorClass: "academy-organic",
+            colorClass: "orange",
 
             topics: [
 
                 {
                     id: "organic-structures",
-
-                    title:
-                        "Organic Structures",
-
+                    title: "Organic Structures",
                     description:
-                        "Learn structural formulas, representations and bonding in organic molecules.",
-
-                    lessons: 8,
-
+                        "Learn how carbon atoms form chains, rings and molecular structures.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "60 min"
-
+                    duration: 40
                 },
 
                 {
-                    id: "nomenclature",
-
-                    title:
-                        "Organic Nomenclature",
-
+                    id: "organic-nomenclature",
+                    title: "Organic Nomenclature",
                     description:
                         "Learn systematic naming of organic compounds.",
-
-                    lessons: 8,
-
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                    duration: 45
                 },
 
                 {
-                    id: "isomerism",
-
-                    title:
-                        "Isomerism & Stereochemistry",
-
+                    id: "isomerism-stereochemistry",
+                    title: "Isomerism & Stereochemistry",
                     description:
-                        "Explore structural isomers, stereoisomers, chirality and configuration.",
-
-                    lessons: 10,
-
+                        "Understand structural isomers, stereoisomers and molecular orientation.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 55
                 },
 
                 {
                     id: "functional-groups",
-
-                    title:
-                        "Functional Groups",
-
+                    title: "Functional Groups",
                     description:
-                        "Identify and understand the behavior of major organic functional groups.",
-
-                    lessons: 9,
-
+                        "Identify the major functional groups and predict their characteristic chemistry.",
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "70 min"
-
+                    duration: 45
                 },
 
                 {
                     id: "hydrocarbons",
-
-                    title:
-                        "Hydrocarbons",
-
+                    title: "Hydrocarbons",
                     description:
                         "Study alkanes, alkenes, alkynes and aromatic hydrocarbons.",
-
-                    lessons: 10,
-
+                    lessons: 8,
                     difficulty: "Intermediate",
-
-                    duration: "80 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "alcohols-ethers",
-
-                    title:
-                        "Alcohols & Ethers",
-
+                    title: "Alcohols & Ethers",
                     description:
                         "Explore structures, properties and reactions of alcohols and ethers.",
-
-                    lessons: 8,
-
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                    duration: 40
                 },
 
                 {
-                    id: "carbonyl",
-
-                    title:
-                        "Aldehydes & Ketones",
-
+                    id: "aldehydes-ketones",
+                    title: "Aldehydes & Ketones",
                     description:
-                        "Study carbonyl chemistry and important reaction patterns.",
+                        "Study carbonyl chemistry and common reactions of aldehydes and ketones.",
+                    lessons: 7,
+                    difficulty: "Advanced",
+                    duration: 50
+                },
 
+                {
+                    id: "carboxylic-acids-derivatives",
+                    title: "Carboxylic Acids & Derivatives",
+                    description:
+                        "Understand carboxylic acids, esters, amides and related compounds.",
+                    lessons: 8,
+                    difficulty: "Advanced",
+                    duration: 55
+                },
+
+                {
+                    id: "organic-reaction-mechanisms",
+                    title: "Organic Reaction Mechanisms",
+                    description:
+                        "Develop a deeper understanding of how organic reactions occur.",
                     lessons: 9,
-
                     difficulty: "Advanced",
-
-                    duration: "75 min"
-
-                },
-
-                {
-                    id: "carboxylic-acids",
-
-                    title:
-                        "Carboxylic Acids & Derivatives",
-
-                    description:
-                        "Understand acids, esters, amides and related compounds.",
-
-                    lessons: 10,
-
-                    difficulty: "Advanced",
-
-                    duration: "85 min"
-
-                },
-
-                {
-                    id: "mechanisms",
-
-                    title:
-                        "Organic Reaction Mechanisms",
-
-                    description:
-                        "Understand how and why organic reactions occur.",
-
-                    lessons: 12,
-
-                    difficulty: "Advanced",
-
-                    duration: "100 min"
-
+                    duration: 60
                 }
 
             ]
@@ -573,136 +400,87 @@
 
             shortName: "Physical",
 
-            category: "physical",
+            category: "Advanced Chemistry",
 
-            icon: "∑",
+            icon: "Δ",
 
             description:
-                "Use mathematics and physical principles to understand chemical systems.",
+                "Understand the mathematical and theoretical principles governing chemical systems.",
 
-            level: "Undergraduate",
+            level: "advanced",
 
-            colorClass: "academy-physical",
+            colorClass: "red",
 
             topics: [
 
                 {
                     id: "gas-laws",
-
-                    title:
-                        "Gas Laws",
-
+                    title: "Gas Laws",
                     description:
-                        "Study pressure, volume, temperature and the behavior of gases.",
-
-                    lessons: 7,
-
+                        "Study pressure, volume, temperature and amount relationships in gases.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "60 min"
-
+                    duration: 40
                 },
 
                 {
-                    id: "kinetic-theory",
-
-                    title:
-                        "Kinetic Molecular Theory",
-
+                    id: "kinetic-molecular-theory",
+                    title: "Kinetic Molecular Theory",
                     description:
                         "Connect molecular motion with macroscopic gas behavior.",
-
                     lessons: 6,
-
-                    difficulty: "Intermediate",
-
-                    duration: "50 min"
-
+                    difficulty: "Advanced",
+                    duration: 45
                 },
 
                 {
                     id: "thermochemistry",
-
-                    title:
-                        "Thermochemistry",
-
+                    title: "Thermochemistry",
                     description:
-                        "Study heat, energy changes, enthalpy and calorimetry.",
-
-                    lessons: 9,
-
+                        "Study heat, energy changes and enthalpy in chemical systems.",
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "70 min"
-
+                    duration: 50
                 },
 
                 {
-                    id: "thermodynamics",
-
-                    title:
-                        "Chemical Thermodynamics",
-
+                    id: "chemical-thermodynamics",
+                    title: "Chemical Thermodynamics",
                     description:
-                        "Explore entropy, Gibbs energy and spontaneity.",
-
-                    lessons: 11,
-
+                        "Explore entropy, Gibbs energy and thermodynamic spontaneity.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "90 min"
-
+                    duration: 60
                 },
 
                 {
-                    id: "equilibrium",
-
-                    title:
-                        "Chemical Equilibrium",
-
+                    id: "chemical-equilibrium",
+                    title: "Chemical Equilibrium",
                     description:
-                        "Understand equilibrium constants, Le Chatelier's principle and equilibrium calculations.",
-
-                    lessons: 10,
-
+                        "Understand equilibrium constants, reaction quotients and Le Chatelier's principle.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 55
                 },
 
                 {
-                    id: "kinetics",
-
-                    title:
-                        "Chemical Kinetics",
-
+                    id: "chemical-kinetics",
+                    title: "Chemical Kinetics",
                     description:
-                        "Study reaction rates, rate laws, activation energy and reaction mechanisms.",
-
-                    lessons: 10,
-
+                        "Study reaction rates, rate laws, mechanisms and activation energy.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 60
                 },
 
                 {
                     id: "phase-equilibria",
-
-                    title:
-                        "Phase Equilibria",
-
+                    title: "Phase Equilibria",
                     description:
-                        "Study phase behavior, phase diagrams and equilibrium between phases.",
-
-                    lessons: 8,
-
+                        "Explore phase behavior, phase diagrams and equilibrium between phases.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "70 min"
-
+                    duration: 55
                 }
 
             ]
@@ -721,119 +499,77 @@
 
             shortName: "Analytical",
 
-            category: "analytical",
+            category: "Applied Chemistry",
 
-            icon: "⌁",
+            icon: "◫",
 
             description:
-                "Learn how chemists identify, measure and quantify substances.",
+                "Develop the skills needed to measure, quantify and interpret chemical information.",
 
-            level: "Undergraduate",
+            level: "undergraduate",
 
-            colorClass: "academy-analytical",
+            colorClass: "green",
 
             topics: [
 
                 {
-                    id: "accuracy-precision",
-
-                    title:
-                        "Accuracy, Precision & Error",
-
+                    id: "accuracy-precision-error",
+                    title: "Accuracy, Precision & Error",
                     description:
-                        "Understand measurement quality, error and uncertainty.",
-
-                    lessons: 7,
-
+                        "Understand measurement quality, systematic error and random error.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "55 min"
-
+                    duration: 40
                 },
 
                 {
-                    id: "statistics",
-
-                    title:
-                        "Chemical Statistics",
-
+                    id: "chemical-statistics",
+                    title: "Chemical Statistics",
                     description:
-                        "Use statistical methods to evaluate chemical measurements.",
-
-                    lessons: 9,
-
+                        "Apply statistical methods to chemical measurements and experimental data.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "75 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "volumetric-analysis",
-
-                    title:
-                        "Volumetric Analysis",
-
+                    title: "Volumetric Analysis",
                     description:
-                        "Understand quantitative analysis using measured solution volumes.",
-
-                    lessons: 9,
-
+                        "Understand quantitative analysis based on measured solution volumes.",
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "70 min"
-
+                    duration: 45
                 },
 
                 {
-                    id: "titration",
-
-                    title:
-                        "Titration Analysis",
-
+                    id: "titration-analysis",
+                    title: "Titration Analysis",
                     description:
-                        "Study equivalence, endpoints, calculations and titration curves.",
-
-                    lessons: 10,
-
+                        "Explore titration principles, equivalence points and quantitative calculations.",
+                    lessons: 8,
                     difficulty: "Intermediate",
-
-                    duration: "80 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "spectrophotometry",
-
-                    title:
-                        "Spectrophotometry",
-
+                    title: "Spectrophotometry",
                     description:
-                        "Understand absorbance, transmittance, calibration and quantitative analysis.",
-
-                    lessons: 10,
-
+                        "Understand absorbance, transmittance and quantitative optical measurements.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 55
                 },
 
                 {
                     id: "chromatography",
-
-                    title:
-                        "Chromatography",
-
+                    title: "Chromatography",
                     description:
-                        "Explore separation and analysis using chromatographic techniques.",
-
-                    lessons: 10,
-
+                        "Learn the principles of separating and analyzing chemical mixtures.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 55
                 }
 
             ]
@@ -852,119 +588,77 @@
 
             shortName: "Biochemistry",
 
-            category: "biochemistry",
+            category: "Life Science",
 
-            icon: "⌁",
+            icon: "⬡",
 
             description:
-                "Explore the chemistry of biological molecules and biochemical systems.",
+                "Explore the chemistry of biological molecules and biochemical processes.",
 
-            level: "Undergraduate",
+            level: "undergraduate",
 
-            colorClass: "academy-biochemistry",
+            colorClass: "teal",
 
             topics: [
 
                 {
-                    id: "amino-acids",
-
-                    title:
-                        "Amino Acids & Proteins",
-
+                    id: "amino-acids-proteins",
+                    title: "Amino Acids & Proteins",
                     description:
-                        "Study amino acids, peptide bonds and protein structure.",
-
-                    lessons: 9,
-
+                        "Study amino acid structures and the organization of proteins.",
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "70 min"
-
+                    duration: 45
                 },
 
                 {
                     id: "enzymes",
-
-                    title:
-                        "Enzymes",
-
+                    title: "Enzymes",
                     description:
                         "Understand enzyme structure, catalysis and factors affecting activity.",
-
-                    lessons: 9,
-
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "70 min"
-
+                    duration: 45
                 },
 
                 {
                     id: "carbohydrates",
-
-                    title:
-                        "Carbohydrates",
-
+                    title: "Carbohydrates",
                     description:
-                        "Study monosaccharides, disaccharides and polysaccharides.",
-
-                    lessons: 8,
-
+                        "Explore monosaccharides, polysaccharides and carbohydrate chemistry.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "60 min"
-
+                    duration: 40
                 },
 
                 {
-                    id: "lipids",
-
-                    title:
-                        "Lipids & Membranes",
-
+                    id: "lipids-membranes",
+                    title: "Lipids & Membranes",
                     description:
-                        "Explore lipid structures, properties and biological membranes.",
+                        "Study lipid structures and their roles in biological membranes.",
+                    lessons: 6,
+                    difficulty: "Intermediate",
+                    duration: 40
+                },
 
+                {
+                    id: "dna-rna-chemistry",
+                    title: "DNA & RNA Chemistry",
+                    description:
+                        "Understand the chemical structures and properties of nucleic acids.",
                     lessons: 7,
-
-                    difficulty: "Intermediate",
-
-                    duration: "55 min"
-
-                },
-
-                {
-                    id: "nucleic-acids",
-
-                    title:
-                        "DNA & RNA Chemistry",
-
-                    description:
-                        "Understand the chemical structure of nucleic acids.",
-
-                    lessons: 9,
-
                     difficulty: "Advanced",
-
-                    duration: "70 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "enzyme-kinetics",
-
-                    title:
-                        "Enzyme Kinetics",
-
+                    title: "Enzyme Kinetics",
                     description:
-                        "Analyze enzyme reaction rates and kinetic models.",
-
-                    lessons: 9,
-
+                        "Analyze enzyme rates, kinetic models and experimental behavior.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "75 min"
-
+                    duration: 55
                 }
 
             ]
@@ -983,85 +677,57 @@
 
             shortName: "Environmental",
 
-            category: "environmental",
+            category: "Applied Chemistry",
 
             icon: "◌",
 
             description:
-                "Understand chemical processes in water, air, soil and environmental systems.",
+                "Understand chemical processes affecting water, air, soil and environmental systems.",
 
-            level: "Undergraduate",
+            level: "undergraduate",
 
-            colorClass: "academy-environmental",
+            colorClass: "green",
 
             topics: [
 
                 {
                     id: "water-chemistry",
-
-                    title:
-                        "Water Chemistry",
-
+                    title: "Water Chemistry",
                     description:
                         "Study the chemical properties and quality of natural and treated water.",
-
-                    lessons: 8,
-
+                    lessons: 7,
                     difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                    duration: 45
                 },
 
                 {
-                    id: "air-pollution",
-
-                    title:
-                        "Atmospheric Chemistry",
-
+                    id: "atmospheric-chemistry",
+                    title: "Atmospheric Chemistry",
                     description:
-                        "Explore chemical processes and pollutants in the atmosphere.",
-
-                    lessons: 8,
-
-                    difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                        "Explore chemical processes occurring in Earth's atmosphere.",
+                    lessons: 7,
+                    difficulty: "Advanced",
+                    duration: 50
                 },
 
                 {
                     id: "soil-chemistry",
-
-                    title:
-                        "Soil Chemistry",
-
+                    title: "Soil Chemistry",
                     description:
-                        "Understand chemical processes occurring in soils.",
-
-                    lessons: 7,
-
+                        "Understand chemical processes controlling soil composition and fertility.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "55 min"
-
+                    duration: 40
                 },
 
                 {
                     id: "green-chemistry",
-
-                    title:
-                        "Green Chemistry",
-
+                    title: "Green Chemistry",
                     description:
-                        "Learn principles for reducing environmental impact through chemistry.",
-
-                    lessons: 8,
-
+                        "Explore principles for reducing environmental impact through chemical design.",
+                    lessons: 6,
                     difficulty: "Intermediate",
-
-                    duration: "60 min"
-
+                    duration: 40
                 }
 
             ]
@@ -1080,102 +746,67 @@
 
             shortName: "Electrochemistry",
 
-            category: "electrochemistry",
+            category: "Advanced Chemistry",
 
             icon: "⚡",
 
             description:
-                "Study chemical reactions involving electron transfer and electrical energy.",
+                "Study chemical systems involving electron transfer, electrical potential and electrochemical cells.",
 
-            level: "Undergraduate",
+            level: "advanced",
 
-            colorClass: "academy-electrochemistry",
+            colorClass: "yellow",
 
             topics: [
 
                 {
                     id: "electrochemical-cells",
-
-                    title:
-                        "Electrochemical Cells",
-
+                    title: "Electrochemical Cells",
                     description:
-                        "Understand galvanic cells, electrodes and electron flow.",
-
-                    lessons: 9,
-
-                    difficulty: "Intermediate",
-
-                    duration: "70 min"
-
+                        "Understand galvanic and electrochemical cell principles.",
+                    lessons: 7,
+                    difficulty: "Advanced",
+                    duration: 50
                 },
 
                 {
                     id: "electrode-potentials",
-
-                    title:
-                        "Electrode Potentials",
-
+                    title: "Electrode Potentials",
                     description:
-                        "Study standard potentials and their relationship to redox chemistry.",
-
-                    lessons: 8,
-
+                        "Explore standard potentials and their role in predicting redox behavior.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "65 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "nernst-equation",
-
-                    title:
-                        "The Nernst Equation",
-
+                    title: "Nernst Equation",
                     description:
-                        "Relate electrode potential to chemical conditions.",
-
+                        "Relate electrode potential to concentration and reaction conditions.",
                     lessons: 8,
-
                     difficulty: "Advanced",
-
-                    duration: "70 min"
-
+                    duration: 60
                 },
 
                 {
                     id: "electrolysis",
-
-                    title:
-                        "Electrolysis",
-
+                    title: "Electrolysis",
                     description:
-                        "Study the relationship between electrical energy and chemical change.",
-
-                    lessons: 8,
-
-                    difficulty: "Intermediate",
-
-                    duration: "65 min"
-
+                        "Understand the principles governing electrochemical decomposition.",
+                    lessons: 7,
+                    difficulty: "Advanced",
+                    duration: 50
                 },
 
                 {
                     id: "corrosion",
-
-                    title:
-                        "Corrosion",
-
+                    title: "Corrosion",
                     description:
-                        "Understand electrochemical corrosion and protection principles.",
-
-                    lessons: 7,
-
-                    difficulty: "Intermediate",
-
-                    duration: "55 min"
-
+                        "Study electrochemical corrosion and methods of corrosion control.",
+                    lessons: 6,
+                    difficulty: "Advanced",
+                    duration: 45
                 }
 
             ]
@@ -1184,7 +815,7 @@
 
 
         /* =================================================
-           MATERIALS & INDUSTRIAL
+           MATERIALS & INDUSTRIAL CHEMISTRY
            ================================================= */
 
         {
@@ -1194,85 +825,57 @@
 
             shortName: "Materials",
 
-            category: "materials",
+            category: "Industrial Chemistry",
 
             icon: "▣",
 
             description:
-                "Explore chemistry applied to materials, manufacturing and industrial processes.",
+                "Explore chemical principles behind materials, industrial processes and catalysts.",
 
-            level: "Advanced",
+            level: "advanced",
 
-            colorClass: "academy-materials",
+            colorClass: "orange",
 
             topics: [
 
                 {
-                    id: "polymers",
-
-                    title:
-                        "Polymer Chemistry",
-
+                    id: "polymer-chemistry",
+                    title: "Polymer Chemistry",
                     description:
-                        "Study polymer structures, formation and properties.",
-
-                    lessons: 9,
-
+                        "Study polymer structures, properties and polymerization concepts.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "70 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "metals-alloys",
-
-                    title:
-                        "Metals & Alloys",
-
+                    title: "Metals & Alloys",
                     description:
-                        "Explore metallic materials, alloys and their chemical properties.",
-
-                    lessons: 8,
-
-                    difficulty: "Advanced",
-
-                    duration: "65 min"
-
+                        "Explore metal properties, structures, alloys and applications.",
+                    lessons: 6,
+                    difficulty: "Intermediate",
+                    duration: 45
                 },
 
                 {
                     id: "catalysis",
-
-                    title:
-                        "Catalysis",
-
+                    title: "Catalysis",
                     description:
-                        "Understand catalysts and their role in chemical processes.",
-
-                    lessons: 8,
-
+                        "Understand how catalysts affect reaction pathways and rates.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "65 min"
-
+                    duration: 50
                 },
 
                 {
-                    id: "industrial-processes",
-
-                    title:
-                        "Industrial Chemical Processes",
-
+                    id: "industrial-chemical-processes",
+                    title: "Industrial Chemical Processes",
                     description:
-                        "Explore major chemical processes and industrial chemistry concepts.",
-
-                    lessons: 10,
-
+                        "Explore major principles used in large-scale chemical manufacturing.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "80 min"
-
+                    duration: 55
                 }
 
             ]
@@ -1291,102 +894,67 @@
 
             shortName: "Instrumental",
 
-            category: "instrumental",
+            category: "Advanced Analytical Chemistry",
 
-            icon: "⌘",
+            icon: "⌁",
 
             description:
-                "Learn how modern instruments are used to identify and quantify chemical substances.",
+                "Learn how modern instruments generate chemical information and analytical data.",
 
-            level: "Advanced",
+            level: "advanced",
 
-            colorClass: "academy-instrumental",
+            colorClass: "purple",
 
             topics: [
 
                 {
-                    id: "uv-vis",
-
-                    title:
-                        "UV-Visible Spectroscopy",
-
+                    id: "uv-visible-spectroscopy",
+                    title: "UV-Visible Spectroscopy",
                     description:
-                        "Understand electronic absorption and quantitative spectroscopic analysis.",
-
-                    lessons: 10,
-
+                        "Understand electronic absorption and quantitative UV-Visible measurements.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 55
                 },
 
                 {
-                    id: "infrared",
-
-                    title:
-                        "Infrared Spectroscopy",
-
+                    id: "infrared-spectroscopy",
+                    title: "Infrared Spectroscopy",
                     description:
-                        "Use vibrational information to understand molecular structure.",
+                        "Use vibrational information to understand molecular functional groups.",
+                    lessons: 8,
+                    difficulty: "Advanced",
+                    duration: 55
+                },
 
+                {
+                    id: "nmr-spectroscopy",
+                    title: "NMR Spectroscopy",
+                    description:
+                        "Explore the fundamental principles of nuclear magnetic resonance.",
                     lessons: 9,
-
                     difficulty: "Advanced",
-
-                    duration: "75 min"
-
-                },
-
-                {
-                    id: "nmr",
-
-                    title:
-                        "NMR Spectroscopy",
-
-                    description:
-                        "Learn the fundamentals of nuclear magnetic resonance and chemical environments.",
-
-                    lessons: 10,
-
-                    difficulty: "Advanced",
-
-                    duration: "90 min"
-
+                    duration: 65
                 },
 
                 {
                     id: "mass-spectrometry",
-
-                    title:
-                        "Mass Spectrometry",
-
+                    title: "Mass Spectrometry",
                     description:
-                        "Understand mass-to-charge measurements and molecular identification.",
-
-                    lessons: 9,
-
+                        "Understand molecular mass, ions and mass spectral interpretation.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "80 min"
-
+                    duration: 60
                 },
 
                 {
-                    id: "hplc-gc",
-
-                    title:
-                        "HPLC & Gas Chromatography",
-
+                    id: "hplc-gas-chromatography",
+                    title: "HPLC & Gas Chromatography",
                     description:
-                        "Explore advanced chromatographic analysis and instrumentation.",
-
-                    lessons: 10,
-
+                        "Explore advanced chromatographic separation and analysis.",
+                    lessons: 9,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 65
                 }
 
             ]
@@ -1403,87 +971,59 @@
 
             name: "Nuclear & Radiochemistry",
 
-            shortName: "Nuclear",
+            shortName: "Nuclear Chemistry",
 
-            category: "nuclear",
+            category: "Advanced Chemistry",
 
-            icon: "◉",
+            icon: "◎",
 
             description:
-                "Study nuclear structure, radioactivity, decay and radiochemical concepts.",
+                "Study nuclear structure, radioactivity, decay processes and radiochemical concepts.",
 
-            level: "Advanced",
+            level: "advanced",
 
-            colorClass: "academy-nuclear",
+            colorClass: "red",
 
             topics: [
 
                 {
                     id: "nuclear-structure",
-
-                    title:
-                        "Nuclear Structure",
-
+                    title: "Nuclear Structure",
                     description:
-                        "Understand nuclei, isotopes and nuclear stability.",
-
-                    lessons: 7,
-
+                        "Understand nuclei, isotopes, nuclear forces and nuclear stability.",
+                    lessons: 6,
                     difficulty: "Advanced",
-
-                    duration: "60 min"
-
+                    duration: 45
                 },
 
                 {
-                    id: "radioactivity",
-
-                    title:
-                        "Radioactivity & Decay",
-
+                    id: "radioactivity-decay",
+                    title: "Radioactivity & Decay",
                     description:
-                        "Study radioactive decay and nuclear transformations.",
-
-                    lessons: 8,
-
+                        "Explore radioactive processes and the major modes of nuclear decay.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "65 min"
-
+                    duration: 50
                 },
 
                 {
-                    id: "half-life",
-
-                    title:
-                        "Half-Life & Nuclear Kinetics",
-
+                    id: "half-life-nuclear-kinetics",
+                    title: "Half-Life & Nuclear Kinetics",
                     description:
-                        "Understand radioactive half-life and decay calculations.",
-
+                        "Understand radioactive half-life and mathematical decay models.",
                     lessons: 7,
-
                     difficulty: "Advanced",
-
-                    duration: "60 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "radiochemical-analysis",
-
-                    title:
-                        "Radiochemical Analysis",
-
+                    title: "Radiochemical Analysis",
                     description:
-                        "Explore analytical applications of radioisotopes.",
-
-                    lessons: 7,
-
+                        "Study the analytical principles behind radiochemical measurements.",
+                    lessons: 6,
                     difficulty: "Advanced",
-
-                    duration: "60 min"
-
+                    duration: 45
                 }
 
             ]
@@ -1502,102 +1042,67 @@
 
             shortName: "Research",
 
-            category: "research",
+            category: "Research Science",
 
-            icon: "⌕",
+            icon: "⌘",
 
             description:
-                "Develop the scientific reasoning and research skills needed for laboratory work.",
+                "Develop the scientific reasoning, data analysis and research skills needed for laboratory science.",
 
-            level: "Advanced",
+            level: "advanced",
 
-            colorClass: "academy-research",
+            colorClass: "teal",
 
             topics: [
 
                 {
                     id: "experimental-design",
-
-                    title:
-                        "Experimental Design",
-
+                    title: "Experimental Design",
                     description:
-                        "Learn hypotheses, variables, controls and experimental planning.",
-
-                    lessons: 8,
-
+                        "Learn how to construct meaningful scientific experiments and controls.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "65 min"
-
+                    duration: 50
                 },
 
                 {
-                    id: "data-analysis",
-
-                    title:
-                        "Scientific Data Analysis",
-
+                    id: "scientific-data-analysis",
+                    title: "Scientific Data Analysis",
                     description:
-                        "Analyze experimental measurements using tables, graphs and statistics.",
-
-                    lessons: 9,
-
+                        "Organize, interpret and communicate quantitative scientific data.",
+                    lessons: 8,
                     difficulty: "Advanced",
-
-                    duration: "75 min"
-
+                    duration: 55
                 },
 
                 {
-                    id: "error-analysis",
-
-                    title:
-                        "Error & Uncertainty Analysis",
-
+                    id: "error-uncertainty-analysis",
+                    title: "Error & Uncertainty Analysis",
                     description:
-                        "Evaluate uncertainty and communicate confidence in experimental results.",
-
-                    lessons: 8,
-
+                        "Evaluate uncertainty and understand how it affects scientific conclusions.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "70 min"
-
+                    duration: 50
                 },
 
                 {
                     id: "scientific-writing",
-
-                    title:
-                        "Scientific Writing",
-
+                    title: "Scientific Writing",
                     description:
-                        "Learn how to communicate laboratory findings clearly and scientifically.",
-
-                    lessons: 8,
-
-                    difficulty: "Advanced",
-
-                    duration: "65 min"
-
+                        "Learn how to communicate scientific methods, results and conclusions.",
+                    lessons: 6,
+                    difficulty: "Intermediate",
+                    duration: 45
                 },
 
                 {
                     id: "research-methodology",
-
-                    title:
-                        "Research Methodology",
-
+                    title: "Research Methodology",
                     description:
-                        "Develop skills for planning, conducting and communicating scientific research.",
-
-                    lessons: 10,
-
+                        "Understand the structure and workflow of scientific research.",
+                    lessons: 7,
                     difficulty: "Advanced",
-
-                    duration: "85 min"
-
+                    duration: 50
                 }
 
             ]
@@ -1608,41 +1113,12 @@
 
 
     /* =====================================================
-       HELPERS
-       ===================================================== */
-
-    function $(selector) {
-
-        return document.querySelector(selector);
-
-    }
-
-
-    function $$(selector) {
-
-        return Array.from(
-            document.querySelectorAll(selector)
-        );
-
-    }
-
-
-    function normalize(value) {
-
-        return String(value || "")
-            .trim()
-            .toLowerCase();
-
-    }
-
-
-    /* =====================================================
-       CURRICULUM ACCESS
+       03. UTILITY FUNCTIONS
        ===================================================== */
 
     function getSubjects() {
 
-        return ACADEMY_CURRICULUM;
+        return ACADEMY_CURRICULUM.slice();
 
     }
 
@@ -1650,28 +1126,22 @@
     function getSubject(subjectId) {
 
         return ACADEMY_CURRICULUM.find(
-            subject =>
-                subject.id === subjectId
+            subject => subject.id === subjectId
         ) || null;
 
     }
 
 
-    function getTopic(
-        subjectId,
-        topicId
-    ) {
+    function getTopic(subjectId, topicId) {
 
-        const subject =
-            getSubject(subjectId);
+        const subject = getSubject(subjectId);
 
         if (!subject) {
             return null;
         }
 
         return subject.topics.find(
-            topic =>
-                topic.id === topicId
+            topic => topic.id === topicId
         ) || null;
 
     }
@@ -1680,8 +1150,7 @@
     function getTotalTopics() {
 
         return ACADEMY_CURRICULUM.reduce(
-            (total, subject) =>
-                total + subject.topics.length,
+            (total, subject) => total + subject.topics.length,
             0
         );
 
@@ -1693,16 +1162,11 @@
         return ACADEMY_CURRICULUM.reduce(
             (total, subject) => {
 
-                return total +
-                    subject.topics.reduce(
-                        (
-                            topicTotal,
-                            topic
-                        ) =>
-                            topicTotal +
-                            topic.lessons,
-                        0
-                    );
+                return total + subject.topics.reduce(
+                    (topicTotal, topic) =>
+                        topicTotal + topic.lessons,
+                    0
+                );
 
             },
             0
@@ -1711,14 +1175,86 @@
     }
 
 
+    function normalizeText(value) {
+
+        return String(value || "")
+            .toLowerCase()
+            .trim();
+
+    }
+
+
+    function getTopicProgress(subjectId, topicId) {
+
+        const key =
+            "chemlab_topic_progress_" +
+            subjectId +
+            "_" +
+            topicId;
+
+        const value =
+            Number(localStorage.getItem(key));
+
+        if (!Number.isFinite(value)) {
+            return 0;
+        }
+
+        return Math.max(
+            0,
+            Math.min(100, value)
+        );
+
+    }
+
+
+    function saveTopicProgress(
+        subjectId,
+        topicId,
+        progress
+    ) {
+
+        const value = Math.max(
+            0,
+            Math.min(100, Number(progress) || 0)
+        );
+
+        const key =
+            "chemlab_topic_progress_" +
+            subjectId +
+            "_" +
+            topicId;
+
+        localStorage.setItem(
+            key,
+            String(value)
+        );
+
+        document.dispatchEvent(
+            new CustomEvent(
+                "chemlab:topic-progress-updated",
+                {
+                    detail: {
+                        subjectId,
+                        topicId,
+                        progress: value
+                    }
+                }
+            )
+        );
+
+        return value;
+
+    }
+
+
     /* =====================================================
-       SEARCH
+       04. SEARCH
        ===================================================== */
 
     function search(query) {
 
         const searchTerm =
-            normalize(query);
+            normalizeText(query);
 
         ACADEMY_STATE.searchQuery =
             searchTerm;
@@ -1726,7 +1262,7 @@
         if (!searchTerm) {
 
             ACADEMY_STATE.filteredSubjects =
-                [...ACADEMY_CURRICULUM];
+                ACADEMY_STATE.subjects.slice();
 
             return ACADEMY_STATE.filteredSubjects;
 
@@ -1734,137 +1270,168 @@
 
 
         ACADEMY_STATE.filteredSubjects =
-            ACADEMY_CURRICULUM
-                .map(subject => {
+            ACADEMY_STATE.subjects.filter(
+                subject => {
 
-                    const subjectMatches =
-                        normalize(
-                            `${subject.name} ${subject.description}`
-                        ).includes(searchTerm);
-
-
-                    const topics =
-                        subject.topics.filter(
-                            topic => {
-
-                                return normalize(
-                                    `${topic.title} ${topic.description}`
-                                ).includes(
-                                    searchTerm
-                                );
-
-                            }
+                    const subjectText =
+                        normalizeText(
+                            [
+                                subject.name,
+                                subject.shortName,
+                                subject.category,
+                                subject.description,
+                                ...subject.topics.map(
+                                    topic =>
+                                        topic.title +
+                                        " " +
+                                        topic.description
+                                )
+                            ].join(" ")
                         );
 
+                    return subjectText.includes(
+                        searchTerm
+                    );
 
-                    if (
-                        subjectMatches ||
-                        topics.length
-                    ) {
-
-                        return {
-
-                            ...subject,
-
-                            topics:
-                                subjectMatches
-                                    ? [...subject.topics]
-                                    : topics
-
-                        };
-
-                    }
-
-                    return null;
-
-                })
-                .filter(Boolean);
+                }
+            );
 
 
         return ACADEMY_STATE.filteredSubjects;
-    }
-
-
-    /* =====================================================
-       RENDER SUBJECT COUNT
-       ===================================================== */
-
-    function renderAcademyStats() {
-
-        setText(
-            "#academySubjectCount",
-            ACADEMY_CURRICULUM.length
-        );
-
-        setText(
-            "#academyTopicCount",
-            getTotalTopics()
-        );
-
-        setText(
-            "#academyLessonCount",
-            getTotalLessons()
-        );
 
     }
 
 
     /* =====================================================
-       SUBJECT FILTER
+       05. LEVEL FILTER
        ===================================================== */
 
     function filterByLevel(level) {
 
-        const normalizedLevel =
-            normalize(level);
+        const selectedLevel =
+            normalizeText(level) || "all";
 
-        if (
-            !normalizedLevel ||
-            normalizedLevel === "all"
-        ) {
+        ACADEMY_STATE.currentLevel =
+            selectedLevel;
 
-            ACADEMY_STATE.filteredSubjects =
-                [...ACADEMY_CURRICULUM];
+        let results =
+            ACADEMY_STATE.subjects.slice();
 
-            return;
+
+        if (selectedLevel !== "all") {
+
+            results =
+                results.filter(
+                    subject =>
+                        subject.level === selectedLevel
+                );
+
+        }
+
+
+        if (ACADEMY_STATE.searchQuery) {
+
+            const searchTerm =
+                ACADEMY_STATE.searchQuery;
+
+            results =
+                results.filter(
+                    subject => {
+
+                        const text =
+                            normalizeText(
+                                [
+                                    subject.name,
+                                    subject.shortName,
+                                    subject.category,
+                                    subject.description,
+                                    ...subject.topics.map(
+                                        topic =>
+                                            topic.title +
+                                            " " +
+                                            topic.description
+                                    )
+                                ].join(" ")
+                            );
+
+                        return text.includes(
+                            searchTerm
+                        );
+
+                    }
+                );
 
         }
 
 
         ACADEMY_STATE.filteredSubjects =
-            ACADEMY_CURRICULUM.filter(
-                subject =>
-                    normalize(
-                        subject.level
-                    ) === normalizedLevel
-            );
+            results;
+
+
+        return results;
 
     }
 
 
     /* =====================================================
-       UI HELPERS
+       06. TOPIC SEARCH
        ===================================================== */
 
-    function setText(
-        selector,
-        value
-    ) {
+    function searchTopics(query) {
 
-        const element =
-            $(selector);
+        const subject =
+            ACADEMY_STATE.currentSubject;
 
-        if (!element) {
-            return;
+        if (!subject) {
+            return [];
         }
 
-        element.textContent =
-            value;
+
+        const searchTerm =
+            normalizeText(query);
+
+        ACADEMY_STATE.topicSearchQuery =
+            searchTerm;
+
+
+        if (!searchTerm) {
+
+            ACADEMY_STATE.filteredTopics =
+                subject.topics.slice();
+
+            return ACADEMY_STATE.filteredTopics;
+
+        }
+
+
+        ACADEMY_STATE.filteredTopics =
+            subject.topics.filter(
+                topic => {
+
+                    const text =
+                        normalizeText(
+                            [
+                                topic.title,
+                                topic.description,
+                                topic.difficulty
+                            ].join(" ")
+                        );
+
+                    return text.includes(
+                        searchTerm
+                    );
+
+                }
+            );
+
+
+        return ACADEMY_STATE.filteredTopics;
+
     }
 
 
     /* =====================================================
-       TOPIC NAVIGATION
+       07. SUBJECT SELECTION
        ===================================================== */
 
     function openSubject(subjectId) {
@@ -1873,14 +1440,27 @@
             getSubject(subjectId);
 
         if (!subject) {
-            return;
+            return null;
         }
+
 
         ACADEMY_STATE.currentSubject =
             subject;
 
         ACADEMY_STATE.currentTopic =
             null;
+
+        ACADEMY_STATE.filteredTopics =
+            subject.topics.slice();
+
+        ACADEMY_STATE.topicSearchQuery =
+            "";
+
+        ACADEMY_STATE.view =
+            "topics";
+
+
+        renderSubjectExplorer();
 
 
         document.dispatchEvent(
@@ -1894,8 +1474,15 @@
             )
         );
 
+
+        return subject;
+
     }
 
+
+    /* =====================================================
+       08. TOPIC SELECTION
+       ===================================================== */
 
     function openTopic(
         subjectId,
@@ -1905,17 +1492,19 @@
         const subject =
             getSubject(subjectId);
 
+        if (!subject) {
+            return null;
+        }
+
+
         const topic =
             getTopic(
                 subjectId,
                 topicId
             );
 
-        if (
-            !subject ||
-            !topic
-        ) {
-            return;
+        if (!topic) {
+            return null;
         }
 
 
@@ -1924,6 +1513,12 @@
 
         ACADEMY_STATE.currentTopic =
             topic;
+
+        ACADEMY_STATE.view =
+            "topic";
+
+
+        renderTopicLearning();
 
 
         document.dispatchEvent(
@@ -1938,17 +1533,1760 @@
             )
         );
 
+
+        return topic;
+
     }
 
 
     /* =====================================================
-       ACADEMY SEARCH UI
+       09. RETURN TO SUBJECTS
+       ===================================================== */
+
+    function closeExplorer() {
+
+        ACADEMY_STATE.currentSubject =
+            null;
+
+        ACADEMY_STATE.currentTopic =
+            null;
+
+        ACADEMY_STATE.filteredTopics =
+            [];
+
+        ACADEMY_STATE.view =
+            "subjects";
+
+
+        showSubjectGrid();
+
+
+        document.dispatchEvent(
+            new CustomEvent(
+                "chemlab:academy-explorer-closed"
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       10. DOM HELPERS
+       ===================================================== */
+
+    function getLearnSection() {
+
+        return document.querySelector(
+            '[data-page="learn"]'
+        );
+
+    }
+
+
+    function createElement(
+        tag,
+        className,
+        textContent
+    ) {
+
+        const element =
+            document.createElement(tag);
+
+
+        if (className) {
+            element.className =
+                className;
+        }
+
+
+        if (
+            textContent !== undefined &&
+            textContent !== null
+        ) {
+
+            element.textContent =
+                textContent;
+
+        }
+
+
+        return element;
+
+    }
+
+
+    /* =====================================================
+       11. SUBJECT GRID
+       ===================================================== */
+
+    function getSubjectGrid() {
+
+        return document.getElementById(
+            "academySubjectGrid"
+        );
+
+    }
+
+
+    function showSubjectGrid() {
+
+        const grid =
+            getSubjectGrid();
+
+        if (!grid) {
+            return;
+        }
+
+
+        grid.hidden = false;
+
+
+        const explorer =
+            document.getElementById(
+                "academySubjectExplorer"
+            );
+
+        if (explorer) {
+            explorer.remove();
+        }
+
+
+        const topicView =
+            document.getElementById(
+                "academyTopicLearning"
+            );
+
+        if (topicView) {
+            topicView.remove();
+        }
+
+
+        renderSubjectCards();
+
+    }
+
+
+    /* =====================================================
+       12. RENDER SUBJECT CARDS
+       ===================================================== */
+
+    function renderSubjectCards() {
+
+        const grid =
+            getSubjectGrid();
+
+        if (!grid) {
+            return;
+        }
+
+
+        const results =
+            ACADEMY_STATE.filteredSubjects;
+
+
+        grid.innerHTML = "";
+
+
+        results.forEach(
+            subject => {
+
+                const card =
+                    createElement(
+                        "article",
+                        "academy-subject-card"
+                    );
+
+
+                card.dataset.academySubject =
+                    subject.id;
+
+
+                const header =
+                    createElement(
+                        "div",
+                        "academy-subject-header"
+                    );
+
+
+                const icon =
+                    createElement(
+                        "span",
+                        "academy-subject-icon",
+                        subject.icon
+                    );
+
+
+                const level =
+                    createElement(
+                        "span",
+                        "academy-subject-level",
+                        subject.level.toUpperCase()
+                    );
+
+
+                header.appendChild(icon);
+                header.appendChild(level);
+
+
+                const title =
+                    createElement(
+                        "h3",
+                        "",
+                        subject.name
+                    );
+
+
+                const description =
+                    createElement(
+                        "p",
+                        "",
+                        subject.description
+                    );
+
+
+                const meta =
+                    createElement(
+                        "div",
+                        "academy-subject-meta"
+                    );
+
+
+                const topicCount =
+                    createElement(
+                        "span",
+                        "",
+                        subject.topics.length +
+                        " Topics"
+                    );
+
+
+                const separator =
+                    createElement(
+                        "span",
+                        "",
+                        "•"
+                    );
+
+
+                const category =
+                    createElement(
+                        "span",
+                        "",
+                        subject.category
+                    );
+
+
+                meta.appendChild(topicCount);
+                meta.appendChild(separator);
+                meta.appendChild(category);
+
+
+                const progressWrapper =
+                    createElement(
+                        "div",
+                        "academy-subject-progress"
+                    );
+
+
+                const progressLabel =
+                    createElement(
+                        "div",
+                        "academy-progress-label"
+                    );
+
+
+                const progressText =
+                    createElement(
+                        "span",
+                        "",
+                        "Mastery"
+                    );
+
+
+                let subjectProgress = 0;
+
+
+                if (subject.topics.length) {
+
+                    subjectProgress =
+                        Math.round(
+                            subject.topics.reduce(
+                                (total, topic) =>
+                                    total +
+                                    getTopicProgress(
+                                        subject.id,
+                                        topic.id
+                                    ),
+                                0
+                            ) /
+                            subject.topics.length
+                        );
+
+                }
+
+
+                const progressValue =
+                    createElement(
+                        "strong",
+                        "",
+                        subjectProgress + "%"
+                    );
+
+
+                progressLabel.appendChild(
+                    progressText
+                );
+
+                progressLabel.appendChild(
+                    progressValue
+                );
+
+
+                const progress =
+                    createElement(
+                        "div",
+                        "progress"
+                    );
+
+
+                const progressBar =
+                    createElement(
+                        "span",
+                        "progress-bar"
+                    );
+
+
+                progressBar.style.width =
+                    subjectProgress + "%";
+
+
+                progress.appendChild(
+                    progressBar
+                );
+
+
+                progressWrapper.appendChild(
+                    progressLabel
+                );
+
+                progressWrapper.appendChild(
+                    progress
+                );
+
+
+                const button =
+                    createElement(
+                        "button",
+                        "button button-secondary academy-explore-button"
+                    );
+
+
+                button.type = "button";
+
+
+                button.dataset.academySubject =
+                    subject.id;
+
+
+                const buttonText =
+                    createElement(
+                        "span",
+                        "",
+                        "Explore Subject"
+                    );
+
+
+                const arrow =
+                    createElement(
+                        "span",
+                        "",
+                        "→"
+                    );
+
+
+                button.appendChild(
+                    buttonText
+                );
+
+                button.appendChild(
+                    arrow
+                );
+
+
+                card.appendChild(header);
+                card.appendChild(title);
+                card.appendChild(description);
+                card.appendChild(meta);
+                card.appendChild(progressWrapper);
+                card.appendChild(button);
+
+
+                grid.appendChild(card);
+
+            }
+        );
+
+
+        updateResultsLabel(
+            results.length
+        );
+
+
+        renderEmptyState(
+            results.length === 0
+        );
+
+    }
+
+
+    /* =====================================================
+       13. RESULTS LABEL
+       ===================================================== */
+
+    function updateResultsLabel(count) {
+
+        const label =
+            document.getElementById(
+                "academyResultsLabel"
+            );
+
+        if (!label) {
+            return;
+        }
+
+
+        if (
+            ACADEMY_STATE.searchQuery
+        ) {
+
+            label.textContent =
+                count +
+                (
+                    count === 1
+                        ? " result"
+                        : " results"
+                );
+
+            return;
+
+        }
+
+
+        if (
+            ACADEMY_STATE.currentLevel !==
+            "all"
+        ) {
+
+            label.textContent =
+                count +
+                (
+                    count === 1
+                        ? " subject"
+                        : " subjects"
+                );
+
+            return;
+
+        }
+
+
+        label.textContent =
+            "All subject areas";
+
+    }
+
+
+    /* =====================================================
+       14. EMPTY STATE
+       ===================================================== */
+
+    function renderEmptyState(isEmpty) {
+
+        const empty =
+            document.getElementById(
+                "academyEmptyState"
+            );
+
+        if (!empty) {
+            return;
+        }
+
+
+        empty.hidden =
+            !isEmpty;
+
+    }
+
+
+    /* =====================================================
+       15. SUBJECT EXPLORER
+       ===================================================== */
+
+    function renderSubjectExplorer() {
+
+        const learnSection =
+            getLearnSection();
+
+        if (!learnSection) {
+            return;
+        }
+
+
+        const grid =
+            getSubjectGrid();
+
+        if (grid) {
+            grid.hidden = true;
+        }
+
+
+        const oldTopicView =
+            document.getElementById(
+                "academyTopicLearning"
+            );
+
+        if (oldTopicView) {
+            oldTopicView.remove();
+        }
+
+
+        const oldExplorer =
+            document.getElementById(
+                "academySubjectExplorer"
+            );
+
+        if (oldExplorer) {
+            oldExplorer.remove();
+        }
+
+
+        const subject =
+            ACADEMY_STATE.currentSubject;
+
+
+        if (!subject) {
+            return;
+        }
+
+
+        const explorer =
+            createElement(
+                "section",
+                "academy-subject-explorer card"
+            );
+
+
+        explorer.id =
+            "academySubjectExplorer";
+
+
+        /* ---------------------------------------------
+           HEADER
+           --------------------------------------------- */
+
+        const header =
+            createElement(
+                "div",
+                "academy-explorer-header"
+            );
+
+
+        const backButton =
+            createElement(
+                "button",
+                "button button-secondary academy-back-button"
+            );
+
+
+        backButton.type = "button";
+
+        backButton.textContent =
+            "← All Subjects";
+
+
+        backButton.addEventListener(
+            "click",
+            closeExplorer
+        );
+
+
+        const titleArea =
+            createElement(
+                "div",
+                "academy-explorer-title-area"
+            );
+
+
+        const eyebrow =
+            createElement(
+                "span",
+                "eyebrow",
+                subject.category
+            );
+
+
+        const title =
+            createElement(
+                "h2",
+                "",
+                subject.name
+            );
+
+
+        const description =
+            createElement(
+                "p",
+                "",
+                subject.description
+            );
+
+
+        titleArea.appendChild(
+            eyebrow
+        );
+
+        titleArea.appendChild(
+            title
+        );
+
+        titleArea.appendChild(
+            description
+        );
+
+
+        header.appendChild(
+            backButton
+        );
+
+        header.appendChild(
+            titleArea
+        );
+
+
+        explorer.appendChild(
+            header
+        );
+
+
+        /* ---------------------------------------------
+           SUBJECT SUMMARY
+           --------------------------------------------- */
+
+        const summary =
+            createElement(
+                "div",
+                "academy-explorer-summary"
+            );
+
+
+        const totalLessons =
+            subject.topics.reduce(
+                (total, topic) =>
+                    total + topic.lessons,
+                0
+            );
+
+
+        const totalMinutes =
+            subject.topics.reduce(
+                (total, topic) =>
+                    total + topic.duration,
+                0
+            );
+
+
+        const summaryItems = [
+
+            [
+                "TOPICS",
+                subject.topics.length
+            ],
+
+            [
+                "LESSONS",
+                totalLessons
+            ],
+
+            [
+                "EST. STUDY TIME",
+                formatMinutes(totalMinutes)
+            ],
+
+            [
+                "LEVEL",
+                subject.level
+            ]
+
+        ];
+
+
+        summaryItems.forEach(
+            item => {
+
+                const summaryCard =
+                    createElement(
+                        "div",
+                        "academy-explorer-stat"
+                    );
+
+
+                const label =
+                    createElement(
+                        "span",
+                        "",
+                        item[0]
+                    );
+
+
+                const value =
+                    createElement(
+                        "strong",
+                        "",
+                        String(item[1])
+                    );
+
+
+                summaryCard.appendChild(
+                    label
+                );
+
+                summaryCard.appendChild(
+                    value
+                );
+
+
+                summary.appendChild(
+                    summaryCard
+                );
+
+            }
+        );
+
+
+        explorer.appendChild(
+            summary
+        );
+
+
+        /* ---------------------------------------------
+           TOPIC TOOLBAR
+           --------------------------------------------- */
+
+        const toolbar =
+            createElement(
+                "div",
+                "academy-topic-toolbar"
+            );
+
+
+        const topicSearch =
+            createElement(
+                "input",
+                "form-input"
+            );
+
+
+        topicSearch.type =
+            "search";
+
+        topicSearch.placeholder =
+            "Search topics in this subject...";
+
+        topicSearch.value =
+            ACADEMY_STATE.topicSearchQuery;
+
+
+        topicSearch.addEventListener(
+            "input",
+            function () {
+
+                searchTopics(
+                    topicSearch.value
+                );
+
+                renderTopicCards(
+                    topicGrid
+                );
+
+            }
+        );
+
+
+        toolbar.appendChild(
+            topicSearch
+        );
+
+
+        explorer.appendChild(
+            toolbar
+        );
+
+
+        /* ---------------------------------------------
+           TOPIC GRID
+           --------------------------------------------- */
+
+        const topicGrid =
+            createElement(
+                "div",
+                "academy-topic-grid"
+            );
+
+
+        topicGrid.id =
+            "academyTopicGrid";
+
+
+        explorer.appendChild(
+            topicGrid
+        );
+
+
+        learnSection.appendChild(
+            explorer
+        );
+
+
+        renderTopicCards(
+            topicGrid
+        );
+
+    }
+
+
+    /* =====================================================
+       16. RENDER TOPIC CARDS
+       ===================================================== */
+
+    function renderTopicCards(grid) {
+
+        if (!grid) {
+            return;
+        }
+
+
+        grid.innerHTML = "";
+
+
+        const topics =
+            ACADEMY_STATE.filteredTopics;
+
+
+        if (!topics.length) {
+
+            const empty =
+                createElement(
+                    "div",
+                    "academy-topic-empty"
+                );
+
+
+            const icon =
+                createElement(
+                    "div",
+                    "academy-empty-icon",
+                    "⌕"
+                );
+
+
+            const title =
+                createElement(
+                    "h3",
+                    "",
+                    "No topics found"
+                );
+
+
+            const text =
+                createElement(
+                    "p",
+                    "",
+                    "Try a different topic search."
+                );
+
+
+            empty.appendChild(icon);
+            empty.appendChild(title);
+            empty.appendChild(text);
+
+
+            grid.appendChild(
+                empty
+            );
+
+            return;
+
+        }
+
+
+        topics.forEach(
+            topic => {
+
+                const card =
+                    createElement(
+                        "article",
+                        "academy-topic-card"
+                    );
+
+
+                card.dataset.academyTopic =
+                    topic.id;
+
+
+                const header =
+                    createElement(
+                        "div",
+                        "academy-topic-card-header"
+                    );
+
+
+                const difficulty =
+                    createElement(
+                        "span",
+                        "academy-topic-difficulty",
+                        topic.difficulty
+                    );
+
+
+                const duration =
+                    createElement(
+                        "span",
+                        "academy-topic-duration",
+                        formatMinutes(
+                            topic.duration
+                        )
+                    );
+
+
+                header.appendChild(
+                    difficulty
+                );
+
+                header.appendChild(
+                    duration
+                );
+
+
+                const title =
+                    createElement(
+                        "h3",
+                        "",
+                        topic.title
+                    );
+
+
+                const description =
+                    createElement(
+                        "p",
+                        "",
+                        topic.description
+                    );
+
+
+                const meta =
+                    createElement(
+                        "div",
+                        "academy-topic-meta"
+                    );
+
+
+                const lessons =
+                    createElement(
+                        "span",
+                        "",
+                        topic.lessons +
+                        (
+                            topic.lessons === 1
+                                ? " lesson"
+                                : " lessons"
+                        )
+                    );
+
+
+                meta.appendChild(
+                    lessons
+                );
+
+
+                const progressValue =
+                    getTopicProgress(
+                        ACADEMY_STATE.currentSubject.id,
+                        topic.id
+                    );
+
+
+                const progressWrapper =
+                    createElement(
+                        "div",
+                        "academy-topic-progress"
+                    );
+
+
+                const progressLabel =
+                    createElement(
+                        "div",
+                        "academy-progress-label"
+                    );
+
+
+                progressLabel.appendChild(
+                    createElement(
+                        "span",
+                        "",
+                        "Progress"
+                    )
+                );
+
+
+                progressLabel.appendChild(
+                    createElement(
+                        "strong",
+                        "",
+                        progressValue + "%"
+                    )
+                );
+
+
+                const progress =
+                    createElement(
+                        "div",
+                        "progress"
+                    );
+
+
+                const progressBar =
+                    createElement(
+                        "span",
+                        "progress-bar"
+                    );
+
+
+                progressBar.style.width =
+                    progressValue + "%";
+
+
+                progress.appendChild(
+                    progressBar
+                );
+
+
+                progressWrapper.appendChild(
+                    progressLabel
+                );
+
+                progressWrapper.appendChild(
+                    progress
+                );
+
+
+                const button =
+                    createElement(
+                        "button",
+                        "button button-primary"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.textContent =
+                    progressValue > 0
+                        ? "Continue Learning →"
+                        : "Start Topic →";
+
+
+                button.dataset.academyTopic =
+                    topic.id;
+
+
+                card.appendChild(
+                    header
+                );
+
+                card.appendChild(
+                    title
+                );
+
+                card.appendChild(
+                    description
+                );
+
+                card.appendChild(
+                    meta
+                );
+
+                card.appendChild(
+                    progressWrapper
+                );
+
+                card.appendChild(
+                    button
+                );
+
+
+                grid.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       17. TOPIC LEARNING VIEW
+       ===================================================== */
+
+    function renderTopicLearning() {
+
+        const learnSection =
+            getLearnSection();
+
+        if (!learnSection) {
+            return;
+        }
+
+
+        const subject =
+            ACADEMY_STATE.currentSubject;
+
+        const topic =
+            ACADEMY_STATE.currentTopic;
+
+
+        if (!subject || !topic) {
+            return;
+        }
+
+
+        const grid =
+            getSubjectGrid();
+
+        if (grid) {
+            grid.hidden = true;
+        }
+
+
+        const explorer =
+            document.getElementById(
+                "academySubjectExplorer"
+            );
+
+        if (explorer) {
+            explorer.remove();
+        }
+
+
+        const oldTopicView =
+            document.getElementById(
+                "academyTopicLearning"
+            );
+
+        if (oldTopicView) {
+            oldTopicView.remove();
+        }
+
+
+        const view =
+            createElement(
+                "section",
+                "academy-topic-learning card"
+            );
+
+
+        view.id =
+            "academyTopicLearning";
+
+
+        /* ---------------------------------------------
+           BACK
+           --------------------------------------------- */
+
+        const back =
+            createElement(
+                "button",
+                "button button-secondary academy-back-button",
+                "← Back to " + subject.shortName
+            );
+
+
+        back.type =
+            "button";
+
+
+        back.addEventListener(
+            "click",
+            function () {
+
+                openSubject(
+                    subject.id
+                );
+
+            }
+        );
+
+
+        view.appendChild(
+            back
+        );
+
+
+        /* ---------------------------------------------
+           TOPIC HEADER
+           --------------------------------------------- */
+
+        const header =
+            createElement(
+                "div",
+                "academy-topic-learning-header"
+            );
+
+
+        const eyebrow =
+            createElement(
+                "span",
+                "eyebrow",
+                subject.name
+            );
+
+
+        const title =
+            createElement(
+                "h2",
+                "",
+                topic.title
+            );
+
+
+        const description =
+            createElement(
+                "p",
+                "",
+                topic.description
+            );
+
+
+        header.appendChild(
+            eyebrow
+        );
+
+        header.appendChild(
+            title
+        );
+
+        header.appendChild(
+            description
+        );
+
+
+        view.appendChild(
+            header
+        );
+
+
+        /* ---------------------------------------------
+           TOPIC METADATA
+           --------------------------------------------- */
+
+        const metadata =
+            createElement(
+                "div",
+                "academy-topic-learning-meta"
+            );
+
+
+        const metadataItems = [
+
+            [
+                "DIFFICULTY",
+                topic.difficulty
+            ],
+
+            [
+                "LESSONS",
+                topic.lessons
+            ],
+
+            [
+                "EST. TIME",
+                formatMinutes(topic.duration)
+            ],
+
+            [
+                "LEVEL",
+                subject.level
+            ]
+
+        ];
+
+
+        metadataItems.forEach(
+            item => {
+
+                const itemElement =
+                    createElement(
+                        "div",
+                        "academy-topic-meta-item"
+                    );
+
+
+                itemElement.appendChild(
+                    createElement(
+                        "span",
+                        "",
+                        item[0]
+                    )
+                );
+
+
+                itemElement.appendChild(
+                    createElement(
+                        "strong",
+                        "",
+                        String(item[1])
+                    )
+                );
+
+
+                metadata.appendChild(
+                    itemElement
+                );
+
+            }
+        );
+
+
+        view.appendChild(
+            metadata
+        );
+
+
+        /* ---------------------------------------------
+           PROGRESS
+           --------------------------------------------- */
+
+        const currentProgress =
+            getTopicProgress(
+                subject.id,
+                topic.id
+            );
+
+
+        const progressCard =
+            createElement(
+                "div",
+                "academy-topic-learning-progress"
+            );
+
+
+        const progressHeader =
+            createElement(
+                "div",
+                "academy-progress-label"
+            );
+
+
+        progressHeader.appendChild(
+            createElement(
+                "span",
+                "",
+                "Topic Progress"
+            )
+        );
+
+
+        const progressValue =
+            createElement(
+                "strong",
+                "",
+                currentProgress + "%"
+            );
+
+
+        progressHeader.appendChild(
+            progressValue
+        );
+
+
+        const progress =
+            createElement(
+                "div",
+                "progress"
+            );
+
+
+        const progressBar =
+            createElement(
+                "span",
+                "progress-bar"
+            );
+
+
+        progressBar.style.width =
+            currentProgress + "%";
+
+
+        progress.appendChild(
+            progressBar
+        );
+
+
+        progressCard.appendChild(
+            progressHeader
+        );
+
+        progressCard.appendChild(
+            progress
+        );
+
+
+        view.appendChild(
+            progressCard
+        );
+
+
+        /* ---------------------------------------------
+           LEARNING STRUCTURE
+           --------------------------------------------- */
+
+        const lessonGrid =
+            createElement(
+                "div",
+                "academy-lesson-preview-grid"
+            );
+
+
+        const learningItems = [
+
+            {
+                number: "01",
+                title: "Concept",
+                description:
+                    "Understand the key chemistry ideas and terminology."
+            },
+
+            {
+                number: "02",
+                title: "Worked Examples",
+                description:
+                    "Study how the concept is applied to chemistry problems."
+            },
+
+            {
+                number: "03",
+                title: "Practice",
+                description:
+                    "Test your understanding with structured questions."
+            },
+
+            {
+                number: "04",
+                title: "Laboratory Connection",
+                description:
+                    "Connect the topic with practical chemistry and experimentation."
+            }
+
+        ];
+
+
+        learningItems.forEach(
+            item => {
+
+                const card =
+                    createElement(
+                        "article",
+                        "academy-lesson-preview-card"
+                    );
+
+
+                const number =
+                    createElement(
+                        "span",
+                        "academy-path-number",
+                        item.number
+                    );
+
+
+                const itemTitle =
+                    createElement(
+                        "h3",
+                        "",
+                        item.title
+                    );
+
+
+                const itemDescription =
+                    createElement(
+                        "p",
+                        "",
+                        item.description
+                    );
+
+
+                card.appendChild(
+                    number
+                );
+
+                card.appendChild(
+                    itemTitle
+                );
+
+                card.appendChild(
+                    itemDescription
+                );
+
+
+                lessonGrid.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+        view.appendChild(
+            lessonGrid
+        );
+
+
+        /* ---------------------------------------------
+           ACTIONS
+           --------------------------------------------- */
+
+        const actions =
+            createElement(
+                "div",
+                "academy-topic-actions"
+            );
+
+
+        const startButton =
+            createElement(
+                "button",
+                "button button-primary",
+                currentProgress > 0
+                    ? "Continue Topic →"
+                    : "Start Learning →"
+            );
+
+
+        startButton.type =
+            "button";
+
+
+        startButton.addEventListener(
+            "click",
+            function () {
+
+                const nextProgress =
+                    Math.min(
+                        100,
+                        currentProgress === 0
+                            ? 10
+                            : currentProgress + 10
+                    );
+
+
+                saveTopicProgress(
+                    subject.id,
+                    topic.id,
+                    nextProgress
+                );
+
+
+                renderTopicLearning();
+
+            }
+        );
+
+
+        const practiceButton =
+            createElement(
+                "button",
+                "button button-secondary",
+                "Practice Topic"
+            );
+
+
+        practiceButton.type =
+            "button";
+
+
+        practiceButton.addEventListener(
+            "click",
+            function () {
+
+                document.dispatchEvent(
+                    new CustomEvent(
+                        "chemlab:academy-practice-topic",
+                        {
+                            detail: {
+                                subject,
+                                topic
+                            }
+                        }
+                    )
+                );
+
+
+                if (
+                    window.CHEMLAB_UI &&
+                    typeof window.CHEMLAB_UI.showToast ===
+                    "function"
+                ) {
+
+                    window.CHEMLAB_UI.showToast(
+                        "Topic practice will be connected to the Assessment Engine."
+                    );
+
+                }
+
+            }
+        );
+
+
+        const laboratoryButton =
+            createElement(
+                "button",
+                "button button-secondary",
+                "Apply in Laboratory"
+            );
+
+
+        laboratoryButton.type =
+            "button";
+
+
+        laboratoryButton.addEventListener(
+            "click",
+            function () {
+
+                const event =
+                    new CustomEvent(
+                        "chemlab:academy-laboratory-topic",
+                        {
+                            detail: {
+                                subject,
+                                topic
+                            }
+                        }
+                    );
+
+
+                document.dispatchEvent(
+                    event
+                );
+
+
+                if (
+                    window.CHEMLAB_ROUTER &&
+                    typeof window.CHEMLAB_ROUTER.navigate ===
+                    "function"
+                ) {
+
+                    window.CHEMLAB_ROUTER.navigate(
+                        "laboratory"
+                    );
+
+                }
+
+            }
+        );
+
+
+        actions.appendChild(
+            startButton
+        );
+
+        actions.appendChild(
+            practiceButton
+        );
+
+        actions.appendChild(
+            laboratoryButton
+        );
+
+
+        view.appendChild(
+            actions
+        );
+
+
+        learnSection.appendChild(
+            view
+        );
+
+    }
+
+
+    /* =====================================================
+       18. FORMAT TIME
+       ===================================================== */
+
+    function formatMinutes(minutes) {
+
+        const value =
+            Number(minutes) || 0;
+
+
+        if (value < 60) {
+
+            return value + " min";
+
+        }
+
+
+        const hours =
+            Math.floor(
+                value / 60
+            );
+
+
+        const remaining =
+            value % 60;
+
+
+        if (!remaining) {
+
+            return (
+                hours +
+                (
+                    hours === 1
+                        ? " hr"
+                        : " hrs"
+                )
+            );
+
+        }
+
+
+        return (
+            hours +
+            (
+                hours === 1
+                    ? " hr "
+                    : " hrs "
+            ) +
+            remaining +
+            " min"
+        );
+
+    }
+
+
+    /* =====================================================
+       19. BIND SEARCH
        ===================================================== */
 
     function bindSearch() {
 
         const input =
-            $("#academySearchInput");
+            document.getElementById(
+                "academySearchInput"
+            );
+
 
         if (!input) {
             return;
@@ -1960,8 +3298,17 @@
             function () {
 
                 search(
-                    this.value
+                    input.value
                 );
+
+
+                filterByLevel(
+                    ACADEMY_STATE.currentLevel
+                );
+
+
+                renderSubjectCards();
+
 
                 document.dispatchEvent(
                     new CustomEvent(
@@ -1969,10 +3316,7 @@
                         {
                             detail: {
                                 query:
-                                    this.value,
-
-                                results:
-                                    ACADEMY_STATE.filteredSubjects
+                                    input.value
                             }
                         }
                     )
@@ -1985,91 +3329,340 @@
 
 
     /* =====================================================
-       LEVEL FILTER UI
+       20. BIND LEVEL FILTERS
        ===================================================== */
 
     function bindLevelFilters() {
 
-        $$(
-            "[data-academy-level]"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const level =
-                        this.dataset.academyLevel;
-
-                    filterByLevel(
-                        level
-                    );
+        const buttons =
+            document.querySelectorAll(
+                "[data-academy-level]"
+            );
 
 
-                    $$(
-                        "[data-academy-level]"
-                    ).forEach(item => {
+        buttons.forEach(
+            button => {
 
-                        item.classList.remove(
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        buttons.forEach(
+                            item =>
+                                item.classList.remove(
+                                    "is-active"
+                                )
+                        );
+
+
+                        button.classList.add(
                             "is-active"
                         );
 
-                    });
+
+                        filterByLevel(
+                            button.dataset.academyLevel
+                        );
 
 
-                    this.classList.add(
-                        "is-active"
-                    );
+                        renderSubjectCards();
 
 
-                    document.dispatchEvent(
-                        new CustomEvent(
-                            "chemlab:academy-filter",
-                            {
-                                detail: {
-                                    level,
-
-                                    results:
-                                        ACADEMY_STATE.filteredSubjects
+                        document.dispatchEvent(
+                            new CustomEvent(
+                                "chemlab:academy-filter",
+                                {
+                                    detail: {
+                                        level:
+                                            button.dataset.academyLevel
+                                    }
                                 }
-                            }
-                        )
-                    );
+                            )
+                        );
 
-                }
-            );
+                    }
+                );
 
-        });
+            }
+        );
 
     }
 
 
     /* =====================================================
-       ACADEMY INITIALIZATION
+       21. BIND SUBJECT + TOPIC EVENTS
        ===================================================== */
 
-    function initialize() {
+    function bindAcademyClicks() {
 
-        if (
-            ACADEMY_STATE.initialized
-        ) {
+        document.addEventListener(
+            "click",
+            function (event) {
+
+                const subjectButton =
+                    event.target.closest(
+                        "[data-academy-subject]"
+                    );
+
+
+                if (
+                    subjectButton &&
+                    subjectButton.dataset.academySubject
+                ) {
+
+                    const subjectId =
+                        subjectButton.dataset.academySubject;
+
+
+                    if (
+                        ACADEMY_STATE.view ===
+                        "topics"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    openSubject(
+                        subjectId
+                    );
+
+
+                    return;
+
+                }
+
+
+                const topicButton =
+                    event.target.closest(
+                        "[data-academy-topic]"
+                    );
+
+
+                if (
+                    topicButton &&
+                    topicButton.dataset.academyTopic
+                ) {
+
+                    const subject =
+                        ACADEMY_STATE.currentSubject;
+
+
+                    if (!subject) {
+
+                        const topicId =
+                            topicButton.dataset.academyTopic;
+
+
+                        for (
+                            const candidate
+                            of ACADEMY_STATE.subjects
+                        ) {
+
+                            const topic =
+                                candidate.topics.find(
+                                    item =>
+                                        item.id ===
+                                        topicId
+                                );
+
+
+                            if (topic) {
+
+                                openTopic(
+                                    candidate.id,
+                                    topic.id
+                                );
+
+                                return;
+
+                            }
+
+                        }
+
+                        return;
+
+                    }
+
+
+                    openTopic(
+                        subject.id,
+                        topicButton.dataset.academyTopic
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       22. CLEAR SEARCH
+       ===================================================== */
+
+    function bindClearSearch() {
+
+        const button =
+            document.getElementById(
+                "academyClearSearch"
+            );
+
+
+        if (!button) {
             return;
         }
 
 
+        button.addEventListener(
+            "click",
+            function () {
+
+                const input =
+                    document.getElementById(
+                        "academySearchInput"
+                    );
+
+
+                if (input) {
+                    input.value = "";
+                }
+
+
+                ACADEMY_STATE.searchQuery =
+                    "";
+
+
+                ACADEMY_STATE.currentLevel =
+                    "all";
+
+
+                const filters =
+                    document.querySelectorAll(
+                        "[data-academy-level]"
+                    );
+
+
+                filters.forEach(
+                    filter => {
+
+                        filter.classList.toggle(
+                            "is-active",
+                            filter.dataset.academyLevel ===
+                            "all"
+                        );
+
+                    }
+                );
+
+
+                ACADEMY_STATE.filteredSubjects =
+                    ACADEMY_STATE.subjects.slice();
+
+
+                renderSubjectCards();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       23. UPDATE ACADEMY STATISTICS
+       ===================================================== */
+
+    function renderStatistics() {
+
+        const subjectCount =
+            document.getElementById(
+                "academySubjectCount"
+            );
+
+
+        const topicCount =
+            document.getElementById(
+                "academyTopicCount"
+            );
+
+
+        const lessonCount =
+            document.getElementById(
+                "academyLessonCount"
+            );
+
+
+        if (subjectCount) {
+
+            subjectCount.textContent =
+                ACADEMY_CURRICULUM.length;
+
+        }
+
+
+        if (topicCount) {
+
+            topicCount.textContent =
+                getTotalTopics();
+
+        }
+
+
+        if (lessonCount) {
+
+            lessonCount.textContent =
+                getTotalLessons();
+
+        }
+
+    }
+
+
+    /* =====================================================
+       24. INITIALIZE
+       ===================================================== */
+
+    function initialize() {
+
+        if (ACADEMY_STATE.initialized) {
+            return;
+        }
+
+
+        ACADEMY_STATE.loading =
+            true;
+
+
         ACADEMY_STATE.subjects =
-            [...ACADEMY_CURRICULUM];
+            getSubjects();
+
 
         ACADEMY_STATE.filteredSubjects =
-            [...ACADEMY_CURRICULUM];
+            ACADEMY_STATE.subjects.slice();
 
+
+        ACADEMY_STATE.filteredTopics =
+            [];
+
+
+        renderStatistics();
 
         bindSearch();
 
         bindLevelFilters();
 
-        renderAcademyStats();
+        bindAcademyClicks();
 
+        bindClearSearch();
+
+
+        renderSubjectCards();
+
+
+        ACADEMY_STATE.loading =
+            false;
 
         ACADEMY_STATE.initialized =
             true;
@@ -2081,12 +3674,12 @@
                 {
                     detail: {
                         subjects:
-                            ACADEMY_CURRICULUM,
+                            ACADEMY_CURRICULUM.length,
 
-                        totalTopics:
+                        topics:
                             getTotalTopics(),
 
-                        totalLessons:
+                        lessons:
                             getTotalLessons()
                     }
                 }
@@ -2097,12 +3690,68 @@
 
 
     /* =====================================================
-       PUBLIC API
+       25. REFRESH
+       ===================================================== */
+
+    function refresh() {
+
+        ACADEMY_STATE.subjects =
+            getSubjects();
+
+
+        ACADEMY_STATE.filteredSubjects =
+            ACADEMY_STATE.subjects.slice();
+
+
+        renderStatistics();
+
+
+        if (
+            ACADEMY_STATE.view ===
+            "topics" &&
+            ACADEMY_STATE.currentSubject
+        ) {
+
+            openSubject(
+                ACADEMY_STATE.currentSubject.id
+            );
+
+            return;
+
+        }
+
+
+        if (
+            ACADEMY_STATE.view ===
+            "topic" &&
+            ACADEMY_STATE.currentSubject &&
+            ACADEMY_STATE.currentTopic
+        ) {
+
+            openTopic(
+                ACADEMY_STATE.currentSubject.id,
+                ACADEMY_STATE.currentTopic.id
+            );
+
+            return;
+
+        }
+
+
+        renderSubjectCards();
+
+    }
+
+
+    /* =====================================================
+       26. PUBLIC API
        ===================================================== */
 
     window.CHEMLAB_ACADEMY = {
 
         initialize,
+
+        refresh,
 
         getSubjects,
 
@@ -2110,7 +3759,13 @@
 
         getTopic,
 
+        getTotalTopics,
+
+        getTotalLessons,
+
         search,
+
+        searchTopics,
 
         filterByLevel,
 
@@ -2118,37 +3773,94 @@
 
         openTopic,
 
-        getTotalTopics,
+        closeExplorer,
 
-        getTotalLessons,
+        getTopicProgress,
 
-        getState: function () {
+        saveTopicProgress,
 
-            return {
+        getState:
+            function () {
 
-                initialized:
-                    ACADEMY_STATE.initialized,
+                return {
+                    initialized:
+                        ACADEMY_STATE.initialized,
 
-                currentSubject:
-                    ACADEMY_STATE.currentSubject,
+                    currentSubject:
+                        ACADEMY_STATE.currentSubject,
 
-                currentTopic:
-                    ACADEMY_STATE.currentTopic,
+                    currentTopic:
+                        ACADEMY_STATE.currentTopic,
 
-                subjects:
-                    [...ACADEMY_STATE.subjects],
+                    searchQuery:
+                        ACADEMY_STATE.searchQuery,
 
-                filteredSubjects:
-                    [...ACADEMY_STATE.filteredSubjects],
+                    topicSearchQuery:
+                        ACADEMY_STATE.topicSearchQuery,
 
-                searchQuery:
-                    ACADEMY_STATE.searchQuery
+                    currentLevel:
+                        ACADEMY_STATE.currentLevel,
 
-            };
+                    view:
+                        ACADEMY_STATE.view,
 
-        }
+                    subjectCount:
+                        ACADEMY_STATE.subjects.length,
+
+                    topicCount:
+                        getTotalTopics(),
+
+                    lessonCount:
+                        getTotalLessons()
+                };
+
+            }
 
     };
+
+
+    /* =====================================================
+       27. GLOBAL EVENTS
+       ===================================================== */
+
+    document.addEventListener(
+        "chemlab:topic-progress-updated",
+        function () {
+
+            if (
+                ACADEMY_STATE.view ===
+                "topics" ||
+                ACADEMY_STATE.view ===
+                "subjects"
+            ) {
+
+                renderSubjectCards();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       28. DOM READY
+       ===================================================== */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initialize
+        );
+
+    } else {
+
+        initialize();
+
+    }
 
 
 })();
