@@ -4127,8 +4127,9 @@
 <script src="js/profile.js"></script>
 <script src="js/auth-ui.js"></script>
 <script src="js/dashboard.js"></script>
+<script src="js/academy.js"></script>
 <script src="js/app.js"></script>
-
+    
     <script>
 document.addEventListener("DOMContentLoaded", function () {
     if (
@@ -4137,6 +4138,21 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
         window.CHEMLAB_DASHBOARD.initialize();
     }
+});
+</script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    if (
+        window.CHEMLAB_ACADEMY &&
+        typeof window.CHEMLAB_ACADEMY.initialize === "function"
+    ) {
+
+        window.CHEMLAB_ACADEMY.initialize();
+
+    }
+
 });
 </script>
     
