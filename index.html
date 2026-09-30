@@ -1425,218 +1425,1658 @@
 </section>
 
 
-            <!-- =================================================
-                 LEARN
-                 ================================================= -->
+          
 
-            <section
-                class="app-page"
-                data-page="learn"
+
+                    <article class="subject-card">  
+                        <!-- =========================================================
+     LEARN
+     CHEMLAB PROFESSIONAL CHEMISTRY ACADEMY
+     STAGE 5.2
+     ========================================================= -->
+
+<section
+    class="app-page"
+    data-page="learn"
+>
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="page-header">
+
+        <div>
+
+            <span class="eyebrow">
+                CHEMISTRY ACADEMY
+            </span>
+
+            <h1>
+                Learn Chemistry
+            </h1>
+
+            <p>
+                Build chemistry knowledge from fundamentals to advanced
+                concepts, then apply what you learn in the laboratory.
+            </p>
+
+        </div>
+
+        <div class="page-header-actions">
+
+            <button
+                type="button"
+                class="button button-secondary"
+                data-route="dashboard"
+            >
+                ← Dashboard
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ACADEMY HERO
+         ===================================================== -->
+
+    <section class="academy-hero card">
+
+        <div class="academy-hero-content">
+
+            <span class="card-eyebrow">
+                PERSONALIZED CHEMISTRY LEARNING
+            </span>
+
+            <h2>
+                Learn the science.
+                <br>
+                Master the laboratory.
+            </h2>
+
+            <p>
+                Study concepts, understand the theory, solve problems,
+                test your knowledge, and apply what you learn through
+                virtual experiments.
+            </p>
+
+            <div class="academy-hero-actions">
+
+                <button
+                    type="button"
+                    class="button button-primary"
+                    data-route="laboratory"
+                >
+                    Open Laboratory
+                </button>
+
+                <button
+                    type="button"
+                    class="button button-secondary"
+                    data-route="assessments"
+                >
+                    Practice Assessment
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="academy-hero-symbol">
+
+            <div class="academy-symbol-ring">
+
+                <span>CHEM</span>
+
+                <strong>∑</strong>
+
+                <small>SCIENCE</small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ACADEMY STATISTICS
+         ===================================================== -->
+
+    <section class="academy-stat-grid">
+
+        <article class="academy-stat-card">
+
+            <div class="academy-stat-icon">
+                ◈
+            </div>
+
+            <div>
+
+                <span class="academy-stat-label">
+                    SUBJECT AREAS
+                </span>
+
+                <strong
+                    id="academySubjectCount"
+                >
+                    12
+                </strong>
+
+                <p>
+                    Chemistry disciplines
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="academy-stat-card">
+
+            <div class="academy-stat-icon">
+                ◇
+            </div>
+
+            <div>
+
+                <span class="academy-stat-label">
+                    TOPICS
+                </span>
+
+                <strong
+                    id="academyTopicCount"
+                >
+                    0
+                </strong>
+
+                <p>
+                    Concepts to master
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="academy-stat-card">
+
+            <div class="academy-stat-icon">
+                ∑
+            </div>
+
+            <div>
+
+                <span class="academy-stat-label">
+                    LESSONS
+                </span>
+
+                <strong
+                    id="academyLessonCount"
+                >
+                    0
+                </strong>
+
+                <p>
+                    Learning sessions
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="academy-stat-card">
+
+            <div class="academy-stat-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <span class="academy-stat-label">
+                    LEARNING PATH
+                </span>
+
+                <strong>
+                    3
+                </strong>
+
+                <p>
+                    Academic levels
+                </p>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- =====================================================
+         SEARCH + FILTERS
+         ===================================================== -->
+
+    <section class="academy-controls card">
+
+        <div class="academy-search">
+
+            <label
+                for="academySearchInput"
+                class="sr-only"
+            >
+                Search chemistry subjects and topics
+            </label>
+
+            <span class="academy-search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                id="academySearchInput"
+                class="form-input"
+                placeholder="Search subjects, topics or chemistry concepts..."
+                autocomplete="off"
             >
 
-                <div class="page-header">
+        </div>
 
-                    <div>
 
-                        <span class="eyebrow">
-                            CHEMISTRY ACADEMY
-                        </span>
+        <div class="academy-filter-area">
 
-                        <h1>
-                            Learn Chemistry
-                        </h1>
+            <span class="academy-filter-label">
+                LEVEL
+            </span>
 
-                        <p>
-                            Build knowledge from fundamentals to advanced chemistry.
-                        </p>
+            <div class="academy-level-filters">
 
-                    </div>
+                <button
+                    type="button"
+                    class="academy-filter-button is-active"
+                    data-academy-level="all"
+                >
+                    All Levels
+                </button>
+
+                <button
+                    type="button"
+                    class="academy-filter-button"
+                    data-academy-level="foundation"
+                >
+                    Foundation
+                </button>
+
+                <button
+                    type="button"
+                    class="academy-filter-button"
+                    data-academy-level="undergraduate"
+                >
+                    Undergraduate
+                </button>
+
+                <button
+                    type="button"
+                    class="academy-filter-button"
+                    data-academy-level="advanced"
+                >
+                    Advanced
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RECOMMENDED LEARNING
+         ===================================================== -->
+
+    <section class="academy-feature-grid">
+
+        <article class="academy-feature-card academy-recommendation-card">
+
+            <div class="academy-feature-top">
+
+                <span class="academy-feature-badge">
+                    RECOMMENDED
+                </span>
+
+                <span class="academy-feature-icon">
+                    ★
+                </span>
+
+            </div>
+
+            <h2>
+                Build your chemistry foundation
+            </h2>
+
+            <p>
+                Start with measurements, scientific units and chemical
+                quantities before moving into more advanced chemistry.
+            </p>
+
+            <div class="academy-feature-meta">
+
+                <span>
+                    FOUNDATION
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    CORE SKILLS
+                </span>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-primary"
+                data-academy-topic="measurements-scientific-units"
+            >
+                Start Learning
+            </button>
+
+        </article>
+
+
+        <article class="academy-feature-card academy-feature-topic">
+
+            <div class="academy-feature-top">
+
+                <span class="academy-feature-badge">
+                    FEATURED TOPIC
+                </span>
+
+                <span class="academy-feature-icon">
+                    ⚗
+                </span>
+
+            </div>
+
+            <h2>
+                From theory to experiment
+            </h2>
+
+            <p>
+                Connect chemistry concepts with laboratory measurements,
+                observations, calculations and scientific conclusions.
+            </p>
+
+            <div class="academy-workflow-mini">
+
+                <span>Learn</span>
+                <b>→</b>
+                <span>Predict</span>
+                <b>→</b>
+                <span>Experiment</span>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary"
+                data-route="laboratory"
+            >
+                Enter Laboratory
+            </button>
+
+        </article>
+
+    </section>
+
+
+    <!-- =====================================================
+         SUBJECT AREA HEADER
+         ===================================================== -->
+
+    <div class="academy-section-header">
+
+        <div>
+
+            <span class="eyebrow">
+                CURRICULUM
+            </span>
+
+            <h2>
+                Chemistry Subject Areas
+            </h2>
+
+            <p>
+                Explore the major branches of chemistry and progress
+                through structured topics at your academic level.
+            </p>
+
+        </div>
+
+        <div class="academy-results-count">
+
+            <span id="academyResultsLabel">
+                All subject areas
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUBJECT GRID
+         ===================================================== -->
+
+    <div
+        class="academy-subject-grid"
+        id="academySubjectGrid"
+    >
+
+        <!-- =================================================
+             SUBJECT 1
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="foundations"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ∑
+                </span>
+
+                <span class="academy-subject-level">
+                    FOUNDATION
+                </span>
+
+            </div>
+
+            <h3>
+                Foundations of Chemistry
+            </h3>
+
+            <p>
+                Measurements, scientific units, atomic structure,
+                formulas, equations, mole concepts, stoichiometry
+                and solutions.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    10 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Foundation
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
 
                 </div>
 
+                <div class="progress">
 
-                <div class="academy-hero card">
-
-                    <div>
-
-                        <span class="card-eyebrow">
-                            PERSONALIZED LEARNING
-                        </span>
-
-                        <h2>
-                            Build knowledge that transfers to the laboratory.
-                        </h2>
-
-                        <p>
-                            Study concepts, solve problems, test your understanding,
-                            then apply what you learn experimentally.
-                        </p>
-
-                    </div>
-
-                    <div class="academy-hero-symbol">
-                        ∑
-                    </div>
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
 
                 </div>
 
+            </div>
 
-                <div class="subject-grid">
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="foundations"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
 
-                    <article class="subject-card">
-
-                        <span class="subject-icon">
-                            ∑
-                        </span>
-
-                        <span class="subject-level">
-                            FOUNDATION
-                        </span>
-
-                        <h3>
-                            General Chemistry
-                        </h3>
-
-                        <p>
-                            Atoms, molecules, equations, moles, stoichiometry and solutions.
-                        </p>
-
-                        <button class="button button-secondary">
-                            Explore
-                        </button>
-
-                    </article>
+        </article>
 
 
-                    <article class="subject-card">
+        <!-- =================================================
+             SUBJECT 2
+             ================================================= -->
 
-                        <span class="subject-icon">
-                            ◇
-                        </span>
+        <article
+            class="academy-subject-card"
+            data-academy-subject="inorganic"
+        >
 
-                        <span class="subject-level">
-                            CORE
-                        </span>
+            <div class="academy-subject-header">
 
-                        <h3>
-                            Inorganic Chemistry
-                        </h3>
+                <span class="academy-subject-icon">
+                    ◇
+                </span>
 
-                        <p>
-                            Periodic trends, bonding, acids, bases, redox and coordination chemistry.
-                        </p>
+                <span class="academy-subject-level">
+                    CORE
+                </span>
 
-                        <button class="button button-secondary">
-                            Explore
-                        </button>
+            </div>
 
-                    </article>
+            <h3>
+                Inorganic Chemistry
+            </h3>
 
+            <p>
+                Periodic trends, chemical bonding, molecular structure,
+                acids, bases, redox chemistry and coordination compounds.
+            </p>
 
-                    <article class="subject-card">
+            <div class="academy-subject-meta">
 
-                        <span class="subject-icon">
-                            ⌬
-                        </span>
+                <span>
+                    7 Topics
+                </span>
 
-                        <span class="subject-level">
-                            CORE
-                        </span>
+                <span>
+                    •
+                </span>
 
-                        <h3>
-                            Organic Chemistry
-                        </h3>
+                <span>
+                    Undergraduate
+                </span>
 
-                        <p>
-                            Structures, functional groups, reactions, mechanisms and spectroscopy.
-                        </p>
+            </div>
 
-                        <button class="button button-secondary">
-                            Explore
-                        </button>
+            <div class="academy-subject-progress">
 
-                    </article>
+                <div class="academy-progress-label">
 
+                    <span>
+                        Mastery
+                    </span>
 
-                    <article class="subject-card">
-
-                        <span class="subject-icon">
-                            Δ
-                        </span>
-
-                        <span class="subject-level">
-                            ADVANCED
-                        </span>
-
-                        <h3>
-                            Physical Chemistry
-                        </h3>
-
-                        <p>
-                            Thermodynamics, equilibrium, kinetics, electrochemistry and quantum concepts.
-                        </p>
-
-                        <button class="button button-secondary">
-                            Explore
-                        </button>
-
-                    </article>
-
-
-                    <article class="subject-card">
-
-                        <span class="subject-icon">
-                            ◫
-                        </span>
-
-                        <span class="subject-level">
-                            APPLIED
-                        </span>
-
-                        <h3>
-                            Analytical Chemistry
-                        </h3>
-
-                        <p>
-                            Measurement, uncertainty, titration, calibration and instrumental analysis.
-                        </p>
-
-                        <button class="button button-secondary">
-                            Explore
-                        </button>
-
-                    </article>
-
-
-                    <article class="subject-card">
-
-                        <span class="subject-icon">
-                            ⬡
-                        </span>
-
-                        <span class="subject-level">
-                            LIFE SCIENCE
-                        </span>
-
-                        <h3>
-                            Biochemistry
-                        </h3>
-
-                        <p>
-                            Proteins, enzymes, carbohydrates, lipids and biochemical systems.
-                        </p>
-
-                        <button class="button button-secondary">
-                            Explore
-                        </button>
-
-                    </article>
+                    <strong>
+                        0%
+                    </strong>
 
                 </div>
 
-            </section>
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="inorganic"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
 
 
+        <!-- =================================================
+             SUBJECT 3
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="organic"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ⌬
+                </span>
+
+                <span class="academy-subject-level">
+                    CORE
+                </span>
+
+            </div>
+
+            <h3>
+                Organic Chemistry
+            </h3>
+
+            <p>
+                Organic structures, nomenclature, stereochemistry,
+                functional groups, reactions and reaction mechanisms.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    9 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Undergraduate
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="organic"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 4
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="physical"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    Δ
+                </span>
+
+                <span class="academy-subject-level">
+                    ADVANCED
+                </span>
+
+            </div>
+
+            <h3>
+                Physical Chemistry
+            </h3>
+
+            <p>
+                Gas laws, thermochemistry, thermodynamics, equilibrium,
+                kinetics and phase equilibria.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    7 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Advanced
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="physical"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 5
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="analytical"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ◫
+                </span>
+
+                <span class="academy-subject-level">
+                    APPLIED
+                </span>
+
+            </div>
+
+            <h3>
+                Analytical Chemistry
+            </h3>
+
+            <p>
+                Measurement, accuracy, precision, uncertainty, statistics,
+                titration, calibration and instrumental analysis.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    6 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Undergraduate
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="analytical"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 6
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="biochemistry"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ⬡
+                </span>
+
+                <span class="academy-subject-level">
+                    LIFE SCIENCE
+                </span>
+
+            </div>
+
+            <h3>
+                Biochemistry
+            </h3>
+
+            <p>
+                Amino acids, proteins, enzymes, carbohydrates, lipids,
+                nucleic acids and biochemical systems.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    6 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Undergraduate
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="biochemistry"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 7
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="environmental"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ◌
+                </span>
+
+                <span class="academy-subject-level">
+                    APPLIED
+                </span>
+
+            </div>
+
+            <h3>
+                Environmental Chemistry
+            </h3>
+
+            <p>
+                Water, atmosphere, soil, pollution, green chemistry
+                and environmental monitoring.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    4 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Undergraduate
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="environmental"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 8
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="electrochemistry"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ⚡
+                </span>
+
+                <span class="academy-subject-level">
+                    ADVANCED
+                </span>
+
+            </div>
+
+            <h3>
+                Electrochemistry
+            </h3>
+
+            <p>
+                Redox reactions, electrochemical cells, electrode potentials,
+                electrolysis, corrosion and electrochemical systems.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    5 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Advanced
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="electrochemistry"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 9
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="materials"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ▣
+                </span>
+
+                <span class="academy-subject-level">
+                    INDUSTRIAL
+                </span>
+
+            </div>
+
+            <h3>
+                Materials & Industrial Chemistry
+            </h3>
+
+            <p>
+                Polymers, metals, alloys, catalysts, industrial chemistry
+                and major chemical manufacturing processes.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    4 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Advanced
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="materials"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 10
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="instrumental"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ⌁
+                </span>
+
+                <span class="academy-subject-level">
+                    INSTRUMENTAL
+                </span>
+
+            </div>
+
+            <h3>
+                Instrumental & Spectroscopic Chemistry
+            </h3>
+
+            <p>
+                UV-Visible, infrared, NMR, mass spectrometry,
+                chromatography and instrumental interpretation.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    5 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Advanced
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="instrumental"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 11
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="nuclear"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ◎
+                </span>
+
+                <span class="academy-subject-level">
+                    ADVANCED
+                </span>
+
+            </div>
+
+            <h3>
+                Nuclear & Radiochemistry
+            </h3>
+
+            <p>
+                Nuclear structure, radioactivity, radioactive decay,
+                half-life and radiochemical analysis.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    4 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Advanced
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="nuclear"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+
+        <!-- =================================================
+             SUBJECT 12
+             ================================================= -->
+
+        <article
+            class="academy-subject-card"
+            data-academy-subject="research"
+        >
+
+            <div class="academy-subject-header">
+
+                <span class="academy-subject-icon">
+                    ⌘
+                </span>
+
+                <span class="academy-subject-level">
+                    RESEARCH
+                </span>
+
+            </div>
+
+            <h3>
+                Research & Laboratory Science
+            </h3>
+
+            <p>
+                Experimental design, scientific data analysis,
+                uncertainty, scientific writing and research methodology.
+            </p>
+
+            <div class="academy-subject-meta">
+
+                <span>
+                    5 Topics
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Advanced
+                </span>
+
+            </div>
+
+            <div class="academy-subject-progress">
+
+                <div class="academy-progress-label">
+
+                    <span>
+                        Mastery
+                    </span>
+
+                    <strong>
+                        0%
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <span
+                        class="progress-bar"
+                        style="width: 0%;"
+                    ></span>
+
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="button button-secondary academy-explore-button"
+                data-academy-subject="research"
+            >
+                Explore Subject
+                <span>→</span>
+            </button>
+
+        </article>
+
+    </div>
+
+
+    <!-- =====================================================
+         NO RESULTS
+         ===================================================== -->
+
+    <div
+        class="academy-empty-state"
+        id="academyEmptyState"
+        hidden
+    >
+
+        <div class="academy-empty-icon">
+            ⌕
+        </div>
+
+        <h3>
+            No chemistry subjects found
+        </h3>
+
+        <p>
+            Try another subject, topic or academic level.
+        </p>
+
+        <button
+            type="button"
+            class="button button-secondary"
+            id="academyClearSearch"
+        >
+            Clear Search
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         LEARNING PATH
+         ===================================================== -->
+
+    <section class="academy-path card">
+
+        <div class="academy-section-header academy-path-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    YOUR LEARNING PATH
+                </span>
+
+                <h2>
+                    Chemistry mastery is built step by step.
+                </h2>
+
+                <p>
+                    Move from understanding concepts to solving problems
+                    and finally applying chemistry experimentally.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="academy-path-grid">
+
+            <article class="academy-path-step">
+
+                <span class="academy-path-number">
+                    01
+                </span>
+
+                <span class="academy-path-icon">
+                    ◉
+                </span>
+
+                <h3>
+                    Learn
+                </h3>
+
+                <p>
+                    Understand the chemistry behind the concept.
+                </p>
+
+            </article>
+
+
+            <article class="academy-path-connector">
+                →
+            </article>
+
+
+            <article class="academy-path-step">
+
+                <span class="academy-path-number">
+                    02
+                </span>
+
+                <span class="academy-path-icon">
+                    ?
+                </span>
+
+                <h3>
+                    Predict
+                </h3>
+
+                <p>
+                    Use scientific reasoning to predict outcomes.
+                </p>
+
+            </article>
+
+
+            <article class="academy-path-connector">
+                →
+            </article>
+
+
+            <article class="academy-path-step">
+
+                <span class="academy-path-number">
+                    03
+                </span>
+
+                <span class="academy-path-icon">
+                    ⚗
+                </span>
+
+                <h3>
+                    Experiment
+                </h3>
+
+                <p>
+                    Apply your knowledge in a virtual laboratory.
+                </p>
+
+            </article>
+
+
+            <article class="academy-path-connector">
+                →
+            </article>
+
+
+            <article class="academy-path-step">
+
+                <span class="academy-path-number">
+                    04
+                </span>
+
+                <span class="academy-path-icon">
+                    ✓
+                </span>
+
+                <h3>
+                    Master
+                </h3>
+
+                <p>
+                    Analyze your results and demonstrate understanding.
+                </p>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ACADEMY FOOTER CTA
+         ===================================================== -->
+
+    <section class="academy-bottom-cta">
+
+        <div>
+
+            <span class="eyebrow">
+                READY TO EXPERIMENT?
+            </span>
+
+            <h2>
+                Take what you learn into the laboratory.
+            </h2>
+
+            <p>
+                Chemistry becomes more meaningful when theory,
+                observation and scientific analysis work together.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="button button-primary"
+            data-route="laboratory"
+        >
+            Open Digital Laboratory →
+        </button>
+
+    </section>
+
+</section>
 
             <!-- =================================================
                  LABORATORY
