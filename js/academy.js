@@ -1,7 +1,7 @@
 /* =========================================================
    CHEMLAB
    PROFESSIONAL CHEMISTRY ACADEMY
-   Stage 5.3 — Subject Explorer & Topic Learning Interface
+   Stage 5.4 — Lesson Viewer & Learning Engine
    ========================================================= */
 
 (function () {
@@ -17,9 +17,13 @@
 
         initialized: false,
 
+        view: "subjects",
+
         currentSubject: null,
 
         currentTopic: null,
+
+        currentLessonIndex: 0,
 
         subjects: [],
 
@@ -33,37 +37,359 @@
 
         currentLevel: "all",
 
-        view: "subjects",
-
         loading: false
 
     };
 
 
     /* =====================================================
-       02. CURRICULUM
+       02. LESSON CONTENT
+       ===================================================== */
+
+    const LESSON_CONTENT = {
+
+        "measurements-scientific-units": [
+
+            {
+                id: "measurement-introduction",
+
+                title: "What Is a Scientific Measurement?",
+
+                type: "concept",
+
+                objectives: [
+                    "Understand what a measurement represents.",
+                    "Distinguish between a numerical value and a unit.",
+                    "Explain why standardized units are important in chemistry."
+                ],
+
+                content: `
+                    <p>
+                        Chemistry is an experimental science. Scientists use
+                        measurements to describe substances, observations and
+                        changes quantitatively.
+                    </p>
+
+                    <p>
+                        A measurement normally consists of a
+                        <strong>numerical value</strong> and a
+                        <strong>unit</strong>.
+                    </p>
+
+                    <div class="lesson-equation">
+                        Measurement = numerical value × unit
+                    </div>
+
+                    <p>
+                        For example, a mass might be reported as
+                        <strong>25.0 g</strong>. The number tells us the
+                        magnitude of the measurement, while the unit tells us
+                        what physical quantity is being measured.
+                    </p>
+
+                    <p>
+                        Without a unit, a numerical value may be ambiguous.
+                        Scientific communication therefore depends on clearly
+                        defined units.
+                    </p>
+                `,
+
+                keyPoints: [
+                    "Measurements describe physical quantities.",
+                    "A measurement requires both a value and a unit.",
+                    "Standardized units allow scientists to communicate consistently."
+                ],
+
+                example: {
+                    title: "Worked Example",
+                    question:
+                        "A sample has a measured mass of 18.5 g. Identify the numerical value and the unit.",
+                    answer:
+                        "The numerical value is 18.5 and the unit is grams (g)."
+                },
+
+                check: {
+                    question:
+                        "Why is the unit important when reporting a measurement?",
+                    options: [
+                        "It identifies what the numerical value represents.",
+                        "It makes every measurement larger.",
+                        "It removes all experimental uncertainty.",
+                        "It replaces the numerical value."
+                    ],
+                    answer: 0
+                }
+            },
+
+
+            {
+                id: "si-system",
+
+                title: "The SI System of Units",
+
+                type: "concept",
+
+                objectives: [
+                    "Identify common SI base units used in chemistry.",
+                    "Recognize common derived units.",
+                    "Understand why scientists use standardized units."
+                ],
+
+                content: `
+                    <p>
+                        The <strong>International System of Units (SI)</strong>
+                        provides a standardized framework for scientific
+                        measurement.
+                    </p>
+
+                    <p>
+                        Chemistry commonly uses quantities such as mass,
+                        length, time, temperature and amount of substance.
+                    </p>
+
+                    <div class="lesson-table-wrapper">
+
+                        <table class="lesson-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Quantity</th>
+                                    <th>SI Unit</th>
+                                    <th>Symbol</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <td>Length</td>
+                                    <td>metre</td>
+                                    <td>m</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Mass</td>
+                                    <td>kilogram</td>
+                                    <td>kg</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Time</td>
+                                    <td>second</td>
+                                    <td>s</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Temperature</td>
+                                    <td>kelvin</td>
+                                    <td>K</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Amount of substance</td>
+                                    <td>mole</td>
+                                    <td>mol</td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <p>
+                        Chemistry also uses derived units. For example,
+                        concentration may be expressed in mol/L, while pressure
+                        can be expressed in pascals.
+                    </p>
+                `,
+
+                keyPoints: [
+                    "SI provides standardized scientific units.",
+                    "The mole is the SI base unit for amount of substance.",
+                    "Derived units are constructed from base units."
+                ],
+
+                example: {
+                    title: "Think About It",
+                    question:
+                        "Which SI base unit is associated with amount of substance?",
+                    answer:
+                        "The mole, symbol mol."
+                },
+
+                check: {
+                    question:
+                        "Which unit represents amount of substance in the SI system?",
+                    options: [
+                        "kilogram",
+                        "mole",
+                        "kelvin",
+                        "metre"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "units-in-chemistry",
+
+                title: "Common Chemistry Units",
+
+                type: "concept",
+
+                objectives: [
+                    "Recognize common chemistry units.",
+                    "Distinguish between mass, volume, temperature and amount of substance.",
+                    "Select appropriate units for common laboratory measurements."
+                ],
+
+                content: `
+                    <p>
+                        Chemists frequently work with measurements that are
+                        smaller or more convenient than the SI base units.
+                    </p>
+
+                    <p>
+                        Common laboratory units include grams, milligrams,
+                        litres, millilitres, degrees Celsius and moles.
+                    </p>
+
+                    <div class="lesson-callout">
+                        <strong>Important:</strong>
+                        Always check the unit before performing a calculation.
+                        Many chemistry errors begin with incompatible units.
+                    </div>
+
+                    <p>
+                        For example, a balance may report mass in grams,
+                        while a volumetric instrument may report volume in
+                        millilitres.
+                    </p>
+
+                    <p>
+                        Before combining measurements in an equation, determine
+                        whether the units are compatible with the equation.
+                    </p>
+                `,
+
+                keyPoints: [
+                    "Laboratories use many practical units.",
+                    "Unit compatibility matters in calculations.",
+                    "Always identify units before substituting values into equations."
+                ],
+
+                example: {
+                    title: "Worked Example",
+                    question:
+                        "A solution volume is reported as 250 mL. What type of quantity is being measured?",
+                    answer:
+                        "The quantity is volume."
+                },
+
+                check: {
+                    question:
+                        "What should you check before using two measured quantities in a calculation?",
+                    options: [
+                        "Whether their units are compatible.",
+                        "Whether their numbers look similar.",
+                        "Whether both values are integers.",
+                        "Whether the units can be ignored."
+                    ],
+                    answer: 0
+                }
+            },
+
+
+            {
+                id: "scientific-notation",
+
+                title: "Scientific Notation",
+
+                type: "calculation",
+
+                objectives: [
+                    "Write very large and very small numbers in scientific notation.",
+                    "Interpret powers of ten.",
+                    "Use scientific notation when working with chemistry quantities."
+                ],
+
+                content: `
+                    <p>
+                        Chemistry often deals with extremely small particles and
+                        very large numbers of particles. Scientific notation
+                        provides a convenient way to represent these values.
+                    </p>
+
+                    <div class="lesson-equation">
+                        a × 10<sup>n</sup>
+                    </div>
+
+                    <p>
+                        In scientific notation, <strong>a</strong> is normally
+                        between 1 and 10, while <strong>n</strong> is an integer.
+                    </p>
+
+                    <p>
+                        For example, 0.00045 can be written as
+                        <strong>4.5 × 10<sup>−4</sup></strong>.
+                    </p>
+
+                    <p>
+                        Moving the decimal point to the right produces a
+                        negative exponent. Moving it to the left produces a
+                        positive exponent.
+                    </p>
+                `,
+
+                keyPoints: [
+                    "Scientific notation uses powers of ten.",
+                    "Small numbers normally have negative exponents.",
+                    "Large numbers normally have positive exponents."
+                ],
+
+                example: {
+                    title: "Worked Example",
+                    question:
+                        "Write 0.0000032 in scientific notation.",
+                    answer:
+                        "3.2 × 10⁻⁶."
+                },
+
+                check: {
+                    question:
+                        "Which is the correct scientific notation for 0.00052?",
+                    options: [
+                        "5.2 × 10⁻⁴",
+                        "5.2 × 10⁴",
+                        "52 × 10⁻⁵",
+                        "0.52 × 10⁻³"
+                    ],
+                    answer: 0
+                }
+            }
+
+        ]
+
+    };
+
+
+    /* =====================================================
+       03. CURRICULUM
        ===================================================== */
 
     const ACADEMY_CURRICULUM = [
 
         {
             id: "foundations",
-
             name: "Foundations of Chemistry",
-
             shortName: "Foundations",
-
             category: "Foundation Chemistry",
-
             icon: "∑",
-
             description:
                 "Build the essential scientific and mathematical foundations required for chemistry.",
-
             level: "foundation",
-
-            colorClass: "blue",
-
             topics: [
 
                 {
@@ -167,32 +493,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           INORGANIC CHEMISTRY
-           ================================================= */
-
         {
             id: "inorganic",
-
             name: "Inorganic Chemistry",
-
             shortName: "Inorganic",
-
             category: "Core Chemistry",
-
             icon: "◇",
-
             description:
                 "Explore the chemistry of elements, compounds, bonding, acids, bases and coordination systems.",
-
             level: "undergraduate",
-
-            colorClass: "purple",
-
             topics: [
 
                 {
@@ -266,32 +578,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           ORGANIC CHEMISTRY
-           ================================================= */
-
         {
             id: "organic",
-
             name: "Organic Chemistry",
-
             shortName: "Organic",
-
             category: "Core Chemistry",
-
             icon: "⌬",
-
             description:
                 "Study carbon chemistry, structures, functional groups, reactions and mechanisms.",
-
             level: "undergraduate",
-
-            colorClass: "orange",
-
             topics: [
 
                 {
@@ -385,32 +683,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           PHYSICAL CHEMISTRY
-           ================================================= */
-
         {
             id: "physical",
-
             name: "Physical Chemistry",
-
             shortName: "Physical",
-
             category: "Advanced Chemistry",
-
             icon: "Δ",
-
             description:
                 "Understand the mathematical and theoretical principles governing chemical systems.",
-
             level: "advanced",
-
-            colorClass: "red",
-
             topics: [
 
                 {
@@ -484,32 +768,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           ANALYTICAL CHEMISTRY
-           ================================================= */
-
         {
             id: "analytical",
-
             name: "Analytical Chemistry",
-
             shortName: "Analytical",
-
             category: "Applied Chemistry",
-
             icon: "◫",
-
             description:
                 "Develop the skills needed to measure, quantify and interpret chemical information.",
-
             level: "undergraduate",
-
-            colorClass: "green",
-
             topics: [
 
                 {
@@ -573,32 +843,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           BIOCHEMISTRY
-           ================================================= */
-
         {
             id: "biochemistry",
-
             name: "Biochemistry",
-
             shortName: "Biochemistry",
-
             category: "Life Science",
-
             icon: "⬡",
-
             description:
                 "Explore the chemistry of biological molecules and biochemical processes.",
-
             level: "undergraduate",
-
-            colorClass: "teal",
-
             topics: [
 
                 {
@@ -662,32 +918,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           ENVIRONMENTAL CHEMISTRY
-           ================================================= */
-
         {
             id: "environmental",
-
             name: "Environmental Chemistry",
-
             shortName: "Environmental",
-
             category: "Applied Chemistry",
-
             icon: "◌",
-
             description:
                 "Understand chemical processes affecting water, air, soil and environmental systems.",
-
             level: "undergraduate",
-
-            colorClass: "green",
-
             topics: [
 
                 {
@@ -731,32 +973,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           ELECTROCHEMISTRY
-           ================================================= */
-
         {
             id: "electrochemistry",
-
             name: "Electrochemistry",
-
             shortName: "Electrochemistry",
-
             category: "Advanced Chemistry",
-
             icon: "⚡",
-
             description:
                 "Study chemical systems involving electron transfer, electrical potential and electrochemical cells.",
-
             level: "advanced",
-
-            colorClass: "yellow",
-
             topics: [
 
                 {
@@ -810,32 +1038,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           MATERIALS & INDUSTRIAL CHEMISTRY
-           ================================================= */
-
         {
             id: "materials",
-
             name: "Materials & Industrial Chemistry",
-
             shortName: "Materials",
-
             category: "Industrial Chemistry",
-
             icon: "▣",
-
             description:
                 "Explore chemical principles behind materials, industrial processes and catalysts.",
-
             level: "advanced",
-
-            colorClass: "orange",
-
             topics: [
 
                 {
@@ -879,32 +1093,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           INSTRUMENTAL CHEMISTRY
-           ================================================= */
-
         {
             id: "instrumental",
-
             name: "Instrumental & Spectroscopic Chemistry",
-
             shortName: "Instrumental",
-
             category: "Advanced Analytical Chemistry",
-
             icon: "⌁",
-
             description:
                 "Learn how modern instruments generate chemical information and analytical data.",
-
             level: "advanced",
-
-            colorClass: "purple",
-
             topics: [
 
                 {
@@ -958,32 +1158,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           NUCLEAR CHEMISTRY
-           ================================================= */
-
         {
             id: "nuclear",
-
             name: "Nuclear & Radiochemistry",
-
             shortName: "Nuclear Chemistry",
-
             category: "Advanced Chemistry",
-
             icon: "◎",
-
             description:
                 "Study nuclear structure, radioactivity, decay processes and radiochemical concepts.",
-
             level: "advanced",
-
-            colorClass: "red",
-
             topics: [
 
                 {
@@ -1027,32 +1213,18 @@
                 }
 
             ]
-
         },
 
 
-        /* =================================================
-           RESEARCH & LABORATORY SCIENCE
-           ================================================= */
-
         {
             id: "research",
-
             name: "Research & Laboratory Science",
-
             shortName: "Research",
-
             category: "Research Science",
-
             icon: "⌘",
-
             description:
                 "Develop the scientific reasoning, data analysis and research skills needed for laboratory science.",
-
             level: "advanced",
-
-            colorClass: "teal",
-
             topics: [
 
                 {
@@ -1106,19 +1278,20 @@
                 }
 
             ]
-
         }
 
     ];
 
 
     /* =====================================================
-       03. UTILITY FUNCTIONS
+       04. HELPERS
        ===================================================== */
 
-    function getSubjects() {
+    function normalizeText(value) {
 
-        return ACADEMY_CURRICULUM.slice();
+        return String(value || "")
+            .toLowerCase()
+            .trim();
 
     }
 
@@ -1134,7 +1307,8 @@
 
     function getTopic(subjectId, topicId) {
 
-        const subject = getSubject(subjectId);
+        const subject =
+            getSubject(subjectId);
 
         if (!subject) {
             return null;
@@ -1147,87 +1321,96 @@
     }
 
 
-    function getTotalTopics() {
+    function getLessons(
+        subjectId,
+        topicId
+    ) {
 
-        return ACADEMY_CURRICULUM.reduce(
-            (total, subject) => total + subject.topics.length,
-            0
-        );
-
-    }
-
-
-    function getTotalLessons() {
-
-        return ACADEMY_CURRICULUM.reduce(
-            (total, subject) => {
-
-                return total + subject.topics.reduce(
-                    (topicTotal, topic) =>
-                        topicTotal + topic.lessons,
-                    0
-                );
-
-            },
-            0
-        );
+        return LESSON_CONTENT[topicId] || [];
 
     }
 
 
-    function normalizeText(value) {
+    function getProgressKey(
+        subjectId,
+        topicId
+    ) {
 
-        return String(value || "")
-            .toLowerCase()
-            .trim();
-
-    }
-
-
-    function getTopicProgress(subjectId, topicId) {
-
-        const key =
+        return (
             "chemlab_topic_progress_" +
             subjectId +
             "_" +
-            topicId;
-
-        const value =
-            Number(localStorage.getItem(key));
-
-        if (!Number.isFinite(value)) {
-            return 0;
-        }
-
-        return Math.max(
-            0,
-            Math.min(100, value)
+            topicId
         );
 
     }
 
 
-    function saveTopicProgress(
+    function getLessonKey(
+        subjectId,
+        topicId,
+        lessonIndex
+    ) {
+
+        return (
+            "chemlab_lesson_completed_" +
+            subjectId +
+            "_" +
+            topicId +
+            "_" +
+            lessonIndex
+        );
+
+    }
+
+
+    function getTopicProgress(
+        subjectId,
+        topicId
+    ) {
+
+        const value =
+            Number(
+                localStorage.getItem(
+                    getProgressKey(
+                        subjectId,
+                        topicId
+                    )
+                )
+            );
+
+
+        return Number.isFinite(value)
+            ? Math.max(0, Math.min(100, value))
+            : 0;
+
+    }
+
+
+    function setTopicProgress(
         subjectId,
         topicId,
         progress
     ) {
 
-        const value = Math.max(
-            0,
-            Math.min(100, Number(progress) || 0)
-        );
+        const value =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    Number(progress) || 0
+                )
+            );
 
-        const key =
-            "chemlab_topic_progress_" +
-            subjectId +
-            "_" +
-            topicId;
 
         localStorage.setItem(
-            key,
+            getProgressKey(
+                subjectId,
+                topicId
+            ),
             String(value)
         );
+
 
         document.dispatchEvent(
             new CustomEvent(
@@ -1242,1988 +1425,154 @@
             )
         );
 
+
         return value;
 
     }
 
 
-    /* =====================================================
-       04. SEARCH
-       ===================================================== */
+    function isLessonCompleted(
+        subjectId,
+        topicId,
+        lessonIndex
+    ) {
 
-    function search(query) {
-
-        const searchTerm =
-            normalizeText(query);
-
-        ACADEMY_STATE.searchQuery =
-            searchTerm;
-
-        if (!searchTerm) {
-
-            ACADEMY_STATE.filteredSubjects =
-                ACADEMY_STATE.subjects.slice();
-
-            return ACADEMY_STATE.filteredSubjects;
-
-        }
-
-
-        ACADEMY_STATE.filteredSubjects =
-            ACADEMY_STATE.subjects.filter(
-                subject => {
-
-                    const subjectText =
-                        normalizeText(
-                            [
-                                subject.name,
-                                subject.shortName,
-                                subject.category,
-                                subject.description,
-                                ...subject.topics.map(
-                                    topic =>
-                                        topic.title +
-                                        " " +
-                                        topic.description
-                                )
-                            ].join(" ")
-                        );
-
-                    return subjectText.includes(
-                        searchTerm
-                    );
-
-                }
-            );
-
-
-        return ACADEMY_STATE.filteredSubjects;
+        return (
+            localStorage.getItem(
+                getLessonKey(
+                    subjectId,
+                    topicId,
+                    lessonIndex
+                )
+            ) === "true"
+        );
 
     }
 
 
-    /* =====================================================
-       05. LEVEL FILTER
-       ===================================================== */
+    function markLessonCompleted(
+        subjectId,
+        topicId,
+        lessonIndex
+    ) {
 
-    function filterByLevel(level) {
-
-        const selectedLevel =
-            normalizeText(level) || "all";
-
-        ACADEMY_STATE.currentLevel =
-            selectedLevel;
-
-        let results =
-            ACADEMY_STATE.subjects.slice();
-
-
-        if (selectedLevel !== "all") {
-
-            results =
-                results.filter(
-                    subject =>
-                        subject.level === selectedLevel
-                );
-
-        }
-
-
-        if (ACADEMY_STATE.searchQuery) {
-
-            const searchTerm =
-                ACADEMY_STATE.searchQuery;
-
-            results =
-                results.filter(
-                    subject => {
-
-                        const text =
-                            normalizeText(
-                                [
-                                    subject.name,
-                                    subject.shortName,
-                                    subject.category,
-                                    subject.description,
-                                    ...subject.topics.map(
-                                        topic =>
-                                            topic.title +
-                                            " " +
-                                            topic.description
-                                    )
-                                ].join(" ")
-                            );
-
-                        return text.includes(
-                            searchTerm
-                        );
-
-                    }
-                );
-
-        }
-
-
-        ACADEMY_STATE.filteredSubjects =
-            results;
-
-
-        return results;
-
-    }
-
-
-    /* =====================================================
-       06. TOPIC SEARCH
-       ===================================================== */
-
-    function searchTopics(query) {
-
-        const subject =
-            ACADEMY_STATE.currentSubject;
-
-        if (!subject) {
-            return [];
-        }
-
-
-        const searchTerm =
-            normalizeText(query);
-
-        ACADEMY_STATE.topicSearchQuery =
-            searchTerm;
-
-
-        if (!searchTerm) {
-
-            ACADEMY_STATE.filteredTopics =
-                subject.topics.slice();
-
-            return ACADEMY_STATE.filteredTopics;
-
-        }
-
-
-        ACADEMY_STATE.filteredTopics =
-            subject.topics.filter(
-                topic => {
-
-                    const text =
-                        normalizeText(
-                            [
-                                topic.title,
-                                topic.description,
-                                topic.difficulty
-                            ].join(" ")
-                        );
-
-                    return text.includes(
-                        searchTerm
-                    );
-
-                }
-            );
-
-
-        return ACADEMY_STATE.filteredTopics;
-
-    }
-
-
-    /* =====================================================
-       07. SUBJECT SELECTION
-       ===================================================== */
-
-    function openSubject(subjectId) {
-
-        const subject =
-            getSubject(subjectId);
-
-        if (!subject) {
-            return null;
-        }
-
-
-        ACADEMY_STATE.currentSubject =
-            subject;
-
-        ACADEMY_STATE.currentTopic =
-            null;
-
-        ACADEMY_STATE.filteredTopics =
-            subject.topics.slice();
-
-        ACADEMY_STATE.topicSearchQuery =
-            "";
-
-        ACADEMY_STATE.view =
-            "topics";
-
-
-        renderSubjectExplorer();
-
-
-        document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-subject-opened",
-                {
-                    detail: {
-                        subject
-                    }
-                }
-            )
+        localStorage.setItem(
+            getLessonKey(
+                subjectId,
+                topicId,
+                lessonIndex
+            ),
+            "true"
         );
 
 
-        return subject;
-
-    }
-
-
-    /* =====================================================
-       08. TOPIC SELECTION
-       ===================================================== */
-
-    function openTopic(
-        subjectId,
-        topicId
-    ) {
-
-        const subject =
-            getSubject(subjectId);
-
-        if (!subject) {
-            return null;
-        }
-
-
-        const topic =
-            getTopic(
+        const lessons =
+            getLessons(
                 subjectId,
                 topicId
             );
 
-        if (!topic) {
-            return null;
+
+        if (!lessons.length) {
+            return;
         }
 
 
-        ACADEMY_STATE.currentSubject =
-            subject;
+        const completed =
+            lessons.reduce(
+                (count, lesson, index) => {
 
-        ACADEMY_STATE.currentTopic =
-            topic;
+                    return count +
+                        (
+                            isLessonCompleted(
+                                subjectId,
+                                topicId,
+                                index
+                            )
+                                ? 1
+                                : 0
+                        );
 
-        ACADEMY_STATE.view =
-            "topic";
+                },
+                0
+            );
 
 
-        renderTopicLearning();
+        const progress =
+            Math.round(
+                (completed / lessons.length) *
+                100
+            );
+
+
+        setTopicProgress(
+            subjectId,
+            topicId,
+            progress
+        );
+
+
+        addScienceXP(10);
 
 
         document.dispatchEvent(
             new CustomEvent(
-                "chemlab:academy-topic-opened",
+                "chemlab:lesson-completed",
                 {
                     detail: {
-                        subject,
-                        topic
+                        subjectId,
+                        topicId,
+                        lessonIndex,
+                        progress
                     }
                 }
             )
         );
 
-
-        return topic;
-
     }
 
 
-    /* =====================================================
-       09. RETURN TO SUBJECTS
-       ===================================================== */
+    function addScienceXP(amount) {
 
-    function closeExplorer() {
-
-        ACADEMY_STATE.currentSubject =
-            null;
-
-        ACADEMY_STATE.currentTopic =
-            null;
-
-        ACADEMY_STATE.filteredTopics =
-            [];
-
-        ACADEMY_STATE.view =
-            "subjects";
+        const value =
+            Math.max(
+                0,
+                Number(amount) || 0
+            );
 
 
-        showSubjectGrid();
+        const key =
+            "chemlab_science_xp";
+
+
+        const current =
+            Number(
+                localStorage.getItem(key)
+            ) || 0;
+
+
+        localStorage.setItem(
+            key,
+            String(
+                current + value
+            )
+        );
 
 
         document.dispatchEvent(
             new CustomEvent(
-                "chemlab:academy-explorer-closed"
+                "chemlab:xp-updated",
+                {
+                    detail: {
+                        amount: value,
+                        total: current + value
+                    }
+                }
             )
         );
 
     }
 
-
-    /* =====================================================
-       10. DOM HELPERS
-       ===================================================== */
-
-    function getLearnSection() {
-
-        return document.querySelector(
-            '[data-page="learn"]'
-        );
-
-    }
-
-
-    function createElement(
-        tag,
-        className,
-        textContent
-    ) {
-
-        const element =
-            document.createElement(tag);
-
-
-        if (className) {
-            element.className =
-                className;
-        }
-
-
-        if (
-            textContent !== undefined &&
-            textContent !== null
-        ) {
-
-            element.textContent =
-                textContent;
-
-        }
-
-
-        return element;
-
-    }
-
-
-    /* =====================================================
-       11. SUBJECT GRID
-       ===================================================== */
-
-    function getSubjectGrid() {
-
-        return document.getElementById(
-            "academySubjectGrid"
-        );
-
-    }
-
-
-    function showSubjectGrid() {
-
-        const grid =
-            getSubjectGrid();
-
-        if (!grid) {
-            return;
-        }
-
-
-        grid.hidden = false;
-
-
-        const explorer =
-            document.getElementById(
-                "academySubjectExplorer"
-            );
-
-        if (explorer) {
-            explorer.remove();
-        }
-
-
-        const topicView =
-            document.getElementById(
-                "academyTopicLearning"
-            );
-
-        if (topicView) {
-            topicView.remove();
-        }
-
-
-        renderSubjectCards();
-
-    }
-
-
-    /* =====================================================
-       12. RENDER SUBJECT CARDS
-       ===================================================== */
-
-    function renderSubjectCards() {
-
-        const grid =
-            getSubjectGrid();
-
-        if (!grid) {
-            return;
-        }
-
-
-        const results =
-            ACADEMY_STATE.filteredSubjects;
-
-
-        grid.innerHTML = "";
-
-
-        results.forEach(
-            subject => {
-
-                const card =
-                    createElement(
-                        "article",
-                        "academy-subject-card"
-                    );
-
-
-                card.dataset.academySubject =
-                    subject.id;
-
-
-                const header =
-                    createElement(
-                        "div",
-                        "academy-subject-header"
-                    );
-
-
-                const icon =
-                    createElement(
-                        "span",
-                        "academy-subject-icon",
-                        subject.icon
-                    );
-
-
-                const level =
-                    createElement(
-                        "span",
-                        "academy-subject-level",
-                        subject.level.toUpperCase()
-                    );
-
-
-                header.appendChild(icon);
-                header.appendChild(level);
-
-
-                const title =
-                    createElement(
-                        "h3",
-                        "",
-                        subject.name
-                    );
-
-
-                const description =
-                    createElement(
-                        "p",
-                        "",
-                        subject.description
-                    );
-
-
-                const meta =
-                    createElement(
-                        "div",
-                        "academy-subject-meta"
-                    );
-
-
-                const topicCount =
-                    createElement(
-                        "span",
-                        "",
-                        subject.topics.length +
-                        " Topics"
-                    );
-
-
-                const separator =
-                    createElement(
-                        "span",
-                        "",
-                        "•"
-                    );
-
-
-                const category =
-                    createElement(
-                        "span",
-                        "",
-                        subject.category
-                    );
-
-
-                meta.appendChild(topicCount);
-                meta.appendChild(separator);
-                meta.appendChild(category);
-
-
-                const progressWrapper =
-                    createElement(
-                        "div",
-                        "academy-subject-progress"
-                    );
-
-
-                const progressLabel =
-                    createElement(
-                        "div",
-                        "academy-progress-label"
-                    );
-
-
-                const progressText =
-                    createElement(
-                        "span",
-                        "",
-                        "Mastery"
-                    );
-
-
-                let subjectProgress = 0;
-
-
-                if (subject.topics.length) {
-
-                    subjectProgress =
-                        Math.round(
-                            subject.topics.reduce(
-                                (total, topic) =>
-                                    total +
-                                    getTopicProgress(
-                                        subject.id,
-                                        topic.id
-                                    ),
-                                0
-                            ) /
-                            subject.topics.length
-                        );
-
-                }
-
-
-                const progressValue =
-                    createElement(
-                        "strong",
-                        "",
-                        subjectProgress + "%"
-                    );
-
-
-                progressLabel.appendChild(
-                    progressText
-                );
-
-                progressLabel.appendChild(
-                    progressValue
-                );
-
-
-                const progress =
-                    createElement(
-                        "div",
-                        "progress"
-                    );
-
-
-                const progressBar =
-                    createElement(
-                        "span",
-                        "progress-bar"
-                    );
-
-
-                progressBar.style.width =
-                    subjectProgress + "%";
-
-
-                progress.appendChild(
-                    progressBar
-                );
-
-
-                progressWrapper.appendChild(
-                    progressLabel
-                );
-
-                progressWrapper.appendChild(
-                    progress
-                );
-
-
-                const button =
-                    createElement(
-                        "button",
-                        "button button-secondary academy-explore-button"
-                    );
-
-
-                button.type = "button";
-
-
-                button.dataset.academySubject =
-                    subject.id;
-
-
-                const buttonText =
-                    createElement(
-                        "span",
-                        "",
-                        "Explore Subject"
-                    );
-
-
-                const arrow =
-                    createElement(
-                        "span",
-                        "",
-                        "→"
-                    );
-
-
-                button.appendChild(
-                    buttonText
-                );
-
-                button.appendChild(
-                    arrow
-                );
-
-
-                card.appendChild(header);
-                card.appendChild(title);
-                card.appendChild(description);
-                card.appendChild(meta);
-                card.appendChild(progressWrapper);
-                card.appendChild(button);
-
-
-                grid.appendChild(card);
-
-            }
-        );
-
-
-        updateResultsLabel(
-            results.length
-        );
-
-
-        renderEmptyState(
-            results.length === 0
-        );
-
-    }
-
-
-    /* =====================================================
-       13. RESULTS LABEL
-       ===================================================== */
-
-    function updateResultsLabel(count) {
-
-        const label =
-            document.getElementById(
-                "academyResultsLabel"
-            );
-
-        if (!label) {
-            return;
-        }
-
-
-        if (
-            ACADEMY_STATE.searchQuery
-        ) {
-
-            label.textContent =
-                count +
-                (
-                    count === 1
-                        ? " result"
-                        : " results"
-                );
-
-            return;
-
-        }
-
-
-        if (
-            ACADEMY_STATE.currentLevel !==
-            "all"
-        ) {
-
-            label.textContent =
-                count +
-                (
-                    count === 1
-                        ? " subject"
-                        : " subjects"
-                );
-
-            return;
-
-        }
-
-
-        label.textContent =
-            "All subject areas";
-
-    }
-
-
-    /* =====================================================
-       14. EMPTY STATE
-       ===================================================== */
-
-    function renderEmptyState(isEmpty) {
-
-        const empty =
-            document.getElementById(
-                "academyEmptyState"
-            );
-
-        if (!empty) {
-            return;
-        }
-
-
-        empty.hidden =
-            !isEmpty;
-
-    }
-
-
-    /* =====================================================
-       15. SUBJECT EXPLORER
-       ===================================================== */
-
-    function renderSubjectExplorer() {
-
-        const learnSection =
-            getLearnSection();
-
-        if (!learnSection) {
-            return;
-        }
-
-
-        const grid =
-            getSubjectGrid();
-
-        if (grid) {
-            grid.hidden = true;
-        }
-
-
-        const oldTopicView =
-            document.getElementById(
-                "academyTopicLearning"
-            );
-
-        if (oldTopicView) {
-            oldTopicView.remove();
-        }
-
-
-        const oldExplorer =
-            document.getElementById(
-                "academySubjectExplorer"
-            );
-
-        if (oldExplorer) {
-            oldExplorer.remove();
-        }
-
-
-        const subject =
-            ACADEMY_STATE.currentSubject;
-
-
-        if (!subject) {
-            return;
-        }
-
-
-        const explorer =
-            createElement(
-                "section",
-                "academy-subject-explorer card"
-            );
-
-
-        explorer.id =
-            "academySubjectExplorer";
-
-
-        /* ---------------------------------------------
-           HEADER
-           --------------------------------------------- */
-
-        const header =
-            createElement(
-                "div",
-                "academy-explorer-header"
-            );
-
-
-        const backButton =
-            createElement(
-                "button",
-                "button button-secondary academy-back-button"
-            );
-
-
-        backButton.type = "button";
-
-        backButton.textContent =
-            "← All Subjects";
-
-
-        backButton.addEventListener(
-            "click",
-            closeExplorer
-        );
-
-
-        const titleArea =
-            createElement(
-                "div",
-                "academy-explorer-title-area"
-            );
-
-
-        const eyebrow =
-            createElement(
-                "span",
-                "eyebrow",
-                subject.category
-            );
-
-
-        const title =
-            createElement(
-                "h2",
-                "",
-                subject.name
-            );
-
-
-        const description =
-            createElement(
-                "p",
-                "",
-                subject.description
-            );
-
-
-        titleArea.appendChild(
-            eyebrow
-        );
-
-        titleArea.appendChild(
-            title
-        );
-
-        titleArea.appendChild(
-            description
-        );
-
-
-        header.appendChild(
-            backButton
-        );
-
-        header.appendChild(
-            titleArea
-        );
-
-
-        explorer.appendChild(
-            header
-        );
-
-
-        /* ---------------------------------------------
-           SUBJECT SUMMARY
-           --------------------------------------------- */
-
-        const summary =
-            createElement(
-                "div",
-                "academy-explorer-summary"
-            );
-
-
-        const totalLessons =
-            subject.topics.reduce(
-                (total, topic) =>
-                    total + topic.lessons,
-                0
-            );
-
-
-        const totalMinutes =
-            subject.topics.reduce(
-                (total, topic) =>
-                    total + topic.duration,
-                0
-            );
-
-
-        const summaryItems = [
-
-            [
-                "TOPICS",
-                subject.topics.length
-            ],
-
-            [
-                "LESSONS",
-                totalLessons
-            ],
-
-            [
-                "EST. STUDY TIME",
-                formatMinutes(totalMinutes)
-            ],
-
-            [
-                "LEVEL",
-                subject.level
-            ]
-
-        ];
-
-
-        summaryItems.forEach(
-            item => {
-
-                const summaryCard =
-                    createElement(
-                        "div",
-                        "academy-explorer-stat"
-                    );
-
-
-                const label =
-                    createElement(
-                        "span",
-                        "",
-                        item[0]
-                    );
-
-
-                const value =
-                    createElement(
-                        "strong",
-                        "",
-                        String(item[1])
-                    );
-
-
-                summaryCard.appendChild(
-                    label
-                );
-
-                summaryCard.appendChild(
-                    value
-                );
-
-
-                summary.appendChild(
-                    summaryCard
-                );
-
-            }
-        );
-
-
-        explorer.appendChild(
-            summary
-        );
-
-
-        /* ---------------------------------------------
-           TOPIC TOOLBAR
-           --------------------------------------------- */
-
-        const toolbar =
-            createElement(
-                "div",
-                "academy-topic-toolbar"
-            );
-
-
-        const topicSearch =
-            createElement(
-                "input",
-                "form-input"
-            );
-
-
-        topicSearch.type =
-            "search";
-
-        topicSearch.placeholder =
-            "Search topics in this subject...";
-
-        topicSearch.value =
-            ACADEMY_STATE.topicSearchQuery;
-
-
-        topicSearch.addEventListener(
-            "input",
-            function () {
-
-                searchTopics(
-                    topicSearch.value
-                );
-
-                renderTopicCards(
-                    topicGrid
-                );
-
-            }
-        );
-
-
-        toolbar.appendChild(
-            topicSearch
-        );
-
-
-        explorer.appendChild(
-            toolbar
-        );
-
-
-        /* ---------------------------------------------
-           TOPIC GRID
-           --------------------------------------------- */
-
-        const topicGrid =
-            createElement(
-                "div",
-                "academy-topic-grid"
-            );
-
-
-        topicGrid.id =
-            "academyTopicGrid";
-
-
-        explorer.appendChild(
-            topicGrid
-        );
-
-
-        learnSection.appendChild(
-            explorer
-        );
-
-
-        renderTopicCards(
-            topicGrid
-        );
-
-    }
-
-
-    /* =====================================================
-       16. RENDER TOPIC CARDS
-       ===================================================== */
-
-    function renderTopicCards(grid) {
-
-        if (!grid) {
-            return;
-        }
-
-
-        grid.innerHTML = "";
-
-
-        const topics =
-            ACADEMY_STATE.filteredTopics;
-
-
-        if (!topics.length) {
-
-            const empty =
-                createElement(
-                    "div",
-                    "academy-topic-empty"
-                );
-
-
-            const icon =
-                createElement(
-                    "div",
-                    "academy-empty-icon",
-                    "⌕"
-                );
-
-
-            const title =
-                createElement(
-                    "h3",
-                    "",
-                    "No topics found"
-                );
-
-
-            const text =
-                createElement(
-                    "p",
-                    "",
-                    "Try a different topic search."
-                );
-
-
-            empty.appendChild(icon);
-            empty.appendChild(title);
-            empty.appendChild(text);
-
-
-            grid.appendChild(
-                empty
-            );
-
-            return;
-
-        }
-
-
-        topics.forEach(
-            topic => {
-
-                const card =
-                    createElement(
-                        "article",
-                        "academy-topic-card"
-                    );
-
-
-                card.dataset.academyTopic =
-                    topic.id;
-
-
-                const header =
-                    createElement(
-                        "div",
-                        "academy-topic-card-header"
-                    );
-
-
-                const difficulty =
-                    createElement(
-                        "span",
-                        "academy-topic-difficulty",
-                        topic.difficulty
-                    );
-
-
-                const duration =
-                    createElement(
-                        "span",
-                        "academy-topic-duration",
-                        formatMinutes(
-                            topic.duration
-                        )
-                    );
-
-
-                header.appendChild(
-                    difficulty
-                );
-
-                header.appendChild(
-                    duration
-                );
-
-
-                const title =
-                    createElement(
-                        "h3",
-                        "",
-                        topic.title
-                    );
-
-
-                const description =
-                    createElement(
-                        "p",
-                        "",
-                        topic.description
-                    );
-
-
-                const meta =
-                    createElement(
-                        "div",
-                        "academy-topic-meta"
-                    );
-
-
-                const lessons =
-                    createElement(
-                        "span",
-                        "",
-                        topic.lessons +
-                        (
-                            topic.lessons === 1
-                                ? " lesson"
-                                : " lessons"
-                        )
-                    );
-
-
-                meta.appendChild(
-                    lessons
-                );
-
-
-                const progressValue =
-                    getTopicProgress(
-                        ACADEMY_STATE.currentSubject.id,
-                        topic.id
-                    );
-
-
-                const progressWrapper =
-                    createElement(
-                        "div",
-                        "academy-topic-progress"
-                    );
-
-
-                const progressLabel =
-                    createElement(
-                        "div",
-                        "academy-progress-label"
-                    );
-
-
-                progressLabel.appendChild(
-                    createElement(
-                        "span",
-                        "",
-                        "Progress"
-                    )
-                );
-
-
-                progressLabel.appendChild(
-                    createElement(
-                        "strong",
-                        "",
-                        progressValue + "%"
-                    )
-                );
-
-
-                const progress =
-                    createElement(
-                        "div",
-                        "progress"
-                    );
-
-
-                const progressBar =
-                    createElement(
-                        "span",
-                        "progress-bar"
-                    );
-
-
-                progressBar.style.width =
-                    progressValue + "%";
-
-
-                progress.appendChild(
-                    progressBar
-                );
-
-
-                progressWrapper.appendChild(
-                    progressLabel
-                );
-
-                progressWrapper.appendChild(
-                    progress
-                );
-
-
-                const button =
-                    createElement(
-                        "button",
-                        "button button-primary"
-                    );
-
-
-                button.type =
-                    "button";
-
-
-                button.textContent =
-                    progressValue > 0
-                        ? "Continue Learning →"
-                        : "Start Topic →";
-
-
-                button.dataset.academyTopic =
-                    topic.id;
-
-
-                card.appendChild(
-                    header
-                );
-
-                card.appendChild(
-                    title
-                );
-
-                card.appendChild(
-                    description
-                );
-
-                card.appendChild(
-                    meta
-                );
-
-                card.appendChild(
-                    progressWrapper
-                );
-
-                card.appendChild(
-                    button
-                );
-
-
-                grid.appendChild(
-                    card
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       17. TOPIC LEARNING VIEW
-       ===================================================== */
-
-    function renderTopicLearning() {
-
-        const learnSection =
-            getLearnSection();
-
-        if (!learnSection) {
-            return;
-        }
-
-
-        const subject =
-            ACADEMY_STATE.currentSubject;
-
-        const topic =
-            ACADEMY_STATE.currentTopic;
-
-
-        if (!subject || !topic) {
-            return;
-        }
-
-
-        const grid =
-            getSubjectGrid();
-
-        if (grid) {
-            grid.hidden = true;
-        }
-
-
-        const explorer =
-            document.getElementById(
-                "academySubjectExplorer"
-            );
-
-        if (explorer) {
-            explorer.remove();
-        }
-
-
-        const oldTopicView =
-            document.getElementById(
-                "academyTopicLearning"
-            );
-
-        if (oldTopicView) {
-            oldTopicView.remove();
-        }
-
-
-        const view =
-            createElement(
-                "section",
-                "academy-topic-learning card"
-            );
-
-
-        view.id =
-            "academyTopicLearning";
-
-
-        /* ---------------------------------------------
-           BACK
-           --------------------------------------------- */
-
-        const back =
-            createElement(
-                "button",
-                "button button-secondary academy-back-button",
-                "← Back to " + subject.shortName
-            );
-
-
-        back.type =
-            "button";
-
-
-        back.addEventListener(
-            "click",
-            function () {
-
-                openSubject(
-                    subject.id
-                );
-
-            }
-        );
-
-
-        view.appendChild(
-            back
-        );
-
-
-        /* ---------------------------------------------
-           TOPIC HEADER
-           --------------------------------------------- */
-
-        const header =
-            createElement(
-                "div",
-                "academy-topic-learning-header"
-            );
-
-
-        const eyebrow =
-            createElement(
-                "span",
-                "eyebrow",
-                subject.name
-            );
-
-
-        const title =
-            createElement(
-                "h2",
-                "",
-                topic.title
-            );
-
-
-        const description =
-            createElement(
-                "p",
-                "",
-                topic.description
-            );
-
-
-        header.appendChild(
-            eyebrow
-        );
-
-        header.appendChild(
-            title
-        );
-
-        header.appendChild(
-            description
-        );
-
-
-        view.appendChild(
-            header
-        );
-
-
-        /* ---------------------------------------------
-           TOPIC METADATA
-           --------------------------------------------- */
-
-        const metadata =
-            createElement(
-                "div",
-                "academy-topic-learning-meta"
-            );
-
-
-        const metadataItems = [
-
-            [
-                "DIFFICULTY",
-                topic.difficulty
-            ],
-
-            [
-                "LESSONS",
-                topic.lessons
-            ],
-
-            [
-                "EST. TIME",
-                formatMinutes(topic.duration)
-            ],
-
-            [
-                "LEVEL",
-                subject.level
-            ]
-
-        ];
-
-
-        metadataItems.forEach(
-            item => {
-
-                const itemElement =
-                    createElement(
-                        "div",
-                        "academy-topic-meta-item"
-                    );
-
-
-                itemElement.appendChild(
-                    createElement(
-                        "span",
-                        "",
-                        item[0]
-                    )
-                );
-
-
-                itemElement.appendChild(
-                    createElement(
-                        "strong",
-                        "",
-                        String(item[1])
-                    )
-                );
-
-
-                metadata.appendChild(
-                    itemElement
-                );
-
-            }
-        );
-
-
-        view.appendChild(
-            metadata
-        );
-
-
-        /* ---------------------------------------------
-           PROGRESS
-           --------------------------------------------- */
-
-        const currentProgress =
-            getTopicProgress(
-                subject.id,
-                topic.id
-            );
-
-
-        const progressCard =
-            createElement(
-                "div",
-                "academy-topic-learning-progress"
-            );
-
-
-        const progressHeader =
-            createElement(
-                "div",
-                "academy-progress-label"
-            );
-
-
-        progressHeader.appendChild(
-            createElement(
-                "span",
-                "",
-                "Topic Progress"
-            )
-        );
-
-
-        const progressValue =
-            createElement(
-                "strong",
-                "",
-                currentProgress + "%"
-            );
-
-
-        progressHeader.appendChild(
-            progressValue
-        );
-
-
-        const progress =
-            createElement(
-                "div",
-                "progress"
-            );
-
-
-        const progressBar =
-            createElement(
-                "span",
-                "progress-bar"
-            );
-
-
-        progressBar.style.width =
-            currentProgress + "%";
-
-
-        progress.appendChild(
-            progressBar
-        );
-
-
-        progressCard.appendChild(
-            progressHeader
-        );
-
-        progressCard.appendChild(
-            progress
-        );
-
-
-        view.appendChild(
-            progressCard
-        );
-
-
-        /* ---------------------------------------------
-           LEARNING STRUCTURE
-           --------------------------------------------- */
-
-        const lessonGrid =
-            createElement(
-                "div",
-                "academy-lesson-preview-grid"
-            );
-
-
-        const learningItems = [
-
-            {
-                number: "01",
-                title: "Concept",
-                description:
-                    "Understand the key chemistry ideas and terminology."
-            },
-
-            {
-                number: "02",
-                title: "Worked Examples",
-                description:
-                    "Study how the concept is applied to chemistry problems."
-            },
-
-            {
-                number: "03",
-                title: "Practice",
-                description:
-                    "Test your understanding with structured questions."
-            },
-
-            {
-                number: "04",
-                title: "Laboratory Connection",
-                description:
-                    "Connect the topic with practical chemistry and experimentation."
-            }
-
-        ];
-
-
-        learningItems.forEach(
-            item => {
-
-                const card =
-                    createElement(
-                        "article",
-                        "academy-lesson-preview-card"
-                    );
-
-
-                const number =
-                    createElement(
-                        "span",
-                        "academy-path-number",
-                        item.number
-                    );
-
-
-                const itemTitle =
-                    createElement(
-                        "h3",
-                        "",
-                        item.title
-                    );
-
-
-                const itemDescription =
-                    createElement(
-                        "p",
-                        "",
-                        item.description
-                    );
-
-
-                card.appendChild(
-                    number
-                );
-
-                card.appendChild(
-                    itemTitle
-                );
-
-                card.appendChild(
-                    itemDescription
-                );
-
-
-                lessonGrid.appendChild(
-                    card
-                );
-
-            }
-        );
-
-
-        view.appendChild(
-            lessonGrid
-        );
-
-
-        /* ---------------------------------------------
-           ACTIONS
-           --------------------------------------------- */
-
-        const actions =
-            createElement(
-                "div",
-                "academy-topic-actions"
-            );
-
-
-        const startButton =
-            createElement(
-                "button",
-                "button button-primary",
-                currentProgress > 0
-                    ? "Continue Topic →"
-                    : "Start Learning →"
-            );
-
-
-        startButton.type =
-            "button";
-
-
-        startButton.addEventListener(
-            "click",
-            function () {
-
-                const nextProgress =
-                    Math.min(
-                        100,
-                        currentProgress === 0
-                            ? 10
-                            : currentProgress + 10
-                    );
-
-
-                saveTopicProgress(
-                    subject.id,
-                    topic.id,
-                    nextProgress
-                );
-
-
-                renderTopicLearning();
-
-            }
-        );
-
-
-        const practiceButton =
-            createElement(
-                "button",
-                "button button-secondary",
-                "Practice Topic"
-            );
-
-
-        practiceButton.type =
-            "button";
-
-
-        practiceButton.addEventListener(
-            "click",
-            function () {
-
-                document.dispatchEvent(
-                    new CustomEvent(
-                        "chemlab:academy-practice-topic",
-                        {
-                            detail: {
-                                subject,
-                                topic
-                            }
-                        }
-                    )
-                );
-
-
-                if (
-                    window.CHEMLAB_UI &&
-                    typeof window.CHEMLAB_UI.showToast ===
-                    "function"
-                ) {
-
-                    window.CHEMLAB_UI.showToast(
-                        "Topic practice will be connected to the Assessment Engine."
-                    );
-
-                }
-
-            }
-        );
-
-
-        const laboratoryButton =
-            createElement(
-                "button",
-                "button button-secondary",
-                "Apply in Laboratory"
-            );
-
-
-        laboratoryButton.type =
-            "button";
-
-
-        laboratoryButton.addEventListener(
-            "click",
-            function () {
-
-                const event =
-                    new CustomEvent(
-                        "chemlab:academy-laboratory-topic",
-                        {
-                            detail: {
-                                subject,
-                                topic
-                            }
-                        }
-                    );
-
-
-                document.dispatchEvent(
-                    event
-                );
-
-
-                if (
-                    window.CHEMLAB_ROUTER &&
-                    typeof window.CHEMLAB_ROUTER.navigate ===
-                    "function"
-                ) {
-
-                    window.CHEMLAB_ROUTER.navigate(
-                        "laboratory"
-                    );
-
-                }
-
-            }
-        );
-
-
-        actions.appendChild(
-            startButton
-        );
-
-        actions.appendChild(
-            practiceButton
-        );
-
-        actions.appendChild(
-            laboratoryButton
-        );
-
-
-        view.appendChild(
-            actions
-        );
-
-
-        learnSection.appendChild(
-            view
-        );
-
-    }
-
-
-    /* =====================================================
-       18. FORMAT TIME
-       ===================================================== */
 
     function formatMinutes(minutes) {
 
@@ -3232,16 +1581,12 @@
 
 
         if (value < 60) {
-
             return value + " min";
-
         }
 
 
         const hours =
-            Math.floor(
-                value / 60
-            );
+            Math.floor(value / 60);
 
 
         const remaining =
@@ -3277,7 +1622,2520 @@
 
 
     /* =====================================================
-       19. BIND SEARCH
+       05. LESSON VIEWER
+       ===================================================== */
+
+    function openLesson(
+        subjectId,
+        topicId,
+        lessonIndex
+    ) {
+
+        const subject =
+            getSubject(subjectId);
+
+        const topic =
+            getTopic(
+                subjectId,
+                topicId
+            );
+
+
+        if (!subject || !topic) {
+            return null;
+        }
+
+
+        const lessons =
+            getLessons(
+                subjectId,
+                topicId
+            );
+
+
+        if (!lessons.length) {
+
+            openTopic(
+                subjectId,
+                topicId
+            );
+
+            return null;
+
+        }
+
+
+        const safeIndex =
+            Math.max(
+                0,
+                Math.min(
+                    lessons.length - 1,
+                    Number(lessonIndex) || 0
+                )
+            );
+
+
+        ACADEMY_STATE.currentSubject =
+            subject;
+
+        ACADEMY_STATE.currentTopic =
+            topic;
+
+        ACADEMY_STATE.currentLessonIndex =
+            safeIndex;
+
+        ACADEMY_STATE.view =
+            "lesson";
+
+
+        renderLesson();
+
+
+        document.dispatchEvent(
+            new CustomEvent(
+                "chemlab:academy-lesson-opened",
+                {
+                    detail: {
+                        subject,
+                        topic,
+                        lesson:
+                            lessons[safeIndex],
+                        lessonIndex:
+                            safeIndex
+                    }
+                }
+            )
+        );
+
+
+        return lessons[safeIndex];
+
+    }
+
+
+    /* =====================================================
+       06. RENDER LESSON
+       ===================================================== */
+
+    function renderLesson() {
+
+        const learnSection =
+            document.querySelector(
+                '[data-page="learn"]'
+            );
+
+
+        if (!learnSection) {
+            return;
+        }
+
+
+        const subject =
+            ACADEMY_STATE.currentSubject;
+
+        const topic =
+            ACADEMY_STATE.currentTopic;
+
+
+        if (!subject || !topic) {
+            return;
+        }
+
+
+        const lessons =
+            getLessons(
+                subject.id,
+                topic.id
+            );
+
+
+        if (!lessons.length) {
+
+            renderNoLessonContent(
+                learnSection
+            );
+
+            return;
+
+        }
+
+
+        const lesson =
+            lessons[
+                ACADEMY_STATE.currentLessonIndex
+            ];
+
+
+        const existing =
+            document.getElementById(
+                "academyLessonViewer"
+            );
+
+
+        if (existing) {
+            existing.remove();
+        }
+
+
+        const subjectGrid =
+            document.getElementById(
+                "academySubjectGrid"
+            );
+
+
+        if (subjectGrid) {
+            subjectGrid.hidden = true;
+        }
+
+
+        const explorer =
+            document.getElementById(
+                "academySubjectExplorer"
+            );
+
+
+        if (explorer) {
+            explorer.remove();
+        }
+
+
+        const topicLearning =
+            document.getElementById(
+                "academyTopicLearning"
+            );
+
+
+        if (topicLearning) {
+            topicLearning.remove();
+        }
+
+
+        const viewer =
+            document.createElement(
+                "section"
+            );
+
+
+        viewer.id =
+            "academyLessonViewer";
+
+
+        viewer.className =
+            "academy-lesson-viewer";
+
+
+        /* ---------------------------------------------
+           TOP NAVIGATION
+           --------------------------------------------- */
+
+        const top =
+            document.createElement(
+                "div"
+            );
+
+
+        top.className =
+            "academy-lesson-top";
+
+
+        const backButton =
+            createButton(
+                "← Back to " + topic.title,
+                "button button-secondary"
+            );
+
+
+        backButton.addEventListener(
+            "click",
+            function () {
+
+                openTopic(
+                    subject.id,
+                    topic.id
+                );
+
+            }
+        );
+
+
+        const lessonPosition =
+            document.createElement(
+                "span"
+            );
+
+
+        lessonPosition.className =
+            "academy-lesson-position";
+
+
+        lessonPosition.textContent =
+            "Lesson " +
+            (ACADEMY_STATE.currentLessonIndex + 1) +
+            " of " +
+            lessons.length;
+
+
+        top.appendChild(
+            backButton
+        );
+
+        top.appendChild(
+            lessonPosition
+        );
+
+
+        viewer.appendChild(
+            top
+        );
+
+
+        /* ---------------------------------------------
+           PROGRESS BAR
+           --------------------------------------------- */
+
+        const progressWrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        progressWrapper.className =
+            "academy-lesson-progress";
+
+
+        const progressValue =
+            lessons.length
+                ? Math.round(
+                    (
+                        ACADEMY_STATE.currentLessonIndex
+                        /
+                        lessons.length
+                    ) * 100
+                )
+                : 0;
+
+
+        const progressBar =
+            document.createElement(
+                "span"
+            );
+
+
+        progressBar.style.width =
+            progressValue + "%";
+
+
+        progressWrapper.appendChild(
+            progressBar
+        );
+
+
+        viewer.appendChild(
+            progressWrapper
+        );
+
+
+        /* ---------------------------------------------
+           HEADER
+           --------------------------------------------- */
+
+        const header =
+            document.createElement(
+                "header"
+            );
+
+
+        header.className =
+            "academy-lesson-header";
+
+
+        const eyebrow =
+            document.createElement(
+                "span"
+            );
+
+
+        eyebrow.className =
+            "eyebrow";
+
+
+        eyebrow.textContent =
+            topic.title;
+
+
+        const title =
+            document.createElement(
+                "h1"
+            );
+
+
+        title.textContent =
+            lesson.title;
+
+
+        const subtitle =
+            document.createElement(
+                "p"
+            );
+
+
+        subtitle.textContent =
+            "Lesson " +
+            (ACADEMY_STATE.currentLessonIndex + 1) +
+            " • " +
+            subject.name;
+
+
+        header.appendChild(
+            eyebrow
+        );
+
+        header.appendChild(
+            title
+        );
+
+        header.appendChild(
+            subtitle
+        );
+
+
+        viewer.appendChild(
+            header
+        );
+
+
+        /* ---------------------------------------------
+           LESSON BODY
+           --------------------------------------------- */
+
+        const bodyGrid =
+            document.createElement(
+                "div"
+            );
+
+
+        bodyGrid.className =
+            "academy-lesson-body-grid";
+
+
+        const main =
+            document.createElement(
+                "main"
+            );
+
+
+        main.className =
+            "academy-lesson-main";
+
+
+        /* Learning objectives */
+
+        const objectives =
+            document.createElement(
+                "section"
+            );
+
+
+        objectives.className =
+            "academy-lesson-block";
+
+
+        const objectivesTitle =
+            document.createElement(
+                "h2"
+            );
+
+
+        objectivesTitle.textContent =
+            "Learning Objectives";
+
+
+        objectives.appendChild(
+            objectivesTitle
+        );
+
+
+        const objectivesList =
+            document.createElement(
+                "ul"
+            );
+
+
+        objectivesList.className =
+            "academy-lesson-objectives";
+
+
+        (lesson.objectives || [])
+            .forEach(
+                objective => {
+
+                    const item =
+                        document.createElement(
+                            "li"
+                        );
+
+
+                    item.textContent =
+                        objective;
+
+
+                    objectivesList.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+
+        objectives.appendChild(
+            objectivesList
+        );
+
+
+        main.appendChild(
+            objectives
+        );
+
+
+        /* Lesson content */
+
+        const content =
+            document.createElement(
+                "section"
+            );
+
+
+        content.className =
+            "academy-lesson-block academy-lesson-content";
+
+
+        content.innerHTML =
+            lesson.content || "";
+
+
+        main.appendChild(
+            content
+        );
+
+
+        /* Key points */
+
+        if (
+            lesson.keyPoints &&
+            lesson.keyPoints.length
+        ) {
+
+            const keyBlock =
+                document.createElement(
+                    "section"
+                );
+
+
+            keyBlock.className =
+                "academy-lesson-block academy-key-points";
+
+
+            const keyTitle =
+                document.createElement(
+                    "h2"
+                );
+
+
+            keyTitle.textContent =
+                "Key Points";
+
+
+            keyBlock.appendChild(
+                keyTitle
+            );
+
+
+            const list =
+                document.createElement(
+                    "ul"
+                );
+
+
+            lesson.keyPoints.forEach(
+                point => {
+
+                    const item =
+                        document.createElement(
+                            "li"
+                        );
+
+
+                    item.textContent =
+                        point;
+
+
+                    list.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+
+            keyBlock.appendChild(
+                list
+            );
+
+
+            main.appendChild(
+                keyBlock
+            );
+
+        }
+
+
+        /* Worked example */
+
+        if (lesson.example) {
+
+            const example =
+                document.createElement(
+                    "section"
+                );
+
+
+            example.className =
+                "academy-lesson-block academy-worked-example";
+
+
+            const exampleTitle =
+                document.createElement(
+                    "h2"
+                );
+
+
+            exampleTitle.textContent =
+                lesson.example.title ||
+                "Worked Example";
+
+
+            const question =
+                document.createElement(
+                    "p"
+                );
+
+
+            question.innerHTML =
+                "<strong>Question:</strong> " +
+                lesson.example.question;
+
+
+            const answer =
+                document.createElement(
+                    "div"
+                );
+
+
+            answer.className =
+                "academy-example-answer";
+
+
+            answer.innerHTML =
+                "<strong>Answer:</strong> " +
+                lesson.example.answer;
+
+
+            example.appendChild(
+                exampleTitle
+            );
+
+            example.appendChild(
+                question
+            );
+
+            example.appendChild(
+                answer
+            );
+
+
+            main.appendChild(
+                example
+            );
+
+        }
+
+
+        /* Knowledge check */
+
+        if (lesson.check) {
+
+            renderKnowledgeCheck(
+                main,
+                lesson.check,
+                subject.id,
+                topic.id,
+                ACADEMY_STATE.currentLessonIndex
+            );
+
+        }
+
+
+        bodyGrid.appendChild(
+            main
+        );
+
+
+        /* ---------------------------------------------
+           SIDEBAR
+           --------------------------------------------- */
+
+        const side =
+            document.createElement(
+                "aside"
+            );
+
+
+        side.className =
+            "academy-lesson-sidebar";
+
+
+        const sideCard =
+            document.createElement(
+                "div"
+            );
+
+
+        sideCard.className =
+            "academy-lesson-sidebar-card";
+
+
+        const sideTitle =
+            document.createElement(
+                "h3"
+            );
+
+
+        sideTitle.textContent =
+            "Your Progress";
+
+
+        sideCard.appendChild(
+            sideTitle
+        );
+
+
+        const completed =
+            lessons.reduce(
+                (count, item, index) =>
+                    count +
+                    (
+                        isLessonCompleted(
+                            subject.id,
+                            topic.id,
+                            index
+                        )
+                            ? 1
+                            : 0
+                    ),
+                0
+            );
+
+
+        const completion =
+            Math.round(
+                (
+                    completed /
+                    lessons.length
+                ) * 100
+            );
+
+
+        const progressText =
+            document.createElement(
+                "strong"
+            );
+
+
+        progressText.textContent =
+            completion + "%";
+
+
+        sideCard.appendChild(
+            progressText
+        );
+
+
+        const progress =
+            document.createElement(
+                "div"
+            );
+
+
+        progress.className =
+            "progress";
+
+
+        const progressFill =
+            document.createElement(
+                "span"
+            );
+
+
+        progressFill.className =
+            "progress-bar";
+
+
+        progressFill.style.width =
+            completion + "%";
+
+
+        progress.appendChild(
+            progressFill
+        );
+
+
+        sideCard.appendChild(
+            progress
+        );
+
+
+        const sideMeta =
+            document.createElement(
+                "p"
+            );
+
+
+        sideMeta.textContent =
+            completed +
+            " of " +
+            lessons.length +
+            " lessons completed";
+
+
+        sideCard.appendChild(
+            sideMeta
+        );
+
+
+        /* Lesson list */
+
+        const lessonList =
+            document.createElement(
+                "div"
+            );
+
+
+        lessonList.className =
+            "academy-lesson-list";
+
+
+        lessons.forEach(
+            (item, index) => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    "academy-lesson-list-item";
+
+
+                if (
+                    index ===
+                    ACADEMY_STATE.currentLessonIndex
+                ) {
+
+                    button.classList.add(
+                        "is-active"
+                    );
+
+                }
+
+
+                if (
+                    isLessonCompleted(
+                        subject.id,
+                        topic.id,
+                        index
+                    )
+                ) {
+
+                    button.classList.add(
+                        "is-complete"
+                    );
+
+                }
+
+
+                const number =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                number.textContent =
+                    String(index + 1)
+                        .padStart(2, "0");
+
+
+                const name =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                name.textContent =
+                    item.title;
+
+
+                button.appendChild(
+                    number
+                );
+
+                button.appendChild(
+                    name
+                );
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        openLesson(
+                            subject.id,
+                            topic.id,
+                            index
+                        );
+
+                    }
+                );
+
+
+                lessonList.appendChild(
+                    button
+                );
+
+            }
+        );
+
+
+        sideCard.appendChild(
+            lessonList
+        );
+
+
+        side.appendChild(
+            sideCard
+        );
+
+
+        bodyGrid.appendChild(
+            side
+        );
+
+
+        viewer.appendChild(
+            bodyGrid
+        );
+
+
+        /* ---------------------------------------------
+           COMPLETE + NAVIGATION
+           --------------------------------------------- */
+
+        const footer =
+            document.createElement(
+                "div"
+            );
+
+
+        footer.className =
+            "academy-lesson-footer";
+
+
+        const completedAlready =
+            isLessonCompleted(
+                subject.id,
+                topic.id,
+                ACADEMY_STATE.currentLessonIndex
+            );
+
+
+        const completeButton =
+            createButton(
+                completedAlready
+                    ? "✓ Lesson Completed"
+                    : "Mark Lesson Complete",
+                completedAlready
+                    ? "button button-secondary is-complete"
+                    : "button button-primary"
+            );
+
+
+        completeButton.disabled =
+            completedAlready;
+
+
+        completeButton.addEventListener(
+            "click",
+            function () {
+
+                markLessonCompleted(
+                    subject.id,
+                    topic.id,
+                    ACADEMY_STATE.currentLessonIndex
+                );
+
+
+                renderLesson();
+
+            }
+        );
+
+
+        const navigation =
+            document.createElement(
+                "div"
+            );
+
+
+        navigation.className =
+            "academy-lesson-navigation";
+
+
+        const previous =
+            createButton(
+                "← Previous",
+                "button button-secondary"
+            );
+
+
+        previous.disabled =
+            ACADEMY_STATE.currentLessonIndex === 0;
+
+
+        previous.addEventListener(
+            "click",
+            function () {
+
+                openLesson(
+                    subject.id,
+                    topic.id,
+                    ACADEMY_STATE.currentLessonIndex - 1
+                );
+
+            }
+        );
+
+
+        const next =
+            createButton(
+                ACADEMY_STATE.currentLessonIndex ===
+                lessons.length - 1
+                    ? "Finish Topic"
+                    : "Next Lesson →",
+                "button button-primary"
+            );
+
+
+        next.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    !isLessonCompleted(
+                        subject.id,
+                        topic.id,
+                        ACADEMY_STATE.currentLessonIndex
+                    )
+                ) {
+
+                    markLessonCompleted(
+                        subject.id,
+                        topic.id,
+                        ACADEMY_STATE.currentLessonIndex
+                    );
+
+                }
+
+
+                if (
+                    ACADEMY_STATE.currentLessonIndex <
+                    lessons.length - 1
+                ) {
+
+                    openLesson(
+                        subject.id,
+                        topic.id,
+                        ACADEMY_STATE.currentLessonIndex + 1
+                    );
+
+                } else {
+
+                    setTopicProgress(
+                        subject.id,
+                        topic.id,
+                        100
+                    );
+
+
+                    showTopicCompletion(
+                        subject,
+                        topic
+                    );
+
+                }
+
+            }
+        );
+
+
+        navigation.appendChild(
+            previous
+        );
+
+        navigation.appendChild(
+            next
+        );
+
+
+        footer.appendChild(
+            completeButton
+        );
+
+        footer.appendChild(
+            navigation
+        );
+
+
+        viewer.appendChild(
+            footer
+        );
+
+
+        learnSection.appendChild(
+            viewer
+        );
+
+    }
+
+
+    /* =====================================================
+       07. KNOWLEDGE CHECK
+       ===================================================== */
+
+    function renderKnowledgeCheck(
+        parent,
+        check,
+        subjectId,
+        topicId,
+        lessonIndex
+    ) {
+
+        const block =
+            document.createElement(
+                "section"
+            );
+
+
+        block.className =
+            "academy-knowledge-check academy-lesson-block";
+
+
+        const title =
+            document.createElement(
+                "h2"
+            );
+
+
+        title.textContent =
+            "Knowledge Check";
+
+
+        block.appendChild(
+            title
+        );
+
+
+        const question =
+            document.createElement(
+                "p"
+            );
+
+
+        question.className =
+            "academy-check-question";
+
+
+        question.textContent =
+            check.question;
+
+
+        block.appendChild(
+            question
+        );
+
+
+        const options =
+            document.createElement(
+                "div"
+            );
+
+
+        options.className =
+            "academy-check-options";
+
+
+        let selected =
+            null;
+
+
+        check.options.forEach(
+            (option, index) => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    "academy-check-option";
+
+
+                button.textContent =
+                    option;
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        selected =
+                            index;
+
+
+                        options
+                            .querySelectorAll(
+                                ".academy-check-option"
+                            )
+                            .forEach(
+                                item =>
+                                    item.classList.remove(
+                                        "is-selected"
+                                    )
+                            );
+
+
+                        button.classList.add(
+                            "is-selected"
+                        );
+
+                    }
+                );
+
+
+                options.appendChild(
+                    button
+                );
+
+            }
+        );
+
+
+        block.appendChild(
+            options
+        );
+
+
+        const feedback =
+            document.createElement(
+                "div"
+            );
+
+
+        feedback.className =
+            "academy-check-feedback";
+
+
+        const checkButton =
+            createButton(
+                "Check Answer",
+                "button button-primary"
+            );
+
+
+        checkButton.addEventListener(
+            "click",
+            function () {
+
+                if (selected === null) {
+
+                    feedback.textContent =
+                        "Select an answer first.";
+
+                    feedback.className =
+                        "academy-check-feedback is-warning";
+
+                    return;
+
+                }
+
+
+                if (
+                    selected ===
+                    check.answer
+                ) {
+
+                    feedback.textContent =
+                        "Correct. You understand this concept.";
+
+                    feedback.className =
+                        "academy-check-feedback is-success";
+
+
+                    addScienceXP(5);
+
+                } else {
+
+                    feedback.textContent =
+                        "Not quite. Review the lesson explanation and try again.";
+
+                    feedback.className =
+                        "academy-check-feedback is-error";
+
+                }
+
+            }
+        );
+
+
+        block.appendChild(
+            checkButton
+        );
+
+        block.appendChild(
+            feedback
+        );
+
+
+        parent.appendChild(
+            block
+        );
+
+    }
+
+
+    /* =====================================================
+       08. TOPIC COMPLETION
+       ===================================================== */
+
+    function showTopicCompletion(
+        subject,
+        topic
+    ) {
+
+        const viewer =
+            document.getElementById(
+                "academyLessonViewer"
+            );
+
+
+        if (!viewer) {
+            return;
+        }
+
+
+        const overlay =
+            document.createElement(
+                "div"
+            );
+
+
+        overlay.className =
+            "academy-completion-panel";
+
+
+        const icon =
+            document.createElement(
+                "div"
+            );
+
+
+        icon.className =
+            "academy-completion-icon";
+
+
+        icon.textContent =
+            "✓";
+
+
+        const title =
+            document.createElement(
+                "h2"
+            );
+
+
+        title.textContent =
+            "Topic Complete";
+
+
+        const text =
+            document.createElement(
+                "p"
+            );
+
+
+        text.textContent =
+            "You completed the available lessons for " +
+            topic.title +
+            ".";
+
+
+        const actions =
+            document.createElement(
+                "div"
+            );
+
+
+        actions.className =
+            "academy-topic-actions";
+
+
+        const back =
+            createButton(
+                "Back to Subject",
+                "button button-secondary"
+            );
+
+
+        back.addEventListener(
+            "click",
+            function () {
+
+                openTopic(
+                    subject.id,
+                    topic.id
+                );
+
+            }
+        );
+
+
+        const next =
+            createButton(
+                "Explore More Topics →",
+                "button button-primary"
+            );
+
+
+        next.addEventListener(
+            "click",
+            function () {
+
+                openSubject(
+                    subject.id
+                );
+
+            }
+        );
+
+
+        actions.appendChild(
+            back
+        );
+
+        actions.appendChild(
+            next
+        );
+
+
+        overlay.appendChild(
+            icon
+        );
+
+        overlay.appendChild(
+            title
+        );
+
+        overlay.appendChild(
+            text
+        );
+
+        overlay.appendChild(
+            actions
+        );
+
+
+        viewer.appendChild(
+            overlay
+        );
+
+
+        addScienceXP(25);
+
+    }
+
+
+    /* =====================================================
+       09. NO LESSON CONTENT
+       ===================================================== */
+
+    function renderNoLessonContent(
+        learnSection
+    ) {
+
+        const existing =
+            document.getElementById(
+                "academyLessonViewer"
+            );
+
+
+        if (existing) {
+            existing.remove();
+        }
+
+
+        const message =
+            document.createElement(
+                "section"
+            );
+
+
+        message.id =
+            "academyLessonViewer";
+
+
+        message.className =
+            "academy-lesson-viewer card";
+
+
+        message.innerHTML = `
+            <div class="academy-empty-state">
+                <div class="academy-empty-icon">📖</div>
+                <h2>Lesson content is being prepared</h2>
+                <p>
+                    This topic is already part of the ChemLab curriculum.
+                    Its detailed lesson content will be added to the Academy
+                    content library.
+                </p>
+            </div>
+        `;
+
+
+        learnSection.appendChild(
+            message
+        );
+
+    }
+
+
+    /* =====================================================
+       10. BUTTON HELPER
+       ===================================================== */
+
+    function createButton(
+        text,
+        className
+    ) {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.type =
+            "button";
+
+
+        button.className =
+            className;
+
+
+        button.textContent =
+            text;
+
+
+        return button;
+
+    }
+
+
+    /* =====================================================
+       11. SUBJECT EXPLORER
+       ===================================================== */
+
+    function openTopic(
+        subjectId,
+        topicId
+    ) {
+
+        const subject =
+            getSubject(subjectId);
+
+        const topic =
+            getTopic(
+                subjectId,
+                topicId
+            );
+
+
+        if (!subject || !topic) {
+            return null;
+        }
+
+
+        ACADEMY_STATE.currentSubject =
+            subject;
+
+        ACADEMY_STATE.currentTopic =
+            topic;
+
+        ACADEMY_STATE.currentLessonIndex =
+            0;
+
+        ACADEMY_STATE.view =
+            "topic";
+
+
+        renderTopic();
+
+
+        document.dispatchEvent(
+            new CustomEvent(
+                "chemlab:academy-topic-opened",
+                {
+                    detail: {
+                        subject,
+                        topic
+                    }
+                }
+            )
+        );
+
+
+        return topic;
+
+    }
+
+
+    function renderTopic() {
+
+        const learnSection =
+            document.querySelector(
+                '[data-page="learn"]'
+            );
+
+
+        if (!learnSection) {
+            return;
+        }
+
+
+        document
+            .getElementById(
+                "academySubjectGrid"
+            )
+            ?.setAttribute(
+                "hidden",
+                ""
+            );
+
+
+        document
+            .getElementById(
+                "academySubjectExplorer"
+            )
+            ?.remove();
+
+
+        document
+            .getElementById(
+                "academyLessonViewer"
+            )
+            ?.remove();
+
+
+        const old =
+            document.getElementById(
+                "academyTopicLearning"
+            );
+
+
+        if (old) {
+            old.remove();
+        }
+
+
+        const subject =
+            ACADEMY_STATE.currentSubject;
+
+        const topic =
+            ACADEMY_STATE.currentTopic;
+
+
+        const lessons =
+            getLessons(
+                subject.id,
+                topic.id
+            );
+
+
+        const wrapper =
+            document.createElement(
+                "section"
+            );
+
+
+        wrapper.id =
+            "academyTopicLearning";
+
+
+        wrapper.className =
+            "academy-topic-learning card";
+
+
+        const back =
+            createButton(
+                "← Back to " + subject.name,
+                "button button-secondary"
+            );
+
+
+        back.addEventListener(
+            "click",
+            function () {
+
+                openSubject(
+                    subject.id
+                );
+
+            }
+        );
+
+
+        wrapper.appendChild(
+            back
+        );
+
+
+        const header =
+            document.createElement(
+                "div"
+            );
+
+
+        header.className =
+            "academy-topic-learning-header";
+
+
+        header.innerHTML = `
+            <span class="eyebrow">${subject.name}</span>
+            <h2>${topic.title}</h2>
+            <p>${topic.description}</p>
+        `;
+
+
+        wrapper.appendChild(
+            header
+        );
+
+
+        const metadata =
+            document.createElement(
+                "div"
+            );
+
+
+        metadata.className =
+            "academy-topic-learning-meta";
+
+
+        const items = [
+
+            [
+                "DIFFICULTY",
+                topic.difficulty
+            ],
+
+            [
+                "LESSONS",
+                topic.lessons
+            ],
+
+            [
+                "EST. TIME",
+                formatMinutes(topic.duration)
+            ]
+
+        ];
+
+
+        items.forEach(
+            item => {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "academy-topic-meta-item";
+
+
+                card.innerHTML =
+                    `
+                        <span>${item[0]}</span>
+                        <strong>${item[1]}</strong>
+                    `;
+
+
+                metadata.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+        wrapper.appendChild(
+            metadata
+        );
+
+
+        const lessonGrid =
+            document.createElement(
+                "div"
+            );
+
+
+        lessonGrid.className =
+            "academy-lesson-preview-grid";
+
+
+        if (!lessons.length) {
+
+            const empty =
+                document.createElement(
+                    "div"
+                );
+
+
+            empty.className =
+                "academy-empty-state";
+
+
+            empty.innerHTML = `
+                <div class="academy-empty-icon">📖</div>
+                <h3>Lesson content is being prepared</h3>
+                <p>
+                    This topic is included in the ChemLab curriculum,
+                    and detailed lessons will be added progressively.
+                </p>
+            `;
+
+
+            lessonGrid.appendChild(
+                empty
+            );
+
+        } else {
+
+            lessons.forEach(
+                (lesson, index) => {
+
+                    const card =
+                        document.createElement(
+                            "article"
+                        );
+
+
+                    card.className =
+                        "academy-lesson-preview-card";
+
+
+                    if (
+                        isLessonCompleted(
+                            subject.id,
+                            topic.id,
+                            index
+                        )
+                    ) {
+
+                        card.classList.add(
+                            "is-complete"
+                        );
+
+                    }
+
+
+                    card.innerHTML = `
+                        <span class="academy-path-number">
+                            ${String(index + 1).padStart(2, "0")}
+                        </span>
+
+                        <h3>
+                            ${lesson.title}
+                        </h3>
+
+                        <p>
+                            ${lesson.type === "calculation"
+                                ? "Concepts, calculations and guided examples."
+                                : "Concept explanation, examples and knowledge check."
+                            }
+                        </p>
+
+                        <span class="academy-lesson-status">
+                            ${
+                                isLessonCompleted(
+                                    subject.id,
+                                    topic.id,
+                                    index
+                                )
+                                    ? "✓ Completed"
+                                    : "Not started"
+                            }
+                        </span>
+                    `;
+
+
+                    const button =
+                        createButton(
+                            isLessonCompleted(
+                                subject.id,
+                                topic.id,
+                                index
+                            )
+                                ? "Review Lesson →"
+                                : "Start Lesson →",
+                            "button button-primary"
+                        );
+
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            openLesson(
+                                subject.id,
+                                topic.id,
+                                index
+                            );
+
+                        }
+                    );
+
+
+                    card.appendChild(
+                        button
+                    );
+
+
+                    lessonGrid.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+
+        wrapper.appendChild(
+            lessonGrid
+        );
+
+
+        learnSection.appendChild(
+            wrapper
+        );
+
+    }
+
+
+    function openSubject(subjectId) {
+
+        const subject =
+            getSubject(subjectId);
+
+
+        if (!subject) {
+            return null;
+        }
+
+
+        ACADEMY_STATE.currentSubject =
+            subject;
+
+        ACADEMY_STATE.currentTopic =
+            null;
+
+        ACADEMY_STATE.view =
+            "topics";
+
+
+        renderSubjectExplorer();
+
+
+        document.dispatchEvent(
+            new CustomEvent(
+                "chemlab:academy-subject-opened",
+                {
+                    detail: {
+                        subject
+                    }
+                }
+            )
+        );
+
+
+        return subject;
+
+    }
+
+
+    function renderSubjectExplorer() {
+
+        const learnSection =
+            document.querySelector(
+                '[data-page="learn"]'
+            );
+
+
+        if (!learnSection) {
+            return;
+        }
+
+
+        document
+            .getElementById(
+                "academySubjectGrid"
+            )
+            ?.setAttribute(
+                "hidden",
+                ""
+            );
+
+
+        document
+            .getElementById(
+                "academyTopicLearning"
+            )
+            ?.remove();
+
+
+        document
+            .getElementById(
+                "academyLessonViewer"
+            )
+            ?.remove();
+
+
+        const old =
+            document.getElementById(
+                "academySubjectExplorer"
+            );
+
+
+        if (old) {
+            old.remove();
+        }
+
+
+        const subject =
+            ACADEMY_STATE.currentSubject;
+
+
+        const explorer =
+            document.createElement(
+                "section"
+            );
+
+
+        explorer.id =
+            "academySubjectExplorer";
+
+
+        explorer.className =
+            "academy-subject-explorer card";
+
+
+        const back =
+            createButton(
+                "← All Subjects",
+                "button button-secondary"
+            );
+
+
+        back.addEventListener(
+            "click",
+            function () {
+
+                closeExplorer();
+
+            }
+        );
+
+
+        explorer.appendChild(
+            back
+        );
+
+
+        explorer.innerHTML += `
+            <div class="academy-explorer-header">
+                <span class="eyebrow">
+                    ${subject.category}
+                </span>
+
+                <h2>
+                    ${subject.name}
+                </h2>
+
+                <p>
+                    ${subject.description}
+                </p>
+            </div>
+        `;
+
+
+        const search =
+            document.createElement(
+                "input"
+            );
+
+
+        search.type =
+            "search";
+
+
+        search.className =
+            "form-input academy-topic-search";
+
+
+        search.placeholder =
+            "Search topics in this subject...";
+
+
+        search.addEventListener(
+            "input",
+            function () {
+
+                renderTopicCards(
+                    subject,
+                    search.value,
+                    explorer
+                );
+
+            }
+        );
+
+
+        explorer.appendChild(
+            search
+        );
+
+
+        renderTopicCards(
+            subject,
+            "",
+            explorer
+        );
+
+
+        learnSection.appendChild(
+            explorer
+        );
+
+    }
+
+
+    function renderTopicCards(
+        subject,
+        query,
+        container
+    ) {
+
+        const oldGrid =
+            container.querySelector(
+                ".academy-topic-grid"
+            );
+
+
+        if (oldGrid) {
+            oldGrid.remove();
+        }
+
+
+        const grid =
+            document.createElement(
+                "div"
+            );
+
+
+        grid.className =
+            "academy-topic-grid";
+
+
+        const term =
+            normalizeText(query);
+
+
+        const topics =
+            subject.topics.filter(
+                topic => {
+
+                    if (!term) {
+                        return true;
+                    }
+
+
+                    return normalizeText(
+                        topic.title +
+                        " " +
+                        topic.description +
+                        " " +
+                        topic.difficulty
+                    ).includes(term);
+
+                }
+            );
+
+
+        topics.forEach(
+            topic => {
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
+
+
+                card.className =
+                    "academy-topic-card";
+
+
+                const progress =
+                    getTopicProgress(
+                        subject.id,
+                        topic.id
+                    );
+
+
+                card.innerHTML = `
+                    <div class="academy-topic-card-header">
+
+                        <span class="academy-topic-difficulty">
+                            ${topic.difficulty}
+                        </span>
+
+                        <span class="academy-topic-duration">
+                            ${formatMinutes(topic.duration)}
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        ${topic.title}
+                    </h3>
+
+                    <p>
+                        ${topic.description}
+                    </p>
+
+                    <div class="academy-topic-meta">
+                        ${topic.lessons}
+                        ${topic.lessons === 1 ? "lesson" : "lessons"}
+                    </div>
+
+                    <div class="academy-topic-progress">
+
+                        <div class="academy-progress-label">
+                            <span>Progress</span>
+                            <strong>${progress}%</strong>
+                        </div>
+
+                        <div class="progress">
+                            <span
+                                class="progress-bar"
+                                style="width:${progress}%"
+                            ></span>
+                        </div>
+
+                    </div>
+                `;
+
+
+                const button =
+                    createButton(
+                        progress > 0
+                            ? "Continue Learning →"
+                            : "Explore Topic →",
+                        "button button-primary"
+                    );
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        openTopic(
+                            subject.id,
+                            topic.id
+                        );
+
+                    }
+                );
+
+
+                card.appendChild(
+                    button
+                );
+
+
+                grid.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+        if (!topics.length) {
+
+            grid.innerHTML = `
+                <div class="academy-empty-state">
+                    <div class="academy-empty-icon">⌕</div>
+                    <h3>No topics found</h3>
+                    <p>
+                        Try another search term.
+                    </p>
+                </div>
+            `;
+
+        }
+
+
+        container.appendChild(
+            grid
+        );
+
+    }
+
+
+    function closeExplorer() {
+
+        ACADEMY_STATE.currentSubject =
+            null;
+
+        ACADEMY_STATE.currentTopic =
+            null;
+
+        ACADEMY_STATE.view =
+            "subjects";
+
+
+        document
+            .getElementById(
+                "academySubjectExplorer"
+            )
+            ?.remove();
+
+
+        document
+            .getElementById(
+                "academyTopicLearning"
+            )
+            ?.remove();
+
+
+        document
+            .getElementById(
+                "academyLessonViewer"
+            )
+            ?.remove();
+
+
+        const grid =
+            document.getElementById(
+                "academySubjectGrid"
+            );
+
+
+        if (grid) {
+            grid.hidden = false;
+        }
+
+    }
+
+
+    /* =====================================================
+       12. SEARCH
+       ===================================================== */
+
+    function search(query) {
+
+        const term =
+            normalizeText(query);
+
+
+        ACADEMY_STATE.searchQuery =
+            term;
+
+
+        let results =
+            ACADEMY_CURRICULUM.slice();
+
+
+        if (term) {
+
+            results =
+                results.filter(
+                    subject =>
+                        normalizeText(
+                            subject.name +
+                            " " +
+                            subject.description +
+                            " " +
+                            subject.category +
+                            " " +
+                            subject.topics
+                                .map(
+                                    topic =>
+                                        topic.title +
+                                        " " +
+                                        topic.description
+                                )
+                                .join(" ")
+                        ).includes(term)
+                );
+
+        }
+
+
+        if (
+            ACADEMY_STATE.currentLevel !==
+            "all"
+        ) {
+
+            results =
+                results.filter(
+                    subject =>
+                        subject.level ===
+                        ACADEMY_STATE.currentLevel
+                );
+
+        }
+
+
+        ACADEMY_STATE.filteredSubjects =
+            results;
+
+
+        return results;
+
+    }
+
+
+    /* =====================================================
+       13. LEVEL FILTER
+       ===================================================== */
+
+    function filterByLevel(level) {
+
+        ACADEMY_STATE.currentLevel =
+            normalizeText(level) ||
+            "all";
+
+
+        return search(
+            ACADEMY_STATE.searchQuery
+        );
+
+    }
+
+
+    /* =====================================================
+       14. STATISTICS
+       ===================================================== */
+
+    function getTotalTopics() {
+
+        return ACADEMY_CURRICULUM.reduce(
+            (total, subject) =>
+                total +
+                subject.topics.length,
+            0
+        );
+
+    }
+
+
+    function getTotalLessons() {
+
+        return ACADEMY_CURRICULUM.reduce(
+            (total, subject) =>
+                total +
+                subject.topics.reduce(
+                    (sum, topic) =>
+                        sum + topic.lessons,
+                    0
+                ),
+            0
+        );
+
+    }
+
+
+    function renderStatistics() {
+
+        const subjectCount =
+            document.getElementById(
+                "academySubjectCount"
+            );
+
+
+        const topicCount =
+            document.getElementById(
+                "academyTopicCount"
+            );
+
+
+        const lessonCount =
+            document.getElementById(
+                "academyLessonCount"
+            );
+
+
+        if (subjectCount) {
+            subjectCount.textContent =
+                ACADEMY_CURRICULUM.length;
+        }
+
+
+        if (topicCount) {
+            topicCount.textContent =
+                getTotalTopics();
+        }
+
+
+        if (lessonCount) {
+            lessonCount.textContent =
+                getTotalLessons();
+        }
+
+    }
+
+
+    /* =====================================================
+       15. SEARCH BINDING
        ===================================================== */
 
     function bindSearch() {
@@ -3302,12 +4160,7 @@
                 );
 
 
-                filterByLevel(
-                    ACADEMY_STATE.currentLevel
-                );
-
-
-                renderSubjectCards();
+                renderSubjectGrid();
 
 
                 document.dispatchEvent(
@@ -3329,7 +4182,7 @@
 
 
     /* =====================================================
-       20. BIND LEVEL FILTERS
+       16. FILTER BINDING
        ===================================================== */
 
     function bindLevelFilters() {
@@ -3365,20 +4218,7 @@
                         );
 
 
-                        renderSubjectCards();
-
-
-                        document.dispatchEvent(
-                            new CustomEvent(
-                                "chemlab:academy-filter",
-                                {
-                                    detail: {
-                                        level:
-                                            button.dataset.academyLevel
-                                    }
-                                }
-                            )
-                        );
+                        renderSubjectGrid();
 
                     }
                 );
@@ -3390,238 +4230,171 @@
 
 
     /* =====================================================
-       21. BIND SUBJECT + TOPIC EVENTS
+       17. SUBJECT GRID
        ===================================================== */
 
-    function bindAcademyClicks() {
+    function renderSubjectGrid() {
 
-        document.addEventListener(
-            "click",
-            function (event) {
-
-                const subjectButton =
-                    event.target.closest(
-                        "[data-academy-subject]"
-                    );
-
-
-                if (
-                    subjectButton &&
-                    subjectButton.dataset.academySubject
-                ) {
-
-                    const subjectId =
-                        subjectButton.dataset.academySubject;
-
-
-                    if (
-                        ACADEMY_STATE.view ===
-                        "topics"
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    openSubject(
-                        subjectId
-                    );
-
-
-                    return;
-
-                }
-
-
-                const topicButton =
-                    event.target.closest(
-                        "[data-academy-topic]"
-                    );
-
-
-                if (
-                    topicButton &&
-                    topicButton.dataset.academyTopic
-                ) {
-
-                    const subject =
-                        ACADEMY_STATE.currentSubject;
-
-
-                    if (!subject) {
-
-                        const topicId =
-                            topicButton.dataset.academyTopic;
-
-
-                        for (
-                            const candidate
-                            of ACADEMY_STATE.subjects
-                        ) {
-
-                            const topic =
-                                candidate.topics.find(
-                                    item =>
-                                        item.id ===
-                                        topicId
-                                );
-
-
-                            if (topic) {
-
-                                openTopic(
-                                    candidate.id,
-                                    topic.id
-                                );
-
-                                return;
-
-                            }
-
-                        }
-
-                        return;
-
-                    }
-
-
-                    openTopic(
-                        subject.id,
-                        topicButton.dataset.academyTopic
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       22. CLEAR SEARCH
-       ===================================================== */
-
-    function bindClearSearch() {
-
-        const button =
+        const grid =
             document.getElementById(
-                "academyClearSearch"
+                "academySubjectGrid"
             );
 
 
-        if (!button) {
+        if (!grid) {
             return;
         }
 
 
-        button.addEventListener(
-            "click",
-            function () {
-
-                const input =
-                    document.getElementById(
-                        "academySearchInput"
-                    );
+        grid.innerHTML = "";
 
 
-                if (input) {
-                    input.value = "";
-                }
+        ACADEMY_STATE.filteredSubjects
+            .forEach(
+                subject => {
+
+                    const progress =
+                        subject.topics.length
+                            ? Math.round(
+                                subject.topics.reduce(
+                                    (sum, topic) =>
+                                        sum +
+                                        getTopicProgress(
+                                            subject.id,
+                                            topic.id
+                                        ),
+                                    0
+                                ) /
+                                subject.topics.length
+                            )
+                            : 0;
 
 
-                ACADEMY_STATE.searchQuery =
-                    "";
-
-
-                ACADEMY_STATE.currentLevel =
-                    "all";
-
-
-                const filters =
-                    document.querySelectorAll(
-                        "[data-academy-level]"
-                    );
-
-
-                filters.forEach(
-                    filter => {
-
-                        filter.classList.toggle(
-                            "is-active",
-                            filter.dataset.academyLevel ===
-                            "all"
+                    const card =
+                        document.createElement(
+                            "article"
                         );
 
-                    }
-                );
+
+                    card.className =
+                        "academy-subject-card";
 
 
-                ACADEMY_STATE.filteredSubjects =
-                    ACADEMY_STATE.subjects.slice();
+                    card.innerHTML = `
+                        <div class="academy-subject-header">
+
+                            <span class="academy-subject-icon">
+                                ${subject.icon}
+                            </span>
+
+                            <span class="academy-subject-level">
+                                ${subject.level.toUpperCase()}
+                            </span>
+
+                        </div>
+
+                        <h3>
+                            ${subject.name}
+                        </h3>
+
+                        <p>
+                            ${subject.description}
+                        </p>
+
+                        <div class="academy-subject-meta">
+
+                            <span>
+                                ${subject.topics.length} Topics
+                            </span>
+
+                            <span>•</span>
+
+                            <span>
+                                ${subject.category}
+                            </span>
+
+                        </div>
+
+                        <div class="academy-subject-progress">
+
+                            <div class="academy-progress-label">
+
+                                <span>
+                                    Mastery
+                                </span>
+
+                                <strong>
+                                    ${progress}%
+                                </strong>
+
+                            </div>
+
+                            <div class="progress">
+
+                                <span
+                                    class="progress-bar"
+                                    style="width:${progress}%"
+                                ></span>
+
+                            </div>
+
+                        </div>
+                    `;
 
 
-                renderSubjectCards();
+                    const button =
+                        createButton(
+                            "Explore Subject →",
+                            "button button-secondary academy-explore-button"
+                        );
 
-            }
-        );
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            openSubject(
+                                subject.id
+                            );
+
+                        }
+                    );
+
+
+                    card.appendChild(
+                        button
+                    );
+
+
+                    grid.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+
+        if (
+            !ACADEMY_STATE.filteredSubjects.length
+        ) {
+
+            grid.innerHTML = `
+                <div class="academy-empty-state">
+                    <div class="academy-empty-icon">⌕</div>
+                    <h3>No chemistry subjects found</h3>
+                    <p>
+                        Try another search or academic level.
+                    </p>
+                </div>
+            `;
+
+        }
 
     }
 
 
     /* =====================================================
-       23. UPDATE ACADEMY STATISTICS
-       ===================================================== */
-
-    function renderStatistics() {
-
-        const subjectCount =
-            document.getElementById(
-                "academySubjectCount"
-            );
-
-
-        const topicCount =
-            document.getElementById(
-                "academyTopicCount"
-            );
-
-
-        const lessonCount =
-            document.getElementById(
-                "academyLessonCount"
-            );
-
-
-        if (subjectCount) {
-
-            subjectCount.textContent =
-                ACADEMY_CURRICULUM.length;
-
-        }
-
-
-        if (topicCount) {
-
-            topicCount.textContent =
-                getTotalTopics();
-
-        }
-
-
-        if (lessonCount) {
-
-            lessonCount.textContent =
-                getTotalLessons();
-
-        }
-
-    }
-
-
-    /* =====================================================
-       24. INITIALIZE
+       18. INITIALIZE
        ===================================================== */
 
     function initialize() {
@@ -3631,20 +4404,12 @@
         }
 
 
-        ACADEMY_STATE.loading =
-            true;
-
-
         ACADEMY_STATE.subjects =
-            getSubjects();
+            ACADEMY_CURRICULUM.slice();
 
 
         ACADEMY_STATE.filteredSubjects =
-            ACADEMY_STATE.subjects.slice();
-
-
-        ACADEMY_STATE.filteredTopics =
-            [];
+            ACADEMY_CURRICULUM.slice();
 
 
         renderStatistics();
@@ -3653,16 +4418,8 @@
 
         bindLevelFilters();
 
-        bindAcademyClicks();
+        renderSubjectGrid();
 
-        bindClearSearch();
-
-
-        renderSubjectCards();
-
-
-        ACADEMY_STATE.loading =
-            false;
 
         ACADEMY_STATE.initialized =
             true;
@@ -3690,74 +4447,18 @@
 
 
     /* =====================================================
-       25. REFRESH
-       ===================================================== */
-
-    function refresh() {
-
-        ACADEMY_STATE.subjects =
-            getSubjects();
-
-
-        ACADEMY_STATE.filteredSubjects =
-            ACADEMY_STATE.subjects.slice();
-
-
-        renderStatistics();
-
-
-        if (
-            ACADEMY_STATE.view ===
-            "topics" &&
-            ACADEMY_STATE.currentSubject
-        ) {
-
-            openSubject(
-                ACADEMY_STATE.currentSubject.id
-            );
-
-            return;
-
-        }
-
-
-        if (
-            ACADEMY_STATE.view ===
-            "topic" &&
-            ACADEMY_STATE.currentSubject &&
-            ACADEMY_STATE.currentTopic
-        ) {
-
-            openTopic(
-                ACADEMY_STATE.currentSubject.id,
-                ACADEMY_STATE.currentTopic.id
-            );
-
-            return;
-
-        }
-
-
-        renderSubjectCards();
-
-    }
-
-
-    /* =====================================================
-       26. PUBLIC API
+       19. PUBLIC API
        ===================================================== */
 
     window.CHEMLAB_ACADEMY = {
 
         initialize,
 
-        refresh,
-
-        getSubjects,
-
         getSubject,
 
         getTopic,
+
+        getLessons,
 
         getTotalTopics,
 
@@ -3765,19 +4466,25 @@
 
         search,
 
-        searchTopics,
-
         filterByLevel,
 
         openSubject,
 
         openTopic,
 
+        openLesson,
+
         closeExplorer,
 
         getTopicProgress,
 
-        saveTopicProgress,
+        setTopicProgress,
+
+        isLessonCompleted,
+
+        markLessonCompleted,
+
+        addScienceXP,
 
         getState:
             function () {
@@ -3786,32 +4493,23 @@
                     initialized:
                         ACADEMY_STATE.initialized,
 
+                    view:
+                        ACADEMY_STATE.view,
+
                     currentSubject:
                         ACADEMY_STATE.currentSubject,
 
                     currentTopic:
                         ACADEMY_STATE.currentTopic,
 
+                    currentLessonIndex:
+                        ACADEMY_STATE.currentLessonIndex,
+
                     searchQuery:
                         ACADEMY_STATE.searchQuery,
 
-                    topicSearchQuery:
-                        ACADEMY_STATE.topicSearchQuery,
-
                     currentLevel:
-                        ACADEMY_STATE.currentLevel,
-
-                    view:
-                        ACADEMY_STATE.view,
-
-                    subjectCount:
-                        ACADEMY_STATE.subjects.length,
-
-                    topicCount:
-                        getTotalTopics(),
-
-                    lessonCount:
-                        getTotalLessons()
+                        ACADEMY_STATE.currentLevel
                 };
 
             }
@@ -3820,30 +4518,7 @@
 
 
     /* =====================================================
-       27. GLOBAL EVENTS
-       ===================================================== */
-
-    document.addEventListener(
-        "chemlab:topic-progress-updated",
-        function () {
-
-            if (
-                ACADEMY_STATE.view ===
-                "topics" ||
-                ACADEMY_STATE.view ===
-                "subjects"
-            ) {
-
-                renderSubjectCards();
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       28. DOM READY
+       20. START
        ===================================================== */
 
     if (
