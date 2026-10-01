@@ -4068,3 +4068,1070 @@ textarea:disabled {
     }
 
 }
+
+/* =========================================================
+   CHEMLAB
+   STAGE 5.4 — PROFESSIONAL LESSON VIEWER
+   ========================================================= */
+
+
+/* =========================================================
+   01. LESSON VIEWER
+   ========================================================= */
+
+.academy-lesson-viewer {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px;
+    animation: academyLessonEnter 0.3s ease;
+}
+
+@keyframes academyLessonEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   02. TOP NAVIGATION
+   ========================================================= */
+
+.academy-lesson-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.academy-lesson-position {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   03. LESSON PROGRESS
+   ========================================================= */
+
+.academy-lesson-progress {
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    margin-bottom: 34px;
+    border-radius: 999px;
+    background: var(--border-color);
+}
+
+.academy-lesson-progress span {
+    display: block;
+    height: 100%;
+    min-width: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        var(--primary),
+        var(--secondary)
+    );
+    transition: width 0.35s ease;
+}
+
+
+/* =========================================================
+   04. LESSON HEADER
+   ========================================================= */
+
+.academy-lesson-header {
+    max-width: 900px;
+    margin: 0 auto 42px;
+    text-align: center;
+}
+
+.academy-lesson-header .eyebrow {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--primary);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.academy-lesson-header h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(
+        2rem,
+        4vw,
+        3.2rem
+    );
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+}
+
+.academy-lesson-header p {
+    margin: 16px 0 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   05. LESSON BODY GRID
+   ========================================================= */
+
+.academy-lesson-body-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        310px;
+    gap: 30px;
+    align-items: start;
+}
+
+.academy-lesson-main {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   06. LESSON BLOCK
+   ========================================================= */
+
+.academy-lesson-block {
+    margin-bottom: 28px;
+    padding: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.academy-lesson-block h2 {
+    margin: 0 0 18px;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    line-height: 1.3;
+}
+
+.academy-lesson-block p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.academy-lesson-block p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   07. OBJECTIVES
+   ========================================================= */
+
+.academy-lesson-objectives {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.academy-lesson-objectives li {
+    position: relative;
+    padding: 13px 16px 13px 42px;
+    border-radius: 12px;
+    background: var(--surface-secondary);
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+.academy-lesson-objectives li::before {
+    content: "✓";
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   08. LESSON CONTENT
+   ========================================================= */
+
+.academy-lesson-content {
+    font-size: 1.02rem;
+}
+
+.academy-lesson-content strong {
+    color: var(--text-primary);
+}
+
+.academy-lesson-content p {
+    margin: 0 0 20px;
+}
+
+.academy-lesson-content ul,
+.academy-lesson-content ol {
+    margin: 0 0 20px;
+    padding-left: 24px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.academy-lesson-content li {
+    margin-bottom: 7px;
+}
+
+
+/* =========================================================
+   09. CHEMISTRY EQUATION
+   ========================================================= */
+
+.lesson-equation {
+    margin: 26px 0;
+    padding: 22px 24px;
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-secondary);
+    color: var(--primary);
+    font-family:
+        "Cambria Math",
+        "Times New Roman",
+        serif;
+    font-size: clamp(
+        1.1rem,
+        2vw,
+        1.5rem
+    );
+    font-weight: 600;
+    line-height: 1.6;
+    text-align: center;
+}
+
+
+/* =========================================================
+   10. CALLOUT
+   ========================================================= */
+
+.lesson-callout {
+    margin: 26px 0;
+    padding: 20px 22px;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 14px 14px 0;
+    background: var(--primary-light);
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.lesson-callout strong {
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   11. LESSON TABLE
+   ========================================================= */
+
+.lesson-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin: 24px 0;
+}
+
+.lesson-table {
+    width: 100%;
+    min-width: 500px;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.lesson-table th,
+.lesson-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.lesson-table th {
+    background: var(--surface-secondary);
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.lesson-table td {
+    color: var(--text-secondary);
+}
+
+.lesson-table tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   12. KEY POINTS
+   ========================================================= */
+
+.academy-key-points {
+    background:
+        linear-gradient(
+            135deg,
+            var(--surface),
+            var(--surface-secondary)
+        );
+}
+
+.academy-key-points ul {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.academy-key-points li {
+    position: relative;
+    padding-left: 28px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+}
+
+.academy-key-points li::before {
+    content: "•";
+    position: absolute;
+    left: 5px;
+    color: var(--primary);
+    font-size: 1.4rem;
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   13. WORKED EXAMPLE
+   ========================================================= */
+
+.academy-worked-example {
+    border-color: var(--primary-light);
+}
+
+.academy-worked-example p {
+    margin-bottom: 16px;
+}
+
+.academy-example-answer {
+    padding: 18px 20px;
+    border-radius: 13px;
+    background: var(--surface-secondary);
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.academy-example-answer strong {
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   14. KNOWLEDGE CHECK
+   ========================================================= */
+
+.academy-knowledge-check {
+    border: 2px solid var(--border-color);
+}
+
+.academy-check-question {
+    margin-bottom: 20px !important;
+    color: var(--text-primary) !important;
+    font-size: 1.05rem !important;
+    font-weight: 700;
+    line-height: 1.6 !important;
+}
+
+.academy-check-options {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.academy-check-option {
+    width: 100%;
+    padding: 15px 17px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font: inherit;
+    line-height: 1.5;
+    text-align: left;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.academy-check-option:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.academy-check-option.is-selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.academy-check-feedback {
+    min-height: 20px;
+    margin-top: 15px;
+    padding: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.academy-check-feedback.is-success,
+.academy-check-feedback.is-error,
+.academy-check-feedback.is-warning {
+    padding: 13px 15px;
+    border-radius: 10px;
+}
+
+.academy-check-feedback.is-success {
+    background: #eaf8ef;
+    color: #187a3d;
+}
+
+.academy-check-feedback.is-error {
+    background: #fff0f0;
+    color: #b42318;
+}
+
+.academy-check-feedback.is-warning {
+    background: #fff8e6;
+    color: #8a5a00;
+}
+
+
+/* =========================================================
+   15. LESSON SIDEBAR
+   ========================================================= */
+
+.academy-lesson-sidebar {
+    position: sticky;
+    top: 24px;
+}
+
+.academy-lesson-sidebar-card {
+    padding: 22px;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.academy-lesson-sidebar-card h3 {
+    margin: 0 0 14px;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.academy-lesson-sidebar-card > strong {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--primary);
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.academy-lesson-sidebar-card > p {
+    margin: 10px 0 20px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   16. LESSON LIST
+   ========================================================= */
+
+.academy-lesson-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 22px;
+}
+
+.academy-lesson-list-item {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    padding: 11px 10px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.academy-lesson-list-item:hover {
+    background: var(--surface-secondary);
+}
+
+.academy-lesson-list-item > span:first-child {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--surface-secondary);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.academy-lesson-list-item.is-active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.academy-lesson-list-item.is-active > span:first-child {
+    background: var(--primary);
+    color: #fff;
+}
+
+.academy-lesson-list-item.is-complete:not(.is-active) {
+    color: #187a3d;
+}
+
+.academy-lesson-list-item.is-complete:not(.is-active)
+    > span:first-child {
+    background: #eaf8ef;
+    color: #187a3d;
+}
+
+
+/* =========================================================
+   17. LESSON FOOTER
+   ========================================================= */
+
+.academy-lesson-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 10px;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-color);
+}
+
+.academy-lesson-navigation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.academy-lesson-footer .is-complete {
+    color: #187a3d;
+    border-color: #b9e3c7;
+    background: #eaf8ef;
+}
+
+
+/* =========================================================
+   18. TOPIC COMPLETION
+   ========================================================= */
+
+.academy-completion-panel {
+    position: relative;
+    margin-top: 28px;
+    padding: 45px 30px;
+    border: 1px solid var(--primary-light);
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary-light),
+            var(--surface)
+        );
+    text-align: center;
+    animation: academyCompletionEnter 0.35s ease;
+}
+
+@keyframes academyCompletionEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.academy-completion-icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 900;
+    box-shadow: var(--shadow-md);
+}
+
+.academy-completion-panel h2 {
+    margin: 0 0 10px;
+    color: var(--text-primary);
+    font-size: 1.8rem;
+}
+
+.academy-completion-panel p {
+    max-width: 600px;
+    margin: 0 auto 24px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.academy-topic-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   19. TOPIC LEARNING
+   ========================================================= */
+
+.academy-topic-learning {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px;
+    animation: academyLessonEnter 0.3s ease;
+}
+
+.academy-topic-learning-header {
+    max-width: 850px;
+    margin: 32px auto;
+    text-align: center;
+}
+
+.academy-topic-learning-header .eyebrow {
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.academy-topic-learning-header h2 {
+    margin: 10px 0;
+    color: var(--text-primary);
+    font-size: clamp(
+        1.8rem,
+        4vw,
+        2.8rem
+    );
+}
+
+.academy-topic-learning-header p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   20. TOPIC METADATA
+   ========================================================= */
+
+.academy-topic-learning-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.academy-topic-meta-item {
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-secondary);
+    text-align: center;
+}
+
+.academy-topic-meta-item span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+}
+
+.academy-topic-meta-item strong {
+    color: var(--text-primary);
+}
+
+
+/* =========================================================
+   21. LESSON PREVIEW GRID
+   ========================================================= */
+
+.academy-lesson-preview-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.academy-lesson-preview-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 240px;
+    padding: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.academy-lesson-preview-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+}
+
+.academy-lesson-preview-card.is-complete {
+    border-color: #b9e3c7;
+}
+
+.academy-path-number {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.academy-lesson-preview-card h3 {
+    margin: 0 0 10px;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.academy-lesson-preview-card p {
+    margin: 0 0 16px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+}
+
+.academy-lesson-status {
+    margin-top: auto;
+    margin-bottom: 15px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.academy-lesson-preview-card.is-complete
+    .academy-lesson-status {
+    color: #187a3d;
+}
+
+
+/* =========================================================
+   22. TOPIC SEARCH
+   ========================================================= */
+
+.academy-topic-search {
+    width: 100%;
+    margin: 24px 0;
+}
+
+
+/* =========================================================
+   23. EMPTY STATE
+   ========================================================= */
+
+.academy-empty-state {
+    grid-column: 1 / -1;
+    padding: 55px 25px;
+    text-align: center;
+}
+
+.academy-empty-icon {
+    margin-bottom: 14px;
+    font-size: 2.4rem;
+}
+
+.academy-empty-state h3,
+.academy-empty-state h2 {
+    margin: 0 0 10px;
+    color: var(--text-primary);
+}
+
+.academy-empty-state p {
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   24. DARK MODE
+   ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+
+    .academy-check-feedback.is-success {
+        background: rgba(24, 122, 61, 0.15);
+    }
+
+    .academy-check-feedback.is-error {
+        background: rgba(180, 35, 24, 0.15);
+    }
+
+    .academy-check-feedback.is-warning {
+        background: rgba(138, 90, 0, 0.15);
+    }
+
+    .academy-lesson-preview-card.is-complete {
+        border-color: rgba(80, 180, 110, 0.35);
+    }
+
+}
+
+
+/* =========================================================
+   25. TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .academy-lesson-body-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .academy-lesson-sidebar {
+        position: static;
+    }
+
+    .academy-lesson-sidebar-card {
+        display: grid;
+        grid-template-columns:
+            auto 1fr;
+        gap: 12px 18px;
+        align-items: center;
+    }
+
+    .academy-lesson-sidebar-card h3 {
+        margin: 0;
+    }
+
+    .academy-lesson-sidebar-card > strong {
+        margin: 0;
+    }
+
+    .academy-lesson-sidebar-card > p {
+        margin: 0;
+    }
+
+    .academy-lesson-list {
+        grid-column: 1 / -1;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   26. MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+    .academy-lesson-viewer,
+    .academy-topic-learning {
+        padding: 18px;
+    }
+
+    .academy-lesson-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .academy-lesson-position {
+        align-self: flex-start;
+    }
+
+    .academy-lesson-header {
+        margin-bottom: 28px;
+    }
+
+    .academy-lesson-header h1 {
+        font-size: 2rem;
+    }
+
+    .academy-lesson-block {
+        padding: 21px;
+        border-radius: 15px;
+    }
+
+    .academy-topic-learning-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .academy-lesson-preview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .academy-lesson-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .academy-lesson-navigation {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .academy-lesson-navigation .button {
+        flex: 1;
+    }
+
+    .academy-lesson-footer > .button {
+        width: 100%;
+    }
+
+    .academy-lesson-list {
+        grid-template-columns: 1fr;
+    }
+
+    .academy-topic-actions {
+        flex-direction: column;
+    }
+
+    .academy-topic-actions .button {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   27. SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .academy-lesson-viewer,
+    .academy-topic-learning {
+        padding: 14px;
+    }
+
+    .academy-lesson-block {
+        padding: 17px;
+    }
+
+    .academy-lesson-header h1 {
+        font-size: 1.7rem;
+    }
+
+    .academy-lesson-header p {
+        font-size: 0.9rem;
+    }
+
+    .lesson-equation {
+        padding: 17px;
+        font-size: 1rem;
+    }
+
+    .lesson-table th,
+    .lesson-table td {
+        padding: 11px;
+    }
+
+    .academy-completion-panel {
+        padding: 32px 18px;
+    }
+
+}
+
+
+/* =========================================================
+   28. REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .academy-lesson-viewer,
+    .academy-topic-learning,
+    .academy-completion-panel {
+        animation: none;
+    }
+
+    .academy-lesson-preview-card,
+    .academy-check-option {
+        transition: none;
+    }
+
+}
