@@ -108,18 +108,24 @@
                 },
 
                 {
-                    id: "atomic-structure",
-                    title: "Atomic Structure",
-                    level: "foundation",
-                    description:
-                        "Understand protons, neutrons, electrons and the structure of atoms.",
-                    lessons: [
-                        "development-atomic-model",
-                        "subatomic-particles",
-                        "atomic-number-mass-number",
-                        "electron-structure"
-                    ]
-                },
+                 {
+    id: "atomic-structure-periodic-table",
+    title: "Atomic Structure & the Periodic Table",
+    description:
+        "Explore the structure of atoms, electron configuration, isotopes, ions, and the principles behind periodic trends.",
+    level: "foundation",
+    difficulty: "Intermediate",
+    estimatedMinutes: 150,
+    lessons: 12,
+    icon: "⚛",
+    tags: [
+        "atoms",
+        "electrons",
+        "isotopes",
+        "periodic table",
+        "periodic trends"
+    ]
+},
 
                 {
                     id: "isotopes-atomic-mass",
@@ -1853,6 +1859,1249 @@ const LESSON_CONTENT = {
     ]
 
 };
+   
+   "atomic-structure-periodic-table": [
+
+    /* =====================================================
+       LESSON 1
+       ===================================================== */
+
+    {
+        id: "introduction-to-atomic-structure",
+        title: "Introduction to Atomic Structure",
+        type: "concept",
+        duration: 10,
+
+        objectives: [
+            "Explain what an atom is.",
+            "Describe the basic structure of an atom.",
+            "Distinguish between the nucleus and the electron cloud.",
+            "Explain why atomic structure is important in chemistry."
+        ],
+
+        content: `
+            <p>
+                Matter is made of particles, and one of the fundamental
+                particles used to describe ordinary matter is the
+                <strong>atom</strong>.
+            </p>
+
+            <p>
+                An atom is the smallest unit of an element that retains
+                the chemical identity of that element.
+            </p>
+
+            <p>
+                Modern atomic structure consists of a small,
+                dense <strong>nucleus</strong> surrounded by a region
+                occupied by electrons.
+            </p>
+
+            <h4>The nucleus</h4>
+
+            <p>
+                The nucleus contains positively charged
+                <strong>protons</strong> and electrically neutral
+                <strong>neutrons</strong>.
+            </p>
+
+            <p>
+                Almost all of an atom's mass is concentrated in its
+                nucleus.
+            </p>
+
+            <h4>The electron region</h4>
+
+            <p>
+                Electrons are negatively charged particles associated
+                with regions around the nucleus. They occupy
+                <strong>atomic orbitals</strong>, which describe regions
+                where electrons are likely to be found.
+            </p>
+
+            <div class="academy-callout">
+                <strong>Key idea:</strong>
+                Chemical behavior is strongly influenced by the
+                arrangement of electrons, especially the outermost
+                electrons.
+            </div>
+        `,
+
+        keyPoints: [
+            "Atoms are fundamental units of elements.",
+            "The nucleus contains protons and neutrons.",
+            "Electrons occupy regions around the nucleus.",
+            "Most atomic mass is concentrated in the nucleus.",
+            "Electron arrangement strongly influences chemical behavior."
+        ],
+
+        workedExample: {
+            question:
+                "Which part of an atom contains protons and neutrons?",
+
+            steps: [
+                "Identify the two particles mentioned.",
+                "Both protons and neutrons are located in the nucleus.",
+                "Therefore, the answer is the nucleus."
+            ],
+
+            answer: "The nucleus."
+        },
+
+        knowledgeCheck: {
+            question:
+                "Which statement correctly describes the nucleus of an atom?",
+
+            options: [
+                "It contains only electrons.",
+                "It contains protons and neutrons.",
+                "It contains only neutrons.",
+                "It contains negatively charged particles."
+            ],
+
+            answer: 1,
+
+            explanation:
+                "The nucleus contains positively charged protons and neutral neutrons."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 2
+       ===================================================== */
+
+    {
+        id: "subatomic-particles",
+        title: "Subatomic Particles",
+        type: "concept",
+        duration: 12,
+
+        objectives: [
+            "Identify the three major subatomic particles.",
+            "Compare their charges and relative masses.",
+            "Locate each particle within an atom.",
+            "Explain why electrons contribute little to atomic mass."
+        ],
+
+        content: `
+            <p>
+                The three major subatomic particles used to describe
+                atoms are <strong>protons</strong>,
+                <strong>neutrons</strong>, and <strong>electrons</strong>.
+            </p>
+
+            <table class="academy-table">
+                <thead>
+                    <tr>
+                        <th>Particle</th>
+                        <th>Charge</th>
+                        <th>Relative mass</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Proton</td>
+                        <td>+1</td>
+                        <td>≈ 1</td>
+                        <td>Nucleus</td>
+                    </tr>
+
+                    <tr>
+                        <td>Neutron</td>
+                        <td>0</td>
+                        <td>≈ 1</td>
+                        <td>Nucleus</td>
+                    </tr>
+
+                    <tr>
+                        <td>Electron</td>
+                        <td>−1</td>
+                        <td>≈ 1/1836</td>
+                        <td>Electron region</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                Protons and electrons have equal-sized opposite
+                charges. A neutral atom therefore contains equal
+                numbers of protons and electrons.
+            </p>
+
+            <p>
+                Neutrons have no net electrical charge. Changing the
+                number of neutrons produces different isotopes of the
+                same element.
+            </p>
+
+            <div class="academy-callout">
+                <strong>Remember:</strong>
+                The number of protons determines which element an atom is.
+            </div>
+        `,
+
+        keyPoints: [
+            "Protons have a +1 charge.",
+            "Neutrons have no charge.",
+            "Electrons have a −1 charge.",
+            "Protons and neutrons are in the nucleus.",
+            "The proton number identifies the element."
+        ],
+
+        workedExample: {
+            question:
+                "An atom contains 11 protons and 11 electrons. What is its net charge?",
+
+            steps: [
+                "Each proton contributes +1.",
+                "Each electron contributes −1.",
+                "Total charge = +11 − 11.",
+                "Therefore, the net charge is zero."
+            ],
+
+            answer: "The atom is electrically neutral."
+        },
+
+        knowledgeCheck: {
+            question:
+                "Which subatomic particle determines the identity of an element?",
+
+            options: [
+                "Electron",
+                "Neutron",
+                "Proton",
+                "Orbital"
+            ],
+
+            answer: 2,
+
+            explanation:
+                "The number of protons is the atomic number and uniquely identifies the element."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 3
+       ===================================================== */
+
+    {
+        id: "atomic-number-and-mass-number",
+        title: "Atomic Number and Mass Number",
+        type: "concept",
+        duration: 12,
+
+        objectives: [
+            "Define atomic number.",
+            "Define mass number.",
+            "Calculate numbers of protons, neutrons, and electrons.",
+            "Interpret nuclear notation."
+        ],
+
+        content: `
+            <p>
+                The <strong>atomic number (Z)</strong> is the number
+                of protons in the nucleus of an atom.
+            </p>
+
+            <p>
+                The atomic number identifies the element.
+            </p>
+
+            <p>
+                The <strong>mass number (A)</strong> is the total number
+                of protons and neutrons:
+            </p>
+
+            <div class="academy-equation">
+                A = Z + N
+            </div>
+
+            <p>where:</p>
+
+            <ul>
+                <li><strong>A</strong> = mass number</li>
+                <li><strong>Z</strong> = number of protons</li>
+                <li><strong>N</strong> = number of neutrons</li>
+            </ul>
+
+            <p>
+                Therefore:
+            </p>
+
+            <div class="academy-equation">
+                N = A − Z
+            </div>
+
+            <p>
+                For a neutral atom, the number of electrons equals the
+                number of protons.
+            </p>
+        `,
+
+        keyPoints: [
+            "Atomic number = number of protons.",
+            "Mass number = protons + neutrons.",
+            "Neutrons = mass number − atomic number.",
+            "Neutral atoms have equal numbers of protons and electrons."
+        ],
+
+        workedExample: {
+            question:
+                "An atom has atomic number 17 and mass number 35. How many protons, neutrons, and electrons does a neutral atom contain?",
+
+            steps: [
+                "Protons = atomic number = 17.",
+                "Neutrons = 35 − 17 = 18.",
+                "Because the atom is neutral, electrons = 17."
+            ],
+
+            answer:
+                "17 protons, 18 neutrons, and 17 electrons."
+        },
+
+        knowledgeCheck: {
+            question:
+                "An atom has mass number 23 and atomic number 11. How many neutrons does it have?",
+
+            options: [
+                "11",
+                "12",
+                "23",
+                "34"
+            ],
+
+            answer: 1,
+
+            explanation:
+                "Neutrons = mass number − atomic number = 23 − 11 = 12."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 4
+       ===================================================== */
+
+    {
+        id: "isotopes-and-relative-atomic-mass",
+        title: "Isotopes and Relative Atomic Mass",
+        type: "concept",
+        duration: 14,
+
+        objectives: [
+            "Define isotopes.",
+            "Explain why isotopes are atoms of the same element.",
+            "Distinguish isotopes by their neutron numbers.",
+            "Calculate a weighted average relative atomic mass."
+        ],
+
+        content: `
+            <p>
+                <strong>Isotopes</strong> are atoms of the same element
+                that have the same number of protons but different
+                numbers of neutrons.
+            </p>
+
+            <p>
+                Because they have the same number of protons, isotopes
+                have the same atomic number.
+            </p>
+
+            <p>
+                Their different neutron numbers give them different
+                mass numbers.
+            </p>
+
+            <div class="academy-callout">
+                <strong>Example:</strong>
+                Carbon-12 and Carbon-14 are both carbon because each
+                contains 6 protons. They differ in neutron number.
+            </div>
+
+            <h4>Relative atomic mass</h4>
+
+            <p>
+                The relative atomic mass of an element accounts for the
+                naturally occurring isotopes and their relative
+                abundances.
+            </p>
+
+            <div class="academy-equation">
+                Relative atomic mass =
+                Σ(isotope mass × fractional abundance)
+            </div>
+
+            <p>
+                This is a weighted average rather than a simple average.
+            </p>
+        `,
+
+        keyPoints: [
+            "Isotopes have the same proton number.",
+            "Isotopes have different neutron numbers.",
+            "Different isotopes have different mass numbers.",
+            "Relative atomic mass is a weighted average."
+        ],
+
+        workedExample: {
+            question:
+                "An element has two isotopes: isotope X has mass 10 and abundance 20%, while isotope Y has mass 11 and abundance 80%. Find its relative atomic mass.",
+
+            steps: [
+                "Convert percentages to fractions: 0.20 and 0.80.",
+                "Calculate 10 × 0.20 = 2.0.",
+                "Calculate 11 × 0.80 = 8.8.",
+                "Add the contributions: 2.0 + 8.8 = 10.8."
+            ],
+
+            answer: "Relative atomic mass = 10.8."
+        },
+
+        knowledgeCheck: {
+            question:
+                "What must be different between two isotopes of the same element?",
+
+            options: [
+                "Number of protons",
+                "Number of neutrons",
+                "Atomic number",
+                "Element identity"
+            ],
+
+            answer: 1,
+
+            explanation:
+                "Isotopes have the same number of protons but different numbers of neutrons."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 5
+       ===================================================== */
+
+    {
+        id: "electron-configuration",
+        title: "Electron Configuration",
+        type: "concept",
+        duration: 16,
+
+        objectives: [
+            "Explain the meaning of electron configuration.",
+            "Describe the main electron subshells.",
+            "Apply the basic rules for filling electrons.",
+            "Write simple electron configurations."
+        ],
+
+        content: `
+            <p>
+                An atom's <strong>electron configuration</strong>
+                describes how its electrons are distributed among
+                atomic orbitals.
+            </p>
+
+            <p>
+                Electrons occupy energy levels and subshells.
+                The commonly encountered subshells are:
+            </p>
+
+            <ul>
+                <li>s</li>
+                <li>p</li>
+                <li>d</li>
+                <li>f</li>
+            </ul>
+
+            <p>
+                Their maximum electron capacities are:
+            </p>
+
+            <table class="academy-table">
+                <thead>
+                    <tr>
+                        <th>Subshell</th>
+                        <th>Maximum electrons</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr><td>s</td><td>2</td></tr>
+                    <tr><td>p</td><td>6</td></tr>
+                    <tr><td>d</td><td>10</td></tr>
+                    <tr><td>f</td><td>14</td></tr>
+                </tbody>
+            </table>
+
+            <p>
+                In the ground state, electrons generally occupy
+                available orbitals in order of increasing energy.
+            </p>
+
+            <p>
+                For example, hydrogen has one electron:
+            </p>
+
+            <div class="academy-equation">
+                1s¹
+            </div>
+
+            <p>
+                Helium has two:
+            </p>
+
+            <div class="academy-equation">
+                1s²
+            </div>
+
+            <p>
+                A neutral carbon atom contains six electrons:
+            </p>
+
+            <div class="academy-equation">
+                1s² 2s² 2p²
+            </div>
+        `,
+
+        keyPoints: [
+            "Electron configuration describes electron distribution.",
+            "s, p, d and f are major subshell types.",
+            "s holds 2 electrons.",
+            "p holds 6 electrons.",
+            "d holds 10 electrons.",
+            "f holds 14 electrons."
+        ],
+
+        workedExample: {
+            question:
+                "Write the electron configuration of oxygen, which has atomic number 8.",
+
+            steps: [
+                "A neutral oxygen atom has 8 electrons.",
+                "Place 2 electrons in 1s.",
+                "Place 2 electrons in 2s.",
+                "The remaining 4 electrons occupy 2p."
+            ],
+
+            answer: "1s² 2s² 2p⁴."
+        },
+
+        knowledgeCheck: {
+            question:
+                "What is the maximum number of electrons in a p subshell?",
+
+            options: [
+                "2",
+                "4",
+                "6",
+                "10"
+            ],
+
+            answer: 2,
+
+            explanation:
+                "A p subshell contains three orbitals, each capable of holding two electrons, for a total of six."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 6
+       ===================================================== */
+
+    {
+        id: "orbitals-and-quantum-numbers",
+        title: "Orbitals and Quantum Numbers",
+        type: "concept",
+        duration: 16,
+
+        objectives: [
+            "Define an atomic orbital.",
+            "Describe the shapes of s and p orbitals.",
+            "Identify the four quantum numbers.",
+            "Explain what quantum numbers tell us about electrons."
+        ],
+
+        content: `
+            <p>
+                An <strong>atomic orbital</strong> is a mathematical
+                description of a region around the nucleus where an
+                electron has a high probability of being found.
+            </p>
+
+            <p>
+                An orbital is not a fixed circular path followed by an
+                electron.
+            </p>
+
+            <h4>Quantum numbers</h4>
+
+            <p>
+                Four quantum numbers are used to describe the state of
+                an electron:
+            </p>
+
+            <ul>
+                <li><strong>n</strong> — principal quantum number</li>
+                <li><strong>l</strong> — angular momentum quantum number</li>
+                <li><strong>mₗ</strong> — magnetic quantum number</li>
+                <li><strong>mₛ</strong> — spin quantum number</li>
+            </ul>
+
+            <p>
+                The principal quantum number identifies the main energy
+                level.
+            </p>
+
+            <p>
+                The angular momentum quantum number identifies the
+                subshell type.
+            </p>
+
+            <p>
+                The magnetic quantum number identifies the orientation
+                of an orbital within a subshell.
+            </p>
+
+            <p>
+                The spin quantum number describes one of two allowed
+                electron spin states.
+            </p>
+
+            <div class="academy-callout">
+                Quantum numbers provide a precise way to describe
+                electron states in atoms.
+            </div>
+        `,
+
+        keyPoints: [
+            "Orbitals describe probable electron locations.",
+            "Orbitals are not classical circular electron paths.",
+            "Four quantum numbers describe an electron state.",
+            "The principal quantum number identifies the main energy level.",
+            "The spin quantum number has two allowed values."
+        ],
+
+        workedExample: {
+            question:
+                "Which quantum number identifies the principal energy level of an electron?",
+
+            steps: [
+                "Identify the quantum number associated with the main energy level.",
+                "This is the principal quantum number.",
+                "It is represented by n."
+            ],
+
+            answer: "The principal quantum number, n."
+        },
+
+        knowledgeCheck: {
+            question:
+                "Which quantum number describes electron spin?",
+
+            options: [
+                "n",
+                "l",
+                "mₗ",
+                "mₛ"
+            ],
+
+            answer: 3,
+
+            explanation:
+                "The spin quantum number is represented by mₛ."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 7
+       ===================================================== */
+
+    {
+        id: "electron-arrangement-and-ions",
+        title: "Electron Arrangement and Ions",
+        type: "concept",
+        duration: 14,
+
+        objectives: [
+            "Explain how ions form.",
+            "Distinguish cations from anions.",
+            "Relate electron loss or gain to charge.",
+            "Write simple electron arrangements for ions."
+        ],
+
+        content: `
+            <p>
+                An <strong>ion</strong> is an atom or group of atoms
+                with a net electrical charge.
+            </p>
+
+            <h4>Cations</h4>
+
+            <p>
+                A positively charged ion is called a
+                <strong>cation</strong>. It forms when an atom loses
+                one or more electrons.
+            </p>
+
+            <h4>Anions</h4>
+
+            <p>
+                A negatively charged ion is called an
+                <strong>anion</strong>. It forms when an atom gains
+                one or more electrons.
+            </p>
+
+            <p>
+                The number of protons does not change when an ordinary
+                ion forms. The charge changes because the number of
+                electrons changes.
+            </p>
+
+            <div class="academy-callout">
+                <strong>Example:</strong>
+                A sodium atom has 11 protons and 11 electrons.
+                Na⁺ has 11 protons but 10 electrons.
+            </div>
+        `,
+
+        keyPoints: [
+            "Cations are positively charged.",
+            "Anions are negatively charged.",
+            "Cations form by electron loss.",
+            "Anions form by electron gain.",
+            "Ion formation changes electron number, not proton number."
+        ],
+
+        workedExample: {
+            question:
+                "How many electrons are present in Mg²⁺ if magnesium has atomic number 12?",
+
+            steps: [
+                "Neutral magnesium has 12 electrons.",
+                "A 2+ charge means two electrons have been removed.",
+                "12 − 2 = 10."
+            ],
+
+            answer: "Mg²⁺ contains 10 electrons."
+        },
+
+        knowledgeCheck: {
+            question:
+                "What happens when an atom forms a 1− ion?",
+
+            options: [
+                "It loses one electron.",
+                "It gains one electron.",
+                "It loses one proton.",
+                "It gains one proton."
+            ],
+
+            answer: 1,
+
+            explanation:
+                "A 1− ion has one more electron than the neutral atom."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 8
+       ===================================================== */
+
+    {
+        id: "the-periodic-table",
+        title: "The Periodic Table",
+        type: "concept",
+        duration: 14,
+
+        objectives: [
+            "Explain how elements are arranged in the periodic table.",
+            "Distinguish periods from groups.",
+            "Identify metals, nonmetals, and metalloids.",
+            "Relate electron configuration to periodic-table position."
+        ],
+
+        content: `
+            <p>
+                The modern periodic table arranges elements in order of
+                increasing <strong>atomic number</strong>.
+            </p>
+
+            <h4>Periods</h4>
+
+            <p>
+                Horizontal rows are called <strong>periods</strong>.
+                Elements in the same period have electrons occupying
+                the same principal energy-level range.
+            </p>
+
+            <h4>Groups</h4>
+
+            <p>
+                Vertical columns are called <strong>groups</strong>.
+                Elements within a group often have related chemical
+                behavior because of similarities in their outer-electron
+                arrangements.
+            </p>
+
+            <p>
+                Important regions include:
+            </p>
+
+            <ul>
+                <li>alkali metals</li>
+                <li>alkaline earth metals</li>
+                <li>transition metals</li>
+                <li>halogens</li>
+                <li>noble gases</li>
+                <li>lanthanides</li>
+                <li>actinides</li>
+            </ul>
+        `,
+
+        keyPoints: [
+            "Elements are arranged by increasing atomic number.",
+            "Rows are periods.",
+            "Columns are groups.",
+            "Elements in the same group often have similar chemical behavior.",
+            "The periodic table contains metals, nonmetals, and metalloids."
+        ],
+
+        workedExample: {
+            question:
+                "What is the difference between a group and a period?",
+
+            steps: [
+                "Look at the direction of arrangement.",
+                "A group is a vertical column.",
+                "A period is a horizontal row."
+            ],
+
+            answer:
+                "A group is a vertical column; a period is a horizontal row."
+        },
+
+        knowledgeCheck: {
+            question:
+                "What property is used to arrange elements in the modern periodic table?",
+
+            options: [
+                "Atomic mass only",
+                "Density",
+                "Atomic number",
+                "Melting point"
+            ],
+
+            answer: 2,
+
+            explanation:
+                "Elements are arranged in increasing atomic number."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 9
+       ===================================================== */
+
+    {
+        id: "atomic-radius",
+        title: "Atomic Radius",
+        type: "concept",
+        duration: 12,
+
+        objectives: [
+            "Define atomic radius.",
+            "Describe its general trend across a period.",
+            "Describe its general trend down a group.",
+            "Explain the trends using effective nuclear attraction and energy levels."
+        ],
+
+        content: `
+            <p>
+                Atomic radius is a measure used to describe the size of
+                an atom.
+            </p>
+
+            <h4>Across a period</h4>
+
+            <p>
+                Atomic radius generally <strong>decreases</strong> from
+                left to right across a period.
+            </p>
+
+            <p>
+                As atomic number increases, the nucleus gains positive
+                charge while electrons are added to the same principal
+                energy-level region. The increased effective attraction
+                tends to pull the electron cloud closer to the nucleus.
+            </p>
+
+            <h4>Down a group</h4>
+
+            <p>
+                Atomic radius generally <strong>increases</strong>
+                down a group because additional occupied energy levels
+                are introduced.
+            </p>
+
+            <div class="academy-callout">
+                General trend:
+                <strong>larger down a group, smaller across a period.</strong>
+            </div>
+        `,
+
+        keyPoints: [
+            "Atomic radius measures atomic size.",
+            "Radius generally decreases across a period.",
+            "Radius generally increases down a group.",
+            "Additional energy levels increase size.",
+            "Effective nuclear attraction influences size."
+        ],
+
+        workedExample: {
+            question:
+                "Which generally has the larger atomic radius: sodium or chlorine?",
+
+            steps: [
+                "Sodium and chlorine are in the same period.",
+                "Atomic radius generally decreases from left to right.",
+                "Sodium is to the left of chlorine."
+            ],
+
+            answer: "Sodium generally has the larger atomic radius."
+        },
+
+        knowledgeCheck: {
+            question:
+                "What generally happens to atomic radius down a group?",
+
+            options: [
+                "It decreases.",
+                "It remains exactly constant.",
+                "It increases.",
+                "It becomes zero."
+            ],
+
+            answer: 2,
+
+            explanation:
+                "Additional occupied energy levels are added down a group, increasing atomic size."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 10
+       ===================================================== */
+
+    {
+        id: "ionization-energy",
+        title: "Ionization Energy",
+        type: "concept",
+        duration: 14,
+
+        objectives: [
+            "Define first ionization energy.",
+            "Describe its general periodic trend.",
+            "Explain the effect of atomic size and nuclear attraction.",
+            "Recognize that periodic trends can contain exceptions."
+        ],
+
+        content: `
+            <p>
+                The <strong>first ionization energy</strong> is the
+                energy required to remove one electron from each atom
+                in one mole of gaseous atoms to form one mole of gaseous
+                1+ ions.
+            </p>
+
+            <p>
+                In general, first ionization energy tends to
+                <strong>increase across a period</strong>.
+            </p>
+
+            <p>
+                This is associated with increasing effective nuclear
+                attraction for the outer electron.
+            </p>
+
+            <p>
+                It generally <strong>decreases down a group</strong>
+                because the outer electron is farther from the nucleus
+                and more strongly shielded by inner electrons.
+            </p>
+
+            <div class="academy-callout">
+                High ionization energy means that removing an electron
+                requires relatively more energy.
+            </div>
+        `,
+
+        keyPoints: [
+            "Ionization energy measures the energy needed to remove an electron.",
+            "It generally increases across a period.",
+            "It generally decreases down a group.",
+            "Distance from the nucleus and shielding affect ionization energy.",
+            "Real periodic data contain some notable exceptions."
+        ],
+
+        workedExample: {
+            question:
+                "Which generally has the higher first ionization energy: magnesium or sodium?",
+
+            steps: [
+                "Both elements are in period 3.",
+                "Ionization energy generally increases across a period.",
+                "Magnesium lies to the right of sodium."
+            ],
+
+            answer:
+                "Magnesium generally has the higher first ionization energy."
+        },
+
+        knowledgeCheck: {
+            question:
+                "Which trend is generally correct for first ionization energy?",
+
+            options: [
+                "Decreases across a period and increases down a group.",
+                "Increases across a period and decreases down a group.",
+                "Always remains constant.",
+                "Only changes with atomic mass."
+            ],
+
+            answer: 1,
+
+            explanation:
+                "First ionization energy generally increases across periods and decreases down groups."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 11
+       ===================================================== */
+
+    {
+        id: "electronegativity-and-electron-affinity",
+        title: "Electronegativity and Electron Affinity",
+        type: "concept",
+        duration: 14,
+
+        objectives: [
+            "Define electronegativity.",
+            "Explain electron affinity at an introductory level.",
+            "Distinguish electronegativity from ionization energy.",
+            "Describe general periodic trends."
+        ],
+
+        content: `
+            <p>
+                <strong>Electronegativity</strong> describes the ability
+                of an atom in a chemical bond to attract shared
+                electrons toward itself.
+            </p>
+
+            <p>
+                Electronegativity generally increases across a period
+                and decreases down a group.
+            </p>
+
+            <p>
+                Fluorine is commonly assigned the highest
+                electronegativity on the Pauling scale.
+            </p>
+
+            <h4>Electron affinity</h4>
+
+            <p>
+                Electron affinity concerns the energy change associated
+                with adding an electron to a gaseous atom.
+            </p>
+
+            <p>
+                Electron affinity and electronegativity are related to
+                an atom's attraction for electrons, but they are not the
+                same quantity.
+            </p>
+
+            <div class="academy-callout">
+                <strong>Important distinction:</strong>
+                Electronegativity describes attraction for shared
+                electrons in a bond, while electron affinity describes
+                an energy change associated with adding an electron to
+                an isolated gaseous atom.
+            </div>
+        `,
+
+        keyPoints: [
+            "Electronegativity describes attraction for bonding electrons.",
+            "Electronegativity generally increases across a period.",
+            "Electronegativity generally decreases down a group.",
+            "Electron affinity concerns adding an electron to a gaseous atom.",
+            "The two concepts are related but not identical."
+        ],
+
+        workedExample: {
+            question:
+                "Why is fluorine strongly electronegative?",
+
+            steps: [
+                "Fluorine is small compared with many other atoms.",
+                "Its bonding electrons experience strong attraction from the nucleus.",
+                "It therefore strongly attracts shared electrons."
+            ],
+
+            answer:
+                "Its small atomic size and strong effective nuclear attraction give it a strong attraction for shared electrons."
+        },
+
+        knowledgeCheck: {
+            question:
+                "Electronegativity describes an atom's ability to attract:",
+
+            options: [
+                "Neutrons in the nucleus",
+                "Shared bonding electrons",
+                "Only its own protons",
+                "Atomic nuclei from outside the atom"
+            ],
+
+            answer: 1,
+
+            explanation:
+                "Electronegativity describes attraction for shared electrons in a chemical bond."
+        }
+    },
+
+
+    /* =====================================================
+       LESSON 12
+       ===================================================== */
+
+    {
+        id: "understanding-periodic-trends",
+        title: "Understanding Periodic Trends",
+        type: "concept",
+        duration: 16,
+
+        objectives: [
+            "Compare major periodic trends.",
+            "Explain trends using nuclear charge, shielding, and energy levels.",
+            "Predict relative atomic properties using periodic position.",
+            "Apply periodic trends to chemical reasoning."
+        ],
+
+        content: `
+            <p>
+                Periodic trends allow chemists to predict how atomic
+                properties change according to position in the periodic
+                table.
+            </p>
+
+            <table class="academy-table">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Across a period</th>
+                        <th>Down a group</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Atomic radius</td>
+                        <td>Generally decreases</td>
+                        <td>Generally increases</td>
+                    </tr>
+
+                    <tr>
+                        <td>First ionization energy</td>
+                        <td>Generally increases</td>
+                        <td>Generally decreases</td>
+                    </tr>
+
+                    <tr>
+                        <td>Electronegativity</td>
+                        <td>Generally increases</td>
+                        <td>Generally decreases</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Why do these trends occur?</h4>
+
+            <p>
+                Three major ideas are especially important:
+            </p>
+
+            <ul>
+                <li><strong>Nuclear charge</strong> — the positive charge of the nucleus.</li>
+                <li><strong>Shielding</strong> — reduction in nuclear attraction caused by inner electrons.</li>
+                <li><strong>Energy levels</strong> — additional occupied levels place outer electrons farther from the nucleus.</li>
+            </ul>
+
+            <p>
+                These factors work together to determine how strongly
+                electrons are attracted to the nucleus.
+            </p>
+
+            <div class="academy-callout">
+                <strong>Scientific reasoning:</strong>
+                Do not memorize trends without understanding them.
+                Use nuclear charge, shielding, distance, and electron
+                arrangement to explain the observed pattern.
+            </div>
+        `,
+
+        keyPoints: [
+            "Atomic radius generally decreases across a period.",
+            "Atomic radius generally increases down a group.",
+            "Ionization energy generally increases across a period.",
+            "Ionization energy generally decreases down a group.",
+            "Electronegativity generally increases across a period.",
+            "Shielding and distance influence attraction to the nucleus."
+        ],
+
+        workedExample: {
+            question:
+                "Which element would generally have the stronger attraction for bonding electrons: sodium or chlorine?",
+
+            steps: [
+                "Sodium and chlorine are in the same period.",
+                "Electronegativity generally increases from left to right.",
+                "Chlorine is farther to the right.",
+                "Therefore chlorine generally has the stronger attraction for shared electrons."
+            ],
+
+            answer: "Chlorine."
+        },
+
+        knowledgeCheck: {
+            question:
+                "Which combination best explains why atomic radius generally increases down a group?",
+
+            options: [
+                "Fewer energy levels and less shielding",
+                "More occupied energy levels and greater shielding",
+                "Lower atomic number only",
+                "Fewer electrons in every atom"
+            ],
+
+            answer: 1,
+
+            explanation:
+                "Atoms gain additional occupied energy levels down a group, and increased shielding contributes to a larger atomic radius."
+        }
+    }
+
+]
 
     /* =====================================================
        HELPERS
