@@ -492,488 +492,515 @@
         }
     ];
 
+/* =========================================================
+   CHEMLAB
+   STAGE 5.5 — EXPANDED LESSON CONTENT
+   FOUNDATIONS OF CHEMISTRY
+   ========================================================= */
+
+const LESSON_CONTENT = {
 
     /* =====================================================
-       LESSON CONTENT
+       MEASUREMENTS & SCIENTIFIC UNITS
        ===================================================== */
 
-    const LESSON_CONTENT = {
+    "measurements-scientific-units": [
 
-        /* =================================================
-           MEASUREMENTS
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 1
+           ------------------------------------------------- */
 
-        "scientific-measurement": {
+        {
+            id: "what-is-a-scientific-measurement",
 
             title: "What Is a Scientific Measurement?",
 
+            type: "concept",
+
+            duration: 8,
+
             objectives: [
-                "Define a scientific measurement.",
+                "Explain what a scientific measurement is.",
                 "Identify the numerical value and unit in a measurement.",
-                "Explain why measurements are essential in chemistry.",
-                "Distinguish measured quantities from qualitative observations."
+                "Distinguish measured quantities from observations.",
+                "Explain why units are essential in chemistry."
             ],
 
             content: `
                 <p>
-                    Chemistry is an experimental science. Chemists do not simply
-                    describe substances; they measure physical and chemical
-                    properties and use those measurements to develop explanations.
+                    Chemistry is an experimental science. Chemists do not
+                    simply describe what happens; they observe, measure,
+                    record, compare, and analyze evidence.
                 </p>
 
                 <p>
-                    A <strong>measurement</strong> is a quantitative description
-                    of a physical quantity obtained by comparing it with an
-                    accepted reference standard.
-                </p>
-
-                <p>
-                    A complete measurement normally contains two parts:
-                    a <strong>numerical value</strong> and a
-                    <strong>unit</strong>.
-                </p>
-
-                <div class="lesson-equation">
-                    Measurement = Numerical value × Unit
-                </div>
-
-                <p>
-                    For example, if the mass of a sample is reported as
-                    <strong>12.5 g</strong>, the number <strong>12.5</strong>
-                    gives the numerical value while <strong>g</strong>
-                    identifies the unit.
-                </p>
-
-                <p>
-                    Without the unit, the value is incomplete because the same
-                    numerical value could represent grams, kilograms, milligrams
-                    or another quantity.
+                    A <strong>scientific measurement</strong> is a quantitative
+                    description of a physical quantity obtained by comparing
+                    it with an agreed standard.
                 </p>
 
                 <div class="lesson-callout">
-                    <strong>Important:</strong>
-                    A measurement should always be reported with an appropriate
-                    unit unless the context explicitly defines the unit.
+                    <strong>Key idea:</strong>
+                    A measurement normally contains two essential parts:
+                    a numerical value and a unit.
                 </div>
 
-                <h3>Measured quantities in chemistry</h3>
+                <div class="lesson-equation">
+                    Measurement = Numerical Value + Unit
+                </div>
 
                 <p>
-                    Common measurements include mass, volume, temperature,
-                    time, pressure and amount of substance.
-                </p>
-
-                <table class="lesson-table">
-                    <thead>
-                        <tr>
-                            <th>Quantity</th>
-                            <th>Example</th>
-                            <th>Common unit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Mass</td>
-                            <td>25.4 g</td>
-                            <td>gram (g)</td>
-                        </tr>
-                        <tr>
-                            <td>Volume</td>
-                            <td>50.0 mL</td>
-                            <td>millilitre (mL)</td>
-                        </tr>
-                        <tr>
-                            <td>Temperature</td>
-                            <td>298 K</td>
-                            <td>kelvin (K)</td>
-                        </tr>
-                        <tr>
-                            <td>Time</td>
-                            <td>120 s</td>
-                            <td>second (s)</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>Measurements versus observations</h3>
-
-                <p>
-                    A qualitative observation describes what is seen, heard,
-                    smelled or otherwise observed without necessarily assigning
-                    a numerical value.
+                    For example, if the mass of a sample is recorded as
+                    <strong>12.5 g</strong>, the number
+                    <strong>12.5</strong> tells us the magnitude of the
+                    measurement, while <strong>g</strong> tells us what unit
+                    was used.
                 </p>
 
                 <p>
-                    For example, saying that a solution becomes
-                    <strong>blue</strong> is a qualitative observation.
-                    Reporting a temperature of <strong>25.4 °C</strong>
-                    is a quantitative measurement.
+                    A number without an appropriate unit can be ambiguous.
+                    Saying that a sample has a mass of "12.5" does not tell
+                    another scientist whether the value is in grams,
+                    kilograms, milligrams, or another unit.
                 </p>
+
+                <p>
+                    Measurements are also not perfectly exact. Every physical
+                    measuring instrument has a limit to how finely it can
+                    distinguish values. This is why chemistry places great
+                    importance on significant figures, uncertainty, accuracy,
+                    and precision.
+                </p>
+
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Quantity</th>
+                                <th>Example</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Mass</td>
+                                <td>12.50 g</td>
+                                <td>gram (g)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Volume</td>
+                                <td>25.0 mL</td>
+                                <td>millilitre (mL)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Temperature</td>
+                                <td>298 K</td>
+                                <td>kelvin (K)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Time</td>
+                                <td>45.2 s</td>
+                                <td>second (s)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             `,
 
             keyPoints: [
-                "A measurement contains a numerical value and a unit.",
-                "Units provide meaning to numerical values.",
-                "Chemistry relies heavily on quantitative measurements.",
-                "Qualitative observations and quantitative measurements are different types of scientific evidence."
+                "Measurements provide quantitative information.",
+                "A measurement normally contains a numerical value and a unit.",
+                "Units communicate what a numerical value represents.",
+                "Measurements have limitations and associated uncertainty.",
+                "Chemistry depends heavily on reliable quantitative measurements."
             ],
 
             workedExample: {
                 question:
-                    "A student records the volume of a liquid as 35.0 mL. Identify the numerical value and the unit.",
-                solution:
-                    "<strong>Numerical value:</strong> 35.0<br><strong>Unit:</strong> mL (millilitre)"
+                    "A student measures the volume of a liquid as 35.0 mL. Identify the numerical value and the unit.",
+
+                solution: `
+                    <strong>Numerical value:</strong> 35.0<br>
+                    <strong>Unit:</strong> mL (millilitres)
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "Which statement represents a complete scientific measurement?",
+                    "Which statement best describes a scientific measurement?",
+
                 options: [
-                    "25",
-                    "25 grams",
-                    "Large mass",
-                    "Approximately heavy"
+                    "A number written without a unit",
+                    "A qualitative description of an object",
+                    "A quantitative value expressed with an appropriate unit",
+                    "A prediction about what will happen"
                 ],
-                answer: 1,
+
+                answer: 2,
+
                 explanation:
-                    "A complete quantitative measurement contains a numerical value together with a unit."
+                    "A scientific measurement gives quantitative information and is normally expressed with an appropriate unit."
             }
         },
 
 
-        /* =================================================
-           SI UNITS
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 2
+           ------------------------------------------------- */
 
-        "si-units": {
+        {
+            id: "si-system-of-units",
 
             title: "The SI System of Units",
 
+            type: "concept",
+
+            duration: 10,
+
             objectives: [
-                "Explain the purpose of the SI system.",
-                "Identify important SI base units used in chemistry.",
-                "Distinguish base units from derived units.",
-                "Recognize common SI prefixes."
+                "Define the SI system.",
+                "Identify common SI base quantities used in chemistry.",
+                "Recognize SI symbols and units.",
+                "Explain why standardized units are important."
             ],
 
             content: `
                 <p>
-                    Scientists around the world need a consistent way to
-                    communicate measurements. The
+                    Scientists around the world need a common language for
+                    measurements. The
                     <strong>International System of Units (SI)</strong>
-                    provides a standardized system of measurement.
-                </p>
-
-                <p>
-                    Chemistry uses SI units extensively because chemical
-                    calculations often combine measurements from different
-                    experiments and instruments.
-                </p>
-
-                <h3>Important SI base quantities</h3>
-
-                <table class="lesson-table">
-                    <thead>
-                        <tr>
-                            <th>Quantity</th>
-                            <th>SI base unit</th>
-                            <th>Symbol</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Length</td>
-                            <td>metre</td>
-                            <td>m</td>
-                        </tr>
-                        <tr>
-                            <td>Mass</td>
-                            <td>kilogram</td>
-                            <td>kg</td>
-                        </tr>
-                        <tr>
-                            <td>Time</td>
-                            <td>second</td>
-                            <td>s</td>
-                        </tr>
-                        <tr>
-                            <td>Temperature</td>
-                            <td>kelvin</td>
-                            <td>K</td>
-                        </tr>
-                        <tr>
-                            <td>Amount of substance</td>
-                            <td>mole</td>
-                            <td>mol</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>Derived units</h3>
-
-                <p>
-                    Many quantities used in chemistry are derived from base
+                    provides a standardized system for expressing physical
                     quantities.
                 </p>
 
                 <p>
-                    For example, volume can be expressed as a cubic length:
+                    The SI system is built from a set of
+                    <strong>base quantities</strong>. Other units can be
+                    derived from these fundamental units.
                 </p>
 
-                <div class="lesson-equation">
-                    Volume = length × length × length
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Quantity</th>
+                                <th>SI Unit</th>
+                                <th>Symbol</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Length</td>
+                                <td>metre</td>
+                                <td>m</td>
+                            </tr>
+
+                            <tr>
+                                <td>Mass</td>
+                                <td>kilogram</td>
+                                <td>kg</td>
+                            </tr>
+
+                            <tr>
+                                <td>Time</td>
+                                <td>second</td>
+                                <td>s</td>
+                            </tr>
+
+                            <tr>
+                                <td>Temperature</td>
+                                <td>kelvin</td>
+                                <td>K</td>
+                            </tr>
+
+                            <tr>
+                                <td>Amount of substance</td>
+                                <td>mole</td>
+                                <td>mol</td>
+                            </tr>
+
+                            <tr>
+                                <td>Electric current</td>
+                                <td>ampere</td>
+                                <td>A</td>
+                            </tr>
+
+                            <tr>
+                                <td>Luminous intensity</td>
+                                <td>candela</td>
+                                <td>cd</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <p>
-                    Therefore the SI unit for volume is
-                    <strong>m³</strong>.
+                    Chemistry frequently uses several derived quantities.
+                    For example, volume can be expressed in cubic metres
+                    (<strong>m³</strong>), while concentration may be expressed
+                    in moles per cubic metre or moles per litre.
                 </p>
-
-                <p>
-                    Chemistry commonly uses litres and millilitres for
-                    laboratory volume measurements. These are accepted for use
-                    with SI even though the litre is not an SI base unit.
-                </p>
-
-                <h3>Common prefixes</h3>
-
-                <table class="lesson-table">
-                    <thead>
-                        <tr>
-                            <th>Prefix</th>
-                            <th>Symbol</th>
-                            <th>Factor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>kilo</td>
-                            <td>k</td>
-                            <td>10³</td>
-                        </tr>
-                        <tr>
-                            <td>centi</td>
-                            <td>c</td>
-                            <td>10⁻²</td>
-                        </tr>
-                        <tr>
-                            <td>milli</td>
-                            <td>m</td>
-                            <td>10⁻³</td>
-                        </tr>
-                        <tr>
-                            <td>micro</td>
-                            <td>µ</td>
-                            <td>10⁻⁶</td>
-                        </tr>
-                        <tr>
-                            <td>nano</td>
-                            <td>n</td>
-                            <td>10⁻⁹</td>
-                        </tr>
-                    </tbody>
-                </table>
 
                 <div class="lesson-callout">
-                    <strong>Scientific habit:</strong>
-                    Always check the unit before beginning a calculation.
-                    Many chemistry errors are unit errors rather than
-                    mathematical errors.
+                    <strong>Important:</strong>
+                    The kilogram is the SI base unit for mass, although grams
+                    and milligrams are extremely common in laboratory work.
                 </div>
+
+                <p>
+                    Standardized units allow measurements made in different
+                    laboratories, countries, and experiments to be compared
+                    consistently.
+                </p>
             `,
 
             keyPoints: [
-                "SI provides a standardized scientific measurement system.",
+                "SI stands for International System of Units.",
+                "SI provides internationally standardized measurement units.",
                 "The mole is the SI base unit for amount of substance.",
-                "Derived units are constructed from base units.",
-                "Prefixes represent powers of ten."
+                "The kelvin is the SI base unit for thermodynamic temperature.",
+                "Derived units are constructed from base units."
             ],
 
             workedExample: {
                 question:
-                    "Convert 3.5 km into metres.",
-                solution:
-                    "1 km = 1000 m.<br><br>Therefore:<br><strong>3.5 km × 1000 m/km = 3500 m</strong>"
+                    "What is the SI base unit for amount of substance?",
+
+                solution: `
+                    The SI base unit for amount of substance is the
+                    <strong>mole (mol)</strong>.
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "Which is the SI base unit for amount of substance?",
+                    "Which is the SI base unit for temperature?",
+
                 options: [
-                    "gram",
-                    "litre",
-                    "mole",
-                    "millilitre"
+                    "Degree Celsius (°C)",
+                    "Kelvin (K)",
+                    "Joule (J)",
+                    "Pascal (Pa)"
                 ],
-                answer: 2,
+
+                answer: 1,
+
                 explanation:
-                    "The mole (mol) is the SI base unit for amount of substance."
+                    "The kelvin (K) is the SI base unit for thermodynamic temperature."
             }
         },
 
 
-        /* =================================================
-           COMMON CHEMISTRY UNITS
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 3
+           ------------------------------------------------- */
 
-        "chemistry-units": {
+        {
+            id: "common-chemistry-units",
 
             title: "Common Chemistry Units",
 
+            type: "concept",
+
+            duration: 10,
+
             objectives: [
                 "Identify common units used in chemistry.",
-                "Relate common laboratory units to SI units.",
-                "Recognize units used for mass, volume, temperature and pressure.",
-                "Avoid confusing similar units."
+                "Match physical quantities with appropriate units.",
+                "Distinguish SI units from commonly used laboratory units.",
+                "Recognize common prefixes such as milli-, micro-, and kilo-."
             ],
 
             content: `
                 <p>
-                    Although SI units provide the scientific foundation,
-                    chemistry laboratories frequently use practical units
-                    that are convenient for experimental work.
+                    Although SI units provide the international foundation,
+                    chemists frequently use related units that are convenient
+                    for laboratory measurements.
                 </p>
 
-                <h3>Mass</h3>
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Quantity</th>
+                                <th>Common Units</th>
+                                <th>Typical Use</th>
+                            </tr>
+                        </thead>
 
-                <p>
-                    Mass is commonly reported in grams (g), milligrams (mg)
-                    and kilograms (kg).
-                </p>
+                        <tbody>
+                            <tr>
+                                <td>Mass</td>
+                                <td>g, mg, kg</td>
+                                <td>Weighing substances</td>
+                            </tr>
 
-                <div class="lesson-equation">
-                    1 kg = 1000 g
+                            <tr>
+                                <td>Volume</td>
+                                <td>L, mL, cm³</td>
+                                <td>Measuring liquids</td>
+                            </tr>
+
+                            <tr>
+                                <td>Temperature</td>
+                                <td>°C, K</td>
+                                <td>Thermal measurements</td>
+                            </tr>
+
+                            <tr>
+                                <td>Pressure</td>
+                                <td>Pa, kPa, atm</td>
+                                <td>Gas and atmospheric studies</td>
+                            </tr>
+
+                            <tr>
+                                <td>Energy</td>
+                                <td>J, kJ</td>
+                                <td>Thermochemistry</td>
+                            </tr>
+
+                            <tr>
+                                <td>Amount</td>
+                                <td>mol</td>
+                                <td>Stoichiometric calculations</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="lesson-equation">
-                    1 g = 1000 mg
-                </div>
-
-                <h3>Volume</h3>
-
                 <p>
-                    Laboratory volumes are frequently measured in litres (L)
-                    and millilitres (mL).
+                    Chemistry also uses prefixes to represent very large or
+                    very small quantities.
                 </p>
 
-                <div class="lesson-equation">
-                    1 L = 1000 mL
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Prefix</th>
+                                <th>Symbol</th>
+                                <th>Factor</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>kilo</td>
+                                <td>k</td>
+                                <td>10³</td>
+                            </tr>
+
+                            <tr>
+                                <td>milli</td>
+                                <td>m</td>
+                                <td>10⁻³</td>
+                            </tr>
+
+                            <tr>
+                                <td>micro</td>
+                                <td>µ</td>
+                                <td>10⁻⁶</td>
+                            </tr>
+
+                            <tr>
+                                <td>nano</td>
+                                <td>n</td>
+                                <td>10⁻⁹</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <p>
-                    A useful relationship is:
-                </p>
-
-                <div class="lesson-equation">
-                    1 mL = 1 cm³
+                <div class="lesson-callout">
+                    <strong>Remember:</strong>
+                    A prefix changes the scale of a unit. It does not change
+                    the physical quantity being measured.
                 </div>
-
-                <h3>Temperature</h3>
-
-                <p>
-                    Celsius is widely used in everyday laboratory work,
-                    while kelvin is the SI base unit for thermodynamic
-                    temperature.
-                </p>
-
-                <div class="lesson-equation">
-                    T(K) = T(°C) + 273.15
-                </div>
-
-                <h3>Pressure</h3>
-
-                <p>
-                    Pressure may be reported in pascals (Pa), kilopascals
-                    (kPa), atmospheres (atm), or millimetres of mercury
-                    (mmHg), depending on the context.
-                </p>
-
-                <table class="lesson-table">
-                    <thead>
-                        <tr>
-                            <th>Quantity</th>
-                            <th>Common chemistry units</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Mass</td>
-                            <td>g, mg, kg</td>
-                        </tr>
-                        <tr>
-                            <td>Volume</td>
-                            <td>L, mL, cm³</td>
-                        </tr>
-                        <tr>
-                            <td>Temperature</td>
-                            <td>°C, K</td>
-                        </tr>
-                        <tr>
-                            <td>Pressure</td>
-                            <td>Pa, kPa, atm, mmHg</td>
-                        </tr>
-                        <tr>
-                            <td>Amount of substance</td>
-                            <td>mol, mmol</td>
-                        </tr>
-                    </tbody>
-                </table>
             `,
 
             keyPoints: [
-                "Chemistry uses both SI units and practical laboratory units.",
-                "1 L equals 1000 mL.",
-                "1 mL equals 1 cm³.",
-                "Kelvin is the SI base unit for temperature."
+                "Chemists use many units depending on the quantity and scale.",
+                "Millilitres and litres are common units for laboratory volume.",
+                "Grams and milligrams are common laboratory mass units.",
+                "Prefixes represent powers of ten.",
+                "Unit conversions are essential when performing calculations."
             ],
 
             workedExample: {
                 question:
-                    "Convert 250 mL to litres.",
-                solution:
-                    "Because 1000 mL = 1 L:<br><br><strong>250 mL ÷ 1000 = 0.250 L</strong>"
+                    "How many millilitres are in 2.5 litres?",
+
+                solution: `
+                    Since 1 L = 1000 mL:
+
+                    <div class="lesson-equation">
+                        2.5 L × 1000 mL/L = 2500 mL
+                    </div>
+
+                    Therefore, <strong>2.5 L = 2500 mL</strong>.
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "How many millilitres are in 2.00 L?",
+                    "Which prefix represents 10⁻³?",
+
                 options: [
-                    "20.0 mL",
-                    "200 mL",
-                    "2000 mL",
-                    "20,000 mL"
+                    "kilo-",
+                    "micro-",
+                    "milli-",
+                    "nano-"
                 ],
+
                 answer: 2,
+
                 explanation:
-                    "Since 1 L = 1000 mL, 2.00 L = 2000 mL."
+                    "The prefix milli- represents one thousandth, or 10⁻³."
             }
         },
 
 
-        /* =================================================
-           SCIENTIFIC NOTATION
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 4
+           ------------------------------------------------- */
 
-        "scientific-notation": {
+        {
+            id: "scientific-notation",
 
             title: "Scientific Notation",
 
+            type: "calculation",
+
+            duration: 12,
+
             objectives: [
-                "Write very large and very small numbers in scientific notation.",
-                "Identify the coefficient and exponent.",
-                "Convert between decimal notation and scientific notation.",
-                "Apply scientific notation to chemistry measurements."
+                "Explain scientific notation.",
+                "Convert ordinary numbers into scientific notation.",
+                "Convert scientific notation back to ordinary numbers.",
+                "Use scientific notation to represent very large and very small quantities."
             ],
 
             content: `
                 <p>
-                    Chemistry frequently deals with extremely large and
-                    extremely small quantities. Scientific notation provides
-                    a compact way of representing these values.
+                    Chemistry frequently deals with quantities that are
+                    extremely large or extremely small.
                 </p>
 
                 <p>
-                    A number written in scientific notation has the form:
+                    For example, atoms are incredibly small, while a laboratory
+                    may contain an enormous number of particles. Writing such
+                    numbers in ordinary decimal form can be inconvenient and
+                    can make mistakes more likely.
+                </p>
+
+                <p>
+                    <strong>Scientific notation</strong> provides a compact way
+                    of representing these numbers.
                 </p>
 
                 <div class="lesson-equation">
@@ -981,665 +1008,851 @@
                 </div>
 
                 <p>
-                    where <strong>a</strong> is normally between 1 and 10,
-                    and <strong>n</strong> is an integer.
-                </p>
-
-                <h3>Large numbers</h3>
-
-                <p>
-                    When a decimal point is moved to the left, the exponent
-                    becomes positive.
-                </p>
-
-                <div class="lesson-equation">
-                    300000 = 3.00 × 10⁵
-                </div>
-
-                <h3>Small numbers</h3>
-
-                <p>
-                    When a decimal point is moved to the right, the exponent
-                    becomes negative.
-                </p>
-
-                <div class="lesson-equation">
-                    0.00045 = 4.5 × 10⁻⁴
-                </div>
-
-                <h3>Why chemistry uses scientific notation</h3>
-
-                <p>
-                    Scientific notation makes it easier to communicate values
-                    such as molecular dimensions, particle masses, atomic
-                    quantities and concentrations.
+                    In scientific notation, <strong>a</strong> is a number
+                    greater than or equal to 1 but less than 10, while
+                    <strong>n</strong> is an integer.
                 </p>
 
                 <div class="lesson-callout">
-                    <strong>Remember:</strong>
-                    The sign of the exponent tells you the direction in which
-                    the decimal point was moved.
+                    <strong>Moving the decimal left</strong> produces a
+                    positive exponent when converting a large number.
+                    Moving it right produces a negative exponent for a number
+                    smaller than one.
                 </div>
 
-                <h3>Multiplication</h3>
-
-                <p>
-                    When multiplying numbers in scientific notation, multiply
-                    the coefficients and add the exponents.
-                </p>
+                <h3>Example: Large Number</h3>
 
                 <div class="lesson-equation">
-                    (2 × 10³)(3 × 10²) = 6 × 10⁵
+                    450000 = 4.5 × 10⁵
                 </div>
 
-                <h3>Division</h3>
-
-                <p>
-                    When dividing, divide the coefficients and subtract the
-                    exponent in the denominator from the exponent in the
-                    numerator.
-                </p>
+                <h3>Example: Small Number</h3>
 
                 <div class="lesson-equation">
-                    (6 × 10⁵) ÷ (2 × 10²) = 3 × 10³
+                    0.00032 = 3.2 × 10⁻⁴
                 </div>
+
+                <p>
+                    Scientific notation is especially useful when working with
+                    atomic dimensions, particle counts, concentrations,
+                    physical constants, and very small measurements.
+                </p>
             `,
 
             keyPoints: [
-                "Scientific notation has the form a × 10ⁿ.",
-                "Large numbers generally have positive exponents.",
-                "Small numbers generally have negative exponents.",
-                "Multiplication adds exponents.",
-                "Division subtracts exponents."
+                "Scientific notation expresses numbers as a × 10ⁿ.",
+                "The coefficient a must be at least 1 and less than 10.",
+                "Large numbers normally have positive exponents.",
+                "Numbers between 0 and 1 normally have negative exponents.",
+                "Scientific notation reduces ambiguity and simplifies calculations."
             ],
 
             workedExample: {
                 question:
-                    "Write 0.0000072 in scientific notation.",
-                solution:
-                    "Move the decimal point six places to the right:<br><br><strong>0.0000072 = 7.2 × 10⁻⁶</strong>"
+                    "Express 0.00000560 in scientific notation.",
+
+                solution: `
+                    Move the decimal point five places to the right:
+
+                    <div class="lesson-equation">
+                        0.00000560 = 5.60 × 10⁻⁶
+                    </div>
+
+                    Therefore, the answer is
+                    <strong>5.60 × 10⁻⁶</strong>.
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "Which is the correct scientific notation for 450000?",
+                    "Which is the correct scientific notation for 720000?",
+
                 options: [
-                    "4.5 × 10⁵",
-                    "45 × 10⁴",
-                    "0.45 × 10⁶",
-                    "4.5 × 10⁻⁵"
+                    "72 × 10⁴",
+                    "7.2 × 10⁵",
+                    "0.72 × 10⁶",
+                    "720 × 10³"
                 ],
-                answer: 0,
+
+                answer: 1,
+
                 explanation:
-                    "450000 becomes 4.5 × 10⁵ when the decimal point is moved five places to the left."
+                    "Scientific notation requires the coefficient to be at least 1 and less than 10, so 720000 = 7.2 × 10⁵."
             }
         },
 
 
-        /* =================================================
-           SIGNIFICANT FIGURES
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 5
+           ------------------------------------------------- */
 
-        "meaning-significant-figures": {
+        {
+            id: "significant-figures",
 
-            title: "Why Significant Figures Matter",
+            title: "Significant Figures",
+
+            type: "calculation",
+
+            duration: 14,
 
             objectives: [
                 "Define significant figures.",
-                "Explain the relationship between significant figures and measurement precision.",
-                "Distinguish exact numbers from measured values."
+                "Identify significant and non-significant zeros.",
+                "Count significant figures in measured values.",
+                "Explain why significant figures matter in chemistry."
             ],
 
             content: `
                 <p>
-                    Measurements in chemistry are not infinitely precise.
-                    Every measuring instrument has a limit to how finely it
-                    can resolve a quantity.
-                </p>
-
-                <p>
+                    Measurements contain information about their precision.
                     <strong>Significant figures</strong> are the digits in a
-                    measurement that carry meaningful information about its
-                    precision.
-                </p>
-
-                <p>
-                    Consider the measurements:
-                </p>
-
-                <div class="lesson-equation">
-                    2 g &nbsp;&nbsp; versus &nbsp;&nbsp; 2.00 g
-                </div>
-
-                <p>
-                    These values communicate different levels of reported
-                    precision. The second measurement contains more
-                    information about the precision of the measurement.
+                    measured value that communicate its meaningful precision.
                 </p>
 
                 <div class="lesson-callout">
-                    Significant figures do not make an instrument more accurate.
-                    They communicate the precision with which a result has been
-                    measured or calculated.
+                    <strong>Important:</strong>
+                    Significant figures are not simply all the digits written
+                    in a number. Their purpose is to communicate the precision
+                    supported by the measurement.
                 </div>
 
-                <h3>Exact numbers</h3>
+                <h3>Basic Rules</h3>
 
                 <p>
-                    Some numbers are exact because they arise from definitions
-                    or counting rather than measurement.
-                </p>
-
-                <p>
-                    For example, if a laboratory tray contains exactly
-                    <strong>12 test tubes</strong>, the number 12 is a counted
-                    quantity rather than an experimentally measured quantity.
-                </p>
-            `,
-
-            keyPoints: [
-                "Significant figures communicate meaningful measurement precision.",
-                "Measured quantities have limited precision.",
-                "More displayed digits do not automatically mean greater accuracy.",
-                "Exact counted quantities differ from measured quantities."
-            ],
-
-            workedExample: {
-                question:
-                    "Which measurement communicates greater reported precision: 5 g or 5.00 g?",
-                solution:
-                    "<strong>5.00 g</strong> communicates greater reported precision because it contains three significant figures rather than one."
-            },
-
-            knowledgeCheck: {
-                question:
-                    "What do significant figures primarily communicate?",
-                options: [
-                    "The color of a substance",
-                    "The precision of a measurement",
-                    "The chemical formula",
-                    "The reaction mechanism"
-                ],
-                answer: 1,
-                explanation:
-                    "Significant figures communicate the precision represented by a measurement."
-            }
-        },
-
-
-        /* =================================================
-           COUNTING SIGNIFICANT FIGURES
-           ================================================= */
-
-        "counting-significant-figures": {
-
-            title: "Counting Significant Figures",
-
-            objectives: [
-                "Identify significant and non-significant zeros.",
-                "Count significant figures in decimal measurements.",
-                "Count significant figures in scientific notation."
-            ],
-
-            content: `
-                <p>
-                    Several rules help determine which digits are significant.
-                </p>
-
-                <h3>Rule 1 — Non-zero digits</h3>
-
-                <p>
-                    All non-zero digits are significant.
+                    Non-zero digits are always significant.
                 </p>
 
                 <div class="lesson-equation">
-                    347 → 3 significant figures
+                    245 → 3 significant figures
                 </div>
 
-                <h3>Rule 2 — Zeros between non-zero digits</h3>
-
                 <p>
-                    Zeros between significant non-zero digits are significant.
+                    Zeros between non-zero digits are significant.
                 </p>
 
                 <div class="lesson-equation">
-                    1002 → 4 significant figures
+                    1005 → 4 significant figures
                 </div>
 
-                <h3>Rule 3 — Leading zeros</h3>
-
                 <p>
-                    Zeros at the beginning of a decimal number are not
-                    significant. They only locate the decimal point.
+                    Leading zeros are not significant.
                 </p>
 
                 <div class="lesson-equation">
                     0.0045 → 2 significant figures
                 </div>
 
-                <h3>Rule 4 — Trailing zeros after a decimal</h3>
-
                 <p>
                     Trailing zeros after a decimal point are significant.
                 </p>
 
                 <div class="lesson-equation">
-                    2.500 → 4 significant figures
+                    4.500 → 4 significant figures
                 </div>
 
-                <h3>Scientific notation</h3>
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                                <th>Significant Figures</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>25.4</td>
+                                <td>3</td>
+                            </tr>
+
+                            <tr>
+                                <td>0.0052</td>
+                                <td>2</td>
+                            </tr>
+
+                            <tr>
+                                <td>1005</td>
+                                <td>4</td>
+                            </tr>
+
+                            <tr>
+                                <td>7.00</td>
+                                <td>3</td>
+                            </tr>
+
+                            <tr>
+                                <td>0.0400</td>
+                                <td>3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <p>
-                    In scientific notation, every digit in the coefficient is
-                    significant.
+                    Significant figures become especially important when
+                    reporting calculated results because the final answer
+                    should not imply greater precision than the measurements
+                    support.
                 </p>
-
-                <div class="lesson-equation">
-                    4.50 × 10³ → 3 significant figures
-                </div>
             `,
 
             keyPoints: [
-                "All non-zero digits are significant.",
+                "Significant figures communicate meaningful measurement precision.",
+                "Non-zero digits are significant.",
                 "Zeros between non-zero digits are significant.",
                 "Leading zeros are not significant.",
-                "Trailing decimal zeros are significant.",
-                "Scientific notation makes significant figures explicit."
+                "Trailing zeros after a decimal point are significant."
             ],
 
             workedExample: {
                 question:
-                    "How many significant figures are in 0.00450?",
-                solution:
-                    "The leading zeros are not significant. The digits 4, 5 and the trailing decimal zero are significant.<br><br><strong>Answer: 3 significant figures.</strong>"
+                    "How many significant figures are present in 0.03040?",
+
+                solution: `
+                    The leading zeros are not significant.
+
+                    The digits 3, 0, 4, and the final zero are significant.
+
+                    Therefore:
+
+                    <div class="lesson-equation">
+                        0.03040 → 4 significant figures
+                    </div>
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "How many significant figures are in 0.02050?",
+                    "How many significant figures are in 0.00450?",
+
                 options: [
                     "2",
                     "3",
                     "4",
                     "5"
                 ],
-                answer: 2,
+
+                answer: 1,
+
                 explanation:
-                    "The significant digits are 2, 0, 5 and 0. The leading zeros are not significant."
+                    "The leading zeros are not significant. The digits 4, 5, and the final zero are significant, giving 3 significant figures."
             }
         },
 
 
-        /* =================================================
-           DIMENSIONAL ANALYSIS
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 6
+           ------------------------------------------------- */
 
-        "dimensional-analysis-basics": {
+        {
+            id: "accuracy-and-precision",
 
-            title: "Dimensional Analysis Basics",
+            title: "Accuracy and Precision",
+
+            type: "concept",
+
+            duration: 10,
 
             objectives: [
-                "Explain dimensional analysis.",
-                "Use units as mathematical factors.",
-                "Recognize when units cancel correctly.",
-                "Use dimensional analysis to check calculations."
+                "Define accuracy.",
+                "Define precision.",
+                "Distinguish accuracy from precision.",
+                "Explain why both matter in laboratory measurements."
             ],
 
             content: `
                 <p>
-                    <strong>Dimensional analysis</strong> is a method of
-                    solving problems by treating units as mathematical
-                    quantities.
+                    Two important ideas in experimental chemistry are
+                    <strong>accuracy</strong> and <strong>precision</strong>.
+                    Although the words are sometimes used interchangeably in
+                    everyday language, they have different scientific meanings.
                 </p>
+
+                <h3>Accuracy</h3>
 
                 <p>
-                    The central idea is simple:
-                    <strong>units must be consistent with the quantity being
-                    calculated.</strong>
+                    <strong>Accuracy</strong> describes how close a measured
+                    value is to an accepted or reference value.
                 </p>
+
+                <h3>Precision</h3>
 
                 <p>
-                    Conversion factors are written as ratios equal to one.
+                    <strong>Precision</strong> describes how closely repeated
+                    measurements agree with one another.
                 </p>
 
-                <div class="lesson-equation">
-                    1 m = 100 cm
-                </div>
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Situation</th>
+                                <th>Accuracy</th>
+                                <th>Precision</th>
+                            </tr>
+                        </thead>
 
-                <p>
-                    Therefore either of the following ratios represents a
-                    valid conversion factor:
-                </p>
+                        <tbody>
+                            <tr>
+                                <td>Values close to reference and each other</td>
+                                <td>High</td>
+                                <td>High</td>
+                            </tr>
 
-                <div class="lesson-equation">
-                    1 m / 100 cm
-                    &nbsp;&nbsp;&nbsp; or &nbsp;&nbsp;&nbsp;
-                    100 cm / 1 m
-                </div>
+                            <tr>
+                                <td>Values close to each other but far from reference</td>
+                                <td>Low</td>
+                                <td>High</td>
+                            </tr>
 
-                <h3>Why units cancel</h3>
-
-                <p>
-                    Suppose we want to convert metres to centimetres:
-                </p>
-
-                <div class="lesson-equation">
-                    2 m × (100 cm / 1 m)
-                </div>
-
-                <p>
-                    The unit <strong>m</strong> appears in both the numerator
-                    and denominator, so it cancels.
-                </p>
-
-                <div class="lesson-equation">
-                    2 m × (100 cm / 1 m) = 200 cm
+                            <tr>
+                                <td>Values spread out but centered around reference</td>
+                                <td>Generally high overall</td>
+                                <td>Low</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="lesson-callout">
-                    <strong>Powerful habit:</strong>
-                    Write the units at every stage of a chemistry calculation.
-                    If the unwanted unit does not cancel, the conversion setup
-                    needs to be reconsidered.
+                    <strong>Remember:</strong>
+                    A measurement can be precise without being accurate.
+                    Repeating the same systematic error can produce tightly
+                    grouped but inaccurate results.
                 </div>
+
+                <p>
+                    Good experimental practice aims to produce measurements
+                    that are both accurate and precise, while recognizing that
+                    real measurements always have limitations.
+                </p>
             `,
 
             keyPoints: [
-                "Dimensional analysis treats units as mathematical quantities.",
-                "Conversion factors are ratios equivalent to one.",
-                "Units should cancel in a valid conversion.",
-                "The final unit should match the quantity requested."
+                "Accuracy refers to closeness to an accepted value.",
+                "Precision refers to agreement among repeated measurements.",
+                "A result can be precise but inaccurate.",
+                "Systematic errors can affect accuracy.",
+                "Random variation can affect precision."
             ],
 
             workedExample: {
                 question:
-                    "Convert 5.0 km to metres using dimensional analysis.",
-                solution:
-                    "5.0 km × (1000 m / 1 km) = <strong>5000 m</strong><br><br>The km units cancel, leaving metres."
+                    "A balance repeatedly gives 10.21 g for a standard sample whose accepted value is 10.00 g. What does this suggest?",
+
+                solution: `
+                    The repeated results are close to one another, indicating
+                    good <strong>precision</strong>. However, they are not close
+                    to the accepted value, indicating lower <strong>accuracy</strong>.
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "What should happen to an unwanted unit during dimensional analysis?",
+                    "What does precision describe?",
+
                 options: [
-                    "It should become larger",
-                    "It should remain in the final answer",
-                    "It should cancel",
-                    "It should be ignored"
+                    "How close a result is to the accepted value",
+                    "How close repeated measurements are to one another",
+                    "The unit used for a measurement",
+                    "The size of the laboratory instrument"
                 ],
-                answer: 2,
+
+                answer: 1,
+
                 explanation:
-                    "A correctly constructed conversion causes the unwanted unit to cancel."
+                    "Precision describes the degree of agreement among repeated measurements."
             }
         },
 
 
-        /* =================================================
-           UNIT CONVERSIONS
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 7
+           ------------------------------------------------- */
 
-        "unit-conversions": {
+        {
+            id: "measurement-uncertainty",
 
-            title: "Unit Conversions",
+            title: "Measurement Uncertainty",
+
+            type: "concept",
+
+            duration: 12,
 
             objectives: [
-                "Construct conversion factors.",
-                "Convert between common chemistry units.",
-                "Track units through a calculation."
+                "Explain measurement uncertainty.",
+                "Identify sources of uncertainty.",
+                "Understand why measurements cannot be perfectly exact.",
+                "Relate instrument resolution to reported measurements."
             ],
 
             content: `
                 <p>
-                    Unit conversion changes the way a quantity is expressed
-                    without changing the physical quantity itself.
+                    No physical measurement is perfectly exact. Every
+                    measurement has some degree of
+                    <strong>uncertainty</strong>.
                 </p>
 
                 <p>
-                    For example, 1 L and 1000 mL represent the same volume.
-                    Only the numerical representation changes.
+                    Measurement uncertainty represents the range within which
+                    the true value is expected to lie, according to the
+                    measurement method and its limitations.
                 </p>
 
-                <h3>Example: litres to millilitres</h3>
+                <div class="lesson-callout">
+                    <strong>Key idea:</strong>
+                    Uncertainty does not mean that an experiment has failed.
+                    It is a normal and important part of scientific measurement.
+                </div>
+
+                <p>
+                    Sources of uncertainty may include the measuring
+                    instrument, environmental conditions, sample preparation,
+                    reading technique, and natural variation.
+                </p>
+
+                <h3>Instrument Resolution</h3>
+
+                <p>
+                    The smallest scale division or display increment of an
+                    instrument influences how precisely a measurement can be
+                    reported.
+                </p>
+
+                <p>
+                    For example, an instrument displaying mass to the nearest
+                    0.01 g communicates a different level of measurement detail
+                    from an instrument displaying only to the nearest gram.
+                </p>
+
+                <div class="lesson-equation">
+                    Reported measurement = measured value ± uncertainty
+                </div>
+
+                <p>
+                    In advanced analytical chemistry, uncertainty can be
+                    quantified using statistical and experimental methods.
+                    These methods allow scientists to communicate the quality
+                    and limitations of their results.
+                </p>
+            `,
+
+            keyPoints: [
+                "Every physical measurement has uncertainty.",
+                "Uncertainty can arise from instruments, environment, technique, and samples.",
+                "Instrument resolution affects how a measurement can be reported.",
+                "Uncertainty should be communicated rather than ignored.",
+                "Advanced chemistry uses statistical methods to estimate uncertainty."
+            ],
+
+            workedExample: {
+                question:
+                    "Why should a student avoid reporting more decimal places than an instrument can support?",
+
+                solution: `
+                    Reporting unsupported decimal places gives the impression
+                    of greater precision than the measuring instrument can
+                    actually provide. The reported value should reflect the
+                    measurement capability of the instrument.
+                `
+            },
+
+            knowledgeCheck: {
+                question:
+                    "Which statement about measurement uncertainty is correct?",
+
+                options: [
+                    "It means every measurement is useless",
+                    "It is a normal limitation of physical measurement",
+                    "It only occurs when a student makes a mistake",
+                    "It can always be completely eliminated"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "Uncertainty is an inherent part of physical measurement and should be properly considered and reported."
+            }
+        },
+
+
+        /* -------------------------------------------------
+           LESSON 8
+           ------------------------------------------------- */
+
+        {
+            id: "dimensional-analysis",
+
+            title: "Dimensional Analysis",
+
+            type: "calculation",
+
+            duration: 14,
+
+            objectives: [
+                "Explain dimensional analysis.",
+                "Use conversion factors to change units.",
+                "Cancel units systematically.",
+                "Check whether a calculation has physically meaningful units."
+            ],
+
+            content: `
+                <p>
+                    <strong>Dimensional analysis</strong> is a systematic
+                    method for converting quantities from one unit to another.
+                    It is also a powerful way to check whether a calculation
+                    is dimensionally consistent.
+                </p>
+
+                <p>
+                    The central idea is to multiply by a conversion factor that
+                    is equal to one.
+                </p>
 
                 <div class="lesson-equation">
                     1 L = 1000 mL
                 </div>
 
                 <p>
-                    To convert 0.750 L:
+                    Therefore, either of the following ratios represents a
+                    valid conversion factor:
                 </p>
 
                 <div class="lesson-equation">
-                    0.750 L × (1000 mL / 1 L)
-                </div>
-
-                <div class="lesson-equation">
-                    = 750 mL
-                </div>
-
-                <h3>Example: milligrams to grams</h3>
-
-                <div class="lesson-equation">
-                    1 g = 1000 mg
+                    1000 mL / 1 L
+                    &nbsp;&nbsp;&nbsp; or &nbsp;&nbsp;&nbsp;
+                    1 L / 1000 mL
                 </div>
 
                 <p>
+                    The correct form is selected so that unwanted units cancel.
+                </p>
+
+                <div class="lesson-equation">
+                    2.5 L ×
+                    (1000 mL / 1 L)
+                    = 2500 mL
+                </div>
+
+                <p>
+                    Notice that the unit L appears in both the numerator and
+                    denominator and therefore cancels.
+                </p>
+
+                <div class="lesson-callout">
+                    <strong>Useful habit:</strong>
+                    Always write units during chemistry calculations. Units
+                    provide an immediate check on whether your setup makes
+                    sense.
+                </div>
+            `,
+
+            keyPoints: [
+                "Dimensional analysis uses conversion factors to change units.",
+                "Conversion factors are ratios equal to one.",
+                "Units should be treated algebraically.",
+                "Unwanted units should cancel.",
+                "Dimensional analysis can reveal calculation errors."
+            ],
+
+            workedExample: {
+                question:
+                    "Convert 750 mL to litres.",
+
+                solution: `
+                    Use:
+
+                    <div class="lesson-equation">
+                        1 L = 1000 mL
+                    </div>
+
                     Therefore:
-                </p>
 
-                <div class="lesson-equation">
-                    2500 mg × (1 g / 1000 mg)
-                    = 2.5 g
-                </div>
+                    <div class="lesson-equation">
+                        750 mL ×
+                        (1 L / 1000 mL)
+                        = 0.750 L
+                    </div>
 
-                <div class="lesson-callout">
-                    Notice that the conversion factor is selected so that the
-                    original unit cancels.
-                </div>
-            `,
-
-            keyPoints: [
-                "Unit conversion changes the numerical representation, not the physical quantity.",
-                "Choose conversion factors so unwanted units cancel.",
-                "Keep units visible throughout the calculation."
-            ],
-
-            workedExample: {
-                question:
-                    "Convert 3500 mg to grams.",
-                solution:
-                    "3500 mg × (1 g / 1000 mg) = <strong>3.5 g</strong>"
+                    Therefore, <strong>750 mL = 0.750 L</strong>.
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "Which conversion factor should be used to convert grams to milligrams?",
+                    "What is the main purpose of dimensional analysis?",
+
                 options: [
-                    "1 g / 1000 mg",
-                    "1000 mg / 1 g",
-                    "1 mg / 1000 g",
-                    "100 g / 1 mg"
+                    "To remove units from every answer",
+                    "To convert units and check dimensional consistency",
+                    "To increase the precision of an instrument",
+                    "To determine the colour of a chemical"
                 ],
+
                 answer: 1,
+
                 explanation:
-                    "1000 mg equals 1 g, so the factor 1000 mg / 1 g converts grams to milligrams."
+                    "Dimensional analysis is used for unit conversion and for checking whether calculations are dimensionally consistent."
             }
         },
 
 
-        /* =================================================
-           MULTI-STEP CONVERSIONS
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 9
+           ------------------------------------------------- */
 
-        "multi-step-conversions": {
+        {
+            id: "unit-conversions-in-chemistry",
 
-            title: "Multi-Step Conversions",
+            title: "Unit Conversions in Chemistry",
+
+            type: "calculation",
+
+            duration: 14,
 
             objectives: [
-                "Perform conversions requiring more than one conversion factor.",
-                "Keep track of units through multiple steps.",
-                "Use dimensional analysis to connect different units."
+                "Perform common chemistry unit conversions.",
+                "Convert between metric prefixes.",
+                "Use multiple conversion factors.",
+                "Maintain appropriate significant figures."
             ],
 
             content: `
                 <p>
-                    Some chemistry calculations require several conversion
-                    factors. The same principle still applies:
-                    choose each factor so that unwanted units cancel.
+                    Chemistry calculations frequently require conversion
+                    between different units before an equation can be used.
                 </p>
-
-                <h3>Example</h3>
 
                 <p>
-                    Convert 2.5 hours to seconds.
+                    Metric prefixes make many conversions straightforward
+                    because they represent powers of ten.
                 </p>
 
-                <div class="lesson-equation">
-                    2.5 h
-                    × (60 min / 1 h)
-                    × (60 s / 1 min)
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Relationship</th>
+                                <th>Equivalent</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>1 kg</td>
+                                <td>1000 g</td>
+                            </tr>
+
+                            <tr>
+                                <td>1 g</td>
+                                <td>1000 mg</td>
+                            </tr>
+
+                            <tr>
+                                <td>1 L</td>
+                                <td>1000 mL</td>
+                            </tr>
+
+                            <tr>
+                                <td>1 mL</td>
+                                <td>1 cm³</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <p>
-                    The hours cancel first, followed by minutes.
+                    Some chemistry problems require more than one conversion
+                    step. Dimensional analysis allows these steps to be linked
+                    together without losing track of the units.
                 </p>
 
                 <div class="lesson-equation">
-                    2.5 × 60 × 60 s
-                    = 9000 s
-                </div>
-
-                <h3>The unit pathway</h3>
-
-                <div class="lesson-equation">
-                    h → min → s
+                    2.4 kg ×
+                    (1000 g / 1 kg)
+                    = 2400 g
                 </div>
 
                 <p>
-                    Thinking of a conversion as a pathway can make complex
-                    unit problems easier to organize.
+                    When converting measured quantities, remember that the
+                    precision of the final result should remain consistent with
+                    the information supplied by the original measurement.
                 </p>
             `,
 
             keyPoints: [
-                "Multi-step conversions use several conversion factors.",
-                "Each factor should cancel an unwanted unit.",
-                "A clear unit pathway reduces mistakes."
+                "Metric conversions are based on powers of ten.",
+                "Dimensional analysis is useful for multi-step conversions.",
+                "Write units at every step.",
+                "The final unit should match the quantity being requested.",
+                "Reported precision should be appropriate for the original measurement."
             ],
 
             workedExample: {
                 question:
-                    "Convert 3.0 days to seconds.",
-                solution:
-                    "3.0 days × (24 h/day) × (60 min/h) × (60 s/min)<br><br><strong>= 259200 s</strong>"
+                    "Convert 0.0250 kg to grams.",
+
+                solution: `
+                    <div class="lesson-equation">
+                        0.0250 kg ×
+                        (1000 g / 1 kg)
+                        = 25.0 g
+                    </div>
+
+                    Therefore, <strong>0.0250 kg = 25.0 g</strong>.
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "In a multi-step conversion, what should happen after every conversion factor is applied?",
+                    "How many grams are equivalent to 0.500 kg?",
+
                 options: [
-                    "A new unwanted unit should appear",
-                    "The calculation should become unitless",
-                    "One unwanted unit should cancel",
-                    "All numbers should become zero"
+                    "0.0500 g",
+                    "5.00 g",
+                    "50.0 g",
+                    "500 g"
                 ],
-                answer: 2,
+
+                answer: 3,
+
                 explanation:
-                    "Each conversion factor is selected to cancel an unwanted unit."
+                    "Since 1 kg = 1000 g, 0.500 kg × 1000 g/kg = 500 g."
             }
         },
 
 
-        /* =================================================
-           DIMENSIONAL ANALYSIS IN CHEMISTRY
-           ================================================= */
+        /* -------------------------------------------------
+           LESSON 10
+           ------------------------------------------------- */
 
-        "dimensional-analysis-chemistry": {
+        {
+            id: "reading-scientific-data",
 
-            title: "Dimensional Analysis in Chemistry",
+            title: "Reading Scientific Data",
+
+            type: "data-analysis",
+
+            duration: 12,
 
             objectives: [
-                "Apply dimensional analysis to chemistry quantities.",
-                "Use molar mass as a conversion factor.",
-                "Connect mass, moles and particles."
+                "Identify important information in scientific data.",
+                "Distinguish variables and units.",
+                "Interpret tables of experimental measurements.",
+                "Recognize trends and unusual values."
             ],
 
             content: `
                 <p>
-                    Dimensional analysis becomes especially powerful in
-                    chemistry because many chemical quantities are connected
-                    through defined relationships.
+                    Chemistry produces data in many forms, including tables,
+                    graphs, instrument displays, spectra, and recorded
+                    observations.
                 </p>
 
                 <p>
-                    For example, molar mass connects mass and amount of
-                    substance:
+                    Before interpreting data, first identify
+                    <strong>what was measured</strong>, <strong>the units</strong>,
+                    and <strong>the conditions</strong> under which the
+                    measurements were obtained.
                 </p>
 
-                <div class="lesson-equation">
-                    Molar mass = grams / mole
+                <div class="lesson-table-wrapper">
+                    <table class="lesson-table">
+                        <thead>
+                            <tr>
+                                <th>Trial</th>
+                                <th>Temperature (°C)</th>
+                                <th>Mass (g)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>24.8</td>
+                                <td>5.02</td>
+                            </tr>
+
+                            <tr>
+                                <td>2</td>
+                                <td>25.0</td>
+                                <td>5.01</td>
+                            </tr>
+
+                            <tr>
+                                <td>3</td>
+                                <td>25.1</td>
+                                <td>5.03</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <p>
-                    This means molar mass can be used as a conversion factor
-                    between grams and moles.
+                    From this table, we can see that the temperature varies
+                    slightly between trials while the measured mass remains
+                    close to 5.02 g.
                 </p>
 
-                <h3>Mass → moles</h3>
-
-                <div class="lesson-equation">
-                    grams × (1 mol / molar mass in grams)
-                </div>
-
-                <h3>Moles → mass</h3>
-
-                <div class="lesson-equation">
-                    moles × (molar mass in grams / 1 mol)
-                </div>
-
                 <p>
-                    The same approach can later be extended to particles using
-                    the Avogadro constant.
+                    When interpreting scientific data, avoid making claims that
+                    are not supported by the measurements. A small difference
+                    may simply represent normal experimental variation.
                 </p>
 
                 <div class="lesson-callout">
-                    Dimensional analysis provides a common mathematical
-                    framework for many chemistry calculations, including
-                    stoichiometry.
+                    <strong>Scientific habit:</strong>
+                    Separate what the data directly show from explanations or
+                    hypotheses about why the data look that way.
                 </div>
+
+                <p>
+                    Good data analysis considers numerical patterns,
+                    uncertainties, units, experimental conditions, and possible
+                    sources of variation.
+                </p>
             `,
 
             keyPoints: [
-                "Molar mass connects mass and amount of substance.",
-                "Conversion factors can connect grams and moles.",
-                "Units provide a logical pathway through chemistry calculations.",
-                "Dimensional analysis becomes central to stoichiometry."
+                "Always identify the measured quantity and its unit.",
+                "Check the experimental conditions before interpreting results.",
+                "Look for trends and repeated patterns.",
+                "Consider variation and uncertainty.",
+                "Do not claim more than the data support."
             ],
 
             workedExample: {
                 question:
-                    "How many moles are present in 18.0 g of water? Use a molar mass of 18.0 g/mol.",
-                solution:
-                    "18.0 g × (1 mol / 18.0 g) = <strong>1.00 mol H₂O</strong>"
+                    "Three mass measurements are 4.98 g, 5.01 g, and 5.00 g. What general observation can be made?",
+
+                solution: `
+                    The three measurements are close to one another,
+                    indicating that the measurements show relatively little
+                    variation.
+                `
             },
 
             knowledgeCheck: {
                 question:
-                    "Which quantity connects grams and moles?",
+                    "What should you identify first when reading a scientific data table?",
+
                 options: [
-                    "Density",
-                    "Molar mass",
-                    "Temperature",
-                    "Pressure"
+                    "The colour of the table",
+                    "The measured quantities and their units",
+                    "The name of the student",
+                    "The largest number only"
                 ],
+
                 answer: 1,
+
                 explanation:
-                    "Molar mass expresses grams per mole and therefore connects mass with amount of substance."
+                    "Understanding what was measured and the units used is essential before interpreting scientific data."
             }
         }
 
-    };
+    ]
 
+};
 
     /* =====================================================
        HELPERS
