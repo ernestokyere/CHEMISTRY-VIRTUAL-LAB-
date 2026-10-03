@@ -1977,11 +1977,351 @@
                     ],
                     answer: 0
                 }
+        ],
+
+
+        /* =================================================
+           CHEMICAL FORMULAS & EQUATIONS
+           ================================================= */
+
+        "chemical-formulas": [
+
+            {
+                id: "formula-1",
+                title: "What Chemical Formulas Represent",
+                type: "lesson",
+                duration: 10,
+
+                objectives: [
+                    "Explain what a chemical formula represents.",
+                    "Identify the elements present in a compound.",
+                    "Interpret subscripts in chemical formulas."
+                ],
+
+                content: [
+                    {
+                        heading: "A symbolic language for chemistry",
+                        text:
+                            "Chemical formulas provide a compact way of representing the composition of substances. They show which elements are present and, in many cases, the relative numbers of their atoms or ions."
+                    },
+                    {
+                        heading: "Reading a formula",
+                        text:
+                            "In H₂O, the symbols H and O identify hydrogen and oxygen. The subscript 2 tells us that the formula contains two hydrogen atoms for every one oxygen atom in a single molecule of water."
+                    },
+                    {
+                        heading: "Subscripts matter",
+                        text:
+                            "A subscript belongs to the element symbol immediately before it. If no subscript is written, the number is understood to be one."
+                    }
+                ],
+
+                keyPoints: [
+                    "Chemical formulas represent the composition of substances.",
+                    "Element symbols identify the elements present.",
+                    "A subscript indicates how many atoms or ions are represented.",
+                    "No subscript means one."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many hydrogen and oxygen atoms are represented by one H₂O molecule?",
+                    answer:
+                        "H₂O represents 2 hydrogen atoms and 1 oxygen atom."
+                },
+
+                knowledgeCheck: {
+                    question:
+                        "What does the subscript 2 in H₂O indicate?",
+                    options: [
+                        "There are two oxygen atoms",
+                        "There are two hydrogen atoms",
+                        "There are two molecules",
+                        "The substance has charge −2"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "formula-2",
+                title: "Chemical Symbols and Formulas",
+                type: "lesson",
+                duration: 10,
+
+                objectives: [
+                    "Recognize chemical element symbols.",
+                    "Construct simple chemical formulas.",
+                    "Distinguish element symbols from subscripts."
+                ],
+
+                content: [
+                    {
+                        heading: "Element symbols",
+                        text:
+                            "Each chemical element has a symbol. The first letter is capitalized, while a second letter, when present, is lowercase. Examples include H for hydrogen, O for oxygen, Na for sodium, and Cl for chlorine."
+                    },
+                    {
+                        heading: "Combining symbols",
+                        text:
+                            "Chemical formulas combine element symbols with subscripts to communicate composition. For example, CO₂ represents carbon and oxygen in a 1:2 ratio."
+                    }
+                ],
+
+                keyPoints: [
+                    "The first letter of an element symbol is capitalized.",
+                    "A second letter is lowercase.",
+                    "Subscripts describe numerical relationships between atoms or ions."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many total atoms are represented by one CO₂ molecule?",
+                    answer:
+                        "One carbon atom plus two oxygen atoms gives a total of three atoms."
+                },
+
+                knowledgeCheck: {
+                    question:
+                        "Which formula represents two oxygen atoms for every one carbon atom?",
+                    options: [
+                        "CO",
+                        "CO₂",
+                        "C₂O",
+                        "C₂O₂"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "formula-3",
+                title: "Ionic and Molecular Formulas",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Distinguish ionic and molecular substances.",
+                    "Interpret formulas of ionic compounds.",
+                    "Interpret formulas of molecular compounds."
+                ],
+
+                content: [
+                    {
+                        heading: "Ionic compounds",
+                        text:
+                            "Ionic compounds contain positively and negatively charged ions arranged in an extended structure. Their formulas show the simplest whole-number ratio of the ions."
+                    },
+                    {
+                        heading: "Molecular compounds",
+                        text:
+                            "Molecular substances consist of discrete molecules. Their formulas indicate the types and numbers of atoms in each molecule."
+                    },
+                    {
+                        heading: "Charge balance",
+                        text:
+                            "For an ionic compound, the overall electrical charge of the formula unit is zero. The numbers of positive and negative ions must therefore balance."
+                    }
+                ],
+
+                keyPoints: [
+                    "Ionic formulas represent ratios of ions.",
+                    "Molecular formulas represent individual molecules.",
+                    "Ionic compounds must have overall electrical neutrality."
+                ],
+
+                workedExample: {
+                    question:
+                        "Why is the formula of magnesium chloride MgCl₂ rather than MgCl?",
+                    answer:
+                        "Magnesium forms Mg²⁺ ions while chloride is Cl⁻. Two chloride ions are needed to balance the +2 charge of one magnesium ion."
+                },
+
+                knowledgeCheck: {
+                    question:
+                        "What must be true of an ionic compound's overall formula?",
+                    options: [
+                        "Its total charge is positive",
+                        "Its total charge is negative",
+                        "Its overall charge is zero",
+                        "It must contain oxygen"
+                    ],
+                    answer: 2
+                }
+            },
+
+
+            {
+                id: "formula-4",
+                title: "Writing Chemical Equations",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Explain what a chemical equation represents.",
+                    "Identify reactants and products.",
+                    "Interpret the arrow in a chemical equation."
+                ],
+
+                content: [
+                    {
+                        heading: "Chemical equations",
+                        text:
+                            "A chemical equation represents a chemical reaction using formulas and symbols. It communicates which substances participate and which substances are formed."
+                    },
+                    {
+                        heading: "Reactants and products",
+                        text:
+                            "The substances on the left side of the equation are called reactants. The substances on the right side are products."
+                    },
+                    {
+                        heading: "The reaction arrow",
+                        text:
+                            "The arrow connects reactants to products and indicates the direction represented by the equation."
+                    }
+                ],
+
+                keyPoints: [
+                    "Reactants appear on the left.",
+                    "Products appear on the right.",
+                    "The arrow connects reactants and products.",
+                    "Chemical formulas identify the substances involved."
+                ],
+
+                workedExample: {
+                    question:
+                        "In the equation H₂ + O₂ → H₂O, which substance is a reactant?",
+                    answer:
+                        "Hydrogen (H₂) and oxygen (O₂) are the reactants."
+                },
+
+                knowledgeCheck: {
+                    question:
+                        "Where are the products normally written in a chemical equation?",
+                    options: [
+                        "Before the arrow",
+                        "After the arrow",
+                        "Above the equation only",
+                        "Inside the element symbols"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "formula-5",
+                title: "Balancing Chemical Equations",
+                type: "lesson",
+                duration: 15,
+
+                objectives: [
+                    "Explain why chemical equations must be balanced.",
+                    "Distinguish coefficients from subscripts.",
+                    "Use coefficients to balance simple equations."
+                ],
+
+                content: [
+                    {
+                        heading: "Conservation of atoms",
+                        text:
+                            "Chemical reactions rearrange atoms rather than creating or destroying them. A balanced equation therefore contains the same number of atoms of each element on both sides."
+                    },
+                    {
+                        heading: "Coefficients",
+                        text:
+                            "Coefficients are numbers placed in front of chemical formulas. They change the number of particles represented without changing the identity of the substance."
+                    },
+                    {
+                        heading: "Never change subscripts to balance",
+                        text:
+                            "Changing a subscript changes the chemical formula and therefore changes the substance being represented. Balancing is accomplished by adjusting coefficients."
+                    }
+                ],
+
+                keyPoints: [
+                    "Balanced equations obey conservation of atoms.",
+                    "Coefficients change quantities.",
+                    "Subscripts define chemical composition.",
+                    "Do not change subscripts when balancing equations."
+                ],
+
+                workedExample: {
+                    question:
+                        "Balance: H₂ + O₂ → H₂O.",
+                    answer:
+                        "The balanced equation is 2H₂ + O₂ → 2H₂O."
+                },
+
+                knowledgeCheck: {
+                    question:
+                        "Which part of a chemical equation should normally be changed when balancing it?",
+                    options: [
+                        "Element symbols",
+                        "Subscripts",
+                        "Coefficients",
+                        "Atomic numbers"
+                    ],
+                    answer: 2
+                }
+            },
+
+
+            {
+                id: "formula-6",
+                title: "Interpreting Chemical Equations",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Interpret coefficients as particle ratios.",
+                    "Connect equations with mole ratios.",
+                    "Use balanced equations to understand reaction quantities."
+                ],
+
+                content: [
+                    {
+                        heading: "Coefficients represent ratios",
+                        text:
+                            "In a balanced chemical equation, coefficients provide ratios between the amounts of reacting and produced substances."
+                    },
+                    {
+                        heading: "Mole ratios",
+                        text:
+                            "Because chemical equations represent particle relationships, their coefficients can also be interpreted as mole ratios. These ratios become essential in stoichiometric calculations."
+                    }
+                ],
+
+                keyPoints: [
+                    "Balanced coefficients represent quantitative ratios.",
+                    "Coefficients can be interpreted as mole ratios.",
+                    "Stoichiometry uses these ratios to relate reactants and products."
+                ],
+
+                workedExample: {
+                    question:
+                        "In 2H₂ + O₂ → 2H₂O, what is the mole ratio of H₂ to O₂?",
+                    answer:
+                        "The mole ratio H₂:O₂ is 2:1."
+                },
+
+                knowledgeCheck: {
+                    question:
+                        "What do coefficients in a balanced equation primarily provide?",
+                    options: [
+                        "Mole ratios",
+                        "Atomic numbers",
+                        "Element symbols",
+                        "Melting points"
+                    ],
+                    answer: 0
+                }
             }
         ]
-    };
 
-
+    
     /* =====================================================
        HELPERS
        ===================================================== */
