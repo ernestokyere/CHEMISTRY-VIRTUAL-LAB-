@@ -1,45 +1,36 @@
 /* =========================================================
    CHEMLAB
    CHEMISTRY ACADEMY ENGINE
-   Stage 5.5 — Chemistry Content Engine
-   Part 1: Foundations of Chemistry
+   Stage 5.5 — Unified Learning System
    ========================================================= */
 
 (function () {
     "use strict";
 
-    /* =====================================================
-       STATE
-       ===================================================== */
-
-    const STATE = {
-        initialized: false,
-
-        view: "subjects",
-
-        currentSubject: null,
-        currentTopic: null,
-        currentLessonIndex: 0,
-
-        subjects: [],
-        filteredSubjects: [],
-        filteredTopics: [],
-
-        searchQuery: "",
-        topicSearchQuery: "",
-        currentLevel: "all",
-
-        loading: false
-    };
-
 
     /* =====================================================
-       STORAGE
+       CONFIGURATION
        ===================================================== */
 
     const STORAGE = {
-        topicProgress: "chemlab_topic_progress_",
-        lessonCompleted: "chemlab_lesson_completed_"
+        progress: "chemlab_academy_progress",
+        xp: "chemlab_science_xp"
+    };
+
+
+    const ACADEMY_STATE = {
+        initialized: false,
+        currentSubject: null,
+        currentTopic: null,
+        currentLesson: null,
+
+        subjects: [],
+        filteredSubjects: [],
+
+        searchQuery: "",
+        levelFilter: "all",
+
+        loading: false
     };
 
 
@@ -47,3083 +38,1989 @@
        CURRICULUM
        ===================================================== */
 
-    const CURRICULUM = [
+    const ACADEMY_CURRICULUM = [
+
+        /* =================================================
+           1. FOUNDATIONS
+           ================================================= */
 
         {
             id: "foundations",
             title: "Foundations of Chemistry",
-            shortTitle: "Foundations",
-            icon: "🧪",
             description:
-                "The mathematical, atomic, molecular and experimental foundations required for university-level chemistry.",
-
-            levels: [
-                "foundation",
-                "undergraduate",
-                "advanced"
-            ],
-
+                "Build the scientific and mathematical foundations required for serious chemistry.",
+            level: "Foundation",
+            icon: "⚗",
             topics: [
 
                 {
                     id: "measurements-scientific-units",
                     title: "Measurements & Scientific Units",
-                    level: "foundation",
                     description:
-                        "Learn how chemists measure physical quantities and communicate measurements using the SI system.",
-                    lessons: [
-                        "scientific-measurement",
-                        "si-units",
-                        "chemistry-units",
-                        "scientific-notation"
-                    ]
+                        "Learn how chemists measure, record, convert, and interpret scientific quantities.",
+                    difficulty: "Beginner",
+                    duration: 120,
+                    lessons: 10,
+                    icon: "📏"
                 },
 
                 {
                     id: "significant-figures",
                     title: "Significant Figures",
-                    level: "foundation",
                     description:
-                        "Learn how significant figures communicate the precision of experimental measurements.",
-                    lessons: [
-                        "meaning-significant-figures",
-                        "counting-significant-figures",
-                        "calculations-significant-figures",
-                        "rounding-results"
-                    ]
+                        "Understand precision, rounding, and significant figures in chemical calculations.",
+                    difficulty: "Beginner",
+                    duration: 45,
+                    lessons: 5,
+                    icon: "🔢"
                 },
 
                 {
                     id: "dimensional-analysis",
                     title: "Dimensional Analysis",
-                    level: "foundation",
                     description:
-                        "Use units as mathematical tools for converting quantities and checking equations.",
-                    lessons: [
-                        "dimensional-analysis-basics",
-                        "unit-conversions",
-                        "multi-step-conversions",
-                        "dimensional-analysis-chemistry"
-                    ]
+                        "Use units as a powerful tool for solving chemistry calculations.",
+                    difficulty: "Beginner",
+                    duration: 50,
+                    lessons: 5,
+                    icon: "↔"
                 },
 
                 {
-                 {
-    id: "atomic-structure-periodic-table",
-    title: "Atomic Structure & the Periodic Table",
-    description:
-        "Explore the structure of atoms, electron configuration, isotopes, ions, and the principles behind periodic trends.",
-    level: "foundation",
-    difficulty: "Intermediate",
-    estimatedMinutes: 150,
-    lessons: 12,
-    icon: "⚛",
-    tags: [
-        "atoms",
-        "electrons",
-        "isotopes",
-        "periodic table",
-        "periodic trends"
-    ]
-},
-
-                {
-                    id: "isotopes-atomic-mass",
-                    title: "Isotopes & Atomic Mass",
-                    level: "foundation",
+                    id: "atomic-structure-periodic-table",
+                    title: "Atomic Structure & the Periodic Table",
                     description:
-                        "Understand isotopes and calculate weighted average atomic masses.",
-                    lessons: [
-                        "isotopes",
-                        "isotopic-abundance",
-                        "average-atomic-mass",
-                        "mass-spectrometry-introduction"
-                    ]
-                },
-
-                {
-                    id: "periodic-table",
-                    title: "The Periodic Table",
-                    level: "foundation",
-                    description:
-                        "Explore periodic organization, groups, periods and chemical trends.",
-                    lessons: [
-                        "periodic-organization",
-                        "groups-periods-blocks",
-                        "atomic-radius",
-                        "ionization-electronegativity"
-                    ]
+                        "Explore atoms, subatomic particles, isotopes, electron configuration, and periodic trends.",
+                    difficulty: "Intermediate",
+                    duration: 150,
+                    lessons: 12,
+                    icon: "⚛"
                 },
 
                 {
                     id: "chemical-formulas",
-                    title: "Chemical Formulas",
-                    level: "foundation",
+                    title: "Chemical Formulas & Equations",
                     description:
-                        "Interpret molecular, empirical and ionic formulas.",
-                    lessons: [
-                        "chemical-formula-language",
-                        "ionic-formulas",
-                        "molecular-formulas",
-                        "empirical-formulas"
-                    ]
-                },
-
-                {
-                    id: "chemical-equations",
-                    title: "Chemical Equations",
-                    level: "foundation",
-                    description:
-                        "Represent chemical reactions using balanced chemical equations.",
-                    lessons: [
-                        "chemical-equation-language",
-                        "balancing-equations",
-                        "reaction-information",
-                        "reaction-types"
-                    ]
+                        "Learn how chemical substances and reactions are represented symbolically.",
+                    difficulty: "Beginner",
+                    duration: 60,
+                    lessons: 6,
+                    icon: "🧪"
                 },
 
                 {
                     id: "mole-concept",
                     title: "The Mole Concept",
-                    level: "foundation",
                     description:
-                        "Connect microscopic particles with measurable amounts of chemical substance.",
-                    lessons: [
-                        "counting-particles",
-                        "avogadro-constant",
-                        "moles-and-particles",
-                        "moles-and-mass"
-                    ]
-                },
-
-                {
-                    id: "molar-mass",
-                    title: "Molar Mass",
-                    level: "foundation",
-                    description:
-                        "Calculate molar mass and use it to convert between mass and amount of substance.",
-                    lessons: [
-                        "molar-mass-definition",
-                        "calculating-molar-mass",
-                        "mass-to-moles",
-                        "moles-to-mass"
-                    ]
+                        "Master moles, molar mass, Avogadro's constant, and chemical quantity.",
+                    difficulty: "Intermediate",
+                    duration: 70,
+                    lessons: 7,
+                    icon: "◉"
                 },
 
                 {
                     id: "stoichiometry",
                     title: "Stoichiometry",
-                    level: "undergraduate",
                     description:
-                        "Use balanced chemical equations to calculate relationships between reactants and products.",
-                    lessons: [
-                        "stoichiometric-ratios",
-                        "mole-to-mole",
-                        "mass-to-mass",
-                        "stoichiometric-problem-solving"
-                    ]
+                        "Calculate quantities of reactants and products in chemical reactions.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "⚖"
                 },
 
                 {
-                    id: "limiting-reagents",
-                    title: "Limiting Reagents",
-                    level: "undergraduate",
+                    id: "solutions",
+                    title: "Solutions & Concentration",
                     description:
-                        "Determine which reactant limits a chemical reaction and calculate theoretical product.",
-                    lessons: [
-                        "limiting-reactant-concept",
-                        "identifying-limiting-reactant",
-                        "excess-reactant",
-                        "theoretical-yield"
-                    ]
+                        "Understand concentration, dilution, solution preparation, and related calculations.",
+                    difficulty: "Intermediate",
+                    duration: 70,
+                    lessons: 6,
+                    icon: "🧴"
                 },
 
                 {
-                    id: "yield",
-                    title: "Theoretical & Percent Yield",
-                    level: "undergraduate",
+                    id: "uncertainty",
+                    title: "Uncertainty & Experimental Error",
                     description:
-                        "Compare theoretical and experimental quantities of products.",
-                    lessons: [
-                        "theoretical-yield",
-                        "actual-yield",
-                        "percent-yield",
-                        "interpreting-yield"
-                    ]
-                },
-
-                {
-                    id: "concentration",
-                    title: "Concentration",
-                    level: "foundation",
-                    description:
-                        "Describe the amount of dissolved substance relative to solution volume.",
-                    lessons: [
-                        "concentration-concept",
-                        "molarity",
-                        "mass-concentration",
-                        "concentration-calculations"
-                    ]
-                },
-
-                {
-                    id: "dilution",
-                    title: "Dilution",
-                    level: "foundation",
-                    description:
-                        "Understand how solution concentration changes when solvent is added.",
-                    lessons: [
-                        "dilution-concept",
-                        "dilution-equation",
-                        "dilution-calculations",
-                        "serial-dilution"
-                    ]
-                },
-
-                {
-                    id: "solution-preparation",
-                    title: "Solution Preparation",
-                    level: "undergraduate",
-                    description:
-                        "Learn the scientific principles behind preparing solutions of known concentration.",
-                    lessons: [
-                        "solution-preparation-principles",
-                        "volumetric-flask",
-                        "solid-solute-preparation",
-                        "solution-dilution-preparation"
-                    ]
-                },
-
-                {
-                    id: "experimental-uncertainty",
-                    title: "Experimental Uncertainty",
-                    level: "undergraduate",
-                    description:
-                        "Understand uncertainty and how it affects scientific measurements.",
-                    lessons: [
-                        "measurement-uncertainty",
-                        "absolute-uncertainty",
-                        "relative-uncertainty",
-                        "propagation-introduction"
-                    ]
-                },
-
-                {
-                    id: "accuracy-precision",
-                    title: "Accuracy & Precision",
-                    level: "foundation",
-                    description:
-                        "Distinguish accuracy from precision and interpret experimental results.",
-                    lessons: [
-                        "accuracy",
-                        "precision",
-                        "systematic-random-error",
-                        "evaluating-results"
-                    ]
-                },
-
-                {
-                    id: "chemical-data-analysis",
-                    title: "Introduction to Chemical Data Analysis",
-                    level: "undergraduate",
-                    description:
-                        "Use tables, averages, graphs and basic statistics to interpret chemical data.",
-                    lessons: [
-                        "organizing-data",
-                        "mean-and-range",
-                        "graphs-in-chemistry",
-                        "interpreting-experimental-data"
-                    ]
+                        "Understand uncertainty, error, accuracy, precision, and scientific reporting.",
+                    difficulty: "Intermediate",
+                    duration: 65,
+                    lessons: 6,
+                    icon: "±"
                 }
             ]
         },
 
+
+        /* =================================================
+           2. INORGANIC
+           ================================================= */
+
         {
             id: "inorganic",
             title: "Inorganic Chemistry",
-            shortTitle: "Inorganic",
-            icon: "⚛️",
             description:
-                "Explore elements, bonding, coordination chemistry, acids, bases and inorganic reactions.",
-            levels: [
-                "foundation",
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Study elements, compounds, bonding, reactions, coordination chemistry, and inorganic systems.",
+            level: "Undergraduate",
+            icon: "◈",
+            topics: [
+
+                {
+                    id: "periodic-chemistry",
+                    title: "Periodic Chemistry",
+                    description:
+                        "Explore chemical behavior across the periodic table.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "▦"
+                },
+
+                {
+                    id: "chemical-bonding",
+                    title: "Chemical Bonding",
+                    description:
+                        "Study ionic, covalent, metallic, and intermolecular bonding.",
+                    difficulty: "Intermediate",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "🔗"
+                },
+
+                {
+                    id: "acids-bases",
+                    title: "Acids & Bases",
+                    description:
+                        "Understand acid-base theories, pH, buffers, and neutralization.",
+                    difficulty: "Intermediate",
+                    duration: 100,
+                    lessons: 10,
+                    icon: "pH"
+                },
+
+                {
+                    id: "redox",
+                    title: "Redox Chemistry",
+                    description:
+                        "Explore oxidation, reduction, oxidation states, and electron transfer.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "⇄"
+                },
+
+                {
+                    id: "precipitation",
+                    title: "Precipitation Chemistry",
+                    description:
+                        "Study precipitation reactions, solubility, and ionic equilibria.",
+                    difficulty: "Advanced",
+                    duration: 80,
+                    lessons: 7,
+                    icon: "↓"
+                },
+
+                {
+                    id: "coordination",
+                    title: "Coordination Chemistry",
+                    description:
+                        "Explore coordination compounds, ligands, geometry, and complex ions.",
+                    difficulty: "Advanced",
+                    duration: 110,
+                    lessons: 9,
+                    icon: "◇"
+                },
+
+                {
+                    id: "qualitative-analysis",
+                    title: "Qualitative Analysis",
+                    description:
+                        "Learn the principles behind identifying ions and chemical species.",
+                    difficulty: "Advanced",
+                    duration: 120,
+                    lessons: 10,
+                    icon: "🔍"
+                }
+            ]
         },
+
+
+        /* =================================================
+           3. ORGANIC
+           ================================================= */
 
         {
             id: "organic",
             title: "Organic Chemistry",
-            shortTitle: "Organic",
-            icon: "🧬",
             description:
-                "Study carbon compounds, functional groups, mechanisms, reactions and synthesis.",
-            levels: [
-                "foundation",
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Study carbon compounds, structures, reactions, mechanisms, synthesis, and spectroscopy.",
+            level: "Undergraduate",
+            icon: "⌬",
+            topics: [
+
+                {
+                    id: "organic-structures",
+                    title: "Organic Structures",
+                    description: "Representations and structures of organic molecules.",
+                    difficulty: "Intermediate",
+                    duration: 80,
+                    lessons: 8,
+                    icon: "⌬"
+                },
+
+                {
+                    id: "nomenclature",
+                    title: "Organic Nomenclature",
+                    description: "Systematic naming of organic compounds.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "N"
+                },
+
+                {
+                    id: "isomerism",
+                    title: "Isomerism",
+                    description: "Structural and stereoisomerism in organic molecules.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "↔"
+                },
+
+                {
+                    id: "functional-groups",
+                    title: "Functional Groups",
+                    description: "Identify and understand major organic functional groups.",
+                    difficulty: "Intermediate",
+                    duration: 80,
+                    lessons: 8,
+                    icon: "ƒ"
+                },
+
+                {
+                    id: "organic-reactions",
+                    title: "Organic Reactions",
+                    description: "Understand major reaction classes in organic chemistry.",
+                    difficulty: "Advanced",
+                    duration: 120,
+                    lessons: 12,
+                    icon: "⚗"
+                },
+
+                {
+                    id: "reaction-mechanisms",
+                    title: "Reaction Mechanisms",
+                    description: "Explore how organic reactions occur at the molecular level.",
+                    difficulty: "Advanced",
+                    duration: 120,
+                    lessons: 10,
+                    icon: "→"
+                },
+
+                {
+                    id: "organic-synthesis",
+                    title: "Organic Synthesis",
+                    description: "Plan and analyze multistep synthetic pathways.",
+                    difficulty: "Advanced",
+                    duration: 140,
+                    lessons: 10,
+                    icon: "🧩"
+                },
+
+                {
+                    id: "purification",
+                    title: "Purification Techniques",
+                    description: "Study extraction, recrystallization, distillation, and chromatography.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 8,
+                    icon: "◇"
+                }
+            ]
         },
+
+
+        /* =================================================
+           4. PHYSICAL
+           ================================================= */
 
         {
             id: "physical",
             title: "Physical Chemistry",
-            shortTitle: "Physical",
-            icon: "📐",
             description:
-                "Study energy, equilibrium, kinetics, thermodynamics and molecular behavior.",
-            levels: [
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Use mathematics and physics to understand chemical systems.",
+            level: "Undergraduate",
+            icon: "∑",
+            topics: [
+
+                {
+                    id: "gas-laws",
+                    title: "Gas Laws",
+                    description: "Pressure, volume, temperature, and gas behavior.",
+                    difficulty: "Intermediate",
+                    duration: 70,
+                    lessons: 7,
+                    icon: "◎"
+                },
+
+                {
+                    id: "kinetic-theory",
+                    title: "Kinetic Theory",
+                    description: "Particle motion and molecular interpretation of gases.",
+                    difficulty: "Intermediate",
+                    duration: 80,
+                    lessons: 7,
+                    icon: "↯"
+                },
+
+                {
+                    id: "thermochemistry",
+                    title: "Thermochemistry",
+                    description: "Energy changes accompanying chemical processes.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "Δ"
+                },
+
+                {
+                    id: "thermodynamics",
+                    title: "Thermodynamics",
+                    description: "Energy, entropy, spontaneity, and thermodynamic systems.",
+                    difficulty: "Advanced",
+                    duration: 130,
+                    lessons: 11,
+                    icon: "∇"
+                },
+
+                {
+                    id: "equilibrium",
+                    title: "Chemical Equilibrium",
+                    description: "Dynamic equilibrium and equilibrium constants.",
+                    difficulty: "Advanced",
+                    duration: 110,
+                    lessons: 10,
+                    icon: "⇌"
+                },
+
+                {
+                    id: "kinetics",
+                    title: "Chemical Kinetics",
+                    description: "Reaction rates, rate laws, mechanisms, and activation energy.",
+                    difficulty: "Advanced",
+                    duration: 110,
+                    lessons: 10,
+                    icon: "⏱"
+                },
+
+                {
+                    id: "quantum",
+                    title: "Quantum Chemistry Fundamentals",
+                    description: "Introductory quantum concepts applied to chemical systems.",
+                    difficulty: "Advanced",
+                    duration: 130,
+                    lessons: 10,
+                    icon: "Ψ"
+                }
+            ]
         },
+
+
+        /* =================================================
+           5. ANALYTICAL
+           ================================================= */
 
         {
             id: "analytical",
             title: "Analytical Chemistry",
-            shortTitle: "Analytical",
-            icon: "🔬",
             description:
-                "Learn quantitative and qualitative methods used to identify and measure chemical substances.",
-            levels: [
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Learn how chemists identify, measure, quantify, and validate chemical information.",
+            level: "Undergraduate",
+            icon: "⌁",
+            topics: [
+
+                {
+                    id: "accuracy-precision",
+                    title: "Accuracy & Precision",
+                    description: "Evaluate the quality of experimental measurements.",
+                    difficulty: "Intermediate",
+                    duration: 60,
+                    lessons: 6,
+                    icon: "◎"
+                },
+
+                {
+                    id: "statistics",
+                    title: "Analytical Statistics",
+                    description: "Use statistics to interpret chemical measurements.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 8,
+                    icon: "∑"
+                },
+
+                {
+                    id: "calibration",
+                    title: "Calibration Methods",
+                    description: "Understand calibration curves and analytical standards.",
+                    difficulty: "Advanced",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "⌁"
+                },
+
+                {
+                    id: "titration",
+                    title: "Titration",
+                    description: "Explore volumetric analysis and titration calculations.",
+                    difficulty: "Intermediate",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "⚗"
+                },
+
+                {
+                    id: "gravimetry",
+                    title: "Gravimetric Analysis",
+                    description: "Quantitative analysis based on mass measurements.",
+                    difficulty: "Advanced",
+                    duration: 90,
+                    lessons: 7,
+                    icon: "⚖"
+                },
+
+                {
+                    id: "spectrophotometry",
+                    title: "Spectrophotometry",
+                    description: "Measure chemical species through light absorption.",
+                    difficulty: "Advanced",
+                    duration: 120,
+                    lessons: 10,
+                    icon: "◐"
+                },
+
+                {
+                    id: "chromatography",
+                    title: "Chromatography",
+                    description: "Separate and analyze chemical mixtures.",
+                    difficulty: "Advanced",
+                    duration: 120,
+                    lessons: 10,
+                    icon: "▥"
+                }
+            ]
         },
+
+
+        /* =================================================
+           6. BIOCHEMISTRY
+           ================================================= */
 
         {
             id: "biochemistry",
             title: "Biochemistry",
-            shortTitle: "Biochemistry",
-            icon: "🧬",
             description:
-                "Explore the chemistry of biological molecules, enzymes and metabolic systems.",
-            levels: [
-                "foundation",
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Explore the chemistry of living systems.",
+            level: "Undergraduate",
+            icon: "🧬",
+            topics: [
+
+                {
+                    id: "biomolecules",
+                    title: "Biomolecules",
+                    description: "Carbohydrates, lipids, proteins, and nucleic acids.",
+                    difficulty: "Intermediate",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "🧬"
+                },
+
+                {
+                    id: "enzymes",
+                    title: "Enzymes",
+                    description: "Structure, function, catalysis, and enzyme kinetics.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "⚙"
+                },
+
+                {
+                    id: "metabolism",
+                    title: "Metabolism",
+                    description: "Chemical pathways involved in energy and biosynthesis.",
+                    difficulty: "Advanced",
+                    duration: 130,
+                    lessons: 11,
+                    icon: "↻"
+                }
+            ]
         },
+
+
+        /* =================================================
+           7. ENVIRONMENTAL
+           ================================================= */
 
         {
             id: "environmental",
             title: "Environmental Chemistry",
-            shortTitle: "Environmental",
-            icon: "🌍",
             description:
-                "Study chemical processes in water, soil, atmosphere and environmental systems.",
-            levels: [
-                "foundation",
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Understand chemical processes affecting air, water, soil, and ecosystems.",
+            level: "Undergraduate",
+            icon: "🌍",
+            topics: [
+
+                {
+                    id: "atmospheric",
+                    title: "Atmospheric Chemistry",
+                    description: "Chemical processes in Earth's atmosphere.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "☁"
+                },
+
+                {
+                    id: "water-chemistry",
+                    title: "Water Chemistry",
+                    description: "Chemical properties and analysis of water systems.",
+                    difficulty: "Intermediate",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "💧"
+                },
+
+                {
+                    id: "pollution",
+                    title: "Pollution Chemistry",
+                    description: "Chemical sources and consequences of environmental pollution.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 8,
+                    icon: "⚠"
+                }
+            ]
         },
+
+
+        /* =================================================
+           8. ELECTROCHEMISTRY
+           ================================================= */
 
         {
             id: "electrochemistry",
             title: "Electrochemistry",
-            shortTitle: "Electrochemistry",
-            icon: "⚡",
             description:
-                "Study oxidation-reduction reactions, electrochemical cells and electrical energy.",
-            levels: [
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Study chemical systems involving electrical energy and electron transfer.",
+            level: "Undergraduate",
+            icon: "⚡",
+            topics: [
+
+                {
+                    id: "electrochemical-cells",
+                    title: "Electrochemical Cells",
+                    description: "Understand galvanic and electrochemical cells.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "🔋"
+                },
+
+                {
+                    id: "electrolysis",
+                    title: "Electrolysis",
+                    description: "Explore chemical changes driven by electrical energy.",
+                    difficulty: "Intermediate",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "⚡"
+                },
+
+                {
+                    id: "electrode-potentials",
+                    title: "Electrode Potentials",
+                    description: "Study standard potentials and electrochemical driving forces.",
+                    difficulty: "Advanced",
+                    duration: 110,
+                    lessons: 9,
+                    icon: "Δ"
+                }
+            ]
         },
 
+
+        /* =================================================
+           9. MATERIALS & INDUSTRIAL
+           ================================================= */
+
         {
-            id: "materials",
+            id: "materials-industrial",
             title: "Materials & Industrial Chemistry",
-            shortTitle: "Materials",
-            icon: "🏭",
             description:
-                "Explore polymers, metals, ceramics, catalysts and major industrial chemical processes.",
-            levels: [
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Explore chemical principles behind materials and industrial processes.",
+            level: "Advanced",
+            icon: "⬡",
+            topics: [
+
+                {
+                    id: "polymers",
+                    title: "Polymers",
+                    description: "Structure, synthesis, properties, and applications of polymers.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 8,
+                    icon: "⌁"
+                },
+
+                {
+                    id: "industrial-processes",
+                    title: "Industrial Chemical Processes",
+                    description: "Study chemistry at industrial scale.",
+                    difficulty: "Advanced",
+                    duration: 120,
+                    lessons: 10,
+                    icon: "🏭"
+                },
+
+                {
+                    id: "materials",
+                    title: "Materials Chemistry",
+                    description: "Understand chemical structure and material properties.",
+                    difficulty: "Advanced",
+                    duration: 110,
+                    lessons: 9,
+                    icon: "⬡"
+                }
+            ]
         },
+
+
+        /* =================================================
+           10. INSTRUMENTAL
+           ================================================= */
 
         {
             id: "instrumental",
             title: "Instrumental & Spectroscopic Chemistry",
-            shortTitle: "Instrumental",
-            icon: "📊",
             description:
-                "Learn the principles behind spectroscopy, chromatography and modern chemical instruments.",
-            levels: [
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Learn how modern instruments reveal chemical structure and composition.",
+            level: "Advanced",
+            icon: "⌬",
+            topics: [
+
+                {
+                    id: "uv-visible",
+                    title: "UV-Visible Spectroscopy",
+                    description: "Analyze molecular absorption in the ultraviolet and visible regions.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "◐"
+                },
+
+                {
+                    id: "ir",
+                    title: "Infrared Spectroscopy",
+                    description: "Use vibrational spectra to identify chemical groups.",
+                    difficulty: "Advanced",
+                    duration: 110,
+                    lessons: 9,
+                    icon: "≋"
+                },
+
+                {
+                    id: "nmr",
+                    title: "NMR Spectroscopy",
+                    description: "Explore nuclear magnetic resonance and molecular structure.",
+                    difficulty: "Advanced",
+                    duration: 140,
+                    lessons: 11,
+                    icon: "⌬"
+                },
+
+                {
+                    id: "mass-spectrometry",
+                    title: "Mass Spectrometry",
+                    description: "Analyze molecular mass and fragmentation patterns.",
+                    difficulty: "Advanced",
+                    duration: 120,
+                    lessons: 10,
+                    icon: "m/z"
+                }
+            ]
         },
+
+
+        /* =================================================
+           11. NUCLEAR
+           ================================================= */
 
         {
             id: "nuclear",
             title: "Nuclear & Radiochemistry",
-            shortTitle: "Nuclear",
-            icon: "☢️",
             description:
-                "Study nuclear structure, radioactivity, decay and applications of radioisotopes.",
-            levels: [
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Explore nuclear structure, radioactivity, decay, and applications.",
+            level: "Advanced",
+            icon: "☢",
+            topics: [
+
+                {
+                    id: "nuclear-structure",
+                    title: "Nuclear Structure",
+                    description: "Study nuclei, isotopes, and nuclear stability.",
+                    difficulty: "Advanced",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "◎"
+                },
+
+                {
+                    id: "radioactivity",
+                    title: "Radioactivity",
+                    description: "Understand radioactive decay and nuclear transformations.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "☢"
+                },
+
+                {
+                    id: "nuclear-applications",
+                    title: "Nuclear Applications",
+                    description: "Explore scientific and medical applications of nuclear chemistry.",
+                    difficulty: "Advanced",
+                    duration: 90,
+                    lessons: 8,
+                    icon: "⚛"
+                }
+            ]
         },
+
+
+        /* =================================================
+           12. RESEARCH
+           ================================================= */
 
         {
             id: "research",
             title: "Research & Laboratory Science",
-            shortTitle: "Research",
-            icon: "🧪",
             description:
-                "Develop experimental design, scientific reasoning, data analysis and research communication skills.",
-            levels: [
-                "undergraduate",
-                "advanced"
-            ],
-            topics: []
+                "Develop the skills needed for scientific investigation and laboratory research.",
+            level: "Advanced",
+            icon: "🔬",
+            topics: [
+
+                {
+                    id: "scientific-method",
+                    title: "The Scientific Method",
+                    description: "Design investigations using scientific reasoning.",
+                    difficulty: "Intermediate",
+                    duration: 70,
+                    lessons: 7,
+                    icon: "→"
+                },
+
+                {
+                    id: "experimental-design",
+                    title: "Experimental Design",
+                    description: "Design reliable and reproducible experiments.",
+                    difficulty: "Advanced",
+                    duration: 100,
+                    lessons: 9,
+                    icon: "🧪"
+                },
+
+                {
+                    id: "laboratory-safety",
+                    title: "Laboratory Safety",
+                    description: "Understand safe laboratory practice and risk awareness.",
+                    difficulty: "Foundation",
+                    duration: 60,
+                    lessons: 6,
+                    icon: "🛡"
+                },
+
+                {
+                    id: "scientific-reporting",
+                    title: "Scientific Reporting",
+                    description: "Communicate experimental findings professionally.",
+                    difficulty: "Advanced",
+                    duration: 80,
+                    lessons: 7,
+                    icon: "📄"
+                }
+            ]
         }
     ];
 
-/* =========================================================
-   CHEMLAB
-   STAGE 5.5 — EXPANDED LESSON CONTENT
-   FOUNDATIONS OF CHEMISTRY
-   ========================================================= */
-
-const LESSON_CONTENT = {
 
     /* =====================================================
-       MEASUREMENTS & SCIENTIFIC UNITS
+       LESSON CONTENT
        ===================================================== */
 
-    "measurements-scientific-units": [
+    const LESSON_CONTENT = {
 
-        /* -------------------------------------------------
-           LESSON 1
-           ------------------------------------------------- */
 
-        {
-            id: "what-is-a-scientific-measurement",
+        /* =================================================
+           MEASUREMENTS
+           ================================================= */
 
-            title: "What Is a Scientific Measurement?",
+        "measurements-scientific-units": [
 
-            type: "concept",
+            {
+                id: "measurement-1",
+                title: "What Is a Scientific Measurement?",
+                type: "lesson",
+                duration: 10,
 
-            duration: 8,
-
-            objectives: [
-                "Explain what a scientific measurement is.",
-                "Identify the numerical value and unit in a measurement.",
-                "Distinguish measured quantities from observations.",
-                "Explain why units are essential in chemistry."
-            ],
-
-            content: `
-                <p>
-                    Chemistry is an experimental science. Chemists do not
-                    simply describe what happens; they observe, measure,
-                    record, compare, and analyze evidence.
-                </p>
-
-                <p>
-                    A <strong>scientific measurement</strong> is a quantitative
-                    description of a physical quantity obtained by comparing
-                    it with an agreed standard.
-                </p>
-
-                <div class="lesson-callout">
-                    <strong>Key idea:</strong>
-                    A measurement normally contains two essential parts:
-                    a numerical value and a unit.
-                </div>
-
-                <div class="lesson-equation">
-                    Measurement = Numerical Value + Unit
-                </div>
-
-                <p>
-                    For example, if the mass of a sample is recorded as
-                    <strong>12.5 g</strong>, the number
-                    <strong>12.5</strong> tells us the magnitude of the
-                    measurement, while <strong>g</strong> tells us what unit
-                    was used.
-                </p>
-
-                <p>
-                    A number without an appropriate unit can be ambiguous.
-                    Saying that a sample has a mass of "12.5" does not tell
-                    another scientist whether the value is in grams,
-                    kilograms, milligrams, or another unit.
-                </p>
-
-                <p>
-                    Measurements are also not perfectly exact. Every physical
-                    measuring instrument has a limit to how finely it can
-                    distinguish values. This is why chemistry places great
-                    importance on significant figures, uncertainty, accuracy,
-                    and precision.
-                </p>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Quantity</th>
-                                <th>Example</th>
-                                <th>Unit</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>Mass</td>
-                                <td>12.50 g</td>
-                                <td>gram (g)</td>
-                            </tr>
-
-                            <tr>
-                                <td>Volume</td>
-                                <td>25.0 mL</td>
-                                <td>millilitre (mL)</td>
-                            </tr>
-
-                            <tr>
-                                <td>Temperature</td>
-                                <td>298 K</td>
-                                <td>kelvin (K)</td>
-                            </tr>
-
-                            <tr>
-                                <td>Time</td>
-                                <td>45.2 s</td>
-                                <td>second (s)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            `,
-
-            keyPoints: [
-                "Measurements provide quantitative information.",
-                "A measurement normally contains a numerical value and a unit.",
-                "Units communicate what a numerical value represents.",
-                "Measurements have limitations and associated uncertainty.",
-                "Chemistry depends heavily on reliable quantitative measurements."
-            ],
-
-            workedExample: {
-                question:
-                    "A student measures the volume of a liquid as 35.0 mL. Identify the numerical value and the unit.",
-
-                solution: `
-                    <strong>Numerical value:</strong> 35.0<br>
-                    <strong>Unit:</strong> mL (millilitres)
-                `
-            },
-
-            knowledgeCheck: {
-                question:
-                    "Which statement best describes a scientific measurement?",
-
-                options: [
-                    "A number written without a unit",
-                    "A qualitative description of an object",
-                    "A quantitative value expressed with an appropriate unit",
-                    "A prediction about what will happen"
+                objectives: [
+                    "Define scientific measurement.",
+                    "Identify the parts of a measured quantity.",
+                    "Explain why measurements are important in chemistry."
                 ],
 
-                answer: 2,
-
-                explanation:
-                    "A scientific measurement gives quantitative information and is normally expressed with an appropriate unit."
-            }
-        },
-
-
-        /* -------------------------------------------------
-           LESSON 2
-           ------------------------------------------------- */
-
-        {
-            id: "si-system-of-units",
-
-            title: "The SI System of Units",
-
-            type: "concept",
-
-            duration: 10,
-
-            objectives: [
-                "Define the SI system.",
-                "Identify common SI base quantities used in chemistry.",
-                "Recognize SI symbols and units.",
-                "Explain why standardized units are important."
-            ],
-
-            content: `
-                <p>
-                    Scientists around the world need a common language for
-                    measurements. The
-                    <strong>International System of Units (SI)</strong>
-                    provides a standardized system for expressing physical
-                    quantities.
-                </p>
-
-                <p>
-                    The SI system is built from a set of
-                    <strong>base quantities</strong>. Other units can be
-                    derived from these fundamental units.
-                </p>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Quantity</th>
-                                <th>SI Unit</th>
-                                <th>Symbol</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>Length</td>
-                                <td>metre</td>
-                                <td>m</td>
-                            </tr>
-
-                            <tr>
-                                <td>Mass</td>
-                                <td>kilogram</td>
-                                <td>kg</td>
-                            </tr>
-
-                            <tr>
-                                <td>Time</td>
-                                <td>second</td>
-                                <td>s</td>
-                            </tr>
-
-                            <tr>
-                                <td>Temperature</td>
-                                <td>kelvin</td>
-                                <td>K</td>
-                            </tr>
-
-                            <tr>
-                                <td>Amount of substance</td>
-                                <td>mole</td>
-                                <td>mol</td>
-                            </tr>
-
-                            <tr>
-                                <td>Electric current</td>
-                                <td>ampere</td>
-                                <td>A</td>
-                            </tr>
-
-                            <tr>
-                                <td>Luminous intensity</td>
-                                <td>candela</td>
-                                <td>cd</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <p>
-                    Chemistry frequently uses several derived quantities.
-                    For example, volume can be expressed in cubic metres
-                    (<strong>m³</strong>), while concentration may be expressed
-                    in moles per cubic metre or moles per litre.
-                </p>
-
-                <div class="lesson-callout">
-                    <strong>Important:</strong>
-                    The kilogram is the SI base unit for mass, although grams
-                    and milligrams are extremely common in laboratory work.
-                </div>
-
-                <p>
-                    Standardized units allow measurements made in different
-                    laboratories, countries, and experiments to be compared
-                    consistently.
-                </p>
-            `,
-
-            keyPoints: [
-                "SI stands for International System of Units.",
-                "SI provides internationally standardized measurement units.",
-                "The mole is the SI base unit for amount of substance.",
-                "The kelvin is the SI base unit for thermodynamic temperature.",
-                "Derived units are constructed from base units."
-            ],
-
-            workedExample: {
-                question:
-                    "What is the SI base unit for amount of substance?",
-
-                solution: `
-                    The SI base unit for amount of substance is the
-                    <strong>mole (mol)</strong>.
-                `
-            },
-
-            knowledgeCheck: {
-                question:
-                    "Which is the SI base unit for temperature?",
-
-                options: [
-                    "Degree Celsius (°C)",
-                    "Kelvin (K)",
-                    "Joule (J)",
-                    "Pascal (Pa)"
+                content: [
+                    {
+                        heading: "Measurement in chemistry",
+                        text:
+                            "A scientific measurement is a quantitative description of a physical quantity. In chemistry, measurements allow scientists to describe matter, compare substances, perform calculations, and communicate experimental results."
+                    },
+                    {
+                        heading: "Every measurement has two parts",
+                        text:
+                            "A measurement consists of a numerical value and a unit. For example, 25.0 mL contains the numerical value 25.0 and the unit millilitre."
+                    }
                 ],
 
-                answer: 1,
-
-                explanation:
-                    "The kelvin (K) is the SI base unit for thermodynamic temperature."
-            }
-        },
-
-
-        /* -------------------------------------------------
-           LESSON 3
-           ------------------------------------------------- */
-
-        {
-            id: "common-chemistry-units",
-
-            title: "Common Chemistry Units",
-
-            type: "concept",
-
-            duration: 10,
-
-            objectives: [
-                "Identify common units used in chemistry.",
-                "Match physical quantities with appropriate units.",
-                "Distinguish SI units from commonly used laboratory units.",
-                "Recognize common prefixes such as milli-, micro-, and kilo-."
-            ],
-
-            content: `
-                <p>
-                    Although SI units provide the international foundation,
-                    chemists frequently use related units that are convenient
-                    for laboratory measurements.
-                </p>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Quantity</th>
-                                <th>Common Units</th>
-                                <th>Typical Use</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>Mass</td>
-                                <td>g, mg, kg</td>
-                                <td>Weighing substances</td>
-                            </tr>
-
-                            <tr>
-                                <td>Volume</td>
-                                <td>L, mL, cm³</td>
-                                <td>Measuring liquids</td>
-                            </tr>
-
-                            <tr>
-                                <td>Temperature</td>
-                                <td>°C, K</td>
-                                <td>Thermal measurements</td>
-                            </tr>
-
-                            <tr>
-                                <td>Pressure</td>
-                                <td>Pa, kPa, atm</td>
-                                <td>Gas and atmospheric studies</td>
-                            </tr>
-
-                            <tr>
-                                <td>Energy</td>
-                                <td>J, kJ</td>
-                                <td>Thermochemistry</td>
-                            </tr>
-
-                            <tr>
-                                <td>Amount</td>
-                                <td>mol</td>
-                                <td>Stoichiometric calculations</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <p>
-                    Chemistry also uses prefixes to represent very large or
-                    very small quantities.
-                </p>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Prefix</th>
-                                <th>Symbol</th>
-                                <th>Factor</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>kilo</td>
-                                <td>k</td>
-                                <td>10³</td>
-                            </tr>
-
-                            <tr>
-                                <td>milli</td>
-                                <td>m</td>
-                                <td>10⁻³</td>
-                            </tr>
-
-                            <tr>
-                                <td>micro</td>
-                                <td>µ</td>
-                                <td>10⁻⁶</td>
-                            </tr>
-
-                            <tr>
-                                <td>nano</td>
-                                <td>n</td>
-                                <td>10⁻⁹</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="lesson-callout">
-                    <strong>Remember:</strong>
-                    A prefix changes the scale of a unit. It does not change
-                    the physical quantity being measured.
-                </div>
-            `,
-
-            keyPoints: [
-                "Chemists use many units depending on the quantity and scale.",
-                "Millilitres and litres are common units for laboratory volume.",
-                "Grams and milligrams are common laboratory mass units.",
-                "Prefixes represent powers of ten.",
-                "Unit conversions are essential when performing calculations."
-            ],
-
-            workedExample: {
-                question:
-                    "How many millilitres are in 2.5 litres?",
-
-                solution: `
-                    Since 1 L = 1000 mL:
-
-                    <div class="lesson-equation">
-                        2.5 L × 1000 mL/L = 2500 mL
-                    </div>
-
-                    Therefore, <strong>2.5 L = 2500 mL</strong>.
-                `
-            },
-
-            knowledgeCheck: {
-                question:
-                    "Which prefix represents 10⁻³?",
-
-                options: [
-                    "kilo-",
-                    "micro-",
-                    "milli-",
-                    "nano-"
+                keyPoints: [
+                    "Measurements describe physical quantities.",
+                    "A numerical value without a unit is incomplete.",
+                    "Measurements are fundamental to experimental chemistry."
                 ],
 
-                answer: 2,
+                workedExample: {
+                    question: "A sample has a mass of 12.5 g. Identify the quantity, numerical value, and unit.",
+                    answer:
+                        "The quantity is mass, the numerical value is 12.5, and the unit is gram (g)."
+                },
 
-                explanation:
-                    "The prefix milli- represents one thousandth, or 10⁻³."
-            }
-        },
-
-
-        /* -------------------------------------------------
-           LESSON 4
-           ------------------------------------------------- */
-
-        {
-            id: "scientific-notation",
-
-            title: "Scientific Notation",
-
-            type: "calculation",
-
-            duration: 12,
-
-            objectives: [
-                "Explain scientific notation.",
-                "Convert ordinary numbers into scientific notation.",
-                "Convert scientific notation back to ordinary numbers.",
-                "Use scientific notation to represent very large and very small quantities."
-            ],
-
-            content: `
-                <p>
-                    Chemistry frequently deals with quantities that are
-                    extremely large or extremely small.
-                </p>
-
-                <p>
-                    For example, atoms are incredibly small, while a laboratory
-                    may contain an enormous number of particles. Writing such
-                    numbers in ordinary decimal form can be inconvenient and
-                    can make mistakes more likely.
-                </p>
-
-                <p>
-                    <strong>Scientific notation</strong> provides a compact way
-                    of representing these numbers.
-                </p>
-
-                <div class="lesson-equation">
-                    a × 10ⁿ
-                </div>
-
-                <p>
-                    In scientific notation, <strong>a</strong> is a number
-                    greater than or equal to 1 but less than 10, while
-                    <strong>n</strong> is an integer.
-                </p>
-
-                <div class="lesson-callout">
-                    <strong>Moving the decimal left</strong> produces a
-                    positive exponent when converting a large number.
-                    Moving it right produces a negative exponent for a number
-                    smaller than one.
-                </div>
-
-                <h3>Example: Large Number</h3>
-
-                <div class="lesson-equation">
-                    450000 = 4.5 × 10⁵
-                </div>
-
-                <h3>Example: Small Number</h3>
-
-                <div class="lesson-equation">
-                    0.00032 = 3.2 × 10⁻⁴
-                </div>
-
-                <p>
-                    Scientific notation is especially useful when working with
-                    atomic dimensions, particle counts, concentrations,
-                    physical constants, and very small measurements.
-                </p>
-            `,
-
-            keyPoints: [
-                "Scientific notation expresses numbers as a × 10ⁿ.",
-                "The coefficient a must be at least 1 and less than 10.",
-                "Large numbers normally have positive exponents.",
-                "Numbers between 0 and 1 normally have negative exponents.",
-                "Scientific notation reduces ambiguity and simplifies calculations."
-            ],
-
-            workedExample: {
-                question:
-                    "Express 0.00000560 in scientific notation.",
-
-                solution: `
-                    Move the decimal point five places to the right:
-
-                    <div class="lesson-equation">
-                        0.00000560 = 5.60 × 10⁻⁶
-                    </div>
-
-                    Therefore, the answer is
-                    <strong>5.60 × 10⁻⁶</strong>.
-                `
+                knowledgeCheck: {
+                    question: "Which statement best describes a scientific measurement?",
+                    options: [
+                        "A number written without a unit",
+                        "A qualitative description only",
+                        "A quantitative value expressed with an appropriate unit",
+                        "An estimate that cannot be recorded"
+                    ],
+                    answer: 2
+                }
             },
 
-            knowledgeCheck: {
-                question:
-                    "Which is the correct scientific notation for 720000?",
 
-                options: [
-                    "72 × 10⁴",
-                    "7.2 × 10⁵",
-                    "0.72 × 10⁶",
-                    "720 × 10³"
+            {
+                id: "measurement-2",
+                title: "The SI System of Units",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Explain the purpose of the SI system.",
+                    "Identify common SI base units used in chemistry.",
+                    "Distinguish between base and derived units."
                 ],
 
-                answer: 1,
+                content: [
+                    {
+                        heading: "International measurement",
+                        text:
+                            "The International System of Units, abbreviated SI, provides a consistent framework for scientific measurement."
+                    },
+                    {
+                        heading: "Important SI quantities",
+                        text:
+                            "Chemistry frequently uses metre for length, kilogram for mass, second for time, kelvin for temperature, mole for amount of substance, and ampere for electric current."
+                    }
+                ],
 
-                explanation:
-                    "Scientific notation requires the coefficient to be at least 1 and less than 10, so 720000 = 7.2 × 10⁵."
-            }
-        },
+                keyPoints: [
+                    "SI provides a common measurement language.",
+                    "The mole is the SI base unit for amount of substance.",
+                    "Many chemistry units are derived from SI units."
+                ],
 
+                workedExample: {
+                    question: "Which SI base unit represents amount of substance?",
+                    answer: "The mole (mol)."
+                },
 
-        /* -------------------------------------------------
-           LESSON 5
-           ------------------------------------------------- */
-
-        {
-            id: "significant-figures",
-
-            title: "Significant Figures",
-
-            type: "calculation",
-
-            duration: 14,
-
-            objectives: [
-                "Define significant figures.",
-                "Identify significant and non-significant zeros.",
-                "Count significant figures in measured values.",
-                "Explain why significant figures matter in chemistry."
-            ],
-
-            content: `
-                <p>
-                    Measurements contain information about their precision.
-                    <strong>Significant figures</strong> are the digits in a
-                    measured value that communicate its meaningful precision.
-                </p>
-
-                <div class="lesson-callout">
-                    <strong>Important:</strong>
-                    Significant figures are not simply all the digits written
-                    in a number. Their purpose is to communicate the precision
-                    supported by the measurement.
-                </div>
-
-                <h3>Basic Rules</h3>
-
-                <p>
-                    Non-zero digits are always significant.
-                </p>
-
-                <div class="lesson-equation">
-                    245 → 3 significant figures
-                </div>
-
-                <p>
-                    Zeros between non-zero digits are significant.
-                </p>
-
-                <div class="lesson-equation">
-                    1005 → 4 significant figures
-                </div>
-
-                <p>
-                    Leading zeros are not significant.
-                </p>
-
-                <div class="lesson-equation">
-                    0.0045 → 2 significant figures
-                </div>
-
-                <p>
-                    Trailing zeros after a decimal point are significant.
-                </p>
-
-                <div class="lesson-equation">
-                    4.500 → 4 significant figures
-                </div>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Value</th>
-                                <th>Significant Figures</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>25.4</td>
-                                <td>3</td>
-                            </tr>
-
-                            <tr>
-                                <td>0.0052</td>
-                                <td>2</td>
-                            </tr>
-
-                            <tr>
-                                <td>1005</td>
-                                <td>4</td>
-                            </tr>
-
-                            <tr>
-                                <td>7.00</td>
-                                <td>3</td>
-                            </tr>
-
-                            <tr>
-                                <td>0.0400</td>
-                                <td>3</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <p>
-                    Significant figures become especially important when
-                    reporting calculated results because the final answer
-                    should not imply greater precision than the measurements
-                    support.
-                </p>
-            `,
-
-            keyPoints: [
-                "Significant figures communicate meaningful measurement precision.",
-                "Non-zero digits are significant.",
-                "Zeros between non-zero digits are significant.",
-                "Leading zeros are not significant.",
-                "Trailing zeros after a decimal point are significant."
-            ],
-
-            workedExample: {
-                question:
-                    "How many significant figures are present in 0.03040?",
-
-                solution: `
-                    The leading zeros are not significant.
-
-                    The digits 3, 0, 4, and the final zero are significant.
-
-                    Therefore:
-
-                    <div class="lesson-equation">
-                        0.03040 → 4 significant figures
-                    </div>
-                `
+                knowledgeCheck: {
+                    question: "Which is the SI base unit for temperature?",
+                    options: [
+                        "Degree Celsius",
+                        "Kelvin",
+                        "Joule",
+                        "Pascal"
+                    ],
+                    answer: 1
+                }
             },
 
-            knowledgeCheck: {
-                question:
-                    "How many significant figures are in 0.00450?",
 
-                options: [
-                    "2",
-                    "3",
-                    "4",
-                    "5"
+            {
+                id: "measurement-3",
+                title: "Common Chemistry Units",
+                type: "lesson",
+                duration: 10,
+
+                objectives: [
+                    "Recognize common chemistry units.",
+                    "Connect units to physical quantities.",
+                    "Distinguish between common laboratory units."
                 ],
 
-                answer: 1,
+                content: [
+                    {
+                        heading: "Mass",
+                        text:
+                            "Chemists commonly measure mass using grams or kilograms."
+                    },
+                    {
+                        heading: "Volume",
+                        text:
+                            "Laboratory liquid volumes are commonly reported in litres, millilitres, or cubic centimetres."
+                    },
+                    {
+                        heading: "Temperature",
+                        text:
+                            "Temperature may be reported in degrees Celsius in laboratory work, while kelvin is the SI base unit."
+                    }
+                ],
 
-                explanation:
-                    "The leading zeros are not significant. The digits 4, 5, and the final zero are significant, giving 3 significant figures."
-            }
-        },
+                keyPoints: [
+                    "Mass can be measured in g or kg.",
+                    "Volume can be measured in L or mL.",
+                    "Temperature has both Celsius and kelvin scales commonly encountered in chemistry."
+                ],
 
+                workedExample: {
+                    question: "Convert 2.5 L to mL.",
+                    answer: "2.5 L × 1000 mL/L = 2500 mL."
+                },
 
-        /* -------------------------------------------------
-           LESSON 6
-           ------------------------------------------------- */
-
-        {
-            id: "accuracy-and-precision",
-
-            title: "Accuracy and Precision",
-
-            type: "concept",
-
-            duration: 10,
-
-            objectives: [
-                "Define accuracy.",
-                "Define precision.",
-                "Distinguish accuracy from precision.",
-                "Explain why both matter in laboratory measurements."
-            ],
-
-            content: `
-                <p>
-                    Two important ideas in experimental chemistry are
-                    <strong>accuracy</strong> and <strong>precision</strong>.
-                    Although the words are sometimes used interchangeably in
-                    everyday language, they have different scientific meanings.
-                </p>
-
-                <h3>Accuracy</h3>
-
-                <p>
-                    <strong>Accuracy</strong> describes how close a measured
-                    value is to an accepted or reference value.
-                </p>
-
-                <h3>Precision</h3>
-
-                <p>
-                    <strong>Precision</strong> describes how closely repeated
-                    measurements agree with one another.
-                </p>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Situation</th>
-                                <th>Accuracy</th>
-                                <th>Precision</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>Values close to reference and each other</td>
-                                <td>High</td>
-                                <td>High</td>
-                            </tr>
-
-                            <tr>
-                                <td>Values close to each other but far from reference</td>
-                                <td>Low</td>
-                                <td>High</td>
-                            </tr>
-
-                            <tr>
-                                <td>Values spread out but centered around reference</td>
-                                <td>Generally high overall</td>
-                                <td>Low</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="lesson-callout">
-                    <strong>Remember:</strong>
-                    A measurement can be precise without being accurate.
-                    Repeating the same systematic error can produce tightly
-                    grouped but inaccurate results.
-                </div>
-
-                <p>
-                    Good experimental practice aims to produce measurements
-                    that are both accurate and precise, while recognizing that
-                    real measurements always have limitations.
-                </p>
-            `,
-
-            keyPoints: [
-                "Accuracy refers to closeness to an accepted value.",
-                "Precision refers to agreement among repeated measurements.",
-                "A result can be precise but inaccurate.",
-                "Systematic errors can affect accuracy.",
-                "Random variation can affect precision."
-            ],
-
-            workedExample: {
-                question:
-                    "A balance repeatedly gives 10.21 g for a standard sample whose accepted value is 10.00 g. What does this suggest?",
-
-                solution: `
-                    The repeated results are close to one another, indicating
-                    good <strong>precision</strong>. However, they are not close
-                    to the accepted value, indicating lower <strong>accuracy</strong>.
-                `
+                knowledgeCheck: {
+                    question: "Which unit is commonly used for laboratory liquid volume?",
+                    options: [
+                        "mL",
+                        "kg",
+                        "K",
+                        "mol"
+                    ],
+                    answer: 0
+                }
             },
 
-            knowledgeCheck: {
-                question:
-                    "What does precision describe?",
 
-                options: [
-                    "How close a result is to the accepted value",
-                    "How close repeated measurements are to one another",
-                    "The unit used for a measurement",
-                    "The size of the laboratory instrument"
+            {
+                id: "measurement-4",
+                title: "Scientific Notation",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Write very large and small numbers in scientific notation.",
+                    "Interpret powers of ten.",
+                    "Use scientific notation in chemistry."
                 ],
 
-                answer: 1,
+                content: [
+                    {
+                        heading: "Why scientific notation matters",
+                        text:
+                            "Chemistry frequently deals with extremely small particles and extremely large numbers. Scientific notation makes these quantities easier to write and calculate."
+                    },
+                    {
+                        heading: "Basic form",
+                        text:
+                            "Scientific notation is written as a × 10ⁿ, where a is at least 1 but less than 10."
+                    }
+                ],
 
-                explanation:
-                    "Precision describes the degree of agreement among repeated measurements."
-            }
-        },
+                keyPoints: [
+                    "Scientific notation uses powers of ten.",
+                    "The coefficient is normally between 1 and 10.",
+                    "Negative exponents represent numbers smaller than one."
+                ],
 
+                workedExample: {
+                    question: "Write 0.00045 in scientific notation.",
+                    answer: "4.5 × 10⁻⁴."
+                },
 
-        /* -------------------------------------------------
-           LESSON 7
-           ------------------------------------------------- */
-
-        {
-            id: "measurement-uncertainty",
-
-            title: "Measurement Uncertainty",
-
-            type: "concept",
-
-            duration: 12,
-
-            objectives: [
-                "Explain measurement uncertainty.",
-                "Identify sources of uncertainty.",
-                "Understand why measurements cannot be perfectly exact.",
-                "Relate instrument resolution to reported measurements."
-            ],
-
-            content: `
-                <p>
-                    No physical measurement is perfectly exact. Every
-                    measurement has some degree of
-                    <strong>uncertainty</strong>.
-                </p>
-
-                <p>
-                    Measurement uncertainty represents the range within which
-                    the true value is expected to lie, according to the
-                    measurement method and its limitations.
-                </p>
-
-                <div class="lesson-callout">
-                    <strong>Key idea:</strong>
-                    Uncertainty does not mean that an experiment has failed.
-                    It is a normal and important part of scientific measurement.
-                </div>
-
-                <p>
-                    Sources of uncertainty may include the measuring
-                    instrument, environmental conditions, sample preparation,
-                    reading technique, and natural variation.
-                </p>
-
-                <h3>Instrument Resolution</h3>
-
-                <p>
-                    The smallest scale division or display increment of an
-                    instrument influences how precisely a measurement can be
-                    reported.
-                </p>
-
-                <p>
-                    For example, an instrument displaying mass to the nearest
-                    0.01 g communicates a different level of measurement detail
-                    from an instrument displaying only to the nearest gram.
-                </p>
-
-                <div class="lesson-equation">
-                    Reported measurement = measured value ± uncertainty
-                </div>
-
-                <p>
-                    In advanced analytical chemistry, uncertainty can be
-                    quantified using statistical and experimental methods.
-                    These methods allow scientists to communicate the quality
-                    and limitations of their results.
-                </p>
-            `,
-
-            keyPoints: [
-                "Every physical measurement has uncertainty.",
-                "Uncertainty can arise from instruments, environment, technique, and samples.",
-                "Instrument resolution affects how a measurement can be reported.",
-                "Uncertainty should be communicated rather than ignored.",
-                "Advanced chemistry uses statistical methods to estimate uncertainty."
-            ],
-
-            workedExample: {
-                question:
-                    "Why should a student avoid reporting more decimal places than an instrument can support?",
-
-                solution: `
-                    Reporting unsupported decimal places gives the impression
-                    of greater precision than the measuring instrument can
-                    actually provide. The reported value should reflect the
-                    measurement capability of the instrument.
-                `
+                knowledgeCheck: {
+                    question: "Which is the scientific notation for 560000?",
+                    options: [
+                        "5.6 × 10⁵",
+                        "56 × 10⁴",
+                        "0.56 × 10⁶",
+                        "5.6 × 10⁶"
+                    ],
+                    answer: 0
+                }
             },
 
-            knowledgeCheck: {
-                question:
-                    "Which statement about measurement uncertainty is correct?",
 
-                options: [
-                    "It means every measurement is useless",
-                    "It is a normal limitation of physical measurement",
-                    "It only occurs when a student makes a mistake",
-                    "It can always be completely eliminated"
+            {
+                id: "measurement-5",
+                title: "Significant Figures",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Identify significant figures.",
+                    "Distinguish significant digits from placeholders.",
+                    "Explain why significant figures matter."
                 ],
 
-                answer: 1,
+                content: [
+                    {
+                        heading: "Meaning of significant figures",
+                        text:
+                            "Significant figures communicate the precision supported by a measurement. They prevent calculated results from appearing more precise than the measurements used."
+                    },
+                    {
+                        heading: "Zeros",
+                        text:
+                            "Zeros may be significant depending on their position. Zeros between non-zero digits are significant, while leading zeros generally are not."
+                    }
+                ],
 
-                explanation:
-                    "Uncertainty is an inherent part of physical measurement and should be properly considered and reported."
-            }
-        },
+                keyPoints: [
+                    "Significant figures communicate measurement precision.",
+                    "Leading zeros are generally not significant.",
+                    "Zeros between non-zero digits are significant."
+                ],
 
+                workedExample: {
+                    question: "How many significant figures are in 0.00450?",
+                    answer: "Three significant figures: 4, 5, and the final zero."
+                },
 
-        /* -------------------------------------------------
-           LESSON 8
-           ------------------------------------------------- */
-
-        {
-            id: "dimensional-analysis",
-
-            title: "Dimensional Analysis",
-
-            type: "calculation",
-
-            duration: 14,
-
-            objectives: [
-                "Explain dimensional analysis.",
-                "Use conversion factors to change units.",
-                "Cancel units systematically.",
-                "Check whether a calculation has physically meaningful units."
-            ],
-
-            content: `
-                <p>
-                    <strong>Dimensional analysis</strong> is a systematic
-                    method for converting quantities from one unit to another.
-                    It is also a powerful way to check whether a calculation
-                    is dimensionally consistent.
-                </p>
-
-                <p>
-                    The central idea is to multiply by a conversion factor that
-                    is equal to one.
-                </p>
-
-                <div class="lesson-equation">
-                    1 L = 1000 mL
-                </div>
-
-                <p>
-                    Therefore, either of the following ratios represents a
-                    valid conversion factor:
-                </p>
-
-                <div class="lesson-equation">
-                    1000 mL / 1 L
-                    &nbsp;&nbsp;&nbsp; or &nbsp;&nbsp;&nbsp;
-                    1 L / 1000 mL
-                </div>
-
-                <p>
-                    The correct form is selected so that unwanted units cancel.
-                </p>
-
-                <div class="lesson-equation">
-                    2.5 L ×
-                    (1000 mL / 1 L)
-                    = 2500 mL
-                </div>
-
-                <p>
-                    Notice that the unit L appears in both the numerator and
-                    denominator and therefore cancels.
-                </p>
-
-                <div class="lesson-callout">
-                    <strong>Useful habit:</strong>
-                    Always write units during chemistry calculations. Units
-                    provide an immediate check on whether your setup makes
-                    sense.
-                </div>
-            `,
-
-            keyPoints: [
-                "Dimensional analysis uses conversion factors to change units.",
-                "Conversion factors are ratios equal to one.",
-                "Units should be treated algebraically.",
-                "Unwanted units should cancel.",
-                "Dimensional analysis can reveal calculation errors."
-            ],
-
-            workedExample: {
-                question:
-                    "Convert 750 mL to litres.",
-
-                solution: `
-                    Use:
-
-                    <div class="lesson-equation">
-                        1 L = 1000 mL
-                    </div>
-
-                    Therefore:
-
-                    <div class="lesson-equation">
-                        750 mL ×
-                        (1 L / 1000 mL)
-                        = 0.750 L
-                    </div>
-
-                    Therefore, <strong>750 mL = 0.750 L</strong>.
-                `
+                knowledgeCheck: {
+                    question: "How many significant figures are in 0.00450?",
+                    options: [
+                        "2",
+                        "3",
+                        "4",
+                        "5"
+                    ],
+                    answer: 1
+                }
             },
 
-            knowledgeCheck: {
-                question:
-                    "What is the main purpose of dimensional analysis?",
 
-                options: [
-                    "To remove units from every answer",
-                    "To convert units and check dimensional consistency",
-                    "To increase the precision of an instrument",
-                    "To determine the colour of a chemical"
+            {
+                id: "measurement-6",
+                title: "Accuracy and Precision",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Define accuracy.",
+                    "Define precision.",
+                    "Distinguish accuracy from precision."
                 ],
 
-                answer: 1,
+                content: [
+                    {
+                        heading: "Accuracy",
+                        text:
+                            "Accuracy describes how close a measurement is to an accepted or reference value."
+                    },
+                    {
+                        heading: "Precision",
+                        text:
+                            "Precision describes how closely repeated measurements agree with one another."
+                    }
+                ],
 
-                explanation:
-                    "Dimensional analysis is used for unit conversion and for checking whether calculations are dimensionally consistent."
-            }
-        },
+                keyPoints: [
+                    "Accuracy concerns closeness to a reference value.",
+                    "Precision concerns agreement between repeated measurements.",
+                    "A measurement can be precise without being accurate."
+                ],
 
+                workedExample: {
+                    question:
+                        "Three measurements are 10.01, 10.02, and 10.01 when the reference value is 10.00. What characteristic do they demonstrate?",
+                    answer:
+                        "They demonstrate high precision and are also close to the reference value, indicating good accuracy."
+                },
 
-        /* -------------------------------------------------
-           LESSON 9
-           ------------------------------------------------- */
-
-        {
-            id: "unit-conversions-in-chemistry",
-
-            title: "Unit Conversions in Chemistry",
-
-            type: "calculation",
-
-            duration: 14,
-
-            objectives: [
-                "Perform common chemistry unit conversions.",
-                "Convert between metric prefixes.",
-                "Use multiple conversion factors.",
-                "Maintain appropriate significant figures."
-            ],
-
-            content: `
-                <p>
-                    Chemistry calculations frequently require conversion
-                    between different units before an equation can be used.
-                </p>
-
-                <p>
-                    Metric prefixes make many conversions straightforward
-                    because they represent powers of ten.
-                </p>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Relationship</th>
-                                <th>Equivalent</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>1 kg</td>
-                                <td>1000 g</td>
-                            </tr>
-
-                            <tr>
-                                <td>1 g</td>
-                                <td>1000 mg</td>
-                            </tr>
-
-                            <tr>
-                                <td>1 L</td>
-                                <td>1000 mL</td>
-                            </tr>
-
-                            <tr>
-                                <td>1 mL</td>
-                                <td>1 cm³</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <p>
-                    Some chemistry problems require more than one conversion
-                    step. Dimensional analysis allows these steps to be linked
-                    together without losing track of the units.
-                </p>
-
-                <div class="lesson-equation">
-                    2.4 kg ×
-                    (1000 g / 1 kg)
-                    = 2400 g
-                </div>
-
-                <p>
-                    When converting measured quantities, remember that the
-                    precision of the final result should remain consistent with
-                    the information supplied by the original measurement.
-                </p>
-            `,
-
-            keyPoints: [
-                "Metric conversions are based on powers of ten.",
-                "Dimensional analysis is useful for multi-step conversions.",
-                "Write units at every step.",
-                "The final unit should match the quantity being requested.",
-                "Reported precision should be appropriate for the original measurement."
-            ],
-
-            workedExample: {
-                question:
-                    "Convert 0.0250 kg to grams.",
-
-                solution: `
-                    <div class="lesson-equation">
-                        0.0250 kg ×
-                        (1000 g / 1 kg)
-                        = 25.0 g
-                    </div>
-
-                    Therefore, <strong>0.0250 kg = 25.0 g</strong>.
-                `
+                knowledgeCheck: {
+                    question: "Precision primarily describes:",
+                    options: [
+                        "Closeness to the accepted value",
+                        "Agreement among repeated measurements",
+                        "The size of the instrument",
+                        "The unit used"
+                    ],
+                    answer: 1
+                }
             },
 
-            knowledgeCheck: {
-                question:
-                    "How many grams are equivalent to 0.500 kg?",
 
-                options: [
-                    "0.0500 g",
-                    "5.00 g",
-                    "50.0 g",
-                    "500 g"
+            {
+                id: "measurement-7",
+                title: "Measurement Uncertainty",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Explain measurement uncertainty.",
+                    "Recognize why instruments have limits.",
+                    "Report measurements appropriately."
                 ],
 
-                answer: 3,
+                content: [
+                    {
+                        heading: "No measurement is perfectly exact",
+                        text:
+                            "Real measurements contain uncertainty because instruments have finite resolution and experimental conditions are not perfectly controlled."
+                    },
+                    {
+                        heading: "Reporting uncertainty",
+                        text:
+                            "Scientists communicate uncertainty through appropriate significant figures, uncertainty estimates, or stated instrument limitations."
+                    }
+                ],
 
-                explanation:
-                    "Since 1 kg = 1000 g, 0.500 kg × 1000 g/kg = 500 g."
-            }
-        },
+                keyPoints: [
+                    "Measurements contain uncertainty.",
+                    "Instrument resolution affects uncertainty.",
+                    "Scientific reporting should communicate realistic precision."
+                ],
 
+                workedExample: {
+                    question:
+                        "Why should a digital balance reading not normally be reported with many extra invented decimal places?",
+                    answer:
+                        "Because the instrument does not provide information supporting those additional digits."
+                },
 
-        /* -------------------------------------------------
-           LESSON 10
-           ------------------------------------------------- */
-
-        {
-            id: "reading-scientific-data",
-
-            title: "Reading Scientific Data",
-
-            type: "data-analysis",
-
-            duration: 12,
-
-            objectives: [
-                "Identify important information in scientific data.",
-                "Distinguish variables and units.",
-                "Interpret tables of experimental measurements.",
-                "Recognize trends and unusual values."
-            ],
-
-            content: `
-                <p>
-                    Chemistry produces data in many forms, including tables,
-                    graphs, instrument displays, spectra, and recorded
-                    observations.
-                </p>
-
-                <p>
-                    Before interpreting data, first identify
-                    <strong>what was measured</strong>, <strong>the units</strong>,
-                    and <strong>the conditions</strong> under which the
-                    measurements were obtained.
-                </p>
-
-                <div class="lesson-table-wrapper">
-                    <table class="lesson-table">
-                        <thead>
-                            <tr>
-                                <th>Trial</th>
-                                <th>Temperature (°C)</th>
-                                <th>Mass (g)</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>24.8</td>
-                                <td>5.02</td>
-                            </tr>
-
-                            <tr>
-                                <td>2</td>
-                                <td>25.0</td>
-                                <td>5.01</td>
-                            </tr>
-
-                            <tr>
-                                <td>3</td>
-                                <td>25.1</td>
-                                <td>5.03</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <p>
-                    From this table, we can see that the temperature varies
-                    slightly between trials while the measured mass remains
-                    close to 5.02 g.
-                </p>
-
-                <p>
-                    When interpreting scientific data, avoid making claims that
-                    are not supported by the measurements. A small difference
-                    may simply represent normal experimental variation.
-                </p>
-
-                <div class="lesson-callout">
-                    <strong>Scientific habit:</strong>
-                    Separate what the data directly show from explanations or
-                    hypotheses about why the data look that way.
-                </div>
-
-                <p>
-                    Good data analysis considers numerical patterns,
-                    uncertainties, units, experimental conditions, and possible
-                    sources of variation.
-                </p>
-            `,
-
-            keyPoints: [
-                "Always identify the measured quantity and its unit.",
-                "Check the experimental conditions before interpreting results.",
-                "Look for trends and repeated patterns.",
-                "Consider variation and uncertainty.",
-                "Do not claim more than the data support."
-            ],
-
-            workedExample: {
-                question:
-                    "Three mass measurements are 4.98 g, 5.01 g, and 5.00 g. What general observation can be made?",
-
-                solution: `
-                    The three measurements are close to one another,
-                    indicating that the measurements show relatively little
-                    variation.
-                `
+                knowledgeCheck: {
+                    question: "What contributes to measurement uncertainty?",
+                    options: [
+                        "Instrument limitations",
+                        "Only mathematical errors",
+                        "The chemical formula",
+                        "The color of the sample"
+                    ],
+                    answer: 0
+                }
             },
 
-            knowledgeCheck: {
-                question:
-                    "What should you identify first when reading a scientific data table?",
 
-                options: [
-                    "The colour of the table",
-                    "The measured quantities and their units",
-                    "The name of the student",
-                    "The largest number only"
+            {
+                id: "measurement-8",
+                title: "Dimensional Analysis",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Use units to organize calculations.",
+                    "Set up conversion factors.",
+                    "Check whether an answer has appropriate units."
                 ],
 
-                answer: 1,
+                content: [
+                    {
+                        heading: "Units as a calculation tool",
+                        text:
+                            "Dimensional analysis treats units as algebraic quantities. Conversion factors are arranged so unwanted units cancel."
+                    }
+                ],
 
-                explanation:
-                    "Understanding what was measured and the units used is essential before interpreting scientific data."
+                keyPoints: [
+                    "Units can be cancelled algebraically.",
+                    "Conversion factors equal one.",
+                    "The final unit should match the requested quantity."
+                ],
+
+                workedExample: {
+                    question: "Convert 2.5 L to mL.",
+                    answer:
+                        "2.5 L × (1000 mL / 1 L) = 2500 mL."
+                },
+
+                knowledgeCheck: {
+                    question: "In dimensional analysis, unwanted units should:",
+                    options: [
+                        "Remain in the final answer",
+                        "Cancel",
+                        "Be squared",
+                        "Be ignored"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "measurement-9",
+                title: "Unit Conversions in Chemistry",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Convert between common chemistry units.",
+                    "Use metric prefixes.",
+                    "Check conversions for reasonableness."
+                ],
+
+                content: [
+                    {
+                        heading: "Metric prefixes",
+                        text:
+                            "Prefixes such as kilo-, centi-, milli-, and micro- represent powers of ten and make unit conversion systematic."
+                    }
+                ],
+
+                keyPoints: [
+                    "Metric prefixes represent powers of ten.",
+                    "Always identify the starting and desired units.",
+                    "Use conversion factors instead of guessing."
+                ],
+
+                workedExample: {
+                    question: "Convert 3500 mg to g.",
+                    answer:
+                        "3500 mg × (1 g / 1000 mg) = 3.5 g."
+                },
+
+                knowledgeCheck: {
+                    question: "1000 mg is equal to:",
+                    options: [
+                        "0.001 g",
+                        "0.1 g",
+                        "1 g",
+                        "10 g"
+                    ],
+                    answer: 2
+                }
+            },
+
+
+            {
+                id: "measurement-10",
+                title: "Reading Scientific Data",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Interpret tables and graphs.",
+                    "Identify trends in experimental data.",
+                    "Distinguish observations from conclusions."
+                ],
+
+                content: [
+                    {
+                        heading: "Scientific data",
+                        text:
+                            "Chemists use tables, graphs, measurements, and calculated quantities to communicate experimental results."
+                    },
+                    {
+                        heading: "Interpretation",
+                        text:
+                            "A useful interpretation identifies patterns supported by the data without claiming more than the evidence shows."
+                    }
+                ],
+
+                keyPoints: [
+                    "Tables organize measurements.",
+                    "Graphs reveal relationships and trends.",
+                    "Conclusions should be supported by the data."
+                ],
+
+                workedExample: {
+                    question:
+                        "A graph shows that reaction rate increases as temperature increases. What relationship is suggested?",
+                    answer:
+                        "The data suggest that reaction rate increases with increasing temperature over the measured range."
+                },
+
+                knowledgeCheck: {
+                    question: "A scientific conclusion should primarily be based on:",
+                    options: [
+                        "Personal preference",
+                        "Experimental evidence",
+                        "A guess",
+                        "The most attractive graph"
+                    ],
+                    answer: 1
+                }
             }
-        }
-
-    ]
-
-};
-   
-   "atomic-structure-periodic-table": [
-
-    /* =====================================================
-       LESSON 1
-       ===================================================== */
-
-    {
-        id: "introduction-to-atomic-structure",
-        title: "Introduction to Atomic Structure",
-        type: "concept",
-        duration: 10,
-
-        objectives: [
-            "Explain what an atom is.",
-            "Describe the basic structure of an atom.",
-            "Distinguish between the nucleus and the electron cloud.",
-            "Explain why atomic structure is important in chemistry."
         ],
 
-        content: `
-            <p>
-                Matter is made of particles, and one of the fundamental
-                particles used to describe ordinary matter is the
-                <strong>atom</strong>.
-            </p>
-
-            <p>
-                An atom is the smallest unit of an element that retains
-                the chemical identity of that element.
-            </p>
-
-            <p>
-                Modern atomic structure consists of a small,
-                dense <strong>nucleus</strong> surrounded by a region
-                occupied by electrons.
-            </p>
-
-            <h4>The nucleus</h4>
-
-            <p>
-                The nucleus contains positively charged
-                <strong>protons</strong> and electrically neutral
-                <strong>neutrons</strong>.
-            </p>
-
-            <p>
-                Almost all of an atom's mass is concentrated in its
-                nucleus.
-            </p>
-
-            <h4>The electron region</h4>
-
-            <p>
-                Electrons are negatively charged particles associated
-                with regions around the nucleus. They occupy
-                <strong>atomic orbitals</strong>, which describe regions
-                where electrons are likely to be found.
-            </p>
-
-            <div class="academy-callout">
-                <strong>Key idea:</strong>
-                Chemical behavior is strongly influenced by the
-                arrangement of electrons, especially the outermost
-                electrons.
-            </div>
-        `,
-
-        keyPoints: [
-            "Atoms are fundamental units of elements.",
-            "The nucleus contains protons and neutrons.",
-            "Electrons occupy regions around the nucleus.",
-            "Most atomic mass is concentrated in the nucleus.",
-            "Electron arrangement strongly influences chemical behavior."
-        ],
-
-        workedExample: {
-            question:
-                "Which part of an atom contains protons and neutrons?",
-
-            steps: [
-                "Identify the two particles mentioned.",
-                "Both protons and neutrons are located in the nucleus.",
-                "Therefore, the answer is the nucleus."
-            ],
-
-            answer: "The nucleus."
-        },
-
-        knowledgeCheck: {
-            question:
-                "Which statement correctly describes the nucleus of an atom?",
-
-            options: [
-                "It contains only electrons.",
-                "It contains protons and neutrons.",
-                "It contains only neutrons.",
-                "It contains negatively charged particles."
-            ],
-
-            answer: 1,
-
-            explanation:
-                "The nucleus contains positively charged protons and neutral neutrons."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 2
-       ===================================================== */
-
-    {
-        id: "subatomic-particles",
-        title: "Subatomic Particles",
-        type: "concept",
-        duration: 12,
-
-        objectives: [
-            "Identify the three major subatomic particles.",
-            "Compare their charges and relative masses.",
-            "Locate each particle within an atom.",
-            "Explain why electrons contribute little to atomic mass."
-        ],
-
-        content: `
-            <p>
-                The three major subatomic particles used to describe
-                atoms are <strong>protons</strong>,
-                <strong>neutrons</strong>, and <strong>electrons</strong>.
-            </p>
-
-            <table class="academy-table">
-                <thead>
-                    <tr>
-                        <th>Particle</th>
-                        <th>Charge</th>
-                        <th>Relative mass</th>
-                        <th>Location</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>Proton</td>
-                        <td>+1</td>
-                        <td>≈ 1</td>
-                        <td>Nucleus</td>
-                    </tr>
-
-                    <tr>
-                        <td>Neutron</td>
-                        <td>0</td>
-                        <td>≈ 1</td>
-                        <td>Nucleus</td>
-                    </tr>
-
-                    <tr>
-                        <td>Electron</td>
-                        <td>−1</td>
-                        <td>≈ 1/1836</td>
-                        <td>Electron region</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p>
-                Protons and electrons have equal-sized opposite
-                charges. A neutral atom therefore contains equal
-                numbers of protons and electrons.
-            </p>
-
-            <p>
-                Neutrons have no net electrical charge. Changing the
-                number of neutrons produces different isotopes of the
-                same element.
-            </p>
-
-            <div class="academy-callout">
-                <strong>Remember:</strong>
-                The number of protons determines which element an atom is.
-            </div>
-        `,
-
-        keyPoints: [
-            "Protons have a +1 charge.",
-            "Neutrons have no charge.",
-            "Electrons have a −1 charge.",
-            "Protons and neutrons are in the nucleus.",
-            "The proton number identifies the element."
-        ],
-
-        workedExample: {
-            question:
-                "An atom contains 11 protons and 11 electrons. What is its net charge?",
-
-            steps: [
-                "Each proton contributes +1.",
-                "Each electron contributes −1.",
-                "Total charge = +11 − 11.",
-                "Therefore, the net charge is zero."
-            ],
-
-            answer: "The atom is electrically neutral."
-        },
-
-        knowledgeCheck: {
-            question:
-                "Which subatomic particle determines the identity of an element?",
-
-            options: [
-                "Electron",
-                "Neutron",
-                "Proton",
-                "Orbital"
-            ],
-
-            answer: 2,
-
-            explanation:
-                "The number of protons is the atomic number and uniquely identifies the element."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 3
-       ===================================================== */
-
-    {
-        id: "atomic-number-and-mass-number",
-        title: "Atomic Number and Mass Number",
-        type: "concept",
-        duration: 12,
-
-        objectives: [
-            "Define atomic number.",
-            "Define mass number.",
-            "Calculate numbers of protons, neutrons, and electrons.",
-            "Interpret nuclear notation."
-        ],
-
-        content: `
-            <p>
-                The <strong>atomic number (Z)</strong> is the number
-                of protons in the nucleus of an atom.
-            </p>
-
-            <p>
-                The atomic number identifies the element.
-            </p>
-
-            <p>
-                The <strong>mass number (A)</strong> is the total number
-                of protons and neutrons:
-            </p>
-
-            <div class="academy-equation">
-                A = Z + N
-            </div>
-
-            <p>where:</p>
-
-            <ul>
-                <li><strong>A</strong> = mass number</li>
-                <li><strong>Z</strong> = number of protons</li>
-                <li><strong>N</strong> = number of neutrons</li>
-            </ul>
-
-            <p>
-                Therefore:
-            </p>
-
-            <div class="academy-equation">
-                N = A − Z
-            </div>
-
-            <p>
-                For a neutral atom, the number of electrons equals the
-                number of protons.
-            </p>
-        `,
-
-        keyPoints: [
-            "Atomic number = number of protons.",
-            "Mass number = protons + neutrons.",
-            "Neutrons = mass number − atomic number.",
-            "Neutral atoms have equal numbers of protons and electrons."
-        ],
-
-        workedExample: {
-            question:
-                "An atom has atomic number 17 and mass number 35. How many protons, neutrons, and electrons does a neutral atom contain?",
-
-            steps: [
-                "Protons = atomic number = 17.",
-                "Neutrons = 35 − 17 = 18.",
-                "Because the atom is neutral, electrons = 17."
-            ],
-
-            answer:
-                "17 protons, 18 neutrons, and 17 electrons."
-        },
-
-        knowledgeCheck: {
-            question:
-                "An atom has mass number 23 and atomic number 11. How many neutrons does it have?",
-
-            options: [
-                "11",
-                "12",
-                "23",
-                "34"
-            ],
-
-            answer: 1,
-
-            explanation:
-                "Neutrons = mass number − atomic number = 23 − 11 = 12."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 4
-       ===================================================== */
-
-    {
-        id: "isotopes-and-relative-atomic-mass",
-        title: "Isotopes and Relative Atomic Mass",
-        type: "concept",
-        duration: 14,
-
-        objectives: [
-            "Define isotopes.",
-            "Explain why isotopes are atoms of the same element.",
-            "Distinguish isotopes by their neutron numbers.",
-            "Calculate a weighted average relative atomic mass."
-        ],
-
-        content: `
-            <p>
-                <strong>Isotopes</strong> are atoms of the same element
-                that have the same number of protons but different
-                numbers of neutrons.
-            </p>
-
-            <p>
-                Because they have the same number of protons, isotopes
-                have the same atomic number.
-            </p>
-
-            <p>
-                Their different neutron numbers give them different
-                mass numbers.
-            </p>
-
-            <div class="academy-callout">
-                <strong>Example:</strong>
-                Carbon-12 and Carbon-14 are both carbon because each
-                contains 6 protons. They differ in neutron number.
-            </div>
-
-            <h4>Relative atomic mass</h4>
-
-            <p>
-                The relative atomic mass of an element accounts for the
-                naturally occurring isotopes and their relative
-                abundances.
-            </p>
-
-            <div class="academy-equation">
-                Relative atomic mass =
-                Σ(isotope mass × fractional abundance)
-            </div>
-
-            <p>
-                This is a weighted average rather than a simple average.
-            </p>
-        `,
-
-        keyPoints: [
-            "Isotopes have the same proton number.",
-            "Isotopes have different neutron numbers.",
-            "Different isotopes have different mass numbers.",
-            "Relative atomic mass is a weighted average."
-        ],
-
-        workedExample: {
-            question:
-                "An element has two isotopes: isotope X has mass 10 and abundance 20%, while isotope Y has mass 11 and abundance 80%. Find its relative atomic mass.",
-
-            steps: [
-                "Convert percentages to fractions: 0.20 and 0.80.",
-                "Calculate 10 × 0.20 = 2.0.",
-                "Calculate 11 × 0.80 = 8.8.",
-                "Add the contributions: 2.0 + 8.8 = 10.8."
-            ],
-
-            answer: "Relative atomic mass = 10.8."
-        },
-
-        knowledgeCheck: {
-            question:
-                "What must be different between two isotopes of the same element?",
-
-            options: [
-                "Number of protons",
-                "Number of neutrons",
-                "Atomic number",
-                "Element identity"
-            ],
-
-            answer: 1,
-
-            explanation:
-                "Isotopes have the same number of protons but different numbers of neutrons."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 5
-       ===================================================== */
-
-    {
-        id: "electron-configuration",
-        title: "Electron Configuration",
-        type: "concept",
-        duration: 16,
-
-        objectives: [
-            "Explain the meaning of electron configuration.",
-            "Describe the main electron subshells.",
-            "Apply the basic rules for filling electrons.",
-            "Write simple electron configurations."
-        ],
-
-        content: `
-            <p>
-                An atom's <strong>electron configuration</strong>
-                describes how its electrons are distributed among
-                atomic orbitals.
-            </p>
-
-            <p>
-                Electrons occupy energy levels and subshells.
-                The commonly encountered subshells are:
-            </p>
-
-            <ul>
-                <li>s</li>
-                <li>p</li>
-                <li>d</li>
-                <li>f</li>
-            </ul>
-
-            <p>
-                Their maximum electron capacities are:
-            </p>
-
-            <table class="academy-table">
-                <thead>
-                    <tr>
-                        <th>Subshell</th>
-                        <th>Maximum electrons</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr><td>s</td><td>2</td></tr>
-                    <tr><td>p</td><td>6</td></tr>
-                    <tr><td>d</td><td>10</td></tr>
-                    <tr><td>f</td><td>14</td></tr>
-                </tbody>
-            </table>
-
-            <p>
-                In the ground state, electrons generally occupy
-                available orbitals in order of increasing energy.
-            </p>
-
-            <p>
-                For example, hydrogen has one electron:
-            </p>
-
-            <div class="academy-equation">
-                1s¹
-            </div>
-
-            <p>
-                Helium has two:
-            </p>
-
-            <div class="academy-equation">
-                1s²
-            </div>
-
-            <p>
-                A neutral carbon atom contains six electrons:
-            </p>
-
-            <div class="academy-equation">
-                1s² 2s² 2p²
-            </div>
-        `,
-
-        keyPoints: [
-            "Electron configuration describes electron distribution.",
-            "s, p, d and f are major subshell types.",
-            "s holds 2 electrons.",
-            "p holds 6 electrons.",
-            "d holds 10 electrons.",
-            "f holds 14 electrons."
-        ],
-
-        workedExample: {
-            question:
-                "Write the electron configuration of oxygen, which has atomic number 8.",
-
-            steps: [
-                "A neutral oxygen atom has 8 electrons.",
-                "Place 2 electrons in 1s.",
-                "Place 2 electrons in 2s.",
-                "The remaining 4 electrons occupy 2p."
-            ],
-
-            answer: "1s² 2s² 2p⁴."
-        },
-
-        knowledgeCheck: {
-            question:
-                "What is the maximum number of electrons in a p subshell?",
-
-            options: [
-                "2",
-                "4",
-                "6",
-                "10"
-            ],
-
-            answer: 2,
-
-            explanation:
-                "A p subshell contains three orbitals, each capable of holding two electrons, for a total of six."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 6
-       ===================================================== */
-
-    {
-        id: "orbitals-and-quantum-numbers",
-        title: "Orbitals and Quantum Numbers",
-        type: "concept",
-        duration: 16,
-
-        objectives: [
-            "Define an atomic orbital.",
-            "Describe the shapes of s and p orbitals.",
-            "Identify the four quantum numbers.",
-            "Explain what quantum numbers tell us about electrons."
-        ],
-
-        content: `
-            <p>
-                An <strong>atomic orbital</strong> is a mathematical
-                description of a region around the nucleus where an
-                electron has a high probability of being found.
-            </p>
-
-            <p>
-                An orbital is not a fixed circular path followed by an
-                electron.
-            </p>
-
-            <h4>Quantum numbers</h4>
-
-            <p>
-                Four quantum numbers are used to describe the state of
-                an electron:
-            </p>
-
-            <ul>
-                <li><strong>n</strong> — principal quantum number</li>
-                <li><strong>l</strong> — angular momentum quantum number</li>
-                <li><strong>mₗ</strong> — magnetic quantum number</li>
-                <li><strong>mₛ</strong> — spin quantum number</li>
-            </ul>
-
-            <p>
-                The principal quantum number identifies the main energy
-                level.
-            </p>
-
-            <p>
-                The angular momentum quantum number identifies the
-                subshell type.
-            </p>
-
-            <p>
-                The magnetic quantum number identifies the orientation
-                of an orbital within a subshell.
-            </p>
-
-            <p>
-                The spin quantum number describes one of two allowed
-                electron spin states.
-            </p>
-
-            <div class="academy-callout">
-                Quantum numbers provide a precise way to describe
-                electron states in atoms.
-            </div>
-        `,
-
-        keyPoints: [
-            "Orbitals describe probable electron locations.",
-            "Orbitals are not classical circular electron paths.",
-            "Four quantum numbers describe an electron state.",
-            "The principal quantum number identifies the main energy level.",
-            "The spin quantum number has two allowed values."
-        ],
-
-        workedExample: {
-            question:
-                "Which quantum number identifies the principal energy level of an electron?",
-
-            steps: [
-                "Identify the quantum number associated with the main energy level.",
-                "This is the principal quantum number.",
-                "It is represented by n."
-            ],
-
-            answer: "The principal quantum number, n."
-        },
-
-        knowledgeCheck: {
-            question:
-                "Which quantum number describes electron spin?",
-
-            options: [
-                "n",
-                "l",
-                "mₗ",
-                "mₛ"
-            ],
-
-            answer: 3,
-
-            explanation:
-                "The spin quantum number is represented by mₛ."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 7
-       ===================================================== */
-
-    {
-        id: "electron-arrangement-and-ions",
-        title: "Electron Arrangement and Ions",
-        type: "concept",
-        duration: 14,
-
-        objectives: [
-            "Explain how ions form.",
-            "Distinguish cations from anions.",
-            "Relate electron loss or gain to charge.",
-            "Write simple electron arrangements for ions."
-        ],
-
-        content: `
-            <p>
-                An <strong>ion</strong> is an atom or group of atoms
-                with a net electrical charge.
-            </p>
-
-            <h4>Cations</h4>
-
-            <p>
-                A positively charged ion is called a
-                <strong>cation</strong>. It forms when an atom loses
-                one or more electrons.
-            </p>
-
-            <h4>Anions</h4>
-
-            <p>
-                A negatively charged ion is called an
-                <strong>anion</strong>. It forms when an atom gains
-                one or more electrons.
-            </p>
-
-            <p>
-                The number of protons does not change when an ordinary
-                ion forms. The charge changes because the number of
-                electrons changes.
-            </p>
-
-            <div class="academy-callout">
-                <strong>Example:</strong>
-                A sodium atom has 11 protons and 11 electrons.
-                Na⁺ has 11 protons but 10 electrons.
-            </div>
-        `,
-
-        keyPoints: [
-            "Cations are positively charged.",
-            "Anions are negatively charged.",
-            "Cations form by electron loss.",
-            "Anions form by electron gain.",
-            "Ion formation changes electron number, not proton number."
-        ],
-
-        workedExample: {
-            question:
-                "How many electrons are present in Mg²⁺ if magnesium has atomic number 12?",
-
-            steps: [
-                "Neutral magnesium has 12 electrons.",
-                "A 2+ charge means two electrons have been removed.",
-                "12 − 2 = 10."
-            ],
-
-            answer: "Mg²⁺ contains 10 electrons."
-        },
-
-        knowledgeCheck: {
-            question:
-                "What happens when an atom forms a 1− ion?",
-
-            options: [
-                "It loses one electron.",
-                "It gains one electron.",
-                "It loses one proton.",
-                "It gains one proton."
-            ],
-
-            answer: 1,
-
-            explanation:
-                "A 1− ion has one more electron than the neutral atom."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 8
-       ===================================================== */
-
-    {
-        id: "the-periodic-table",
-        title: "The Periodic Table",
-        type: "concept",
-        duration: 14,
-
-        objectives: [
-            "Explain how elements are arranged in the periodic table.",
-            "Distinguish periods from groups.",
-            "Identify metals, nonmetals, and metalloids.",
-            "Relate electron configuration to periodic-table position."
-        ],
-
-        content: `
-            <p>
-                The modern periodic table arranges elements in order of
-                increasing <strong>atomic number</strong>.
-            </p>
-
-            <h4>Periods</h4>
-
-            <p>
-                Horizontal rows are called <strong>periods</strong>.
-                Elements in the same period have electrons occupying
-                the same principal energy-level range.
-            </p>
-
-            <h4>Groups</h4>
-
-            <p>
-                Vertical columns are called <strong>groups</strong>.
-                Elements within a group often have related chemical
-                behavior because of similarities in their outer-electron
-                arrangements.
-            </p>
-
-            <p>
-                Important regions include:
-            </p>
-
-            <ul>
-                <li>alkali metals</li>
-                <li>alkaline earth metals</li>
-                <li>transition metals</li>
-                <li>halogens</li>
-                <li>noble gases</li>
-                <li>lanthanides</li>
-                <li>actinides</li>
-            </ul>
-        `,
-
-        keyPoints: [
-            "Elements are arranged by increasing atomic number.",
-            "Rows are periods.",
-            "Columns are groups.",
-            "Elements in the same group often have similar chemical behavior.",
-            "The periodic table contains metals, nonmetals, and metalloids."
-        ],
-
-        workedExample: {
-            question:
-                "What is the difference between a group and a period?",
-
-            steps: [
-                "Look at the direction of arrangement.",
-                "A group is a vertical column.",
-                "A period is a horizontal row."
-            ],
-
-            answer:
-                "A group is a vertical column; a period is a horizontal row."
-        },
-
-        knowledgeCheck: {
-            question:
-                "What property is used to arrange elements in the modern periodic table?",
-
-            options: [
-                "Atomic mass only",
-                "Density",
-                "Atomic number",
-                "Melting point"
-            ],
-
-            answer: 2,
-
-            explanation:
-                "Elements are arranged in increasing atomic number."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 9
-       ===================================================== */
-
-    {
-        id: "atomic-radius",
-        title: "Atomic Radius",
-        type: "concept",
-        duration: 12,
-
-        objectives: [
-            "Define atomic radius.",
-            "Describe its general trend across a period.",
-            "Describe its general trend down a group.",
-            "Explain the trends using effective nuclear attraction and energy levels."
-        ],
-
-        content: `
-            <p>
-                Atomic radius is a measure used to describe the size of
-                an atom.
-            </p>
-
-            <h4>Across a period</h4>
-
-            <p>
-                Atomic radius generally <strong>decreases</strong> from
-                left to right across a period.
-            </p>
-
-            <p>
-                As atomic number increases, the nucleus gains positive
-                charge while electrons are added to the same principal
-                energy-level region. The increased effective attraction
-                tends to pull the electron cloud closer to the nucleus.
-            </p>
-
-            <h4>Down a group</h4>
-
-            <p>
-                Atomic radius generally <strong>increases</strong>
-                down a group because additional occupied energy levels
-                are introduced.
-            </p>
-
-            <div class="academy-callout">
-                General trend:
-                <strong>larger down a group, smaller across a period.</strong>
-            </div>
-        `,
-
-        keyPoints: [
-            "Atomic radius measures atomic size.",
-            "Radius generally decreases across a period.",
-            "Radius generally increases down a group.",
-            "Additional energy levels increase size.",
-            "Effective nuclear attraction influences size."
-        ],
-
-        workedExample: {
-            question:
-                "Which generally has the larger atomic radius: sodium or chlorine?",
-
-            steps: [
-                "Sodium and chlorine are in the same period.",
-                "Atomic radius generally decreases from left to right.",
-                "Sodium is to the left of chlorine."
-            ],
-
-            answer: "Sodium generally has the larger atomic radius."
-        },
-
-        knowledgeCheck: {
-            question:
-                "What generally happens to atomic radius down a group?",
-
-            options: [
-                "It decreases.",
-                "It remains exactly constant.",
-                "It increases.",
-                "It becomes zero."
-            ],
-
-            answer: 2,
-
-            explanation:
-                "Additional occupied energy levels are added down a group, increasing atomic size."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 10
-       ===================================================== */
-
-    {
-        id: "ionization-energy",
-        title: "Ionization Energy",
-        type: "concept",
-        duration: 14,
-
-        objectives: [
-            "Define first ionization energy.",
-            "Describe its general periodic trend.",
-            "Explain the effect of atomic size and nuclear attraction.",
-            "Recognize that periodic trends can contain exceptions."
-        ],
-
-        content: `
-            <p>
-                The <strong>first ionization energy</strong> is the
-                energy required to remove one electron from each atom
-                in one mole of gaseous atoms to form one mole of gaseous
-                1+ ions.
-            </p>
-
-            <p>
-                In general, first ionization energy tends to
-                <strong>increase across a period</strong>.
-            </p>
-
-            <p>
-                This is associated with increasing effective nuclear
-                attraction for the outer electron.
-            </p>
-
-            <p>
-                It generally <strong>decreases down a group</strong>
-                because the outer electron is farther from the nucleus
-                and more strongly shielded by inner electrons.
-            </p>
-
-            <div class="academy-callout">
-                High ionization energy means that removing an electron
-                requires relatively more energy.
-            </div>
-        `,
-
-        keyPoints: [
-            "Ionization energy measures the energy needed to remove an electron.",
-            "It generally increases across a period.",
-            "It generally decreases down a group.",
-            "Distance from the nucleus and shielding affect ionization energy.",
-            "Real periodic data contain some notable exceptions."
-        ],
-
-        workedExample: {
-            question:
-                "Which generally has the higher first ionization energy: magnesium or sodium?",
-
-            steps: [
-                "Both elements are in period 3.",
-                "Ionization energy generally increases across a period.",
-                "Magnesium lies to the right of sodium."
-            ],
-
-            answer:
-                "Magnesium generally has the higher first ionization energy."
-        },
-
-        knowledgeCheck: {
-            question:
-                "Which trend is generally correct for first ionization energy?",
-
-            options: [
-                "Decreases across a period and increases down a group.",
-                "Increases across a period and decreases down a group.",
-                "Always remains constant.",
-                "Only changes with atomic mass."
-            ],
-
-            answer: 1,
-
-            explanation:
-                "First ionization energy generally increases across periods and decreases down groups."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 11
-       ===================================================== */
-
-    {
-        id: "electronegativity-and-electron-affinity",
-        title: "Electronegativity and Electron Affinity",
-        type: "concept",
-        duration: 14,
-
-        objectives: [
-            "Define electronegativity.",
-            "Explain electron affinity at an introductory level.",
-            "Distinguish electronegativity from ionization energy.",
-            "Describe general periodic trends."
-        ],
-
-        content: `
-            <p>
-                <strong>Electronegativity</strong> describes the ability
-                of an atom in a chemical bond to attract shared
-                electrons toward itself.
-            </p>
-
-            <p>
-                Electronegativity generally increases across a period
-                and decreases down a group.
-            </p>
-
-            <p>
-                Fluorine is commonly assigned the highest
-                electronegativity on the Pauling scale.
-            </p>
-
-            <h4>Electron affinity</h4>
-
-            <p>
-                Electron affinity concerns the energy change associated
-                with adding an electron to a gaseous atom.
-            </p>
-
-            <p>
-                Electron affinity and electronegativity are related to
-                an atom's attraction for electrons, but they are not the
-                same quantity.
-            </p>
-
-            <div class="academy-callout">
-                <strong>Important distinction:</strong>
-                Electronegativity describes attraction for shared
-                electrons in a bond, while electron affinity describes
-                an energy change associated with adding an electron to
-                an isolated gaseous atom.
-            </div>
-        `,
-
-        keyPoints: [
-            "Electronegativity describes attraction for bonding electrons.",
-            "Electronegativity generally increases across a period.",
-            "Electronegativity generally decreases down a group.",
-            "Electron affinity concerns adding an electron to a gaseous atom.",
-            "The two concepts are related but not identical."
-        ],
-
-        workedExample: {
-            question:
-                "Why is fluorine strongly electronegative?",
-
-            steps: [
-                "Fluorine is small compared with many other atoms.",
-                "Its bonding electrons experience strong attraction from the nucleus.",
-                "It therefore strongly attracts shared electrons."
-            ],
-
-            answer:
-                "Its small atomic size and strong effective nuclear attraction give it a strong attraction for shared electrons."
-        },
-
-        knowledgeCheck: {
-            question:
-                "Electronegativity describes an atom's ability to attract:",
-
-            options: [
-                "Neutrons in the nucleus",
-                "Shared bonding electrons",
-                "Only its own protons",
-                "Atomic nuclei from outside the atom"
-            ],
-
-            answer: 1,
-
-            explanation:
-                "Electronegativity describes attraction for shared electrons in a chemical bond."
-        }
-    },
-
-
-    /* =====================================================
-       LESSON 12
-       ===================================================== */
-
-    {
-        id: "understanding-periodic-trends",
-        title: "Understanding Periodic Trends",
-        type: "concept",
-        duration: 16,
-
-        objectives: [
-            "Compare major periodic trends.",
-            "Explain trends using nuclear charge, shielding, and energy levels.",
-            "Predict relative atomic properties using periodic position.",
-            "Apply periodic trends to chemical reasoning."
-        ],
-
-        content: `
-            <p>
-                Periodic trends allow chemists to predict how atomic
-                properties change according to position in the periodic
-                table.
-            </p>
-
-            <table class="academy-table">
-                <thead>
-                    <tr>
-                        <th>Property</th>
-                        <th>Across a period</th>
-                        <th>Down a group</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>Atomic radius</td>
-                        <td>Generally decreases</td>
-                        <td>Generally increases</td>
-                    </tr>
-
-                    <tr>
-                        <td>First ionization energy</td>
-                        <td>Generally increases</td>
-                        <td>Generally decreases</td>
-                    </tr>
-
-                    <tr>
-                        <td>Electronegativity</td>
-                        <td>Generally increases</td>
-                        <td>Generally decreases</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>Why do these trends occur?</h4>
-
-            <p>
-                Three major ideas are especially important:
-            </p>
-
-            <ul>
-                <li><strong>Nuclear charge</strong> — the positive charge of the nucleus.</li>
-                <li><strong>Shielding</strong> — reduction in nuclear attraction caused by inner electrons.</li>
-                <li><strong>Energy levels</strong> — additional occupied levels place outer electrons farther from the nucleus.</li>
-            </ul>
-
-            <p>
-                These factors work together to determine how strongly
-                electrons are attracted to the nucleus.
-            </p>
-
-            <div class="academy-callout">
-                <strong>Scientific reasoning:</strong>
-                Do not memorize trends without understanding them.
-                Use nuclear charge, shielding, distance, and electron
-                arrangement to explain the observed pattern.
-            </div>
-        `,
-
-        keyPoints: [
-            "Atomic radius generally decreases across a period.",
-            "Atomic radius generally increases down a group.",
-            "Ionization energy generally increases across a period.",
-            "Ionization energy generally decreases down a group.",
-            "Electronegativity generally increases across a period.",
-            "Shielding and distance influence attraction to the nucleus."
-        ],
-
-        workedExample: {
-            question:
-                "Which element would generally have the stronger attraction for bonding electrons: sodium or chlorine?",
-
-            steps: [
-                "Sodium and chlorine are in the same period.",
-                "Electronegativity generally increases from left to right.",
-                "Chlorine is farther to the right.",
-                "Therefore chlorine generally has the stronger attraction for shared electrons."
-            ],
-
-            answer: "Chlorine."
-        },
-
-        knowledgeCheck: {
-            question:
-                "Which combination best explains why atomic radius generally increases down a group?",
-
-            options: [
-                "Fewer energy levels and less shielding",
-                "More occupied energy levels and greater shielding",
-                "Lower atomic number only",
-                "Fewer electrons in every atom"
-            ],
-
-            answer: 1,
-
-            explanation:
-                "Atoms gain additional occupied energy levels down a group, and increased shielding contributes to a larger atomic radius."
-        }
-    }
-
-]
+
+        /* =================================================
+           ATOMIC STRUCTURE + PERIODIC TABLE
+           ================================================= */
+
+        "atomic-structure-periodic-table": [
+
+            {
+                id: "atomic-1",
+                title: "Introduction to Atomic Structure",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Describe the basic structure of an atom.",
+                    "Identify the nucleus and electron region.",
+                    "Explain why atomic structure matters in chemistry."
+                ],
+
+                content: [
+                    {
+                        heading: "What is an atom?",
+                        text:
+                            "An atom is the basic unit of an element that retains the chemical identity of that element. Modern chemistry describes atoms using a dense nucleus surrounded by electrons."
+                    },
+                    {
+                        heading: "The nucleus",
+                        text:
+                            "The nucleus contains protons and neutrons. Electrons occupy regions around the nucleus described by quantum mechanical models."
+                    }
+                ],
+
+                keyPoints: [
+                    "Atoms contain protons, neutrons, and electrons.",
+                    "The nucleus contains protons and neutrons.",
+                    "Electrons occupy regions around the nucleus."
+                ],
+
+                workedExample: {
+                    question: "Which particles are found in the atomic nucleus?",
+                    answer: "Protons and neutrons."
+                },
+
+                knowledgeCheck: {
+                    question: "Where are most of an atom's protons located?",
+                    options: [
+                        "In the electron cloud",
+                        "In the nucleus",
+                        "Outside the atom",
+                        "Between atoms"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "atomic-2",
+                title: "Subatomic Particles",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Identify protons, neutrons, and electrons.",
+                    "Compare their charges.",
+                    "Relate particles to atomic mass and charge."
+                ],
+
+                content: [
+                    {
+                        heading: "The three major particles",
+                        text:
+                            "Protons have positive charge, electrons have negative charge, and neutrons have no net electric charge."
+                    },
+                    {
+                        heading: "Relative masses",
+                        text:
+                            "Protons and neutrons have much greater mass than electrons. This is why nearly all of an atom's mass is associated with its nucleus."
+                    }
+                ],
+
+                keyPoints: [
+                    "Proton: positive.",
+                    "Neutron: neutral.",
+                    "Electron: negative."
+                ],
+
+                workedExample: {
+                    question: "Which subatomic particle determines whether an atom is positively or negatively charged when its number changes?",
+                    answer:
+                        "Electrons. Losing electrons can produce a positive ion, while gaining electrons can produce a negative ion."
+                },
+
+                knowledgeCheck: {
+                    question: "Which particle has a negative charge?",
+                    options: [
+                        "Proton",
+                        "Neutron",
+                        "Electron",
+                        "Nucleus"
+                    ],
+                    answer: 2
+                }
+            },
+
+
+            {
+                id: "atomic-3",
+                title: "Atomic Number and Mass Number",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Define atomic number.",
+                    "Define mass number.",
+                    "Determine numbers of protons and neutrons."
+                ],
+
+                content: [
+                    {
+                        heading: "Atomic number",
+                        text:
+                            "The atomic number, Z, is the number of protons in an atom's nucleus. It identifies the element."
+                    },
+                    {
+                        heading: "Mass number",
+                        text:
+                            "The mass number, A, is the total number of protons and neutrons in the nucleus."
+                    }
+                ],
+
+                keyPoints: [
+                    "Z = number of protons.",
+                    "A = protons + neutrons.",
+                    "Neutrons = A − Z."
+                ],
+
+                workedExample: {
+                    question:
+                        "An atom has atomic number 8 and mass number 16. How many neutrons does it have?",
+                    answer:
+                        "Neutrons = 16 − 8 = 8."
+                },
+
+                knowledgeCheck: {
+                    question: "What does the atomic number represent?",
+                    options: [
+                        "Number of neutrons",
+                        "Number of protons",
+                        "Protons + neutrons",
+                        "Number of electron shells"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "atomic-4",
+                title: "Isotopes and Relative Atomic Mass",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Define isotopes.",
+                    "Explain why isotopes have the same atomic number.",
+                    "Understand weighted average atomic mass."
+                ],
+
+                content: [
+                    {
+                        heading: "Isotopes",
+                        text:
+                            "Isotopes are atoms of the same element with the same number of protons but different numbers of neutrons."
+                    },
+                    {
+                        heading: "Relative atomic mass",
+                        text:
+                            "The atomic mass shown on the periodic table reflects a weighted average based on the naturally occurring isotopes of an element."
+                    }
+                ],
+
+                keyPoints: [
+                    "Isotopes have the same number of protons.",
+                    "Isotopes differ in neutron number.",
+                    "Periodic-table atomic masses are weighted averages."
+                ],
+
+                workedExample: {
+                    question:
+                        "Why are two isotopes still atoms of the same element?",
+                    answer:
+                        "They have the same number of protons and therefore the same atomic number."
+                },
+
+                knowledgeCheck: {
+                    question: "Isotopes of an element differ in their number of:",
+                    options: [
+                        "Protons",
+                        "Electrons only",
+                        "Neutrons",
+                        "Atomic numbers"
+                    ],
+                    answer: 2
+                }
+            },
+
+
+            {
+                id: "atomic-5",
+                title: "Electron Configuration",
+                type: "lesson",
+                duration: 15,
+
+                objectives: [
+                    "Explain electron configuration.",
+                    "Describe electron energy levels.",
+                    "Write simple electron configurations."
+                ],
+
+                content: [
+                    {
+                        heading: "Electrons and energy",
+                        text:
+                            "Electrons occupy quantized energy states around the nucleus. Their arrangement influences chemical behavior."
+                    },
+                    {
+                        heading: "Configuration",
+                        text:
+                            "Electron configuration describes how electrons are distributed among available orbitals and energy levels."
+                    }
+                ],
+
+                keyPoints: [
+                    "Electrons occupy quantized states.",
+                    "Electron arrangement affects chemical behavior.",
+                    "Electron configuration describes electron distribution."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many electrons does a neutral atom of oxygen have?",
+                    answer:
+                        "Oxygen has atomic number 8, so a neutral oxygen atom has 8 electrons."
+                },
+
+                knowledgeCheck: {
+                    question: "A neutral atom's number of electrons equals its number of:",
+                    options: [
+                        "Neutrons",
+                        "Protons",
+                        "Nuclei",
+                        "Isotopes"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "atomic-6",
+                title: "Orbitals and Quantum Numbers",
+                type: "lesson",
+                duration: 15,
+
+                objectives: [
+                    "Describe atomic orbitals.",
+                    "Recognize s, p, d, and f orbital types.",
+                    "Understand the role of quantum numbers."
+                ],
+
+                content: [
+                    {
+                        heading: "Atomic orbitals",
+                        text:
+                            "An orbital is a mathematical description of a region where an electron has a high probability of being found."
+                    },
+                    {
+                        heading: "Orbital types",
+                        text:
+                            "The major orbital types are s, p, d, and f. They differ in their shapes, energies, and numbers of orbitals available."
+                    }
+                ],
+
+                keyPoints: [
+                    "Orbitals describe probable electron locations.",
+                    "s, p, d, and f are orbital types.",
+                    "Quantum numbers describe electron states."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many orbitals are associated with a p subshell?",
+                    answer: "Three orbitals."
+                },
+
+                knowledgeCheck: {
+                    question: "Which is an orbital type?",
+                    options: [
+                        "s",
+                        "q",
+                        "x",
+                        "zeta"
+                    ],
+                    answer: 0
+                }
+            },
+
+
+            {
+                id: "atomic-7",
+                title: "Electron Arrangement and Ions",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Explain ion formation.",
+                    "Distinguish cations from anions.",
+                    "Relate electron gain or loss to charge."
+                ],
+
+                content: [
+                    {
+                        heading: "Ion formation",
+                        text:
+                            "An ion forms when an atom or group of atoms gains or loses electrons."
+                    },
+                    {
+                        heading: "Cations and anions",
+                        text:
+                            "A cation has a positive charge and generally results from electron loss. An anion has a negative charge and generally results from electron gain."
+                    }
+                ],
+
+                keyPoints: [
+                    "Electron loss produces positive charge.",
+                    "Electron gain produces negative charge.",
+                    "Ions have unequal numbers of protons and electrons."
+                ],
+
+                workedExample: {
+                    question:
+                        "What happens when a neutral sodium atom loses one electron?",
+                    answer:
+                        "It becomes a positively charged sodium ion, Na⁺."
+                },
+
+                knowledgeCheck: {
+                    question: "An ion with a negative charge is called a:",
+                    options: [
+                        "Cation",
+                        "Anion",
+                        "Proton",
+                        "Isotope"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "atomic-8",
+                title: "The Periodic Table",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Explain how the periodic table is organized.",
+                    "Identify periods and groups.",
+                    "Relate position to electron structure."
+                ],
+
+                content: [
+                    {
+                        heading: "Organization",
+                        text:
+                            "The periodic table arranges elements by increasing atomic number. Its structure reveals repeating patterns in chemical properties."
+                    },
+                    {
+                        heading: "Periods and groups",
+                        text:
+                            "Horizontal rows are called periods. Vertical columns are called groups or families."
+                    }
+                ],
+
+                keyPoints: [
+                    "Elements are arranged by atomic number.",
+                    "Rows are periods.",
+                    "Columns are groups."
+                ],
+
+                workedExample: {
+                    question:
+                        "What do elements in the same group generally have in common?",
+                    answer:
+                        "They often have related valence-electron arrangements and therefore similar chemical behavior."
+                },
+
+                knowledgeCheck: {
+                    question: "Vertical columns of the periodic table are called:",
+                    options: [
+                        "Periods",
+                        "Groups",
+                        "Blocks",
+                        "Series"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "atomic-9",
+                title: "Atomic Radius",
+                type: "lesson",
+                duration: 12,
+
+                objectives: [
+                    "Define atomic radius.",
+                    "Describe its periodic trend.",
+                    "Explain the trend using atomic structure."
+                ],
+
+                content: [
+                    {
+                        heading: "Atomic size",
+                        text:
+                            "Atomic radius is a measure related to the size of an atom. It is influenced by the number of electron shells and the attraction between the nucleus and electrons."
+                    },
+                    {
+                        heading: "Periodic trend",
+                        text:
+                            "Atomic radius generally increases down a group because additional electron shells are occupied. Across a period, it generally decreases as effective nuclear attraction increases."
+                    }
+                ],
+
+                keyPoints: [
+                    "Atomic radius generally increases down a group.",
+                    "Atomic radius generally decreases across a period.",
+                    "Electron shells and nuclear attraction help explain the trend."
+                ],
+
+                workedExample: {
+                    question:
+                        "Which generally has the larger atomic radius: an element near the top or bottom of the same group?",
+                    answer:
+                        "The element lower in the group generally has the larger atomic radius."
+                },
+
+                knowledgeCheck: {
+                    question: "Atomic radius generally increases:",
+                    options: [
+                        "Up a group",
+                        "Down a group",
+                        "Across a period from left to right",
+                        "Toward the top-right corner"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "atomic-10",
+                title: "Ionization Energy",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Define ionization energy.",
+                    "Describe its periodic trend.",
+                    "Relate ionization energy to electron attraction."
+                ],
+
+                content: [
+                    {
+                        heading: "Ionization energy",
+                        text:
+                            "Ionization energy is the energy required to remove an electron from an isolated gaseous atom or ion under specified conditions."
+                    },
+                    {
+                        heading: "Periodic trend",
+                        text:
+                            "First ionization energy generally increases across a period and decreases down a group, although there are some important exceptions."
+                    }
+                ],
+
+                keyPoints: [
+                    "Ionization energy concerns electron removal.",
+                    "It generally increases across a period.",
+                    "It generally decreases down a group."
+                ],
+
+                workedExample: {
+                    question:
+                        "Why does ionization energy generally decrease down a group?",
+                    answer:
+                        "Outer electrons are generally farther from the nucleus and more shielded by inner electrons."
+                },
+
+                knowledgeCheck: {
+                    question: "Ionization energy is associated with:",
+                    options: [
+                        "Removing an electron",
+                        "Adding a neutron",
+                        "Changing a proton into an electron",
+                        "Increasing atomic mass only"
+                    ],
+                    answer: 0
+                }
+            },
+
+
+            {
+                id: "atomic-11",
+                title: "Electronegativity and Electron Affinity",
+                type: "lesson",
+                duration: 15,
+
+                objectives: [
+                    "Define electronegativity.",
+                    "Explain electron affinity conceptually.",
+                    "Compare the two properties."
+                ],
+
+                content: [
+                    {
+                        heading: "Electronegativity",
+                        text:
+                            "Electronegativity describes the tendency of an atom in a chemical bond to attract shared electrons."
+                    },
+                    {
+                        heading: "Electron affinity",
+                        text:
+                            "Electron affinity concerns the energy change associated with adding an electron to an isolated gaseous atom."
+                    }
+                ],
+
+                keyPoints: [
+                    "Electronegativity concerns bonded atoms.",
+                    "Electron affinity concerns electron addition to isolated gaseous species.",
+                    "Both properties are related to electron attraction but are not identical."
+                ],
+
+                workedExample: {
+                    question:
+                        "Which concept specifically describes attraction for shared bonding electrons?",
+                    answer: "Electronegativity."
+                },
+
+                knowledgeCheck: {
+                    question: "Electronegativity describes an atom's tendency to:",
+                    options: [
+                        "Attract shared electrons",
+                        "Lose neutrons",
+                        "Increase its mass",
+                        "Become radioactive"
+                    ],
+                    answer: 0
+                }
+            },
+
+
+            {
+                id: "atomic-12",
+                title: "Understanding Periodic Trends",
+                type: "lesson",
+                duration: 16,
+
+                objectives: [
+                    "Combine major periodic trends.",
+                    "Explain trends using atomic structure.",
+                    "Predict general changes in properties."
+                ],
+
+                content: [
+                    {
+                        heading: "Periodic patterns",
+                        text:
+                            "The periodic table is more than a list of elements. Its arrangement allows chemists to recognize repeating patterns in atomic size, ionization energy, electronegativity, and other properties."
+                    },
+                    {
+                        heading: "Why trends occur",
+                        text:
+                            "Major factors include nuclear charge, electron shielding, distance from the nucleus, and electron arrangement."
+                    }
+                ],
+
+                keyPoints: [
+                    "Periodic trends arise from atomic structure.",
+                    "Nuclear attraction and shielding are important.",
+                    "The periodic table can be used to make qualitative predictions."
+                ],
+
+                workedExample: {
+                    question:
+                        "What two broad factors are especially useful when explaining periodic trends?",
+                    answer:
+                        "Effective nuclear attraction and electron shielding/distance."
+                },
+
+                knowledgeCheck: {
+                    question: "Which concept helps explain many periodic trends?",
+                    options: [
+                        "Effective nuclear attraction",
+                        "The color of an element",
+                        "The shape of the laboratory",
+                        "Sample volume alone"
+                    ],
+                    answer: 0
+                }
+            }
+        ]
+    };
+
 
     /* =====================================================
        HELPERS
        ===================================================== */
 
-    function getElement(selector) {
-        return document.querySelector(selector);
+    function $(selector, root = document) {
+        return root.querySelector(selector);
     }
 
-    function getAll(selector) {
-        return Array.from(document.querySelectorAll(selector));
+
+    function $$(selector, root = document) {
+        return Array.from(root.querySelectorAll(selector));
     }
+
 
     function escapeHTML(value) {
-        const div = document.createElement("div");
-        div.textContent = value ?? "";
-        return div.innerHTML;
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
-    function getSubject(subjectId) {
-        return STATE.subjects.find(subject => subject.id === subjectId) || null;
+
+    function slug(value) {
+        return String(value || "")
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
     }
+
+
+    function getSubject(subjectId) {
+        return ACADEMY_CURRICULUM.find(
+            subject => subject.id === subjectId
+        ) || null;
+    }
+
 
     function getTopic(subjectId, topicId) {
         const subject = getSubject(subjectId);
@@ -3132,153 +2029,650 @@ const LESSON_CONTENT = {
             return null;
         }
 
-        return subject.topics.find(topic => topic.id === topicId) || null;
+        return subject.topics.find(
+            topic => topic.id === topicId
+        ) || null;
     }
 
-    function getLessons(subjectId, topicId) {
-        const topic = getTopic(subjectId, topicId);
 
-        if (!topic) {
-            return [];
+    function getLessons(topicId) {
+        return LESSON_CONTENT[topicId] || [];
+    }
+
+
+    function getLesson(topicId, lessonId) {
+        return getLessons(topicId).find(
+            lesson => lesson.id === lessonId
+        ) || null;
+    }
+
+
+    function getProgress() {
+        try {
+            return JSON.parse(
+                localStorage.getItem(STORAGE.progress) || "{}"
+            );
+        } catch (error) {
+            return {};
+        }
+    }
+
+
+    function saveProgress(progress) {
+        localStorage.setItem(
+            STORAGE.progress,
+            JSON.stringify(progress)
+        );
+    }
+
+
+    function getTopicProgress(topicId) {
+        const progress = getProgress();
+
+        return progress[topicId] || {
+            completedLessons: [],
+            topicCompleted: false,
+            rewardClaimed: false
+        };
+    }
+
+
+    function setTopicProgress(topicId, data) {
+        const progress = getProgress();
+
+        progress[topicId] = {
+            ...getTopicProgress(topicId),
+            ...data
+        };
+
+        saveProgress(progress);
+    }
+
+
+    function isLessonCompleted(topicId, lessonId) {
+        return getTopicProgress(topicId)
+            .completedLessons
+            .includes(lessonId);
+    }
+
+
+    function getCompletedLessonCount(topicId) {
+        return getTopicProgress(topicId)
+            .completedLessons
+            .length;
+    }
+
+
+    function getTopicCompletionPercent(topicId) {
+        const lessons = getLessons(topicId);
+
+        if (!lessons.length) {
+            return 0;
         }
 
-        return topic.lessons.map(id => ({
-            id,
-            content: LESSON_CONTENT[id] || null
-        }));
-    }
-
-    function getTopicStorageKey(subjectId, topicId) {
-        return `${STORAGE.topicProgress}${subjectId}_${topicId}`;
-    }
-
-    function getLessonStorageKey(subjectId, topicId, index) {
-        return `${STORAGE.lessonCompleted}${subjectId}_${topicId}_${index}`;
-    }
-
-    function getTopicProgress(subjectId, topicId) {
-        const value = Number(
-            localStorage.getItem(
-                getTopicStorageKey(subjectId, topicId)
-            )
+        return Math.round(
+            (getCompletedLessonCount(topicId) / lessons.length) * 100
         );
-
-        return Number.isFinite(value)
-            ? Math.max(0, Math.min(100, value))
-            : 0;
     }
 
-    function setTopicProgress(subjectId, topicId, progress) {
-        const safeProgress = Math.max(
-            0,
-            Math.min(100, Math.round(progress))
+
+    /* =====================================================
+       XP SYSTEM
+       ===================================================== */
+
+    function getXP() {
+        return Number(
+            localStorage.getItem(STORAGE.xp) || 0
         );
+    }
+
+
+    function addXP(amount) {
+        const current = getXP();
+        const updated = current + Number(amount || 0);
 
         localStorage.setItem(
-            getTopicStorageKey(subjectId, topicId),
-            String(safeProgress)
+            STORAGE.xp,
+            String(updated)
         );
 
-        document.dispatchEvent(
-            new CustomEvent("chemlab:topic-progress-updated", {
-                detail: {
-                    subjectId,
-                    topicId,
-                    progress: safeProgress
-                }
-            })
-        );
-    }
-
-    function isLessonCompleted(subjectId, topicId, index) {
-        return (
-            localStorage.getItem(
-                getLessonStorageKey(subjectId, topicId, index)
-            ) === "true"
-        );
-    }
-
-    function addScienceXP(amount) {
         if (
             window.CHEMLAB_DASHBOARD &&
             typeof window.CHEMLAB_DASHBOARD.addXP === "function"
         ) {
             window.CHEMLAB_DASHBOARD.addXP(amount);
         }
-    }
-
-
-    /* =====================================================
-       LESSON PROGRESS
-       ===================================================== */
-
-    function calculateTopicProgress(subjectId, topicId) {
-        const lessons = getLessons(subjectId, topicId);
-
-        if (!lessons.length) {
-            return 0;
-        }
-
-        const completed = lessons.filter(
-            (_, index) =>
-                isLessonCompleted(
-                    subjectId,
-                    topicId,
-                    index
-                )
-        ).length;
-
-        return Math.round(
-            (completed / lessons.length) * 100
-        );
-    }
-
-
-    /* =====================================================
-       MARK LESSON COMPLETE
-       ===================================================== */
-
-    function markLessonCompleted(
-        subjectId,
-        topicId,
-        index
-    ) {
-
-        const key = getLessonStorageKey(
-            subjectId,
-            topicId,
-            index
-        );
-
-        if (localStorage.getItem(key) === "true") {
-            return;
-        }
-
-        localStorage.setItem(key, "true");
-
-        addScienceXP(10);
-
-        const progress = calculateTopicProgress(
-            subjectId,
-            topicId
-        );
-
-        setTopicProgress(
-            subjectId,
-            topicId,
-            progress
-        );
 
         document.dispatchEvent(
-            new CustomEvent("chemlab:lesson-completed", {
+            new CustomEvent("chemlab:academy-xp", {
                 detail: {
-                    subjectId,
-                    topicId,
-                    lessonIndex: index,
-                    progress
+                    amount,
+                    total: updated
                 }
             })
         );
+
+        return updated;
+    }
+
+
+    /* =====================================================
+       DOM OVERLAY
+       ===================================================== */
+
+    function ensureAcademyOverlay() {
+
+        if ($("#academyLearningOverlay")) {
+            return $("#academyLearningOverlay");
+        }
+
+        const overlay = document.createElement("div");
+
+        overlay.id = "academyLearningOverlay";
+        overlay.className = "academy-learning-overlay";
+
+        overlay.innerHTML = `
+            <div
+                class="academy-learning-overlay-backdrop"
+                data-academy-close
+            ></div>
+
+            <div
+                class="academy-learning-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Chemistry Academy"
+            >
+                <button
+                    type="button"
+                    class="academy-learning-close"
+                    data-academy-close
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+                <div id="academyLearningContent"></div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        return overlay;
+    }
+
+
+    function openOverlay() {
+        const overlay = ensureAcademyOverlay();
+
+        overlay.classList.add("is-open");
+        document.body.classList.add("academy-modal-open");
+    }
+
+
+    function closeOverlay() {
+        const overlay = $("#academyLearningOverlay");
+
+        if (!overlay) {
+            return;
+        }
+
+        overlay.classList.remove("is-open");
+        document.body.classList.remove("academy-modal-open");
+    }
+
+
+    function setOverlayContent(html) {
+        const overlay = ensureAcademyOverlay();
+        const content = $("#academyLearningContent", overlay);
+
+        if (!content) {
+            return;
+        }
+
+        content.innerHTML = html;
+        openOverlay();
+    }
+
+
+    /* =====================================================
+       TOPIC EXPLORER
+       ===================================================== */
+
+    function renderTopicExplorer(subjectId) {
+
+        const subject = getSubject(subjectId);
+
+        if (!subject) {
+            return;
+        }
+
+        ACADEMY_STATE.currentSubject = subjectId;
+        ACADEMY_STATE.currentTopic = null;
+        ACADEMY_STATE.currentLesson = null;
+
+        const topics = subject.topics;
+
+        const topicCards = topics.map(topic => {
+
+            const lessons = getLessons(topic.id);
+
+            const availableLessons = lessons.length;
+            const completed = getCompletedLessonCount(topic.id);
+
+            const percent = availableLessons
+                ? Math.round((completed / availableLessons) * 100)
+                : 0;
+
+            return `
+                <article
+                    class="academy-topic-preview-card"
+                    data-topic-open="${escapeHTML(topic.id)}"
+                >
+
+                    <div class="academy-topic-preview-icon">
+                        ${escapeHTML(topic.icon || "⚗")}
+                    </div>
+
+                    <div class="academy-topic-preview-body">
+
+                        <div class="academy-topic-preview-meta">
+                            <span>
+                                ${escapeHTML(topic.difficulty)}
+                            </span>
+
+                            <span>
+                                ${topic.duration} min
+                            </span>
+                        </div>
+
+                        <h3>
+                            ${escapeHTML(topic.title)}
+                        </h3>
+
+                        <p>
+                            ${escapeHTML(topic.description)}
+                        </p>
+
+                        <div class="academy-topic-preview-progress">
+                            <div>
+                                <span>
+                                    ${completed}/${availableLessons || topic.lessons}
+                                    lessons
+                                </span>
+
+                                <strong>
+                                    ${percent}%
+                                </strong>
+                            </div>
+
+                            <div class="academy-progress-track">
+                                <span
+                                    style="width:${percent}%"
+                                ></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </article>
+            `;
+        }).join("");
+
+
+        setOverlayContent(`
+            <section class="academy-topic-explorer">
+
+                <div class="academy-topic-learning-header">
+
+                    <button
+                        type="button"
+                        class="button button-secondary"
+                        data-academy-close
+                    >
+                        ← Back to Academy
+                    </button>
+
+                    <span class="academy-topic-learning-level">
+                        ${escapeHTML(subject.level)}
+                    </span>
+
+                </div>
+
+                <div class="academy-topic-learning-hero">
+
+                    <div class="academy-topic-learning-icon">
+                        ${escapeHTML(subject.icon || "⚗")}
+                    </div>
+
+                    <div>
+                        <div class="academy-topic-learning-eyebrow">
+                            CHEMISTRY ACADEMY
+                        </div>
+
+                        <h1>
+                            ${escapeHTML(subject.title)}
+                        </h1>
+
+                        <p>
+                            ${escapeHTML(subject.description)}
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="academy-topic-learning-grid">
+                    ${topicCards}
+                </div>
+
+            </section>
+        `);
+    }
+
+
+    /* =====================================================
+       LESSON VIEWER
+       ===================================================== */
+
+    function renderLesson(subjectId, topicId, lessonIndex) {
+
+        const subject = getSubject(subjectId);
+        const topic = getTopic(subjectId, topicId);
+        const lessons = getLessons(topicId);
+
+        if (!subject || !topic || !lessons.length) {
+            renderUnavailableTopic(subjectId, topicId);
+            return;
+        }
+
+        const safeIndex = Math.max(
+            0,
+            Math.min(
+                Number(lessonIndex) || 0,
+                lessons.length - 1
+            )
+        );
+
+        const lesson = lessons[safeIndex];
+
+        ACADEMY_STATE.currentSubject = subjectId;
+        ACADEMY_STATE.currentTopic = topicId;
+        ACADEMY_STATE.currentLesson = lesson.id;
+
+
+        const completed = isLessonCompleted(
+            topicId,
+            lesson.id
+        );
+
+        const progress = Math.round(
+            ((safeIndex + (completed ? 1 : 0)) / lessons.length) * 100
+        );
+
+
+        const objectives = (lesson.objectives || [])
+            .map(item => `<li>${escapeHTML(item)}</li>`)
+            .join("");
+
+
+        const content = (lesson.content || [])
+            .map(block => `
+                <section class="academy-lesson-content-block">
+
+                    <h3>
+                        ${escapeHTML(block.heading)}
+                    </h3>
+
+                    <p>
+                        ${escapeHTML(block.text)}
+                    </p>
+
+                </section>
+            `)
+            .join("");
+
+
+        const keyPoints = (lesson.keyPoints || [])
+            .map(item => `<li>${escapeHTML(item)}</li>`)
+            .join("");
+
+
+        const workedExample = lesson.workedExample
+            ? `
+                <section class="academy-worked-example">
+
+                    <div class="academy-block-label">
+                        WORKED EXAMPLE
+                    </div>
+
+                    <h3>
+                        ${escapeHTML(
+                            lesson.workedExample.question
+                        )}
+                    </h3>
+
+                    <div class="academy-example-answer">
+                        ${escapeHTML(
+                            lesson.workedExample.answer
+                        )}
+                    </div>
+
+                </section>
+            `
+            : "";
+
+
+        const knowledgeCheck = renderKnowledgeCheck(
+            lesson,
+            topicId
+        );
+
+
+        setOverlayContent(`
+            <section class="academy-lesson-viewer">
+
+                <div class="academy-lesson-top">
+
+                    <div>
+
+                        <div class="academy-lesson-breadcrumb">
+                            ${escapeHTML(subject.title)}
+                            /
+                            ${escapeHTML(topic.title)}
+                        </div>
+
+                        <div class="academy-lesson-position">
+                            Lesson ${safeIndex + 1}
+                            of ${lessons.length}
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="button button-secondary"
+                        data-topic-back="${escapeHTML(subjectId)}"
+                    >
+                        ← Topic
+                    </button>
+
+                </div>
+
+
+                <div class="academy-lesson-progress">
+
+                    <div class="academy-progress-track">
+                        <span
+                            style="width:${Math.min(progress, 100)}%"
+                        ></span>
+                    </div>
+
+                    <span>
+                        ${Math.min(progress, 100)}%
+                    </span>
+
+                </div>
+
+
+                <div class="academy-lesson-header">
+
+                    <div class="academy-lesson-type">
+                        ${escapeHTML(
+                            lesson.type || "LESSON"
+                        )}
+                    </div>
+
+                    <h1>
+                        ${escapeHTML(lesson.title)}
+                    </h1>
+
+                    <div class="academy-lesson-meta">
+                        ${lesson.duration} min
+                        ·
+                        ${escapeHTML(topic.difficulty)}
+                    </div>
+
+                </div>
+
+
+                <div class="academy-lesson-layout">
+
+                    <main class="academy-lesson-main">
+
+                        <section class="academy-lesson-objectives">
+
+                            <div class="academy-block-label">
+                                LEARNING OBJECTIVES
+                            </div>
+
+                            <ul>
+                                ${objectives}
+                            </ul>
+
+                        </section>
+
+
+                        <section class="academy-lesson-body">
+                            ${content}
+                        </section>
+
+
+                        <section class="academy-key-points">
+
+                            <div class="academy-block-label">
+                                KEY POINTS
+                            </div>
+
+                            <ul>
+                                ${keyPoints}
+                            </ul>
+
+                        </section>
+
+
+                        ${workedExample}
+
+
+                        ${knowledgeCheck}
+
+
+                        <div class="academy-lesson-actions">
+
+                            <button
+                                type="button"
+                                class="button button-secondary"
+                                data-lesson-prev
+                                ${safeIndex === 0 ? "disabled" : ""}
+                            >
+                                ← Previous
+                            </button>
+
+                            <button
+                                type="button"
+                                class="button button-primary"
+                                data-lesson-complete
+                                data-subject-id="${escapeHTML(subjectId)}"
+                                data-topic-id="${escapeHTML(topicId)}"
+                                data-lesson-id="${escapeHTML(lesson.id)}"
+                            >
+                                ${
+                                    completed
+                                        ? "✓ Completed"
+                                        : "Mark Lesson Complete"
+                                }
+                            </button>
+
+                            <button
+                                type="button"
+                                class="button button-primary"
+                                data-lesson-next
+                                ${
+                                    safeIndex === lessons.length - 1
+                                        ? "disabled"
+                                        : ""
+                                }
+                            >
+                                Next →
+                            </button>
+
+                        </div>
+
+                    </main>
+
+
+                    <aside class="academy-lesson-sidebar">
+
+                        <div class="academy-lesson-sidebar-title">
+                            ${escapeHTML(topic.title)}
+                        </div>
+
+                        <div class="academy-lesson-sidebar-list">
+
+                            ${lessons.map((item, index) => {
+
+                                const itemCompleted =
+                                    isLessonCompleted(
+                                        topicId,
+                                        item.id
+                                    );
+
+                                return `
+                                    <button
+                                        type="button"
+                                        class="
+                                            academy-lesson-sidebar-item
+                                            ${index === safeIndex ? "is-active" : ""}
+                                            ${itemCompleted ? "is-completed" : ""}
+                                        "
+                                        data-lesson-index="${index}"
+                                    >
+
+                                        <span>
+                                            ${index + 1}
+                                        </span>
+
+                                        <strong>
+                                            ${escapeHTML(item.title)}
+                                        </strong>
+
+                                        ${
+                                            itemCompleted
+                                                ? `<em>✓</em>`
+                                                : ""
+                                        }
+
+                                    </button>
+                                `;
+                            }).join("")}
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+        `);
     }
 
 
@@ -3286,34 +2680,27 @@ const LESSON_CONTENT = {
        KNOWLEDGE CHECK
        ===================================================== */
 
-    function renderKnowledgeCheck(lesson) {
+    function renderKnowledgeCheck(lesson, topicId) {
 
-        if (
-            !lesson ||
-            !lesson.knowledgeCheck
-        ) {
+        if (!lesson.knowledgeCheck) {
             return "";
         }
 
         const check = lesson.knowledgeCheck;
 
         return `
-            <section class="academy-knowledge-check">
+            <section
+                class="academy-knowledge-check"
+                data-knowledge-check
+            >
 
-                <div class="academy-lesson-block-header">
-                    <span class="academy-lesson-block-icon">
-                        📝
-                    </span>
-
-                    <div>
-                        <h3>Knowledge Check</h3>
-                        <p>Test your understanding.</p>
-                    </div>
+                <div class="academy-block-label">
+                    KNOWLEDGE CHECK
                 </div>
 
-                <div class="academy-check-question">
-                    ${check.question}
-                </div>
+                <h3>
+                    ${escapeHTML(check.question)}
+                </h3>
 
                 <div class="academy-check-options">
 
@@ -3321,15 +2708,14 @@ const LESSON_CONTENT = {
                         <button
                             type="button"
                             class="academy-check-option"
-                            data-answer-index="${index}"
+                            data-check-answer="${index}"
+                            data-correct-answer="${check.answer}"
                         >
-                            <span class="academy-check-letter">
+                            <span>
                                 ${String.fromCharCode(65 + index)}
                             </span>
 
-                            <span>
-                                ${option}
-                            </span>
+                            ${escapeHTML(option)}
                         </button>
                     `).join("")}
 
@@ -3337,8 +2723,7 @@ const LESSON_CONTENT = {
 
                 <div
                     class="academy-check-feedback"
-                    id="academyCheckFeedback"
-                    hidden
+                    data-check-feedback
                 ></div>
 
             </section>
@@ -3347,100 +2732,109 @@ const LESSON_CONTENT = {
 
 
     /* =====================================================
-       BIND KNOWLEDGE CHECK
+       UNAVAILABLE TOPIC
        ===================================================== */
 
-    function bindKnowledgeCheck(lesson) {
+    function renderUnavailableTopic(subjectId, topicId) {
 
-        if (
-            !lesson ||
-            !lesson.knowledgeCheck
-        ) {
+        const subject = getSubject(subjectId);
+        const topic = getTopic(subjectId, topicId);
+
+        if (!subject || !topic) {
             return;
         }
 
-        const buttons = getAll(
-            ".academy-check-option"
-        );
+        setOverlayContent(`
+            <section class="academy-empty-state">
 
-        const feedback = getElement(
-            "#academyCheckFeedback"
-        );
+                <div class="academy-empty-state-icon">
+                    ⚗
+                </div>
 
-        buttons.forEach(button => {
+                <h2>
+                    ${escapeHTML(topic.title)}
+                </h2>
 
-            button.addEventListener(
-                "click",
-                function () {
+                <p>
+                    This topic is part of the ChemLab Academy curriculum.
+                    Detailed lessons are being prepared for this module.
+                </p>
 
-                    if (
-                        button.dataset.answered === "true"
-                    ) {
-                        return;
-                    }
+                <button
+                    type="button"
+                    class="button button-primary"
+                    data-topic-back="${escapeHTML(subjectId)}"
+                >
+                    ← Back to ${escapeHTML(subject.title)}
+                </button>
 
-                    button.dataset.answered = "true";
-
-                    const selected =
-                        Number(
-                            button.dataset.answerIndex
-                        );
-
-                    const correct =
-                        lesson.knowledgeCheck.answer;
-
-                    buttons.forEach(
-                        item => {
-                            item.disabled = true;
-                        }
-                    );
-
-                    if (selected === correct) {
-
-                        button.classList.add(
-                            "is-correct"
-                        );
-
-                        feedback.hidden = false;
-
-                        feedback.className =
-                            "academy-check-feedback is-correct";
-
-                        feedback.innerHTML = `
-                            <strong>Correct.</strong>
-                            ${lesson.knowledgeCheck.explanation}
-                        `;
-
-                        addScienceXP(5);
-
-                    } else {
-
-                        button.classList.add(
-                            "is-incorrect"
-                        );
-
-                        buttons[correct]?.classList.add(
-                            "is-correct"
-                        );
-
-                        feedback.hidden = false;
-
-                        feedback.className =
-                            "academy-check-feedback is-incorrect";
-
-                        feedback.innerHTML = `
-                            <strong>Review this concept.</strong>
-                            ${lesson.knowledgeCheck.explanation}
-                        `;
-                    }
-                }
-            );
-        });
+            </section>
+        `);
     }
 
 
     /* =====================================================
-       LESSON VIEW
+       OPEN SUBJECT
+       ===================================================== */
+
+    function openSubject(subjectId) {
+
+        const subject = getSubject(subjectId);
+
+        if (!subject) {
+            return;
+        }
+
+        renderTopicExplorer(subjectId);
+
+        document.dispatchEvent(
+            new CustomEvent("chemlab:academy-subject-opened", {
+                detail: {
+                    subjectId,
+                    subject
+                }
+            })
+        );
+    }
+
+
+    /* =====================================================
+       OPEN TOPIC
+       ===================================================== */
+
+    function openTopic(subjectId, topicId) {
+
+        const topic = getTopic(subjectId, topicId);
+
+        if (!topic) {
+            return;
+        }
+
+        const lessons = getLessons(topicId);
+
+        if (lessons.length) {
+            openLesson(subjectId, topicId, 0);
+        } else {
+            renderUnavailableTopic(
+                subjectId,
+                topicId
+            );
+        }
+
+        document.dispatchEvent(
+            new CustomEvent("chemlab:academy-topic-opened", {
+                detail: {
+                    subjectId,
+                    topicId,
+                    topic
+                }
+            })
+        );
+    }
+
+
+    /* =====================================================
+       OPEN LESSON
        ===================================================== */
 
     function openLesson(
@@ -3449,1095 +2843,180 @@ const LESSON_CONTENT = {
         lessonIndex = 0
     ) {
 
-        const subject =
-            getSubject(subjectId);
-
-        const topic =
-            getTopic(
-                subjectId,
-                topicId
-            );
-
-        if (!subject || !topic) {
-            return;
-        }
-
-        const lessons =
-            getLessons(
-                subjectId,
-                topicId
-            );
+        const lessons = getLessons(topicId);
 
         if (!lessons.length) {
+            renderUnavailableTopic(
+                subjectId,
+                topicId
+            );
+
             return;
         }
 
-        const safeIndex = Math.max(
-            0,
-            Math.min(
-                lessonIndex,
-                lessons.length - 1
-            )
+        renderLesson(
+            subjectId,
+            topicId,
+            lessonIndex
         );
-
-        STATE.view = "lesson";
-        STATE.currentSubject = subject;
-        STATE.currentTopic = topic;
-        STATE.currentLessonIndex = safeIndex;
-
-        renderLesson();
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
 
         document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-lesson-opened",
-                {
-                    detail: {
-                        subjectId,
-                        topicId,
-                        lessonIndex: safeIndex
-                    }
+            new CustomEvent("chemlab:academy-lesson-opened", {
+                detail: {
+                    subjectId,
+                    topicId,
+                    lessonIndex
                 }
-            )
+            })
         );
     }
 
 
     /* =====================================================
-       RENDER LESSON
+       COMPLETE LESSON
        ===================================================== */
 
-    function renderLesson() {
+    function markLessonCompleted(
+        subjectId,
+        topicId,
+        lessonId
+    ) {
 
-        const container =
-            getElement("#academyLessonContainer");
-
-        if (!container) {
+        if (isLessonCompleted(topicId, lessonId)) {
             return;
         }
 
-        const subject =
-            STATE.currentSubject;
+        const topicProgress =
+            getTopicProgress(topicId);
 
-        const topic =
-            STATE.currentTopic;
+        topicProgress.completedLessons =
+            Array.from(
+                new Set([
+                    ...topicProgress.completedLessons,
+                    lessonId
+                ])
+            );
 
-        if (!subject || !topic) {
-            return;
+        setTopicProgress(
+            topicId,
+            topicProgress
+        );
+
+        addXP(10);
+
+        const lessons = getLessons(topicId);
+
+        if (
+            lessons.length &&
+            topicProgress.completedLessons.length >=
+                lessons.length &&
+            !topicProgress.rewardClaimed
+        ) {
+
+            topicProgress.topicCompleted = true;
+            topicProgress.rewardClaimed = true;
+
+            setTopicProgress(
+                topicId,
+                topicProgress
+            );
+
+            addXP(25);
+
+            showTopicCompletion(
+                subjectId,
+                topicId
+            );
+
+        } else {
+
+            renderLesson(
+                subjectId,
+                topicId,
+                Math.max(
+                    0,
+                    lessons.findIndex(
+                        lesson => lesson.id === lessonId
+                    )
+                )
+            );
         }
 
-        const lessons =
-            getLessons(
-                subject.id,
-                topic.id
-            );
-
-        const current =
-            lessons[
-                STATE.currentLessonIndex
-            ];
-
-        if (!current || !current.content) {
-
-            container.innerHTML = `
-                <div class="academy-empty-state">
-
-                    <div class="academy-empty-state-icon">
-                        📚
-                    </div>
-
-                    <h2>Lesson content is being prepared</h2>
-
-                    <p>
-                        This topic is already part of the ChemLab
-                        curriculum. Detailed lesson content will be
-                        added in the next content release.
-                    </p>
-
-                    <button
-                        type="button"
-                        class="button button-secondary"
-                        id="academyBackToTopic"
-                    >
-                        Back to Topic
-                    </button>
-
-                </div>
-            `;
-
-            container.hidden = false;
-
-            getElement("#academyBackToTopic")
-                ?.addEventListener(
-                    "click",
-                    () => {
-                        openTopic(
-                            subject.id,
-                            topic.id
-                        );
-                    }
-                );
-
-            return;
-        }
-
-        const lesson =
-            current.content;
-
-        const progress =
-            calculateTopicProgress(
-                subject.id,
-                topic.id
-            );
-
-        const completed =
-            isLessonCompleted(
-                subject.id,
-                topic.id,
-                STATE.currentLessonIndex
-            );
-
-        const atFirst =
-            STATE.currentLessonIndex === 0;
-
-        const atLast =
-            STATE.currentLessonIndex ===
-            lessons.length - 1;
-
-        container.hidden = false;
-
-        container.innerHTML = `
-
-            <div class="academy-lesson-viewer">
-
-                <div class="academy-lesson-top">
-
-                    <button
-                        type="button"
-                        class="button button-ghost"
-                        id="academyLessonBack"
-                    >
-                        ← Back to Topic
-                    </button>
-
-                    <span class="academy-lesson-position">
-                        Lesson
-                        ${STATE.currentLessonIndex + 1}
-                        of
-                        ${lessons.length}
-                    </span>
-
-                </div>
-
-
-                <div class="academy-lesson-progress">
-
-                    <div
-                        class="academy-lesson-progress-bar"
-                        style="width:${progress}%"
-                    ></div>
-
-                </div>
-
-
-                <header class="academy-lesson-header">
-
-                    <span class="academy-eyebrow">
-                        ${escapeHTML(subject.title)}
-                    </span>
-
-                    <h1>
-                        ${escapeHTML(lesson.title)}
-                    </h1>
-
-                    <p>
-                        ${escapeHTML(topic.description)}
-                    </p>
-
-                </header>
-
-
-                <div class="academy-lesson-body-grid">
-
-                    <main class="academy-lesson-main">
-
-
-                        <section class="academy-lesson-block academy-lesson-objectives">
-
-                            <div class="academy-lesson-block-header">
-
-                                <span class="academy-lesson-block-icon">
-                                    🎯
-                                </span>
-
-                                <div>
-                                    <h2>Learning Objectives</h2>
-
-                                    <p>
-                                        By the end of this lesson,
-                                        you should be able to:
-                                    </p>
-                                </div>
-
-                            </div>
-
-                            <ul>
-
-                                ${lesson.objectives
-                                    .map(
-                                        objective => `
-                                            <li>
-                                                ${escapeHTML(
-                                                    objective
-                                                )}
-                                            </li>
-                                        `
-                                    )
-                                    .join("")}
-
-                            </ul>
-
-                        </section>
-
-
-                        <section class="academy-lesson-block">
-
-                            <div class="academy-lesson-block-header">
-
-                                <span class="academy-lesson-block-icon">
-                                    📖
-                                </span>
-
-                                <div>
-                                    <h2>Lesson</h2>
-                                    <p>
-                                        Core chemistry concepts
-                                    </p>
-                                </div>
-
-                            </div>
-
-                            <div class="academy-lesson-content">
-
-                                ${lesson.content}
-
-                            </div>
-
-                        </section>
-
-
-                        <section class="academy-lesson-block academy-key-points">
-
-                            <div class="academy-lesson-block-header">
-
-                                <span class="academy-lesson-block-icon">
-                                    💡
-                                </span>
-
-                                <div>
-                                    <h2>Key Points</h2>
-                                    <p>
-                                        Remember these ideas.
-                                    </p>
-                                </div>
-
-                            </div>
-
-                            <ul>
-
-                                ${lesson.keyPoints
-                                    .map(
-                                        point => `
-                                            <li>
-                                                ${escapeHTML(point)}
-                                            </li>
-                                        `
-                                    )
-                                    .join("")}
-
-                            </ul>
-
-                        </section>
-
-
-                        <section class="academy-lesson-block academy-worked-example">
-
-                            <div class="academy-lesson-block-header">
-
-                                <span class="academy-lesson-block-icon">
-                                    🧮
-                                </span>
-
-                                <div>
-                                    <h2>Worked Example</h2>
-                                    <p>
-                                        Follow the reasoning step by step.
-                                    </p>
-                                </div>
-
-                            </div>
-
-                            <div class="academy-example-question">
-
-                                <strong>Problem</strong>
-
-                                <p>
-                                    ${lesson.workedExample.question}
-                                </p>
-
-                            </div>
-
-                            <div class="academy-example-answer">
-
-                                <strong>Solution</strong>
-
-                                <p>
-                                    ${lesson.workedExample.solution}
-                                </p>
-
-                            </div>
-
-                        </section>
-
-
-                        ${renderKnowledgeCheck(lesson)}
-
-
-                        <footer class="academy-lesson-footer">
-
-                            <div class="academy-lesson-navigation">
-
-                                <button
-                                    type="button"
-                                    class="button button-secondary"
-                                    id="academyPreviousLesson"
-                                    ${atFirst ? "disabled" : ""}
-                                >
-                                    ← Previous
-                                </button>
-
-
-                                <button
-                                    type="button"
-                                    class="button button-primary"
-                                    id="academyCompleteLesson"
-                                    ${completed ? "disabled" : ""}
-                                >
-                                    ${completed
-                                        ? "✓ Lesson Completed"
-                                        : "Mark Lesson Complete"
-                                    }
-                                </button>
-
-
-                                <button
-                                    type="button"
-                                    class="button button-primary"
-                                    id="academyNextLesson"
-                                    ${atLast ? "disabled" : ""}
-                                >
-                                    Next →
-                                </button>
-
-                            </div>
-
-                        </footer>
-
-                    </main>
-
-
-                    <aside class="academy-lesson-sidebar">
-
-                        <div class="academy-lesson-sidebar-card">
-
-                            <div class="academy-sidebar-heading">
-
-                                <span>
-                                    Topic Progress
-                                </span>
-
-                                <strong>
-                                    ${progress}%
-                                </strong>
-
-                            </div>
-
-                            <div class="progress-bar">
-
-                                <div
-                                    class="progress-fill"
-                                    style="width:${progress}%"
-                                ></div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="academy-lesson-sidebar-card">
-
-                            <h3>
-                                ${escapeHTML(topic.title)}
-                            </h3>
-
-                            <div class="academy-lesson-list">
-
-                                ${lessons
-                                    .map(
-                                        (item, index) => {
-
-                                            const itemCompleted =
-                                                isLessonCompleted(
-                                                    subject.id,
-                                                    topic.id,
-                                                    index
-                                                );
-
-                                            const itemActive =
-                                                index ===
-                                                STATE.currentLessonIndex;
-
-                                            const itemTitle =
-                                                item.content
-                                                    ?.title ||
-                                                `Lesson ${index + 1}`;
-
-                                            return `
-
-                                                <button
-                                                    type="button"
-                                                    class="
-                                                        academy-lesson-list-item
-                                                        ${itemActive ? "is-active" : ""}
-                                                        ${itemCompleted ? "is-completed" : ""}
-                                                    "
-                                                    data-lesson-index="${index}"
-                                                >
-
-                                                    <span class="academy-lesson-list-number">
-
-                                                        ${
-                                                            itemCompleted
-                                                                ? "✓"
-                                                                : index + 1
-                                                        }
-
-                                                    </span>
-
-                                                    <span>
-                                                        ${escapeHTML(
-                                                            itemTitle
-                                                        )}
-                                                    </span>
-
-                                                </button>
-
-                                            `;
-                                        }
-                                    )
-                                    .join("")}
-
-                            </div>
-
-                        </div>
-
-                    </aside>
-
-                </div>
-
-            </div>
-        `;
-
-
-        /* ================================================
-           EVENTS
-           ================================================ */
-
-        getElement("#academyLessonBack")
-            ?.addEventListener(
-                "click",
-                () => {
-                    openTopic(
-                        subject.id,
-                        topic.id
-                    );
+        document.dispatchEvent(
+            new CustomEvent("chemlab:academy-lesson-completed", {
+                detail: {
+                    subjectId,
+                    topicId,
+                    lessonId
                 }
-            );
-
-
-        getElement("#academyCompleteLesson")
-            ?.addEventListener(
-                "click",
-                () => {
-
-                    markLessonCompleted(
-                        subject.id,
-                        topic.id,
-                        STATE.currentLessonIndex
-                    );
-
-                    renderLesson();
-                }
-            );
-
-
-        getElement("#academyPreviousLesson")
-            ?.addEventListener(
-                "click",
-                () => {
-
-                    if (!atFirst) {
-
-                        openLesson(
-                            subject.id,
-                            topic.id,
-                            STATE.currentLessonIndex - 1
-                        );
-                    }
-                }
-            );
-
-
-        getElement("#academyNextLesson")
-            ?.addEventListener(
-                "click",
-                () => {
-
-                    markLessonCompleted(
-                        subject.id,
-                        topic.id,
-                        STATE.currentLessonIndex
-                    );
-
-                    if (!atLast) {
-
-                        openLesson(
-                            subject.id,
-                            topic.id,
-                            STATE.currentLessonIndex + 1
-                        );
-
-                    } else {
-
-                        showTopicCompletion();
-                    }
-                }
-            );
-
-
-        getAll(
-            ".academy-lesson-list-item"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    openLesson(
-                        subject.id,
-                        topic.id,
-                        Number(
-                            button.dataset.lessonIndex
-                        )
-                    );
-                }
-            );
-
-        });
-
-
-        bindKnowledgeCheck(lesson);
+            })
+        );
     }
 
 
     /* =====================================================
-       TOPIC VIEW
+       TOPIC COMPLETION
        ===================================================== */
 
-    function openTopic(
+    function showTopicCompletion(
         subjectId,
         topicId
     ) {
 
-        const subject =
-            getSubject(subjectId);
-
-        const topic =
-            getTopic(
-                subjectId,
-                topicId
-            );
+        const subject = getSubject(subjectId);
+        const topic = getTopic(subjectId, topicId);
 
         if (!subject || !topic) {
             return;
         }
 
-        STATE.view = "topic";
-        STATE.currentSubject = subject;
-        STATE.currentTopic = topic;
+        setOverlayContent(`
+            <section class="academy-completion-panel">
 
-        renderTopic();
-
-        document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-topic-opened",
-                {
-                    detail: {
-                        subjectId,
-                        topicId
-                    }
-                }
-            )
-        );
-    }
-
-
-    function renderTopic() {
-
-        const container =
-            getElement("#academyTopicContainer");
-
-        const lessonContainer =
-            getElement("#academyLessonContainer");
-
-        if (!container) {
-            return;
-        }
-
-        lessonContainer &&
-            (lessonContainer.hidden = true);
-
-        const subject =
-            STATE.currentSubject;
-
-        const topic =
-            STATE.currentTopic;
-
-        const lessons =
-            getLessons(
-                subject.id,
-                topic.id
-            );
-
-        const progress =
-            calculateTopicProgress(
-                subject.id,
-                topic.id
-            );
-
-        container.hidden = false;
-
-        container.innerHTML = `
-
-            <div class="academy-topic-learning">
-
-                <header class="academy-topic-learning-header">
-
-                    <button
-                        type="button"
-                        class="button button-ghost"
-                        id="academyTopicBack"
-                    >
-                        ← Back to Subject
-                    </button>
-
-                    <span class="academy-eyebrow">
-                        ${escapeHTML(subject.title)}
-                    </span>
-
-                    <h1>
-                        ${escapeHTML(topic.title)}
-                    </h1>
-
-                    <p>
-                        ${escapeHTML(topic.description)}
-                    </p>
-
-                    <div class="academy-topic-learning-meta">
-
-                        <span class="academy-topic-meta-item">
-                            📚 ${lessons.length} Lessons
-                        </span>
-
-                        <span class="academy-topic-meta-item">
-                            📈 ${progress}% Complete
-                        </span>
-
-                    </div>
-
-                </header>
-
-
-                <div class="academy-lesson-preview-grid">
-
-                    ${lessons
-                        .map(
-                            (lesson, index) => {
-
-                                const completed =
-                                    isLessonCompleted(
-                                        subject.id,
-                                        topic.id,
-                                        index
-                                    );
-
-                                const title =
-                                    lesson.content?.title ||
-                                    `Lesson ${index + 1}`;
-
-                                return `
-
-                                    <button
-                                        type="button"
-                                        class="academy-lesson-preview-card"
-                                        data-topic-lesson="${index}"
-                                    >
-
-                                        <span class="academy-path-number">
-
-                                            ${
-                                                completed
-                                                    ? "✓"
-                                                    : index + 1
-                                            }
-
-                                        </span>
-
-                                        <span class="academy-lesson-status">
-
-                                            ${
-                                                completed
-                                                    ? "Completed"
-                                                    : "Start Lesson"
-                                            }
-
-                                        </span>
-
-                                        <h3>
-                                            ${escapeHTML(title)}
-                                        </h3>
-
-                                        <span>
-                                            ${completed
-                                                ? "Review lesson"
-                                                : "Learn concept →"
-                                            }
-                                        </span>
-
-                                    </button>
-
-                                `;
-                            }
-                        )
-                        .join("")}
-
+                <div class="academy-completion-icon">
+                    ✓
                 </div>
 
+                <div class="academy-block-label">
+                    TOPIC COMPLETED
+                </div>
+
+                <h1>
+                    ${escapeHTML(topic.title)}
+                </h1>
+
+                <p>
+                    You have completed every available lesson
+                    in this topic.
+                </p>
+
+                <div class="academy-completion-reward">
+                    <strong>+25 XP</strong>
+                    <span>Topic completion reward</span>
+                </div>
 
                 <div class="academy-topic-actions">
 
                     <button
                         type="button"
-                        class="button button-primary"
-                        id="academyStartTopic"
+                        class="button button-secondary"
+                        data-topic-back="${escapeHTML(subjectId)}"
                     >
-                        ${
-                            progress > 0
-                                ? "Continue Learning"
-                                : "Start Topic"
-                        }
+                        Explore More Topics
                     </button>
-
-                </div>
-
-            </div>
-        `;
-
-
-        getElement("#academyTopicBack")
-            ?.addEventListener(
-                "click",
-                () => {
-                    openSubject(
-                        subject.id
-                    );
-                }
-            );
-
-
-        getElement("#academyStartTopic")
-            ?.addEventListener(
-                "click",
-                () => {
-
-                    const nextLesson =
-                        lessons.findIndex(
-                            (_, index) =>
-                                !isLessonCompleted(
-                                    subject.id,
-                                    topic.id,
-                                    index
-                                )
-                        );
-
-                    openLesson(
-                        subject.id,
-                        topic.id,
-                        nextLesson >= 0
-                            ? nextLesson
-                            : 0
-                    );
-                }
-            );
-
-
-        getAll(
-            "[data-topic-lesson]"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    openLesson(
-                        subject.id,
-                        topic.id,
-                        Number(
-                            button.dataset.topicLesson
-                        )
-                    );
-                }
-            );
-
-        });
-    }
-
-
-    /* =====================================================
-       SUBJECT VIEW
-       ===================================================== */
-
-    function openSubject(subjectId) {
-
-        const subject =
-            getSubject(subjectId);
-
-        if (!subject) {
-            return;
-        }
-
-        STATE.currentSubject = subject;
-        STATE.view = "subject";
-
-        renderSubjectExplorer();
-
-        document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-subject-opened",
-                {
-                    detail: {
-                        subjectId
-                    }
-                }
-            )
-        );
-    }
-
-
-    function renderSubjectExplorer() {
-
-        const grid =
-            getElement("#academySubjectGrid");
-
-        const explorer =
-            getElement("#academySubjectExplorer");
-
-        if (!grid || !explorer) {
-            return;
-        }
-
-        const subject =
-            STATE.currentSubject;
-
-        grid.hidden = true;
-
-        explorer.hidden = false;
-
-        explorer.innerHTML = `
-
-            <div class="academy-topic-learning">
-
-                <header class="academy-topic-learning-header">
 
                     <button
                         type="button"
-                        class="button button-ghost"
-                        id="academyExplorerBack"
+                        class="button button-primary"
+                        data-academy-close
                     >
-                        ← All Subjects
+                        Return to Academy
                     </button>
-
-                    <span class="academy-eyebrow">
-                        Chemistry Academy
-                    </span>
-
-                    <h1>
-                        ${escapeHTML(subject.title)}
-                    </h1>
-
-                    <p>
-                        ${escapeHTML(subject.description)}
-                    </p>
-
-                </header>
-
-
-                <div class="academy-lesson-preview-grid">
-
-                    ${
-                        subject.topics.length
-                            ? subject.topics
-                                .map(
-                                    topic => {
-
-                                        const progress =
-                                            calculateTopicProgress(
-                                                subject.id,
-                                                topic.id
-                                            );
-
-                                        return `
-
-                                            <button
-                                                type="button"
-                                                class="academy-lesson-preview-card"
-                                                data-academy-topic="${topic.id}"
-                                            >
-
-                                                <span class="academy-path-number">
-                                                    ${subject.topics.indexOf(topic) + 1}
-                                                </span>
-
-                                                <span class="academy-lesson-status">
-                                                    ${progress}%
-                                                </span>
-
-                                                <h3>
-                                                    ${escapeHTML(
-                                                        topic.title
-                                                    )}
-                                                </h3>
-
-                                                <span>
-                                                    ${escapeHTML(
-                                                        topic.description
-                                                    )}
-                                                </span>
-
-                                            </button>
-
-                                        `;
-                                    }
-                                )
-                                .join("")
-                            :
-                                `
-                                    <div class="academy-empty-state">
-
-                                        <div class="academy-empty-state-icon">
-                                            📚
-                                        </div>
-
-                                        <h2>
-                                            More content is coming
-                                        </h2>
-
-                                        <p>
-                                            This chemistry area is already
-                                            part of the ChemLab curriculum.
-                                            Detailed topics will be released
-                                            progressively.
-                                        </p>
-
-                                    </div>
-                                `
-                    }
 
                 </div>
 
-            </div>
-        `;
-
-
-        getElement("#academyExplorerBack")
-            ?.addEventListener(
-                "click",
-                closeExplorer
-            );
-
-
-        getAll(
-            "[data-academy-topic]"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    openTopic(
-                        subject.id,
-                        button.dataset.academyTopic
-                    );
-                }
-            );
-
-        });
-    }
-
-
-    function closeExplorer() {
-
-        const grid =
-            getElement("#academySubjectGrid");
-
-        const explorer =
-            getElement("#academySubjectExplorer");
-
-        const topic =
-            getElement("#academyTopicContainer");
-
-        const lesson =
-            getElement("#academyLessonContainer");
-
-        if (grid) {
-            grid.hidden = false;
-        }
-
-        if (explorer) {
-            explorer.hidden = true;
-        }
-
-        if (topic) {
-            topic.hidden = true;
-        }
-
-        if (lesson) {
-            lesson.hidden = true;
-        }
-
-        STATE.view = "subjects";
-        STATE.currentSubject = null;
-        STATE.currentTopic = null;
-
-        document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-explorer-closed"
-            )
-        );
+            </section>
+        `);
     }
 
 
@@ -4547,378 +3026,552 @@ const LESSON_CONTENT = {
 
     function search(query) {
 
-        STATE.searchQuery =
-            String(query || "")
-                .trim()
-                .toLowerCase();
+        ACADEMY_STATE.searchQuery =
+            String(query || "").trim().toLowerCase();
 
-        STATE.filteredSubjects =
-            STATE.subjects.filter(
-                subject =>
-                    subject.title
-                        .toLowerCase()
-                        .includes(
-                            STATE.searchQuery
-                        ) ||
-                    subject.description
-                        .toLowerCase()
-                        .includes(
-                            STATE.searchQuery
-                        ) ||
-                    subject.topics.some(
-                        topic =>
-                            topic.title
-                                .toLowerCase()
-                                .includes(
-                                    STATE.searchQuery
-                                )
-                    )
-            );
+        applyFilters();
 
-        renderSubjectGrid();
-
-        document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-search",
-                {
-                    detail: {
-                        query: STATE.searchQuery
-                    }
-                }
-            )
-        );
+        return ACADEMY_STATE.filteredSubjects;
     }
 
-
-    /* =====================================================
-       LEVEL FILTER
-       ===================================================== */
 
     function filterByLevel(level) {
 
-        STATE.currentLevel =
-            level || "all";
+        ACADEMY_STATE.levelFilter =
+            String(level || "all").toLowerCase();
 
-        if (
-            STATE.currentLevel === "all"
-        ) {
+        applyFilters();
 
-            STATE.filteredSubjects =
-                [...STATE.subjects];
+        return ACADEMY_STATE.filteredSubjects;
+    }
 
-        } else {
 
-            STATE.filteredSubjects =
-                STATE.subjects.filter(
-                    subject =>
-                        subject.levels.includes(
-                            STATE.currentLevel
-                        )
-                );
+    function applyFilters() {
+
+        const query =
+            ACADEMY_STATE.searchQuery;
+
+        const level =
+            ACADEMY_STATE.levelFilter;
+
+        ACADEMY_STATE.filteredSubjects =
+            ACADEMY_CURRICULUM
+                .map(subject => {
+
+                    const subjectMatches =
+                        !query ||
+                        subject.title
+                            .toLowerCase()
+                            .includes(query) ||
+                        subject.description
+                            .toLowerCase()
+                            .includes(query);
+
+                    const topics =
+                        subject.topics.filter(topic => {
+
+                            const topicMatches =
+                                !query ||
+                                topic.title
+                                    .toLowerCase()
+                                    .includes(query) ||
+                                topic.description
+                                    .toLowerCase()
+                                    .includes(query);
+
+                            return topicMatches;
+                        });
+
+                    const levelMatches =
+                        level === "all" ||
+                        subject.level.toLowerCase() === level;
+
+                    if (
+                        levelMatches &&
+                        (subjectMatches || topics.length)
+                    ) {
+
+                        return {
+                            ...subject,
+                            topics:
+                                subjectMatches
+                                    ? subject.topics
+                                    : topics
+                        };
+                    }
+
+                    return null;
+
+                })
+                .filter(Boolean);
+
+        updateAcademyStats();
+    }
+
+
+    /* =====================================================
+       ACADEMY STATS
+       ===================================================== */
+
+    function getTotalTopics() {
+
+        return ACADEMY_CURRICULUM.reduce(
+            (total, subject) =>
+                total + subject.topics.length,
+            0
+        );
+    }
+
+
+    function getTotalLessons() {
+
+        return ACADEMY_CURRICULUM.reduce(
+            (total, subject) =>
+                total +
+                subject.topics.reduce(
+                    (sum, topic) =>
+                        sum + (
+                            getLessons(topic.id).length ||
+                            topic.lessons ||
+                            0
+                        ),
+                    0
+                ),
+            0
+        );
+    }
+
+
+    function updateAcademyStats() {
+
+        const subjectCount =
+            $("#academySubjectCount");
+
+        const topicCount =
+            $("#academyTopicCount");
+
+        const lessonCount =
+            $("#academyLessonCount");
+
+
+        if (subjectCount) {
+            subjectCount.textContent =
+                ACADEMY_CURRICULUM.length;
         }
 
-        renderSubjectGrid();
+        if (topicCount) {
+            topicCount.textContent =
+                getTotalTopics();
+        }
 
-        document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-filter",
-                {
-                    detail: {
-                        level:
-                            STATE.currentLevel
+        if (lessonCount) {
+            lessonCount.textContent =
+                getTotalLessons();
+        }
+    }
+
+
+    /* =====================================================
+       STATIC CARD CLICK HANDLING
+       ===================================================== */
+
+    function bindAcademyClicks() {
+
+        document.addEventListener(
+            "click",
+            event => {
+
+                const subjectCard =
+                    event.target.closest(
+                        "[data-academy-subject]"
+                    );
+
+                if (subjectCard) {
+
+                    const subjectId =
+                        subjectCard.dataset.academySubject;
+
+                    if (subjectId) {
+                        openSubject(subjectId);
                     }
+
+                    return;
                 }
-            )
+
+
+                const topicCard =
+                    event.target.closest(
+                        "[data-academy-topic]"
+                    );
+
+                if (topicCard) {
+
+                    const topicId =
+                        topicCard.dataset.academyTopic;
+
+                    const subjectId =
+                        topicCard.dataset.academySubject ||
+                        ACADEMY_STATE.currentSubject ||
+                        "foundations";
+
+                    if (topicId) {
+                        openTopic(
+                            subjectId,
+                            topicId
+                        );
+                    }
+
+                    return;
+                }
+
+
+                const topicOpen =
+                    event.target.closest(
+                        "[data-topic-open]"
+                    );
+
+                if (topicOpen) {
+
+                    const topicId =
+                        topicOpen.dataset.topicOpen;
+
+                    if (
+                        ACADEMY_STATE.currentSubject &&
+                        topicId
+                    ) {
+
+                        openTopic(
+                            ACADEMY_STATE.currentSubject,
+                            topicId
+                        );
+                    }
+
+                    return;
+                }
+
+
+                const lessonIndexButton =
+                    event.target.closest(
+                        "[data-lesson-index]"
+                    );
+
+                if (lessonIndexButton) {
+
+                    const index =
+                        Number(
+                            lessonIndexButton.dataset.lessonIndex
+                        );
+
+                    openLesson(
+                        ACADEMY_STATE.currentSubject,
+                        ACADEMY_STATE.currentTopic,
+                        index
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    event.target.closest(
+                        "[data-lesson-complete]"
+                    )
+                ) {
+
+                    const button =
+                        event.target.closest(
+                            "[data-lesson-complete]"
+                        );
+
+                    markLessonCompleted(
+                        button.dataset.subjectId,
+                        button.dataset.topicId,
+                        button.dataset.lessonId
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    event.target.closest(
+                        "[data-lesson-next]"
+                    )
+                ) {
+
+                    const lessons =
+                        getLessons(
+                            ACADEMY_STATE.currentTopic
+                        );
+
+                    const currentIndex =
+                        lessons.findIndex(
+                            lesson =>
+                                lesson.id ===
+                                ACADEMY_STATE.currentLesson
+                        );
+
+                    if (
+                        currentIndex >= 0 &&
+                        currentIndex < lessons.length - 1
+                    ) {
+
+                        openLesson(
+                            ACADEMY_STATE.currentSubject,
+                            ACADEMY_STATE.currentTopic,
+                            currentIndex + 1
+                        );
+                    }
+
+                    return;
+                }
+
+
+                if (
+                    event.target.closest(
+                        "[data-lesson-prev]"
+                    )
+                ) {
+
+                    const lessons =
+                        getLessons(
+                            ACADEMY_STATE.currentTopic
+                        );
+
+                    const currentIndex =
+                        lessons.findIndex(
+                            lesson =>
+                                lesson.id ===
+                                ACADEMY_STATE.currentLesson
+                        );
+
+                    if (currentIndex > 0) {
+
+                        openLesson(
+                            ACADEMY_STATE.currentSubject,
+                            ACADEMY_STATE.currentTopic,
+                            currentIndex - 1
+                        );
+                    }
+
+                    return;
+                }
+
+
+                const topicBack =
+                    event.target.closest(
+                        "[data-topic-back]"
+                    );
+
+                if (topicBack) {
+
+                    openSubject(
+                        topicBack.dataset.topicBack
+                    );
+
+                    return;
+                }
+
+
+                const close =
+                    event.target.closest(
+                        "[data-academy-close]"
+                    );
+
+                if (close) {
+                    closeOverlay();
+                }
+            }
         );
     }
 
 
     /* =====================================================
-       SUBJECT GRID
+       KNOWLEDGE CHECK HANDLING
        ===================================================== */
 
-    function renderSubjectGrid() {
+    function bindKnowledgeChecks() {
 
-        const grid =
-            getElement("#academySubjectGrid");
+        document.addEventListener(
+            "click",
+            event => {
 
-        const empty =
-            getElement("#academyEmptyState");
+                const answerButton =
+                    event.target.closest(
+                        "[data-check-answer]"
+                    );
 
-        if (!grid) {
+                if (!answerButton) {
+                    return;
+                }
+
+                const container =
+                    answerButton.closest(
+                        "[data-knowledge-check]"
+                    );
+
+                if (!container) {
+                    return;
+                }
+
+                const buttons =
+                    $$(
+                        "[data-check-answer]",
+                        container
+                    );
+
+                const selected =
+                    Number(
+                        answerButton.dataset.checkAnswer
+                    );
+
+                const correct =
+                    Number(
+                        answerButton.dataset.correctAnswer
+                    );
+
+                const feedback =
+                    $(
+                        "[data-check-feedback]",
+                        container
+                    );
+
+                buttons.forEach(button => {
+                    button.disabled = true;
+                });
+
+
+                if (selected === correct) {
+
+                    answerButton.classList.add(
+                        "is-correct"
+                    );
+
+                    if (feedback) {
+                        feedback.textContent =
+                            "Correct. Excellent work.";
+                    }
+
+                    if (!container.dataset.rewarded) {
+
+                        container.dataset.rewarded =
+                            "true";
+
+                        addXP(5);
+                    }
+
+                } else {
+
+                    answerButton.classList.add(
+                        "is-incorrect"
+                    );
+
+                    if (buttons[correct]) {
+                        buttons[correct].classList.add(
+                            "is-correct"
+                        );
+                    }
+
+                    if (feedback) {
+                        feedback.textContent =
+                            "Not quite. Review the lesson and try the concept again.";
+                    }
+                }
+            }
+        );
+    }
+
+
+    /* =====================================================
+       SEARCH UI
+       ===================================================== */
+
+    function bindSearch() {
+
+        const input =
+            $("#academySearchInput");
+
+        if (!input) {
             return;
         }
 
-        let subjects =
-            STATE.filteredSubjects;
-
-        if (
-            STATE.searchQuery
-        ) {
-
-            subjects =
-                subjects.filter(
-                    subject =>
-                        subject.title
-                            .toLowerCase()
-                            .includes(
-                                STATE.searchQuery
-                            ) ||
-                        subject.description
-                            .toLowerCase()
-                            .includes(
-                                STATE.searchQuery
-                            )
-                );
-        }
-
-        grid.innerHTML =
-            subjects
-                .map(
-                    subject => `
-
-                        <article
-                            class="card academy-subject-card"
-                            data-academy-subject="${subject.id}"
-                        >
-
-                            <div class="academy-subject-icon">
-                                ${subject.icon}
-                            </div>
-
-                            <div class="academy-subject-content">
-
-                                <span class="badge">
-                                    ${subject.topics.length}
-                                    Topics
-                                </span>
-
-                                <h3>
-                                    ${escapeHTML(
-                                        subject.title
-                                    )}
-                                </h3>
-
-                                <p>
-                                    ${escapeHTML(
-                                        subject.description
-                                    )}
-                                </p>
-
-                                <button
-                                    type="button"
-                                    class="button button-secondary academy-open-subject"
-                                    data-subject-id="${subject.id}"
-                                >
-                                    Explore Subject →
-                                </button>
-
-                            </div>
-
-                        </article>
-
-                    `
-                )
-                .join("");
-
-        grid.hidden = false;
-
-        if (empty) {
-            empty.hidden =
-                subjects.length !== 0;
-        }
-
-        getAll(
-            ".academy-open-subject"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    openSubject(
-                        button.dataset.subjectId
-                    );
-                }
-            );
-
-        });
-    }
+        input.addEventListener(
+            "input",
+            event => {
+                search(event.target.value);
+            }
+        );
 
 
-    /* =====================================================
-       STATS
-       ===================================================== */
+        $$("[data-academy-level]")
+            .forEach(button => {
 
-    function updateStats() {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-        const subjectCount =
-            STATE.subjects.length;
-
-        const topicCount =
-            STATE.subjects.reduce(
-                (total, subject) =>
-                    total + subject.topics.length,
-                0
-            );
-
-        const lessonCount =
-            Object.keys(
-                LESSON_CONTENT
-            ).length;
-
-
-        const subjectElement =
-            getElement(
-                "#academySubjectCount"
-            );
-
-        const topicElement =
-            getElement(
-                "#academyTopicCount"
-            );
-
-        const lessonElement =
-            getElement(
-                "#academyLessonCount"
-            );
-
-
-        if (subjectElement) {
-            subjectElement.textContent =
-                subjectCount;
-        }
-
-        if (topicElement) {
-            topicElement.textContent =
-                topicCount;
-        }
-
-        if (lessonElement) {
-            lessonElement.textContent =
-                lessonCount;
-        }
-    }
-
-
-    /* =====================================================
-       BIND UI
-       ===================================================== */
-
-    function bindUI() {
-
-        const searchInput =
-            getElement(
-                "#academySearchInput"
-            );
-
-        if (searchInput) {
-
-            searchInput.addEventListener(
-                "input",
-                event => {
-
-                    search(
-                        event.target.value
-                    );
-
-                }
-            );
-        }
-
-
-        getAll(
-            "[data-academy-level]"
-        ).forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    getAll(
-                        "[data-academy-level]"
-                    ).forEach(
-                        item =>
+                        $$(
+                            "[data-academy-level]"
+                        ).forEach(item => {
                             item.classList.remove(
                                 "is-active"
-                            )
-                    );
+                            );
+                        });
 
-                    button.classList.add(
-                        "is-active"
-                    );
+                        button.classList.add(
+                            "is-active"
+                        );
 
-                    filterByLevel(
-                        button.dataset.academyLevel
-                    );
-                }
-            );
-
-        });
-
-
-        const clearSearch =
-            getElement(
-                "#academyClearSearch"
-            );
-
-        if (clearSearch) {
-
-            clearSearch.addEventListener(
-                "click",
-                () => {
-
-                    if (searchInput) {
-                        searchInput.value = "";
+                        filterByLevel(
+                            button.dataset.academyLevel
+                        );
                     }
-
-                    STATE.searchQuery = "";
-
-                    STATE.filteredSubjects =
-                        [...STATE.subjects];
-
-                    renderSubjectGrid();
-                }
-            );
-        }
+                );
+            });
     }
 
 
     /* =====================================================
-       INITIALIZE
+       INITIALIZATION
        ===================================================== */
 
     function initialize() {
 
-        if (STATE.initialized) {
+        if (ACADEMY_STATE.initialized) {
             return;
         }
 
-        STATE.subjects =
-            CURRICULUM.map(
-                subject => ({
-                    ...subject,
-                    topics: [...subject.topics]
-                })
-            );
+        ACADEMY_STATE.loading = true;
 
-        STATE.filteredSubjects =
-            [...STATE.subjects];
+        ACADEMY_STATE.subjects =
+            ACADEMY_CURRICULUM;
 
-        STATE.initialized = true;
+        ACADEMY_STATE.filteredSubjects =
+            ACADEMY_CURRICULUM;
 
-        bindUI();
-        updateStats();
-        renderSubjectGrid();
+        bindAcademyClicks();
+        bindKnowledgeChecks();
+        bindSearch();
+
+        ensureAcademyOverlay();
+
+        updateAcademyStats();
+
+        ACADEMY_STATE.initialized = true;
+        ACADEMY_STATE.loading = false;
+
 
         document.dispatchEvent(
-            new CustomEvent(
-                "chemlab:academy-ready"
-            )
-        );
-
-        console.log(
-            "[ChemLab Academy] Stage 5.5 initialized."
+            new CustomEvent("chemlab:academy-ready", {
+                detail: {
+                    subjects:
+                        ACADEMY_CURRICULUM.length,
+                    topics:
+                        getTotalTopics(),
+                    lessons:
+                        getTotalLessons()
+                }
+            })
         );
     }
 
@@ -4931,27 +3584,16 @@ const LESSON_CONTENT = {
 
         initialize,
 
+        getSubjects: () =>
+            ACADEMY_CURRICULUM,
+
         getSubject,
 
         getTopic,
 
         getLessons,
 
-        getTotalTopics: function () {
-
-            return STATE.subjects.reduce(
-                (total, subject) =>
-                    total + subject.topics.length,
-                0
-            );
-        },
-
-        getTotalLessons: function () {
-
-            return Object.keys(
-                LESSON_CONTENT
-            ).length;
-        },
+        getLesson,
 
         search,
 
@@ -4963,28 +3605,27 @@ const LESSON_CONTENT = {
 
         openLesson,
 
-        closeExplorer,
+        markLessonCompleted,
+
+        getTotalTopics,
+
+        getTotalLessons,
 
         getTopicProgress,
 
-        setTopicProgress,
+        getTopicCompletionPercent,
 
         isLessonCompleted,
 
-        markLessonCompleted,
+        getXP,
 
-        addScienceXP,
+        addXP,
 
-        getState: function () {
+        close: closeOverlay,
 
-            return {
-                ...STATE,
-                subjects: [...STATE.subjects],
-                filteredSubjects: [
-                    ...STATE.filteredSubjects
-                ]
-            };
-        }
+        getState: () => ({
+            ...ACADEMY_STATE
+        })
     };
 
 
@@ -4992,9 +3633,21 @@ const LESSON_CONTENT = {
        AUTO INITIALIZE
        ===================================================== */
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        initialize
-    );
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initialize,
+            {
+                once: true
+            }
+        );
+
+    } else {
+
+        initialize();
+    }
 
 })();
