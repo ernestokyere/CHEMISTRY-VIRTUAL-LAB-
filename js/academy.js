@@ -2318,7 +2318,406 @@
                     ],
                     answer: 0
                 }
+
+                           /* =================================================
+           MOLE CONCEPT
+           ================================================= */
+
+        "mole-concept": [
+
+            {
+                id: "mole-1",
+                title: "What Is a Mole?",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Explain what a mole represents.",
+                    "Understand why chemists use the mole.",
+                    "Relate the mole to very large numbers of particles."
+                ],
+
+                content: [
+                    {
+                        heading: "The counting problem in chemistry",
+                        text:
+                            "Atoms, molecules, and ions are extremely small, so chemists need a practical way to count enormous numbers of particles. The mole is the SI unit used for the amount of substance."
+                    },
+                    {
+                        heading: "What does one mole mean?",
+                        text:
+                            "One mole of a substance contains exactly 6.02214076 × 10²³ specified particles. The particles may be atoms, molecules, ions, electrons, or other specified entities."
+                    },
+                    {
+                        heading: "Why the mole matters",
+                        text:
+                            "The mole connects the microscopic world of particles with measurable laboratory quantities such as mass and volume."
+                    }
+                ],
+
+                keyPoints: [
+                    "The mole is the SI unit for amount of substance.",
+                    "One mole contains 6.02214076 × 10²³ specified entities.",
+                    "The mole connects particles with measurable quantities."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many particles are present in 1 mole of a substance?",
+                    answer:
+                        "1 mole contains 6.02214076 × 10²³ specified particles."
+                },
+
+                knowledgeCheck: {
+                    question: "What does the mole measure?",
+                    options: [
+                        "Temperature",
+                        "Amount of substance",
+                        "Density",
+                        "Pressure"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "mole-2",
+                title: "Avogadro's Constant",
+                type: "lesson",
+                duration: 14,
+
+                objectives: [
+                    "Define Avogadro's constant.",
+                    "Use Avogadro's constant in particle calculations.",
+                    "Distinguish between amount of substance and number of particles."
+                ],
+
+                content: [
+                    {
+                        heading: "Avogadro's constant",
+                        text:
+                            "Avogadro's constant, represented by Nₐ, is exactly 6.02214076 × 10²³ mol⁻¹. It relates the amount of substance in moles to the number of specified entities."
+                    },
+                    {
+                        heading: "The particle relationship",
+                        text:
+                            "The number of particles can be calculated from the amount of substance using N = nNₐ, where N is the number of particles and n is the amount in moles."
+                    },
+                    {
+                        heading: "Using the relationship",
+                        text:
+                            "If the amount of substance increases, the number of corresponding particles increases proportionally."
+                    }
+                ],
+
+                keyPoints: [
+                    "Nₐ = 6.02214076 × 10²³ mol⁻¹.",
+                    "N = nNₐ.",
+                    "Avogadro's constant connects moles and particles."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many molecules are present in 2.00 mol of a molecular substance?",
+                    answer:
+                        "N = nNₐ = 2.00 × 6.02214076 × 10²³ = 1.2044 × 10²⁴ molecules."
+                },
+
+                knowledgeCheck: {
+                    question: "What is the value of Avogadro's constant?",
+                    options: [
+                        "6.02214076 × 10²³ mol⁻¹",
+                        "9.81 m s⁻²",
+                        "3.00 × 10⁸ m s⁻¹",
+                        "1.602 × 10⁻¹⁹ C"
+                    ],
+                    answer: 0
+                }
+            },
+
+
+            {
+                id: "mole-3",
+                title: "Molar Mass",
+                type: "lesson",
+                duration: 15,
+
+                objectives: [
+                    "Define molar mass.",
+                    "Calculate molar mass from a chemical formula.",
+                    "Use units correctly when reporting molar mass."
+                ],
+
+                content: [
+                    {
+                        heading: "What is molar mass?",
+                        text:
+                            "Molar mass is the mass of one mole of a substance. Its common unit is grams per mole, written g mol⁻¹."
+                    },
+                    {
+                        heading: "Calculating molar mass",
+                        text:
+                            "To calculate molar mass, add the relative atomic masses of all atoms represented in the chemical formula, taking subscripts into account."
+                    },
+                    {
+                        heading: "Example: water",
+                        text:
+                            "Water has the formula H₂O. Its molar mass is approximately 2(1.008) + 16.00 = 18.016 g mol⁻¹."
+                    }
+                ],
+
+                keyPoints: [
+                    "Molar mass is the mass of one mole.",
+                    "The usual unit is g mol⁻¹.",
+                    "Subscripts in formulas determine how many atoms are included."
+                ],
+
+                workedExample: {
+                    question:
+                        "Calculate the approximate molar mass of CO₂ using C = 12.01 and O = 16.00.",
+                    answer:
+                        "M(CO₂) = 12.01 + 2(16.00) = 44.01 g mol⁻¹."
+                },
+
+                knowledgeCheck: {
+                    question: "What is the usual unit for molar mass?",
+                    options: [
+                        "mol g⁻¹",
+                        "g mol⁻¹",
+                        "g L⁻¹",
+                        "mol L⁻¹"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "mole-4",
+                title: "Converting Mass to Moles",
+                type: "lesson",
+                duration: 16,
+
+                objectives: [
+                    "Convert a measured mass into amount of substance.",
+                    "Use the molar mass equation.",
+                    "Select appropriate units for calculations."
+                ],
+
+                content: [
+                    {
+                        heading: "The mass–mole relationship",
+                        text:
+                            "The amount of substance can be calculated from mass and molar mass using n = m/M."
+                    },
+                    {
+                        heading: "Meaning of the symbols",
+                        text:
+                            "In the equation n = m/M, n is the amount in moles, m is the mass in grams, and M is the molar mass in grams per mole."
+                    },
+                    {
+                        heading: "A reliable calculation method",
+                        text:
+                            "First determine the correct molar mass. Then divide the measured mass by the molar mass and report the answer with appropriate significant figures."
+                    }
+                ],
+
+                keyPoints: [
+                    "n = m/M.",
+                    "Mass should normally be expressed in grams when M is in g mol⁻¹.",
+                    "Always determine the correct molar mass before calculating."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many moles are present in 18.0 g of H₂O if its molar mass is 18.0 g mol⁻¹?",
+                    answer:
+                        "n = m/M = 18.0 g ÷ 18.0 g mol⁻¹ = 1.00 mol."
+                },
+
+                knowledgeCheck: {
+                    question: "Which equation calculates moles from mass and molar mass?",
+                    options: [
+                        "n = mM",
+                        "n = M/m",
+                        "n = m/M",
+                        "n = M + m"
+                    ],
+                    answer: 2
+                }
+            },
+
+
+            {
+                id: "mole-5",
+                title: "Converting Moles to Particles",
+                type: "lesson",
+                duration: 15,
+
+                objectives: [
+                    "Convert moles into numbers of particles.",
+                    "Apply Avogadro's constant correctly.",
+                    "Identify the type of particles represented by a formula."
+                ],
+
+                content: [
+                    {
+                        heading: "From moles to particles",
+                        text:
+                            "The number of specified particles can be calculated using N = nNₐ."
+                    },
+                    {
+                        heading: "Choosing the correct particle",
+                        text:
+                            "The chemical substance determines what the particles represent. For example, a sample of an elemental metal may be described in terms of atoms, while a molecular substance may be described in terms of molecules."
+                    },
+                    {
+                        heading: "Keeping track of units",
+                        text:
+                            "The units mol × mol⁻¹ cancel, leaving the number of particles."
+                    }
+                ],
+
+                keyPoints: [
+                    "N = nNₐ.",
+                    "Nₐ = 6.02214076 × 10²³ mol⁻¹.",
+                    "Always identify what the particles represent."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many molecules are present in 0.500 mol of CO₂?",
+                    answer:
+                        "N = 0.500 × 6.02214076 × 10²³ = 3.011 × 10²³ molecules."
+                },
+
+                knowledgeCheck: {
+                    question: "Which quantity is multiplied by Avogadro's constant to find the number of particles?",
+                    options: [
+                        "Mass",
+                        "Density",
+                        "Amount in moles",
+                        "Temperature"
+                    ],
+                    answer: 2
+                }
+            },
+
+
+            {
+                id: "mole-6",
+                title: "Mole Relationships in Compounds",
+                type: "lesson",
+                duration: 16,
+
+                objectives: [
+                    "Interpret subscripts in chemical formulas.",
+                    "Determine mole ratios of elements in compounds.",
+                    "Connect chemical formulas with particle and mole relationships."
+                ],
+
+                content: [
+                    {
+                        heading: "Subscripts carry information",
+                        text:
+                            "The subscripts in a chemical formula show the relative number of atoms of each element in one formula unit or molecule."
+                    },
+                    {
+                        heading: "Example: H₂O",
+                        text:
+                            "The formula H₂O represents two hydrogen atoms for every one oxygen atom. Therefore, one mole of H₂O contains two moles of hydrogen atoms and one mole of oxygen atoms."
+                    },
+                    {
+                        heading: "Example: Al₂(SO₄)₃",
+                        text:
+                            "The formula Al₂(SO₄)₃ contains two aluminium atoms, three sulfur atoms, and twelve oxygen atoms per formula unit. The corresponding mole relationship is 2 mol Al : 3 mol S : 12 mol O."
+                    }
+                ],
+
+                keyPoints: [
+                    "Subscripts show relative atom numbers.",
+                    "Parentheses multiply everything inside them.",
+                    "Chemical formulas provide mole relationships between elements."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many moles of oxygen atoms are present in 2.00 mol of H₂O?",
+                    answer:
+                        "Each mole of H₂O contains 1 mole of oxygen atoms, so 2.00 mol H₂O contains 2.00 mol oxygen atoms."
+                },
+
+                knowledgeCheck: {
+                    question: "How many moles of oxygen atoms are represented by 1 mol of CO₂?",
+                    options: [
+                        "1 mol",
+                        "2 mol",
+                        "3 mol",
+                        "4 mol"
+                    ],
+                    answer: 1
+                }
+            },
+
+
+            {
+                id: "mole-7",
+                title: "Combining Mole Calculations",
+                type: "lesson",
+                duration: 18,
+
+                objectives: [
+                    "Combine mass, moles, and particle calculations.",
+                    "Choose an appropriate sequence of equations.",
+                    "Solve multi-step mole problems systematically."
+                ],
+
+                content: [
+                    {
+                        heading: "The mole calculation pathway",
+                        text:
+                            "Many chemistry calculations require more than one step. A common pathway is mass → moles → particles, or particles → moles → mass."
+                    },
+                    {
+                        heading: "A systematic approach",
+                        text:
+                            "Start by identifying the quantity given and the quantity required. Choose an equation that connects them, track units carefully, and use the result of one step as the input for the next."
+                    },
+                    {
+                        heading: "Core relationships",
+                        text:
+                            "The three important relationships are n = m/M, N = nNₐ, and m = nM. Together they allow chemists to move between mass, amount of substance, and number of particles."
+                    }
+                ],
+
+                keyPoints: [
+                    "Use n = m/M to connect mass and moles.",
+                    "Use N = nNₐ to connect moles and particles.",
+                    "Use m = nM to convert moles back to mass.",
+                    "Track units at every step."
+                ],
+
+                workedExample: {
+                    question:
+                        "How many molecules are present in 36.0 g of H₂O if M(H₂O) = 18.0 g mol⁻¹?",
+                    answer:
+                        "Step 1: n = m/M = 36.0/18.0 = 2.00 mol. Step 2: N = nNₐ = 2.00 × 6.02214076 × 10²³ = 1.2044 × 10²⁴ molecules."
+                },
+
+                knowledgeCheck: {
+                    question:
+                        "Which sequence is appropriate for converting mass directly into number of particles?",
+                    options: [
+                        "Mass → particles",
+                        "Mass → moles → particles",
+                        "Particles → mass → moles",
+                        "Mass → temperature → particles"
+                    ],
+                    answer: 1
+                }
             }
+
         ]
 
     
