@@ -1,8 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -12,7 +11,7 @@
 
     <meta
         name="description"
-        content="ChemLab — A professional digital chemistry laboratory and learning platform."
+        content="ChemLab is a professional digital chemistry laboratory and learning platform."
     >
 
     <meta
@@ -22,195 +21,129 @@
 
     <title>ChemLab | Digital Chemistry Laboratory</title>
 
-    <!-- =====================================================
-         STYLES
-         ===================================================== -->
-
     <link rel="stylesheet" href="css/core.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <link rel="stylesheet" href="css/auth.css">
-
 </head>
-
 
 <body>
 
-    <!-- =====================================================
-         APPLICATION
-         ===================================================== -->
+    <div class="app">
 
-    <div id="app">
-
-        <!-- ================================================
-             APPLICATION LOADER
-             ================================================ -->
-
-        <div
-            id="appLoader"
-            class="app-loader"
-            aria-hidden="true"
-        >
-
-            <div class="loader-content">
-
-                <div class="chem-lab-mark">
-                    CL
-                </div>
-
-                <h1>ChemLab</h1>
-
-                <p>
-                    Digital Chemistry Laboratory
-                </p>
-
-                <div class="loader-spinner"></div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================================================
+        <!-- ==============================
              SIDEBAR
-             ================================================ -->
+             ============================== -->
 
-        <aside
-            id="sidebar"
-            class="sidebar"
-        >
+        <aside class="sidebar">
 
-            <div class="sidebar-brand">
+            <div class="brand">
 
-                <div class="brand-mark">
+                <div class="brand-logo">
                     CL
                 </div>
 
-                <div class="brand-text">
-
+                <div class="brand-info">
                     <strong>ChemLab</strong>
-
-                    <span>
-                        Digital Laboratory
-                    </span>
-
+                    <span>Digital Laboratory</span>
                 </div>
 
             </div>
 
 
-            <!-- Navigation -->
+            <nav class="navigation">
 
-            <nav class="sidebar-navigation">
+                <div class="navigation-group">
 
-                <div class="nav-section">
-
-                    <span class="nav-section-title">
-                        Workspace
-                    </span>
+                    <p class="navigation-title">
+                        WORKSPACE
+                    </p>
 
                     <a
                         href="#dashboard"
-                        class="nav-item active"
-                        data-route="dashboard"
+                        class="navigation-item active"
                     >
-                        <span class="nav-icon">⌂</span>
-                        <span>Dashboard</span>
+                        <span>⌂</span>
+                        Dashboard
                     </a>
 
                     <a
                         href="#laboratory"
-                        class="nav-item"
-                        data-route="laboratory"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">⚗</span>
-                        <span>Laboratory</span>
-                        <span class="nav-badge">
-                            LAB
-                        </span>
+                        <span>⚗</span>
+                        Laboratory
                     </a>
 
                     <a
                         href="#experiments"
-                        class="nav-item"
-                        data-route="experiments"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">🧪</span>
-                        <span>Experiments</span>
+                        <span>🧪</span>
+                        Experiments
                     </a>
 
                     <a
                         href="#analysis"
-                        class="nav-item"
-                        data-route="analysis"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">▥</span>
-                        <span>Analysis</span>
+                        <span>▥</span>
+                        Analysis
                     </a>
 
                 </div>
 
 
-                <div class="nav-section">
+                <div class="navigation-group">
 
-                    <span class="nav-section-title">
-                        Learning
-                    </span>
+                    <p class="navigation-title">
+                        LEARNING
+                    </p>
 
                     <a
                         href="#academy"
-                        class="nav-item"
-                        data-route="academy"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">▤</span>
-                        <span>Chemistry Academy</span>
+                        <span>📚</span>
+                        Chemistry Academy
                     </a>
 
                     <a
                         href="#ai-tutor"
-                        class="nav-item"
-                        data-route="ai-tutor"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">✦</span>
-                        <span>AI ChemLab Tutor</span>
-                        <span class="ai-live-dot"></span>
+                        <span>✦</span>
+                        AI ChemLab Tutor
                     </a>
 
                     <a
                         href="#assessments"
-                        class="nav-item"
-                        data-route="assessments"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">✓</span>
-                        <span>Assessments</span>
+                        <span>✓</span>
+                        Assessments
                     </a>
 
                 </div>
 
 
-                <div class="nav-section">
+                <div class="navigation-group">
 
-                    <span class="nav-section-title">
-                        Academic
-                    </span>
+                    <p class="navigation-title">
+                        ACADEMIC
+                    </p>
 
                     <a
                         href="#notebook"
-                        class="nav-item"
-                        data-route="notebook"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">▱</span>
-                        <span>Lab Notebook</span>
+                        <span>▱</span>
+                        Lab Notebook
                     </a>
 
                     <a
                         href="#progress"
-                        class="nav-item"
-                        data-route="progress"
+                        class="navigation-item"
                     >
-                        <span class="nav-icon">↗</span>
-                        <span>My Progress</span>
+                        <span>↗</span>
+                        My Progress
                     </a>
 
                 </div>
@@ -218,51 +151,40 @@
             </nav>
 
 
-            <!-- Premium -->
-
             <div class="sidebar-premium">
 
-                <div class="premium-icon">
+                <div class="premium-symbol">
                     ✦
                 </div>
 
-                <div>
+                <strong>
+                    ChemLab Premium
+                </strong>
 
-                    <strong>
-                        ChemLab Premium
-                    </strong>
-
-                    <span>
-                        Advanced laboratory tools
-                    </span>
-
-                </div>
+                <p>
+                    Unlock advanced laboratory tools.
+                </p>
 
                 <a href="#premium">
-                    Explore
+                    Explore Premium
                 </a>
 
             </div>
 
 
-            <!-- Sidebar bottom -->
-
-            <div class="sidebar-bottom">
+            <div class="sidebar-footer">
 
                 <a
                     href="#settings"
-                    class="nav-item"
-                    data-route="settings"
+                    class="navigation-item"
                 >
-                    <span class="nav-icon">⚙</span>
-                    <span>Settings</span>
+                    <span>⚙</span>
+                    Settings
                 </a>
 
                 <button
                     type="button"
-                    id="sidebarSignIn"
-                    class="sidebar-signin"
-                    data-auth-action="signin"
+                    class="sign-in-button"
                 >
                     Sign In
                 </button>
@@ -272,23 +194,20 @@
         </aside>
 
 
-        <!-- ================================================
-             MAIN APPLICATION
-             ================================================ -->
+        <!-- ==============================
+             MAIN AREA
+             ============================== -->
 
         <main class="main">
 
-            <!-- ============================================
-                 TOPBAR
-                 ============================================ -->
+            <!-- TOPBAR -->
 
             <header class="topbar">
 
                 <button
                     type="button"
-                    id="mobileMenuButton"
-                    class="mobile-menu-button"
-                    aria-label="Open navigation"
+                    class="mobile-menu"
+                    aria-label="Open menu"
                 >
                     ☰
                 </button>
@@ -296,17 +215,11 @@
 
                 <div class="breadcrumb">
 
-                    <span>
-                        ChemLab
-                    </span>
+                    <span>ChemLab</span>
 
-                    <span class="breadcrumb-divider">
-                        /
-                    </span>
+                    <span>/</span>
 
-                    <strong id="breadcrumbCurrent">
-                        Dashboard
-                    </strong>
+                    <strong>Dashboard</strong>
 
                 </div>
 
@@ -315,17 +228,14 @@
 
                     <button
                         type="button"
-                        class="topbar-search"
-                        id="searchButton"
+                        class="search-button"
                     >
-                        <span>Search ChemLab...</span>
-                        <kbd>Ctrl K</kbd>
+                        Search ChemLab
                     </button>
 
                     <button
                         type="button"
-                        class="topbar-icon-button"
-                        id="notificationButton"
+                        class="notification-button"
                         aria-label="Notifications"
                     >
                         ♢
@@ -334,27 +244,15 @@
 
                     <button
                         type="button"
-                        class="profile-trigger"
-                        id="profileTrigger"
+                        class="profile-button"
                     >
 
-                        <span
-                            class="profile-avatar"
-                            id="topbarAvatar"
-                        >
+                        <span class="avatar">
                             S
                         </span>
 
-                        <span class="profile-details">
-
-                            <strong id="topbarStudentName">
-                                Student
-                            </strong>
-
-                            <small>
-                                Chemistry Student
-                            </small>
-
+                        <span class="profile-name">
+                            Student
                         </span>
 
                         <span>
@@ -368,203 +266,362 @@
             </header>
 
 
-            <!-- ============================================
-                 PAGE CONTENT
-                 ============================================ -->
+            <!-- ==============================
+                 DASHBOARD
+                 ============================== -->
 
-            <div
-                id="pageContent"
-                class="page-content"
-            >
+            <section class="dashboard">
 
-                <!-- Dashboard will be rendered here -->
+                <div class="dashboard-header">
 
-            </div>
+                    <div>
+
+                        <p class="eyebrow">
+                            YOUR CHEMISTRY WORKSPACE
+                        </p>
+
+                        <h1>
+                            Welcome to ChemLab
+                        </h1>
+
+                        <p class="dashboard-description">
+                            Learn chemistry, design experiments,
+                            analyze results, and develop real
+                            scientific skills.
+                        </p>
+
+                    </div>
+
+
+                    <div class="dashboard-actions">
+
+                        <a
+                            href="#laboratory"
+                            class="primary-button"
+                        >
+                            Open Laboratory
+                        </a>
+
+                        <a
+                            href="#academy"
+                            class="secondary-button"
+                        >
+                            Continue Learning
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATISTICS -->
+
+                <div class="stats-grid">
+
+                    <article class="stat-card">
+
+                        <span class="stat-label">
+                            Experiments
+                        </span>
+
+                        <strong>
+                            0
+                        </strong>
+
+                        <small>
+                            Completed
+                        </small>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-label">
+                            Chemistry Mastery
+                        </span>
+
+                        <strong>
+                            0%
+                        </strong>
+
+                        <small>
+                            Overall progress
+                        </small>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-label">
+                            Assessments
+                        </span>
+
+                        <strong>
+                            0
+                        </strong>
+
+                        <small>
+                            Completed
+                        </small>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <span class="stat-label">
+                            Science XP
+                        </span>
+
+                        <strong>
+                            0
+                        </strong>
+
+                        <small>
+                            Keep learning
+                        </small>
+
+                    </article>
+
+                </div>
+
+
+                <!-- MAIN DASHBOARD GRID -->
+
+                <div class="dashboard-grid">
+
+
+                    <!-- LEARNING -->
+
+                    <article class="dashboard-card learning-card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <span class="card-label">
+                                    CONTINUE LEARNING
+                                </span>
+
+                                <h2>
+                                    Measurements & Scientific Units
+                                </h2>
+
+                            </div>
+
+                            <span class="level-badge">
+                                FOUNDATION
+                            </span>
+
+                        </div>
+
+
+                        <p>
+                            Build a strong foundation in
+                            measurement, significant figures,
+                            scientific notation, and laboratory
+                            units.
+                        </p>
+
+
+                        <div class="progress-bar">
+
+                            <span
+                                style="width: 0%"
+                            ></span>
+
+                        </div>
+
+
+                        <div class="card-footer">
+
+                            <span>
+                                0 / 6 lessons
+                            </span>
+
+                            <a href="#academy">
+                                Start Learning →
+                            </a>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- LAB PREVIEW -->
+
+                    <article class="dashboard-card lab-card">
+
+                        <div class="card-header">
+
+                            <div>
+
+                                <span class="card-label">
+                                    DIGITAL LABORATORY
+                                </span>
+
+                                <h2>
+                                    Your Laboratory
+                                </h2>
+
+                            </div>
+
+                            <span class="live-badge">
+                                READY
+                            </span>
+
+                        </div>
+
+
+                        <div class="lab-options">
+
+                            <a href="#laboratory">
+
+                                <span>⚗</span>
+
+                                <strong>
+                                    Guided Lab
+                                </strong>
+
+                                <small>
+                                    Follow experiments
+                                </small>
+
+                            </a>
+
+
+                            <a href="#laboratory">
+
+                                <span>🧪</span>
+
+                                <strong>
+                                    Open Lab
+                                </strong>
+
+                                <small>
+                                    Design your experiment
+                                </small>
+
+                            </a>
+
+
+                            <a href="#analysis">
+
+                                <span>▥</span>
+
+                                <strong>
+                                    Analysis
+                                </strong>
+
+                                <small>
+                                    Analyze your data
+                                </small>
+
+                            </a>
+
+
+                            <a href="#ai-tutor">
+
+                                <span>✦</span>
+
+                                <strong>
+                                    AI Guidance
+                                </strong>
+
+                                <small>
+                                    Ask ChemLab AI
+                                </small>
+
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <!-- SCIENTIFIC METHOD -->
+
+                <article class="dashboard-card scientific-method">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                SCIENTIFIC METHOD
+                            </span>
+
+                            <h2>
+                                From Question to Conclusion
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="method-steps">
+
+                        <div class="method-step">
+                            <span>01</span>
+                            <strong>Learn</strong>
+                            <small>Understand the concept</small>
+                        </div>
+
+                        <div class="method-line"></div>
+
+                        <div class="method-step">
+                            <span>02</span>
+                            <strong>Predict</strong>
+                            <small>Form a hypothesis</small>
+                        </div>
+
+                        <div class="method-line"></div>
+
+                        <div class="method-step">
+                            <span>03</span>
+                            <strong>Experiment</strong>
+                            <small>Perform the investigation</small>
+                        </div>
+
+                        <div class="method-line"></div>
+
+                        <div class="method-step">
+                            <span>04</span>
+                            <strong>Measure</strong>
+                            <small>Record observations</small>
+                        </div>
+
+                        <div class="method-line"></div>
+
+                        <div class="method-step">
+                            <span>05</span>
+                            <strong>Analyze</strong>
+                            <small>Interpret your results</small>
+                        </div>
+
+                        <div class="method-line"></div>
+
+                        <div class="method-step">
+                            <span>06</span>
+                            <strong>Conclude</strong>
+                            <small>Communicate your findings</small>
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </section>
 
         </main>
 
     </div>
 
 
-    <!-- =====================================================
-         AUTHENTICATION MODAL
-         ===================================================== -->
-
-    <div
-        id="authModal"
-        class="modal"
-        aria-hidden="true"
-    >
-
-        <div class="modal-overlay"></div>
-
-        <div
-            class="modal-card auth-card"
-            role="dialog"
-            aria-modal="true"
-        >
-
-            <button
-                type="button"
-                id="closeAuthModal"
-                class="modal-close"
-                aria-label="Close"
-            >
-                ×
-            </button>
-
-
-            <div class="auth-header">
-
-                <div class="auth-logo">
-                    CL
-                </div>
-
-                <h2>
-                    Welcome to ChemLab
-                </h2>
-
-                <p>
-                    Sign in to access your chemistry workspace.
-                </p>
-
-            </div>
-
-
-            <div class="auth-tabs">
-
-                <button
-                    type="button"
-                    id="authLoginTab"
-                    class="auth-tab active"
-                >
-                    Sign In
-                </button>
-
-                <button
-                    type="button"
-                    id="authSignupTab"
-                    class="auth-tab"
-                >
-                    Create Account
-                </button>
-
-            </div>
-
-
-            <div
-                id="authMessage"
-                class="auth-message"
-            ></div>
-
-
-            <!-- Login -->
-
-            <form
-                id="authLoginForm"
-                class="auth-form"
-            >
-
-                <label>
-                    Email
-                    <input
-                        type="email"
-                        id="authLoginEmail"
-                        required
-                        autocomplete="email"
-                    >
-                </label>
-
-                <label>
-                    Password
-                    <input
-                        type="password"
-                        id="authLoginPassword"
-                        required
-                        autocomplete="current-password"
-                    >
-                </label>
-
-                <button
-                    type="submit"
-                    class="primary-button"
-                >
-                    Sign In
-                </button>
-
-            </form>
-
-
-            <!-- Signup -->
-
-            <form
-                id="authSignupForm"
-                class="auth-form hidden"
-            >
-
-                <label>
-                    Full Name
-                    <input
-                        type="text"
-                        id="authSignupName"
-                        required
-                        autocomplete="name"
-                    >
-                </label>
-
-                <label>
-                    Email
-                    <input
-                        type="email"
-                        id="authSignupEmail"
-                        required
-                        autocomplete="email"
-                    >
-                </label>
-
-                <label>
-                    Password
-                    <input
-                        type="password"
-                        id="authSignupPassword"
-                        required
-                        autocomplete="new-password"
-                    >
-                </label>
-
-                <button
-                    type="submit"
-                    class="primary-button"
-                >
-                    Create ChemLab Account
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
-
-    <script src="js/config.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/router.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/laboratory.js"></script>
-    <script src="js/experiments.js"></script>
-    <script src="js/academy.js"></script>
-    <script src="js/analysis.js"></script>
-    <script src="js/notebook.js"></script>
-    <script src="js/assessments.js"></script>
-    <script src="js/progress.js"></script>
-    <script src="js/ai.js"></script>
-    <script src="js/premium.js"></script>
-    <script src="js/app.js"></script>
-
 </body>
-
 </html>
