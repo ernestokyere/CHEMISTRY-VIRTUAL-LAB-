@@ -12,11 +12,11 @@
     /* =====================================================
        ROUTES
        ===================================================== */
+const Router = {
 
-    const ROUTES = {
+    currentRoute: "dashboard",
 
-        dashboard: {
-            title: "Dashboard"
+    dashboardHTML: "",
         },
 
         laboratory: {
@@ -862,62 +862,59 @@
 
         renderView: function (route) {
 
-            const appView =
-                document.querySelector("#appView");
+    const appView =
+        document.querySelector("#appView");
 
 
-            if (!appView) {
-                return;
-            }
+    if (!appView) {
+        return;
+    }
 
 
-            /*
-             * Dashboard already exists in index.html.
-             */
+    /*
+     * Restore the original dashboard.
+     */
 
-            if (route === "dashboard") {
+    if (route === "dashboard") {
 
-                appView.style.display = "";
+        if (this.dashboardHTML) {
 
-                appView.classList.remove("route-view");
+            appView.innerHTML =
+                this.dashboardHTML;
 
-                return;
+        }
 
-            }
+        appView.style.display = "";
 
+        appView.classList.remove("route-view");
 
-            const view =
-                VIEWS[route];
+        return;
 
-
-            if (!view) {
-                return;
-            }
+    }
 
 
-            appView.style.display = "";
-
-            appView.classList.remove("route-view");
-
-
-            /*
-             * Reset animation.
-             */
-
-            void appView.offsetWidth;
+    const view =
+        VIEWS[route];
 
 
-            /*
-             * Insert route view.
-             */
-
-            appView.innerHTML = view;
+    if (!view) {
+        return;
+    }
 
 
-            appView.classList.add("route-view");
+    appView.style.display = "";
 
-        },
+    appView.classList.remove("route-view");
 
+
+    void appView.offsetWidth;
+
+
+    appView.innerHTML = view;
+
+    appView.classList.add("route-view");
+
+},
 
         /* =================================================
            UPDATE UI
@@ -971,13 +968,25 @@
            INITIALIZE
            ================================================= */
 
-        initialize: function () {
+       initialize: function () {
 
-            const self = this;
+    const self = this;
 
 
-            window.addEventListener(
-                "hashchange",
+    const appView =
+        document.querySelector("#appView");
+
+
+    if (appView) {
+
+        this.dashboardHTML =
+            appView.innerHTML;
+
+    }
+
+
+    window.addEventListener(
+        "hashchange",
                 function () {
 
                     self.handleRouteChange();
