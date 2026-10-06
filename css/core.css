@@ -1307,3 +1307,210 @@ h6 {
     }
 
 }
+
+/* =========================================================
+   CHEMLAB APPLICATION STATE
+   ========================================================= */
+
+#appView {
+    min-height: calc(100vh - var(--topbar-height));
+}
+
+#appView.route-view {
+    animation: chemLabPageEnter 0.2s ease;
+}
+
+@keyframes chemLabPageEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   PAGE SECTIONS
+   ========================================================= */
+
+.page-section {
+    margin-top: 24px;
+}
+
+.page-section-title {
+    margin-bottom: 6px;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.page-section-description {
+    margin-bottom: 18px;
+
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   APPLICATION STATUS
+   ========================================================= */
+
+.application-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--surface);
+
+    color: var(--text-secondary);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.application-status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--success);
+}
+
+
+/* =========================================================
+   PROFESSIONAL TOOLBAR
+   ========================================================= */
+
+.page-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-bottom: 20px;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--surface);
+}
+
+.page-toolbar-left,
+.page-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toolbar-button {
+    min-height: 34px;
+
+    padding: 0 11px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.toolbar-button:hover {
+    background: var(--surface-soft);
+    color: var(--text);
+}
+
+
+/* =========================================================
+   EMPTY / DEVELOPMENT STATE
+   ========================================================= */
+
+.development-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    margin-bottom: 20px;
+    padding: 14px 16px;
+
+    border: 1px solid #dfe5ff;
+    border-radius: var(--radius-md);
+
+    background: var(--primary-light);
+}
+
+.development-banner-icon {
+    flex-shrink: 0;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: var(--surface);
+    color: var(--primary);
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.development-banner strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--text);
+
+    font-size: 12px;
+}
+
+.development-banner p {
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    .page-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-toolbar-left,
+    .page-toolbar-right {
+        width: 100%;
+    }
+
+    .toolbar-button {
+        flex: 1;
+    }
+
+}
