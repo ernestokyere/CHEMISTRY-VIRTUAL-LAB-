@@ -83,49 +83,53 @@
        NAVIGATION
        ===================================================== */
 
-    function setupNavigation() {
+  function setupNavigation() {
 
-        const navigationItems = $$(".navigation-item");
-
-        navigationItems.forEach(function (item) {
-
-            item.addEventListener("click", function () {
-
-                navigationItems.forEach(function (nav) {
-
-                    nav.classList.remove("active");
-
-                });
-
-                item.classList.add("active");
+    const navigationItems =
+        $$(".navigation-item");
 
 
-                const href = item.getAttribute("href");
+    navigationItems.forEach(function (item) {
 
-                if (href && href.startsWith("#")) {
+        item.addEventListener("click", function () {
 
-                    ChemLab.currentRoute =
-                        href.substring(1) || "dashboard";
-
-                }
+            const href =
+                item.getAttribute("href");
 
 
-                const sidebar = $(".sidebar");
+            if (
+                href &&
+                href.startsWith("#") &&
+                window.ChemLabRouter
+            ) {
 
-                if (
-                    sidebar &&
-                    window.innerWidth <= 800
-                ) {
+                const route =
+                    href.substring(1) || "dashboard";
 
-                    sidebar.classList.remove("open");
 
-                }
+                window.ChemLabRouter.navigate(route);
 
-            });
+            }
+
+
+            const sidebar =
+                $(".sidebar");
+
+
+            if (
+                sidebar &&
+                window.innerWidth <= 800
+            ) {
+
+                sidebar.classList.remove("open");
+
+            }
 
         });
 
-    }
+    });
+
+}
 
 
     /* =====================================================
@@ -215,33 +219,34 @@
        INITIALIZATION
        ===================================================== */
 
-    function initialize() {
+  function initialize() {
 
-        if (ChemLab.initialized) {
-            return;
-        }
+    if (ChemLab.initialized) return;
 
+    setupMobileMenu();
 
-        setupMobileMenu();
+    setupNavigation();
 
-        setupNavigation();
+    setupDashboardActions();
 
-        setupDashboardActions();
+    setupSignInButton();
 
-        setupSignInButton();
-
-        setupSearch();
+    setupSearch();
 
 
-        ChemLab.initialized = true;
-
-
-        console.log(
-            "ChemLab initialized successfully.",
-            ChemLab.version
-        );
-
+    if (window.ChemLabRouter) {
+        window.ChemLabRouter.initialize();
     }
+
+
+    ChemLab.initialized = true;
+
+    console.log(
+        "ChemLab initialized successfully.",
+        ChemLab.version
+    );
+
+}
 
 
     /* =====================================================
