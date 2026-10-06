@@ -706,104 +706,65 @@
         },
 
 
-        renderView: function (route) {
+     renderView: function (route) {
 
-            const appView =
-                document.querySelector("#appView");
-
-
-            if (!appView) {
-                return;
-            }
+    const appView =
+        document.querySelector("#appView");
 
 
-            /* Dashboard already exists in index.html */
-
-            if (route === "dashboard") {
-
-                appView.style.display = "";
-
-                return;
-
-            }
+    if (!appView) {
+        return;
+    }
 
 
-            const view =
-                VIEWS[route];
+    /*
+     * Dashboard is the original application
+     * view already present in index.html.
+     */
+
+    if (route === "dashboard") {
+
+        appView.style.display = "";
+
+        appView.classList.remove("route-view");
+
+        return;
+
+    }
 
 
-            if (!view) {
-                return;
-            }
+    const view =
+        VIEWS[route];
 
 
-            appView.innerHTML = view;
-
-            appView.classList.add("route-view");
-
-        },
+    if (!view) {
+        return;
+    }
 
 
-        updateUI: function (route) {
+    /*
+     * Prevent stale route content from remaining
+     * visible while switching pages.
+     */
 
-            if (!ROUTES[route]) {
-                route = "dashboard";
-            }
+    appView.style.display = "";
 
-
-            this.currentRoute = route;
-
-
-            this.updateNavigation(route);
-
-            this.updateBreadcrumb(route);
-
-            this.updateTitle(route);
-
-            this.renderView(route);
+    appView.classList.remove("route-view");
 
 
-            if (window.ChemLab) {
+    /*
+     * Force the browser to recognize the new
+     * animation state.
+     */
 
-                window.ChemLab.currentRoute =
-                    route;
-
-            }
-
-        },
+    void appView.offsetWidth;
 
 
-        handleRouteChange: function () {
+    appView.innerHTML = view;
 
-            const route =
-                this.getRoute();
+    appView.classList.add("route-view");
 
-
-            this.updateUI(route);
-
-        },
-
-
-        initialize: function () {
-
-            const self = this;
-
-
-            window.addEventListener(
-                "hashchange",
-                function () {
-
-                    self.handleRouteChange();
-
-                }
-            );
-
-
-            this.handleRouteChange();
-
-        }
-
-    };
+}
 
 
     /* =====================================================
