@@ -1,7 +1,7 @@
 /* =========================================================
    CHEMLAB
    APPLICATION CORE
-   Version 2.0
+   Version 2.1
    ========================================================= */
 
 (function () {
@@ -9,9 +9,13 @@
     "use strict";
 
 
+    /* =====================================================
+       APPLICATION STATE
+       ===================================================== */
+
     const ChemLab = {
 
-        version: "2.0.0",
+        version: "2.1.0",
 
         initialized: false,
 
@@ -22,10 +26,20 @@
     };
 
 
+    /* =====================================================
+       DOM HELPER
+       ===================================================== */
+
     function $(selector) {
+
         return document.querySelector(selector);
+
     }
 
+
+    /* =====================================================
+       MOBILE MENU
+       ===================================================== */
 
     function setupMobileMenu() {
 
@@ -72,6 +86,10 @@
     }
 
 
+    /* =====================================================
+       SIGN IN
+       ===================================================== */
+
     function setupSignInButton() {
 
         const button =
@@ -96,6 +114,10 @@
 
     }
 
+
+    /* =====================================================
+       SEARCH
+       ===================================================== */
 
     function setupSearch() {
 
@@ -122,11 +144,23 @@
     }
 
 
+    /* =====================================================
+       APPLICATION INITIALIZATION
+       ===================================================== */
+
     function initialize() {
 
         if (ChemLab.initialized) {
             return;
         }
+
+
+        /*
+         * Make the global application object available
+         * BEFORE any other system starts.
+         */
+
+        window.ChemLab = ChemLab;
 
 
         setupMobileMenu();
@@ -136,9 +170,22 @@
         setupSearch();
 
 
-        if (window.ChemLabRouter) {
+        /*
+         * Start the router.
+         */
+
+        if (
+            window.ChemLabRouter &&
+            typeof window.ChemLabRouter.initialize === "function"
+        ) {
 
             window.ChemLabRouter.initialize();
+
+        } else {
+
+            console.error(
+                "ChemLab Router was not loaded."
+            );
 
         }
 
@@ -154,6 +201,10 @@
     }
 
 
+    /* =====================================================
+       START APPLICATION
+       ===================================================== */
+
     if (
         document.readyState === "loading"
     ) {
@@ -168,8 +219,5 @@
         initialize();
 
     }
-
-
-    window.ChemLab = ChemLab;
 
 })();
