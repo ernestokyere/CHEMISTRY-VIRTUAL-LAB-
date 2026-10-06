@@ -1,7 +1,7 @@
 /* =========================================================
    CHEMLAB
    APPLICATION ROUTER + VIEW ENGINE
-   Version 2.0
+   Version 2.1
    ========================================================= */
 
 (function () {
@@ -72,8 +72,11 @@
             <div class="page-view">
 
                 <div class="page-header">
+
                     <div>
-                        <p class="eyebrow">DIGITAL LABORATORY</p>
+                        <p class="eyebrow">
+                            DIGITAL LABORATORY
+                        </p>
 
                         <h1>Laboratory</h1>
 
@@ -83,18 +86,27 @@
                         </p>
                     </div>
 
-                    <a href="#experiments" class="primary-button">
+                    <a
+                        href="#experiments"
+                        class="primary-button"
+                    >
                         Explore Experiments
                     </a>
+
                 </div>
 
 
                 <div class="workspace-grid">
 
                     <article class="workspace-card">
-                        <span class="workspace-icon">⚗</span>
 
-                        <h2>Guided Laboratory</h2>
+                        <span class="workspace-icon">
+                            ⚗
+                        </span>
+
+                        <h2>
+                            Guided Laboratory
+                        </h2>
 
                         <p>
                             Follow structured experiments with
@@ -104,13 +116,19 @@
                         <a href="#experiments">
                             Start Guided Lab →
                         </a>
+
                     </article>
 
 
                     <article class="workspace-card">
-                        <span class="workspace-icon">🧪</span>
 
-                        <h2>Open Laboratory</h2>
+                        <span class="workspace-icon">
+                            🧪
+                        </span>
+
+                        <h2>
+                            Open Laboratory
+                        </h2>
 
                         <p>
                             Build your own experiment using chemicals
@@ -120,13 +138,19 @@
                         <a href="#laboratory">
                             Open Workspace →
                         </a>
+
                     </article>
 
 
                     <article class="workspace-card">
-                        <span class="workspace-icon">▥</span>
 
-                        <h2>Data Analysis</h2>
+                        <span class="workspace-icon">
+                            ▥
+                        </span>
+
+                        <h2>
+                            Data Analysis
+                        </h2>
 
                         <p>
                             Record measurements and analyze scientific
@@ -136,22 +160,29 @@
                         <a href="#analysis">
                             Open Analysis →
                         </a>
+
                     </article>
 
 
                     <article class="workspace-card">
-                        <span class="workspace-icon">✦</span>
 
-                        <h2>AI Laboratory Guidance</h2>
+                        <span class="workspace-icon">
+                            ✦
+                        </span>
+
+                        <h2>
+                            AI Laboratory Guidance
+                        </h2>
 
                         <p>
                             Get intelligent chemistry guidance while
-                            working through your laboratory tasks.
+                            working through laboratory tasks.
                         </p>
 
                         <a href="#ai-tutor">
                             Open AI Tutor →
                         </a>
+
                     </article>
 
                 </div>
@@ -164,20 +195,31 @@
             <div class="page-view">
 
                 <div class="page-header">
-                    <div>
-                        <p class="eyebrow">EXPERIMENT LIBRARY</p>
 
-                        <h1>Experiments</h1>
+                    <div>
+
+                        <p class="eyebrow">
+                            EXPERIMENT LIBRARY
+                        </p>
+
+                        <h1>
+                            Experiments
+                        </h1>
 
                         <p>
                             Explore structured chemistry experiments
                             and investigations.
                         </p>
+
                     </div>
 
-                    <a href="#laboratory" class="primary-button">
+                    <a
+                        href="#laboratory"
+                        class="primary-button"
+                    >
                         Open Laboratory
                     </a>
+
                 </div>
 
 
@@ -187,7 +229,9 @@
                         🧪
                     </div>
 
-                    <h2>Experiment Library</h2>
+                    <h2>
+                        Experiment Library
+                    </h2>
 
                     <p>
                         Your professional chemistry experiment
@@ -210,17 +254,26 @@
                 <div class="page-header">
 
                     <div>
-                        <p class="eyebrow">SCIENTIFIC DATA</p>
 
-                        <h1>Analysis</h1>
+                        <p class="eyebrow">
+                            SCIENTIFIC DATA
+                        </p>
+
+                        <h1>
+                            Analysis
+                        </h1>
 
                         <p>
                             Analyze measurements, observations,
                             calculations, and experimental results.
                         </p>
+
                     </div>
 
-                    <a href="#laboratory" class="primary-button">
+                    <a
+                        href="#laboratory"
+                        class="primary-button"
+                    >
                         Laboratory
                     </a>
 
@@ -233,7 +286,9 @@
                         ▥
                     </div>
 
-                    <h2>Scientific Analysis Workspace</h2>
+                    <h2>
+                        Scientific Analysis Workspace
+                    </h2>
 
                     <p>
                         Tables, calculations, graphs, statistics,
@@ -256,9 +311,14 @@
                 <div class="page-header">
 
                     <div>
-                        <p class="eyebrow">CHEMISTRY EDUCATION</p>
 
-                        <h1>Chemistry Academy</h1>
+                        <p class="eyebrow">
+                            CHEMISTRY EDUCATION
+                        </p>
+
+                        <h1>
+                            Chemistry Academy
+                        </h1>
 
                         <p>
                             Build chemistry knowledge from foundational
@@ -267,7 +327,10 @@
 
                     </div>
 
-                    <a href="#assessments" class="primary-button">
+                    <a
+                        href="#assessments"
+                        class="primary-button"
+                    >
                         Assessments
                     </a>
 
@@ -277,42 +340,66 @@
                 <div class="academy-grid">
 
                     <article class="subject-card">
+
                         <span>⚛</span>
-                        <h2>General Chemistry</h2>
+
+                        <h2>
+                            General Chemistry
+                        </h2>
+
                         <p>
                             Matter, atoms, bonding, reactions,
                             stoichiometry, and chemical calculations.
                         </p>
+
                     </article>
 
 
                     <article class="subject-card">
+
                         <span>◈</span>
-                        <h2>Organic Chemistry</h2>
+
+                        <h2>
+                            Organic Chemistry
+                        </h2>
+
                         <p>
                             Structure, reactions, mechanisms,
                             functional groups, and synthesis.
                         </p>
+
                     </article>
 
 
                     <article class="subject-card">
+
                         <span>△</span>
-                        <h2>Physical Chemistry</h2>
+
+                        <h2>
+                            Physical Chemistry
+                        </h2>
+
                         <p>
                             Thermodynamics, kinetics, equilibrium,
                             electrochemistry, and quantum concepts.
                         </p>
+
                     </article>
 
 
                     <article class="subject-card">
+
                         <span>⌬</span>
-                        <h2>Analytical Chemistry</h2>
+
+                        <h2>
+                            Analytical Chemistry
+                        </h2>
+
                         <p>
                             Measurement, titration, spectroscopy,
                             separation, and quantitative analysis.
                         </p>
+
                     </article>
 
                 </div>
@@ -327,14 +414,20 @@
                 <div class="page-header">
 
                     <div>
-                        <p class="eyebrow">INTELLIGENT CHEMISTRY ASSISTANT</p>
 
-                        <h1>AI ChemLab Tutor</h1>
+                        <p class="eyebrow">
+                            INTELLIGENT CHEMISTRY ASSISTANT
+                        </p>
+
+                        <h1>
+                            AI ChemLab Tutor
+                        </h1>
 
                         <p>
                             Your chemistry-focused AI assistant for
                             concepts, calculations, experiments, and analysis.
                         </p>
+
                     </div>
 
                 </div>
@@ -343,6 +436,7 @@
                 <div class="ai-preview">
 
                     <div class="ai-preview-header">
+
                         <span class="ai-status"></span>
 
                         <strong>
@@ -352,6 +446,7 @@
                         <span>
                             Ready
                         </span>
+
                     </div>
 
 
@@ -371,10 +466,13 @@
 
 
                     <div class="ai-input-preview">
+
                         Ask a chemistry question...
+
                         <button type="button">
                             →
                         </button>
+
                     </div>
 
                 </div>
@@ -389,14 +487,20 @@
                 <div class="page-header">
 
                     <div>
-                        <p class="eyebrow">KNOWLEDGE CHECK</p>
 
-                        <h1>Assessments</h1>
+                        <p class="eyebrow">
+                            KNOWLEDGE CHECK
+                        </p>
+
+                        <h1>
+                            Assessments
+                        </h1>
 
                         <p>
                             Test your chemistry knowledge and measure
                             your understanding.
                         </p>
+
                     </div>
 
                 </div>
@@ -408,7 +512,9 @@
                         ✓
                     </div>
 
-                    <h2>Assessment Center</h2>
+                    <h2>
+                        Assessment Center
+                    </h2>
 
                     <p>
                         Topic quizzes, experiment-based assessments,
@@ -431,17 +537,26 @@
                 <div class="page-header">
 
                     <div>
-                        <p class="eyebrow">SCIENTIFIC RECORD</p>
 
-                        <h1>Lab Notebook</h1>
+                        <p class="eyebrow">
+                            SCIENTIFIC RECORD
+                        </p>
+
+                        <h1>
+                            Lab Notebook
+                        </h1>
 
                         <p>
                             Keep structured records of experiments,
                             observations, calculations, and conclusions.
                         </p>
+
                     </div>
 
-                    <a href="#laboratory" class="primary-button">
+                    <a
+                        href="#laboratory"
+                        class="primary-button"
+                    >
                         Open Laboratory
                     </a>
 
@@ -454,7 +569,9 @@
                         ▱
                     </div>
 
-                    <h2>Your Digital Lab Notebook</h2>
+                    <h2>
+                        Your Digital Lab Notebook
+                    </h2>
 
                     <p>
                         Experiment records and scientific notes
@@ -477,14 +594,20 @@
                 <div class="page-header">
 
                     <div>
-                        <p class="eyebrow">YOUR DEVELOPMENT</p>
 
-                        <h1>My Progress</h1>
+                        <p class="eyebrow">
+                            YOUR DEVELOPMENT
+                        </p>
+
+                        <h1>
+                            My Progress
+                        </h1>
 
                         <p>
                             Track your chemistry learning,
                             experiments, assessments, and mastery.
                         </p>
+
                     </div>
 
                 </div>
@@ -540,18 +663,33 @@
                     <div class="premium-features">
 
                         <div>
-                            <strong>Advanced Laboratory</strong>
-                            <span>Expanded experiment capabilities.</span>
+                            <strong>
+                                Advanced Laboratory
+                            </strong>
+
+                            <span>
+                                Expanded experiment capabilities.
+                            </span>
                         </div>
 
                         <div>
-                            <strong>Advanced Analysis</strong>
-                            <span>More powerful scientific data tools.</span>
+                            <strong>
+                                Advanced Analysis
+                            </strong>
+
+                            <span>
+                                More powerful scientific data tools.
+                            </span>
                         </div>
 
                         <div>
-                            <strong>AI Chemistry Assistant</strong>
-                            <span>Enhanced chemistry assistance.</span>
+                            <strong>
+                                AI Chemistry Assistant
+                            </strong>
+
+                            <span>
+                                Enhanced chemistry assistance.
+                            </span>
                         </div>
 
                     </div>
@@ -568,14 +706,20 @@
                 <div class="page-header">
 
                     <div>
-                        <p class="eyebrow">APPLICATION</p>
 
-                        <h1>Settings</h1>
+                        <p class="eyebrow">
+                            APPLICATION
+                        </p>
+
+                        <h1>
+                            Settings
+                        </h1>
 
                         <p>
                             Manage your ChemLab preferences and
                             application settings.
                         </p>
+
                     </div>
 
                 </div>
@@ -587,7 +731,9 @@
                         ⚙
                     </div>
 
-                    <h2>ChemLab Settings</h2>
+                    <h2>
+                        ChemLab Settings
+                    </h2>
 
                     <p>
                         Account, laboratory, notification, and
@@ -614,15 +760,18 @@
         getRoute: function () {
 
             const hash =
-                window.location.hash.replace("#", "");
+                window.location.hash.substring(1);
+
 
             if (!hash) {
                 return "dashboard";
             }
 
+
             if (ROUTES[hash]) {
                 return hash;
             }
+
 
             return "dashboard";
 
@@ -634,6 +783,7 @@
             if (!ROUTES[route]) {
                 route = "dashboard";
             }
+
 
             window.location.hash = route;
 
@@ -706,65 +856,141 @@
         },
 
 
-     renderView: function (route) {
+        /* =================================================
+           VIEW RENDERER
+           ================================================= */
 
-    const appView =
-        document.querySelector("#appView");
+        renderView: function (route) {
 
-
-    if (!appView) {
-        return;
-    }
-
-
-    /*
-     * Dashboard is the original application
-     * view already present in index.html.
-     */
-
-    if (route === "dashboard") {
-
-        appView.style.display = "";
-
-        appView.classList.remove("route-view");
-
-        return;
-
-    }
+            const appView =
+                document.querySelector("#appView");
 
 
-    const view =
-        VIEWS[route];
+            if (!appView) {
+                return;
+            }
 
 
-    if (!view) {
-        return;
-    }
+            /*
+             * Dashboard already exists in index.html.
+             */
+
+            if (route === "dashboard") {
+
+                appView.style.display = "";
+
+                appView.classList.remove("route-view");
+
+                return;
+
+            }
 
 
-    /*
-     * Prevent stale route content from remaining
-     * visible while switching pages.
-     */
-
-    appView.style.display = "";
-
-    appView.classList.remove("route-view");
+            const view =
+                VIEWS[route];
 
 
-    /*
-     * Force the browser to recognize the new
-     * animation state.
-     */
-
-    void appView.offsetWidth;
+            if (!view) {
+                return;
+            }
 
 
-    appView.innerHTML = view;
+            appView.style.display = "";
 
-    appView.classList.add("route-view");
+            appView.classList.remove("route-view");
 
-}
+
+            /*
+             * Reset animation.
+             */
+
+            void appView.offsetWidth;
+
+
+            /*
+             * Insert route view.
+             */
+
+            appView.innerHTML = view;
+
+
+            appView.classList.add("route-view");
+
+        },
+
+
+        /* =================================================
+           UPDATE UI
+           ================================================= */
+
+        updateUI: function (route) {
+
+            if (!ROUTES[route]) {
+                route = "dashboard";
+            }
+
+
+            this.currentRoute = route;
+
+
+            this.updateNavigation(route);
+
+            this.updateBreadcrumb(route);
+
+            this.updateTitle(route);
+
+            this.renderView(route);
+
+
+            if (window.ChemLab) {
+
+                window.ChemLab.currentRoute =
+                    route;
+
+            }
+
+        },
+
+
+        /* =================================================
+           ROUTE CHANGE
+           ================================================= */
+
+        handleRouteChange: function () {
+
+            const route =
+                this.getRoute();
+
+
+            this.updateUI(route);
+
+        },
+
+
+        /* =================================================
+           INITIALIZE
+           ================================================= */
+
+        initialize: function () {
+
+            const self = this;
+
+
+            window.addEventListener(
+                "hashchange",
+                function () {
+
+                    self.handleRouteChange();
+
+                }
+            );
+
+
+            this.handleRouteChange();
+
+        }
+
+    };
 
 
     /* =====================================================
