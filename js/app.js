@@ -737,6 +737,468 @@
 
     }
 
+   /* =====================================================
+   NOTIFICATION SYSTEM
+   ===================================================== */
+
+const NOTIFICATIONS = [
+
+    {
+        id: 1,
+        title: "Welcome to ChemLab",
+        message:
+            "Your professional digital chemistry laboratory is ready.",
+        time: "Just now",
+        type: "system",
+        read: false
+    },
+
+    {
+        id: 2,
+        title: "Chemistry Academy",
+        message:
+            "Your learning workspace is ready for your first chemistry lesson.",
+        time: "Today",
+        type: "learning",
+        read: false
+    },
+
+    {
+        id: 3,
+        title: "Laboratory",
+        message:
+            "Explore the digital laboratory and experiment workspace.",
+        time: "Today",
+        type: "laboratory",
+        read: false
+    }
+
+];
+
+
+function getNotificationIcon(type) {
+
+    const icons = {
+
+        system: "◈",
+
+        learning: "◇",
+
+        laboratory: "⚗",
+
+        experiment: "🧪",
+
+        assessment: "✓"
+
+    };
+
+    return icons[type] || "•";
+}
+
+
+function createNotificationPanel() {
+
+    if (
+        document.querySelector(
+            "#chemLabNotificationPanel"
+        )
+    ) {
+        return;
+    }
+
+
+    const panel =
+        document.createElement("div");
+
+    panel.id =
+        "chemLabNotificationPanel";
+
+    panel.className =
+        "chem-notification-panel";
+
+
+    panel.innerHTML = `
+
+        <div class="chem-notification-header">
+
+            <div>
+
+                <strong>
+                    Notifications
+                </strong>
+
+                <span
+                    id="chemNotificationCount"
+                    class="chem-notification-count"
+                >
+                    0
+                </span>
+
+            </div>
+
+            <button
+                type="button"
+                id="chemMarkNotificationsRead"
+                class="chem-notification-mark"
+            >
+                Mark all read
+            </button>
+
+        </div>
+
+
+        <div
+            id="chemNotificationList"
+            class="chem-notification-list"
+        ></div>
+
+
+        <div class="chem-notification-footer">
+
+            <span>
+                ChemLab Activity
+            </span>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(panel);
+
+
+    renderNotifications();
+
+
+    const markButton =
+        document.querySelector(
+            "#chemMarkNotificationsRead"
+        );
+
+
+    if (markButton) {
+
+        markButton.addEventListener(
+            "click",
+            function () {
+
+                NOTIFICATIONS.forEach(
+                    function (notification) {
+
+                        notification.read = true;
+
+                    }
+                );
+
+
+                renderNotifications();
+
+                showToast(
+                    "All notifications marked as read."
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+function renderNotifications() {
+
+    const list =
+        document.querySelector(
+            "#chemNotificationList"
+        );
+
+    const count =
+        document.querySelector(
+            "#chemNotificationCount"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    const unread =
+        NOTIFICATIONS.filter(
+            function (notification) {
+
+                return !notification.read;
+
+            }
+        ).length;
+
+
+    if (count) {
+
+        count.textContent =
+            unread;
+
+        count.style.display =
+            unread > 0
+                ? "inline-flex"
+                : "none";
+
+    }
+
+
+    if (!NOTIFICATIONS.length) {
+
+        list.innerHTML = `
+
+            <div class="chem-notification-empty">
+
+                <div class="chem-notification-empty-icon">
+                    ✓
+                </div>
+
+                <strong>
+                    You're all caught up
+                </strong>
+
+                <p>
+                    New ChemLab activity will appear here.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        NOTIFICATIONS.map(
+            function (notification) {
+
+                return `
+
+                    <button
+                        type="button"
+                        class="
+                            chem-notification-item
+                            ${notification.read ? "read" : "unread"}
+                        "
+                        data-notification-id="${notification.id}"
+                    >
+
+                        <span
+                            class="
+                                chem-notification-icon
+                                ${notification.type}
+                            "
+                        >
+                            ${getNotificationIcon(
+                                notification.type
+                            )}
+                        </span>
+
+
+                        <span
+                            class="chem-notification-content"
+                        >
+
+                            <strong>
+                                ${notification.title}
+                            </strong>
+
+                            <small>
+                                ${notification.message}
+                            </small>
+
+                            <time>
+                                ${notification.time}
+                            </time>
+
+                        </span>
+
+
+                        ${
+                            notification.read
+                                ? ""
+                                : `
+                                    <span
+                                        class="chem-notification-unread-dot"
+                                    ></span>
+                                `
+                        }
+
+                    </button>
+
+                `;
+
+            }
+        ).join("");
+
+
+    const items =
+        list.querySelectorAll(
+            "[data-notification-id]"
+        );
+
+
+    items.forEach(
+        function (item) {
+
+            item.addEventListener(
+                "click",
+                function () {
+
+                    const id =
+                        Number(
+                            item.getAttribute(
+                                "data-notification-id"
+                            )
+                        );
+
+
+                    const notification =
+                        NOTIFICATIONS.find(
+                            function (entry) {
+
+                                return entry.id === id;
+
+                            }
+                        );
+
+
+                    if (notification) {
+
+                        notification.read = true;
+
+                        renderNotifications();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+function openNotifications() {
+
+    createNotificationPanel();
+
+
+    const panel =
+        document.querySelector(
+            "#chemLabNotificationPanel"
+        );
+
+
+    if (!panel) {
+        return;
+    }
+
+
+    panel.classList.add("active");
+
+}
+
+
+function closeNotifications() {
+
+    const panel =
+        document.querySelector(
+            "#chemLabNotificationPanel"
+        );
+
+
+    if (!panel) {
+        return;
+    }
+
+
+    panel.classList.remove("active");
+
+}
+
+
+function setupNotifications() {
+
+    const button =
+        document.querySelector(
+            ".notification-button"
+        );
+
+
+    if (!button) {
+
+        console.warn(
+            "ChemLab notification button was not found."
+        );
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+
+            const panel =
+                document.querySelector(
+                    "#chemLabNotificationPanel"
+                );
+
+
+            if (
+                panel &&
+                panel.classList.contains("active")
+            ) {
+
+                closeNotifications();
+
+            } else {
+
+                openNotifications();
+
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            const panel =
+                document.querySelector(
+                    "#chemLabNotificationPanel"
+                );
+
+
+            if (!panel) {
+                return;
+            }
+
+
+            if (
+                !panel.contains(event.target) &&
+                !button.contains(event.target)
+            ) {
+
+                closeNotifications();
+
+            }
+
+        }
+    );
+
+}
 
     /* =====================================================
        TOAST SYSTEM
@@ -854,6 +1316,8 @@
         setupSignInButton();
 
         setupSearch();
+       
+       setupNotifications();
 
         setupRouteTracking();
 
