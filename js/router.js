@@ -1,7 +1,7 @@
 /* =========================================================
    CHEMLAB
-   APPLICATION ROUTER + VIEW ENGINE
-   Version 2.1
+   PROFESSIONAL ROUTER
+   Version 3.0
    ========================================================= */
 
 (function () {
@@ -10,60 +10,69 @@
 
 
     /* =====================================================
-       ROUTES
+       ROUTE DEFINITIONS
        ===================================================== */
-const Router = {
 
-    currentRoute: "dashboard",
-
-    dashboardHTML: "",
+    const ROUTES = {
+        dashboard: {
+            title: "Dashboard",
+            breadcrumb: "Dashboard"
         },
 
         laboratory: {
-            title: "Laboratory"
+            title: "Laboratory",
+            breadcrumb: "Laboratory"
         },
 
         experiments: {
-            title: "Experiments"
+            title: "Experiments",
+            breadcrumb: "Experiments"
         },
 
         analysis: {
-            title: "Analysis"
+            title: "Analysis",
+            breadcrumb: "Analysis"
         },
 
         academy: {
-            title: "Chemistry Academy"
+            title: "Chemistry Academy",
+            breadcrumb: "Chemistry Academy"
         },
 
         "ai-tutor": {
-            title: "AI ChemLab Tutor"
+            title: "AI ChemLab Tutor",
+            breadcrumb: "AI ChemLab Tutor"
         },
 
         assessments: {
-            title: "Assessments"
+            title: "Assessments",
+            breadcrumb: "Assessments"
         },
 
         notebook: {
-            title: "Lab Notebook"
+            title: "Lab Notebook",
+            breadcrumb: "Lab Notebook"
         },
 
         progress: {
-            title: "My Progress"
+            title: "My Progress",
+            breadcrumb: "My Progress"
         },
 
         premium: {
-            title: "ChemLab Premium"
+            title: "Premium",
+            breadcrumb: "Premium"
         },
 
         settings: {
-            title: "Settings"
+            title: "Settings",
+            breadcrumb: "Settings"
         }
-
     };
 
 
     /* =====================================================
-       VIEW TEMPLATES
+       PAGE CONTENT
        ===================================================== */
 
     const VIEWS = {
@@ -72,27 +81,27 @@ const Router = {
             <div class="page-view">
 
                 <div class="page-header">
-
                     <div>
-                        <p class="eyebrow">
+                        <span class="page-eyebrow">
                             DIGITAL LABORATORY
-                        </p>
+                        </span>
 
-                        <h1>Laboratory</h1>
+                        <h1>
+                            Laboratory
+                        </h1>
 
                         <p>
-                            Design, perform, and document chemistry
-                            experiments in your digital laboratory.
+                            Design, perform and explore chemistry
+                            experiments in a professional digital
+                            laboratory environment.
                         </p>
                     </div>
 
-                    <a
-                        href="#experiments"
-                        class="primary-button"
-                    >
-                        Explore Experiments
-                    </a>
-
+                    <div class="page-header-actions">
+                        <button class="toolbar-button">
+                            New Experiment
+                        </button>
+                    </div>
                 </div>
 
 
@@ -100,88 +109,88 @@ const Router = {
 
                     <article class="workspace-card">
 
-                        <span class="workspace-icon">
+                        <div class="workspace-icon">
                             ⚗
-                        </span>
+                        </div>
 
-                        <h2>
+                        <h3>
                             Guided Laboratory
-                        </h2>
+                        </h3>
 
                         <p>
-                            Follow structured experiments with
-                            instructions, observations, and analysis.
+                            Follow structured laboratory procedures
+                            with step-by-step scientific guidance.
                         </p>
 
-                        <a href="#experiments">
-                            Start Guided Lab →
-                        </a>
+                        <button class="toolbar-button">
+                            Explore Guided Labs
+                        </button>
 
                     </article>
 
 
                     <article class="workspace-card">
 
-                        <span class="workspace-icon">
-                            🧪
-                        </span>
+                        <div class="workspace-icon">
+                            ⚗
+                        </div>
 
-                        <h2>
+                        <h3>
                             Open Laboratory
-                        </h2>
+                        </h3>
 
                         <p>
-                            Build your own experiment using chemicals
-                            and laboratory apparatus.
+                            Build your own experiment using chemicals,
+                            apparatus and scientific measurements.
                         </p>
 
-                        <a href="#laboratory">
-                            Open Workspace →
-                        </a>
+                        <button class="toolbar-button">
+                            Open Laboratory
+                        </button>
 
                     </article>
 
 
                     <article class="workspace-card">
 
-                        <span class="workspace-icon">
-                            ▥
-                        </span>
+                        <div class="workspace-icon">
+                            ◫
+                        </div>
 
-                        <h2>
-                            Data Analysis
-                        </h2>
+                        <h3>
+                            Chemical Library
+                        </h3>
 
                         <p>
-                            Record measurements and analyze scientific
-                            data from your experiments.
+                            Explore chemical substances, properties
+                            and laboratory information.
                         </p>
 
-                        <a href="#analysis">
-                            Open Analysis →
-                        </a>
+                        <button class="toolbar-button">
+                            View Chemicals
+                        </button>
 
                     </article>
 
 
                     <article class="workspace-card">
 
-                        <span class="workspace-icon">
-                            ✦
-                        </span>
+                        <div class="workspace-icon">
+                            ⚙
+                        </div>
 
-                        <h2>
-                            AI Laboratory Guidance
-                        </h2>
+                        <h3>
+                            Apparatus Library
+                        </h3>
 
                         <p>
-                            Get intelligent chemistry guidance while
-                            working through laboratory tasks.
+                            Access laboratory equipment and learn
+                            how each apparatus is used.
                         </p>
 
-                        <a href="#ai-tutor">
-                            Open AI Tutor →
-                        </a>
+                        <button class="toolbar-button">
+                            View Apparatus
+                        </button>
 
                     </article>
 
@@ -197,50 +206,67 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
-                            EXPERIMENT LIBRARY
-                        </p>
+                        <span class="page-eyebrow">
+                            EXPERIMENT CENTER
+                        </span>
 
                         <h1>
                             Experiments
                         </h1>
 
                         <p>
-                            Explore structured chemistry experiments
-                            and investigations.
+                            Discover chemistry experiments and
+                            build practical scientific skills.
                         </p>
-
                     </div>
-
-                    <a
-                        href="#laboratory"
-                        class="primary-button"
-                    >
-                        Open Laboratory
-                    </a>
 
                 </div>
 
 
-                <div class="empty-state">
+                <div class="workspace-grid">
 
-                    <div class="empty-state-icon">
-                        🧪
-                    </div>
+                    <article class="workspace-card">
 
-                    <h2>
-                        Experiment Library
-                    </h2>
+                        <div class="workspace-icon">
+                            🧪
+                        </div>
 
-                    <p>
-                        Your professional chemistry experiment
-                        library will be built here.
-                    </p>
+                        <h3>
+                            Available Experiments
+                        </h3>
 
-                    <span>
-                        Experiment engine coming next.
-                    </span>
+                        <p>
+                            Browse structured chemistry experiments
+                            designed for progressive learning.
+                        </p>
+
+                        <button class="toolbar-button">
+                            Browse Experiments
+                        </button>
+
+                    </article>
+
+
+                    <article class="workspace-card">
+
+                        <div class="workspace-icon">
+                            +
+                        </div>
+
+                        <h3>
+                            Create Experiment
+                        </h3>
+
+                        <p>
+                            Design a custom experiment using the
+                            ChemLab laboratory environment.
+                        </p>
+
+                        <button class="toolbar-button">
+                            Create Experiment
+                        </button>
+
+                    </article>
 
                 </div>
 
@@ -254,50 +280,67 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
-                            SCIENTIFIC DATA
-                        </p>
+                        <span class="page-eyebrow">
+                            SCIENTIFIC ANALYSIS
+                        </span>
 
                         <h1>
                             Analysis
                         </h1>
 
                         <p>
-                            Analyze measurements, observations,
-                            calculations, and experimental results.
+                            Analyse experimental measurements,
+                            observations and scientific data.
                         </p>
-
                     </div>
-
-                    <a
-                        href="#laboratory"
-                        class="primary-button"
-                    >
-                        Laboratory
-                    </a>
 
                 </div>
 
 
-                <div class="empty-state">
+                <div class="workspace-grid">
 
-                    <div class="empty-state-icon">
-                        ▥
-                    </div>
+                    <article class="workspace-card">
 
-                    <h2>
-                        Scientific Analysis Workspace
-                    </h2>
+                        <div class="workspace-icon">
+                            ∑
+                        </div>
 
-                    <p>
-                        Tables, calculations, graphs, statistics,
-                        and experimental analysis tools will live here.
-                    </p>
+                        <h3>
+                            Data Analysis
+                        </h3>
 
-                    <span>
-                        Analysis engine coming next.
-                    </span>
+                        <p>
+                            Work with experimental measurements and
+                            calculate scientific results.
+                        </p>
+
+                        <button class="toolbar-button">
+                            Start Analysis
+                        </button>
+
+                    </article>
+
+
+                    <article class="workspace-card">
+
+                        <div class="workspace-icon">
+                            ◫
+                        </div>
+
+                        <h3>
+                            Graphing
+                        </h3>
+
+                        <p>
+                            Visualize experimental data using
+                            scientific graphs.
+                        </p>
+
+                        <button class="toolbar-button">
+                            Open Graphing
+                        </button>
+
+                    </article>
 
                 </div>
 
@@ -311,28 +354,19 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
-                            CHEMISTRY EDUCATION
-                        </p>
+                        <span class="page-eyebrow">
+                            CHEMISTRY ACADEMY
+                        </span>
 
                         <h1>
                             Chemistry Academy
                         </h1>
 
                         <p>
-                            Build chemistry knowledge from foundational
-                            concepts to advanced university-level topics.
+                            Build deep chemistry knowledge from
+                            fundamentals to advanced concepts.
                         </p>
-
                     </div>
-
-                    <a
-                        href="#assessments"
-                        class="primary-button"
-                    >
-                        Assessments
-                    </a>
 
                 </div>
 
@@ -340,66 +374,56 @@ const Router = {
                 <div class="academy-grid">
 
                     <article class="subject-card">
-
-                        <span>⚛</span>
-
-                        <h2>
-                            General Chemistry
-                        </h2>
-
+                        <span>01</span>
+                        <h3>General Chemistry</h3>
                         <p>
-                            Matter, atoms, bonding, reactions,
-                            stoichiometry, and chemical calculations.
+                            Fundamental principles of chemistry.
                         </p>
-
                     </article>
 
 
                     <article class="subject-card">
-
-                        <span>◈</span>
-
-                        <h2>
-                            Organic Chemistry
-                        </h2>
-
+                        <span>02</span>
+                        <h3>Organic Chemistry</h3>
                         <p>
-                            Structure, reactions, mechanisms,
-                            functional groups, and synthesis.
+                            Structure, reactions and mechanisms.
                         </p>
-
                     </article>
 
 
                     <article class="subject-card">
-
-                        <span>△</span>
-
-                        <h2>
-                            Physical Chemistry
-                        </h2>
-
+                        <span>03</span>
+                        <h3>Inorganic Chemistry</h3>
                         <p>
-                            Thermodynamics, kinetics, equilibrium,
-                            electrochemistry, and quantum concepts.
+                            Elements, compounds and reactions.
                         </p>
-
                     </article>
 
 
                     <article class="subject-card">
-
-                        <span>⌬</span>
-
-                        <h2>
-                            Analytical Chemistry
-                        </h2>
-
+                        <span>04</span>
+                        <h3>Physical Chemistry</h3>
                         <p>
-                            Measurement, titration, spectroscopy,
-                            separation, and quantitative analysis.
+                            Energy, kinetics, equilibrium and matter.
                         </p>
+                    </article>
 
+
+                    <article class="subject-card">
+                        <span>05</span>
+                        <h3>Analytical Chemistry</h3>
+                        <p>
+                            Chemical identification and measurement.
+                        </p>
+                    </article>
+
+
+                    <article class="subject-card">
+                        <span>06</span>
+                        <h3>Biochemistry</h3>
+                        <p>
+                            Chemistry of biological systems.
+                        </p>
                     </article>
 
                 </div>
@@ -414,20 +438,19 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
+                        <span class="page-eyebrow">
                             INTELLIGENT CHEMISTRY ASSISTANT
-                        </p>
+                        </span>
 
                         <h1>
                             AI ChemLab Tutor
                         </h1>
 
                         <p>
-                            Your chemistry-focused AI assistant for
-                            concepts, calculations, experiments, and analysis.
+                            Your future intelligent chemistry
+                            assistant for learning, experiments
+                            and scientific reasoning.
                         </p>
-
                     </div>
 
                 </div>
@@ -437,42 +460,34 @@ const Router = {
 
                     <div class="ai-preview-header">
 
-                        <span class="ai-status"></span>
+                        <div>
+                            <strong>
+                                ChemLab AI
+                            </strong>
 
-                        <strong>
-                            ChemLab AI
-                        </strong>
-
-                        <span>
-                            Ready
-                        </span>
+                            <span class="ai-status">
+                                Online
+                            </span>
+                        </div>
 
                     </div>
 
 
                     <div class="ai-message">
-
                         <strong>
                             ChemLab AI
                         </strong>
 
                         <p>
-                            Hello. I'm your chemistry assistant.
-                            The full AI laboratory assistant will be
-                            connected in a later stage.
+                            Hello. I am your chemistry assistant.
+                            Ask me about chemistry concepts,
+                            reactions, calculations or experiments.
                         </p>
-
                     </div>
 
 
                     <div class="ai-input-preview">
-
                         Ask a chemistry question...
-
-                        <button type="button">
-                            →
-                        </button>
-
                     </div>
 
                 </div>
@@ -487,43 +502,67 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
-                            KNOWLEDGE CHECK
-                        </p>
+                        <span class="page-eyebrow">
+                            KNOWLEDGE ASSESSMENT
+                        </span>
 
                         <h1>
                             Assessments
                         </h1>
 
                         <p>
-                            Test your chemistry knowledge and measure
-                            your understanding.
+                            Test your chemistry knowledge and
+                            measure your understanding.
                         </p>
-
                     </div>
 
                 </div>
 
 
-                <div class="empty-state">
+                <div class="workspace-grid">
 
-                    <div class="empty-state-icon">
-                        ✓
-                    </div>
+                    <article class="workspace-card">
 
-                    <h2>
-                        Assessment Center
-                    </h2>
+                        <div class="workspace-icon">
+                            ✓
+                        </div>
 
-                    <p>
-                        Topic quizzes, experiment-based assessments,
-                        and chemistry challenges will appear here.
-                    </p>
+                        <h3>
+                            Chemistry Quizzes
+                        </h3>
 
-                    <span>
-                        Assessment engine coming next.
-                    </span>
+                        <p>
+                            Test your understanding of chemistry
+                            concepts.
+                        </p>
+
+                        <button class="toolbar-button">
+                            Start Quiz
+                        </button>
+
+                    </article>
+
+
+                    <article class="workspace-card">
+
+                        <div class="workspace-icon">
+                            ★
+                        </div>
+
+                        <h3>
+                            Experiment Assessments
+                        </h3>
+
+                        <p>
+                            Answer questions based on experiments
+                            you have completed.
+                        </p>
+
+                        <button class="toolbar-button">
+                            View Assessments
+                        </button>
+
+                    </article>
 
                 </div>
 
@@ -537,28 +576,25 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
+                        <span class="page-eyebrow">
                             SCIENTIFIC RECORD
-                        </p>
+                        </span>
 
                         <h1>
                             Lab Notebook
                         </h1>
 
                         <p>
-                            Keep structured records of experiments,
-                            observations, calculations, and conclusions.
+                            Record observations, procedures,
+                            measurements and scientific conclusions.
                         </p>
-
                     </div>
 
-                    <a
-                        href="#laboratory"
-                        class="primary-button"
-                    >
-                        Open Laboratory
-                    </a>
+                    <div>
+                        <button class="toolbar-button">
+                            New Entry
+                        </button>
+                    </div>
 
                 </div>
 
@@ -566,21 +602,17 @@ const Router = {
                 <div class="empty-state">
 
                     <div class="empty-state-icon">
-                        ▱
+                        📓
                     </div>
 
-                    <h2>
-                        Your Digital Lab Notebook
-                    </h2>
+                    <h3>
+                        Your laboratory notebook is ready
+                    </h3>
 
                     <p>
-                        Experiment records and scientific notes
-                        will be stored here.
+                        Completed experiments and scientific
+                        observations will appear here.
                     </p>
-
-                    <span>
-                        Notebook system coming next.
-                    </span>
 
                 </div>
 
@@ -594,10 +626,9 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
-                            YOUR DEVELOPMENT
-                        </p>
+                        <span class="page-eyebrow">
+                            LEARNING PERFORMANCE
+                        </span>
 
                         <h1>
                             My Progress
@@ -605,9 +636,8 @@ const Router = {
 
                         <p>
                             Track your chemistry learning,
-                            experiments, assessments, and mastery.
+                            experiments and scientific development.
                         </p>
-
                     </div>
 
                 </div>
@@ -616,23 +646,23 @@ const Router = {
                 <div class="progress-overview">
 
                     <div class="progress-stat">
+                        <strong>0</strong>
                         <span>Experiments</span>
-                        <strong>0</strong>
                     </div>
 
                     <div class="progress-stat">
-                        <span>Mastery</span>
                         <strong>0%</strong>
+                        <span>Mastery</span>
                     </div>
 
                     <div class="progress-stat">
+                        <strong>0</strong>
                         <span>Assessments</span>
-                        <strong>0</strong>
                     </div>
 
                     <div class="progress-stat">
-                        <span>Science XP</span>
                         <strong>0</strong>
+                        <span>Science XP</span>
                     </div>
 
                 </div>
@@ -642,57 +672,54 @@ const Router = {
 
 
         premium: `
-            <div class="page-view">
+            <div class="page-view premium-page">
 
-                <div class="premium-page">
+                <div class="page-header">
 
-                    <p class="eyebrow">
-                        ADVANCED CHEMISTRY TOOLS
-                    </p>
+                    <div>
+                        <span class="page-eyebrow">
+                            CHEMLAB PREMIUM
+                        </span>
 
-                    <h1>
-                        ChemLab Premium
-                    </h1>
+                        <h1>
+                            Advanced Laboratory Tools
+                        </h1>
 
-                    <p>
-                        Unlock advanced laboratory capabilities,
-                        deeper analysis tools, and enhanced learning
-                        features.
-                    </p>
-
-                    <div class="premium-features">
-
-                        <div>
-                            <strong>
-                                Advanced Laboratory
-                            </strong>
-
-                            <span>
-                                Expanded experiment capabilities.
-                            </span>
-                        </div>
-
-                        <div>
-                            <strong>
-                                Advanced Analysis
-                            </strong>
-
-                            <span>
-                                More powerful scientific data tools.
-                            </span>
-                        </div>
-
-                        <div>
-                            <strong>
-                                AI Chemistry Assistant
-                            </strong>
-
-                            <span>
-                                Enhanced chemistry assistance.
-                            </span>
-                        </div>
-
+                        <p>
+                            Unlock advanced tools designed for
+                            deeper chemistry learning and research.
+                        </p>
                     </div>
+
+                </div>
+
+
+                <div class="premium-features">
+
+                    <article class="workspace-card">
+                        <h3>Advanced Experiments</h3>
+                        <p>
+                            Access more advanced laboratory
+                            experiences.
+                        </p>
+                    </article>
+
+
+                    <article class="workspace-card">
+                        <h3>Advanced Analysis</h3>
+                        <p>
+                            Unlock enhanced scientific data tools.
+                        </p>
+                    </article>
+
+
+                    <article class="workspace-card">
+                        <h3>AI Chemistry Tools</h3>
+                        <p>
+                            Access advanced AI-powered chemistry
+                            assistance.
+                        </p>
+                    </article>
 
                 </div>
 
@@ -706,45 +733,56 @@ const Router = {
                 <div class="page-header">
 
                     <div>
-
-                        <p class="eyebrow">
-                            APPLICATION
-                        </p>
+                        <span class="page-eyebrow">
+                            APPLICATION SETTINGS
+                        </span>
 
                         <h1>
                             Settings
                         </h1>
 
                         <p>
-                            Manage your ChemLab preferences and
-                            application settings.
+                            Manage your ChemLab application
+                            preferences.
                         </p>
-
                     </div>
 
                 </div>
 
 
-                <div class="empty-state">
+                <div class="workspace-grid">
 
-                    <div class="empty-state-icon">
-                        ⚙
-                    </div>
+                    <article class="workspace-card">
 
-                    <h2>
-                        ChemLab Settings
-                    </h2>
+                        <h3>
+                            Account
+                        </h3>
 
-                    <p>
-                        Account, laboratory, notification, and
-                        application preferences will appear here.
-                    </p>
+                        <p>
+                            Account and profile settings will be
+                            available here.
+                        </p>
+
+                    </article>
+
+
+                    <article class="workspace-card">
+
+                        <h3>
+                            Preferences
+                        </h3>
+
+                        <p>
+                            Application preferences will be
+                            available here.
+                        </p>
+
+                    </article>
 
                 </div>
 
             </div>
         `
-
     };
 
 
@@ -756,27 +794,36 @@ const Router = {
 
         currentRoute: "dashboard",
 
+        dashboardHTML: "",
+
+
+        /* =================================================
+           GET CURRENT ROUTE
+           ================================================= */
 
         getRoute: function () {
 
-            const hash =
-                window.location.hash.substring(1);
-
+            let hash =
+                window.location.hash
+                    .replace("#", "")
+                    .trim()
+                    .toLowerCase();
 
             if (!hash) {
                 return "dashboard";
             }
 
-
-            if (ROUTES[hash]) {
-                return hash;
+            if (!ROUTES[hash]) {
+                return "dashboard";
             }
 
-
-            return "dashboard";
-
+            return hash;
         },
 
+
+        /* =================================================
+           NAVIGATE
+           ================================================= */
 
         navigate: function (route) {
 
@@ -784,151 +831,161 @@ const Router = {
                 route = "dashboard";
             }
 
-
             window.location.hash = route;
-
         },
 
+
+        /* =================================================
+           UPDATE NAVIGATION
+           ================================================= */
 
         updateNavigation: function (route) {
 
-            document
-                .querySelectorAll(".navigation-item")
-                .forEach(function (item) {
+            const items =
+                document.querySelectorAll(
+                    ".navigation-item"
+                );
 
-                    const href =
-                        item.getAttribute("href");
+            items.forEach(function (item) {
 
+                const href =
+                    item.getAttribute("href");
 
-                    if (href === "#" + route) {
+                item.classList.remove("active");
 
-                        item.classList.add("active");
+                if (
+                    href === "#" + route
+                ) {
+                    item.classList.add("active");
+                }
 
-                    } else {
-
-                        item.classList.remove("active");
-
-                    }
-
-                });
+            });
 
         },
 
+
+        /* =================================================
+           UPDATE BREADCRUMB
+           ================================================= */
 
         updateBreadcrumb: function (route) {
 
             const breadcrumb =
                 document.querySelector(".breadcrumb");
 
-            const routeConfig =
-                ROUTES[route];
-
-
-            if (!breadcrumb || !routeConfig) {
+            if (!breadcrumb) {
                 return;
             }
 
-
-            breadcrumb.innerHTML =
-                "<span>ChemLab</span>" +
-                "<span>/</span>" +
-                "<strong>" +
-                routeConfig.title +
-                "</strong>";
-
-        },
-
-
-        updateTitle: function (route) {
-
-            const routeConfig =
+            const data =
                 ROUTES[route];
 
-
-            if (!routeConfig) {
+            if (!data) {
                 return;
             }
 
-
-            document.title =
-                routeConfig.title + " | ChemLab";
-
+            breadcrumb.innerHTML = `
+                <span>ChemLab</span>
+                <span>/</span>
+                <strong>${data.breadcrumb}</strong>
+            `;
         },
 
 
         /* =================================================
-           VIEW RENDERER
+           UPDATE PAGE TITLE
+           ================================================= */
+
+        updateTitle: function (route) {
+
+            const data =
+                ROUTES[route];
+
+            if (!data) {
+                return;
+            }
+
+            document.title =
+                "ChemLab | " + data.title;
+        },
+
+
+        /* =================================================
+           RENDER VIEW
            ================================================= */
 
         renderView: function (route) {
 
-    const appView =
-        document.querySelector("#appView");
+            const appView =
+                document.querySelector("#appView");
+
+            if (!appView) {
+
+                console.error(
+                    "ChemLab Router: #appView was not found."
+                );
+
+                return;
+            }
 
 
-    if (!appView) {
-        return;
-    }
+            /* ---------------------------------------------
+               DASHBOARD
+               --------------------------------------------- */
+
+            if (route === "dashboard") {
+
+                if (this.dashboardHTML) {
+
+                    appView.innerHTML =
+                        this.dashboardHTML;
+                }
+
+                appView.classList.add("dashboard");
+                appView.classList.remove("route-view");
+
+                return;
+            }
 
 
-    /*
-     * Restore the original dashboard.
-     */
+            /* ---------------------------------------------
+               OTHER PAGE
+               --------------------------------------------- */
 
-    if (route === "dashboard") {
+            const view =
+                VIEWS[route];
 
-        if (this.dashboardHTML) {
+            if (!view) {
 
-            appView.innerHTML =
-                this.dashboardHTML;
+                console.error(
+                    "ChemLab Router: No view found for",
+                    route
+                );
 
-        }
-
-        appView.style.display = "";
-
-        appView.classList.remove("route-view");
-
-        return;
-
-    }
+                return;
+            }
 
 
-    const view =
-        VIEWS[route];
+            appView.classList.remove("dashboard");
+            appView.classList.remove("route-view");
 
+            void appView.offsetWidth;
 
-    if (!view) {
-        return;
-    }
+            appView.innerHTML = view;
 
+            appView.classList.add("route-view");
 
-    appView.style.display = "";
+        },
 
-    appView.classList.remove("route-view");
-
-
-    void appView.offsetWidth;
-
-
-    appView.innerHTML = view;
-
-    appView.classList.add("route-view");
-
-},
 
         /* =================================================
-           UPDATE UI
+           UPDATE EVERYTHING
            ================================================= */
 
         updateUI: function (route) {
 
-            if (!ROUTES[route]) {
-                route = "dashboard";
-            }
-
-
-            this.currentRoute = route;
-
+            this.currentRoute =
+                route;
 
             this.updateNavigation(route);
 
@@ -938,19 +995,15 @@ const Router = {
 
             this.renderView(route);
 
-
-            if (window.ChemLab) {
-
-                window.ChemLab.currentRoute =
-                    route;
-
-            }
-
+            console.log(
+                "ChemLab route:",
+                route
+            );
         },
 
 
         /* =================================================
-           ROUTE CHANGE
+           HANDLE ROUTE
            ================================================= */
 
         handleRouteChange: function () {
@@ -958,9 +1011,7 @@ const Router = {
             const route =
                 this.getRoute();
 
-
             this.updateUI(route);
-
         },
 
 
@@ -968,25 +1019,35 @@ const Router = {
            INITIALIZE
            ================================================= */
 
-       initialize: function () {
+        initialize: function () {
 
-    const self = this;
+            const self = this;
 
-
-    const appView =
-        document.querySelector("#appView");
-
-
-    if (appView) {
-
-        this.dashboardHTML =
-            appView.innerHTML;
-
-    }
+            const appView =
+                document.querySelector("#appView");
 
 
-    window.addEventListener(
-        "hashchange",
+            /*
+             * Save the original dashboard
+             * BEFORE replacing its content.
+             */
+
+            if (
+                appView &&
+                !this.dashboardHTML
+            ) {
+
+                this.dashboardHTML =
+                    appView.innerHTML;
+            }
+
+
+            /*
+             * Listen for URL changes.
+             */
+
+            window.addEventListener(
+                "hashchange",
                 function () {
 
                     self.handleRouteChange();
@@ -995,18 +1056,26 @@ const Router = {
             );
 
 
+            /*
+             * Handle initial page.
+             */
+
             this.handleRouteChange();
 
-        }
 
+            console.log(
+                "ChemLab Router initialized."
+            );
+        }
     };
 
 
     /* =====================================================
-       PUBLIC API
+       GLOBAL ACCESS
        ===================================================== */
 
-    window.ChemLabRouter = Router;
+    window.ChemLabRouter =
+        Router;
 
 
 })();
