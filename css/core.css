@@ -3781,3 +3781,52 @@ body.mobile-menu-open {
     }
 
 }
+
+/* =========================================================
+   APPARATUS SELECTION
+   ========================================================= */
+
+.laboratory-apparatus-card {
+    position: relative;
+    cursor: pointer;
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.laboratory-apparatus-card:hover {
+    transform: translateY(-2px);
+    border-color: #3157d5;
+}
+
+.laboratory-apparatus-card.selected,
+.laboratory-apparatus-card.is-selected {
+    border-color: #3157d5 !important;
+    background: #f4f7ff !important;
+    box-shadow:
+        0 0 0 2px rgba(49,87,213,.10),
+        0 8px 20px rgba(49,87,213,.08);
+}
+
+.apparatus-selection-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #3157d5;
+    color: #ffffff;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 800;
+    z-index: 3;
+}
+
+.laboratory-apparatus-card:not(.selected)
+.apparatus-selection-indicator {
+    display: none;
+}
