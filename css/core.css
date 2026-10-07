@@ -2513,3 +2513,268 @@ body.modal-open {
     }
 
 }
+
+/* =========================================================
+   CHEMLAB LOADING SYSTEM
+   ========================================================= */
+
+.chem-loader {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 12000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 24px;
+}
+
+
+.chem-loader.active {
+
+    display: flex;
+
+}
+
+
+.chem-loader-backdrop {
+
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(15, 23, 42, 0.45);
+
+    backdrop-filter: blur(4px);
+
+}
+
+
+.chem-loader-card {
+
+    position: relative;
+
+    z-index: 1;
+
+    width: min(420px, 100%);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 22px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 24px 70px rgba(15, 23, 42, 0.20);
+
+    animation: chemLoaderOpen 0.2s ease;
+
+}
+
+
+@keyframes chemLoaderOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(8px) scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   SPINNER
+   ========================================================= */
+
+.chem-loader-spinner {
+
+    position: relative;
+
+    width: 42px;
+
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.chem-loader-spinner::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 2px;
+
+    border: 3px solid var(--primary-light);
+
+    border-top-color: var(--primary);
+
+    border-radius: 50%;
+
+    animation: chemLoaderSpin 0.8s linear infinite;
+
+}
+
+
+.chem-loader-spinner span {
+
+    position: absolute;
+
+    width: 5px;
+
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: var(--secondary);
+
+}
+
+
+.chem-loader-spinner span:nth-child(1) {
+
+    top: 2px;
+
+    right: 7px;
+
+}
+
+
+.chem-loader-spinner span:nth-child(2) {
+
+    bottom: 5px;
+
+    left: 4px;
+
+}
+
+
+.chem-loader-spinner span:nth-child(3) {
+
+    right: 2px;
+
+    bottom: 9px;
+
+}
+
+
+@keyframes chemLoaderSpin {
+
+    to {
+
+        transform: rotate(360deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   LOADER TEXT
+   ========================================================= */
+
+.chem-loader-content {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+}
+
+
+.chem-loader-content strong {
+
+    color: var(--text);
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+.chem-loader-content span {
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   BODY LOCK
+   ========================================================= */
+
+body.loader-open {
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .chem-loader {
+
+        padding: 15px;
+
+        align-items: flex-end;
+
+    }
+
+
+    .chem-loader-card {
+
+        width: 100%;
+
+        padding: 18px;
+
+        border-radius: 15px;
+
+    }
+
+}
