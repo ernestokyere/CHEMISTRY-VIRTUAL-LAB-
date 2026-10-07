@@ -40,50 +40,136 @@
     /* =====================================================
        MOBILE MENU
        ===================================================== */
+   function setupMobileMenu() {
 
-    function setupMobileMenu() {
+    const menuButton =
+        document.querySelector(".mobile-menu");
 
-        const button =
-            $(".mobile-menu");
+    const sidebar =
+        document.querySelector(".sidebar");
 
-        const sidebar =
-            $(".sidebar");
-
-        if (!button || !sidebar) {
-            return;
-        }
-
-
-        button.addEventListener(
-            "click",
-            function () {
-
-                sidebar.classList.toggle("open");
-
-            }
-        );
-
-
-        document.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    window.innerWidth <= 800 &&
-                    sidebar.classList.contains("open") &&
-                    !sidebar.contains(event.target) &&
-                    !button.contains(event.target)
-                ) {
-
-                    sidebar.classList.remove("open");
-
-                }
-
-            }
-        );
-
+    if (!menuButton || !sidebar) {
+        return;
     }
 
+    let backdrop =
+        document.querySelector(".chem-mobile-backdrop");
+
+    if (!backdrop) {
+
+        backdrop =
+            document.createElement("div");
+
+        backdrop.className =
+            "chem-mobile-backdrop";
+
+        document.body.appendChild(backdrop);
+    }
+
+
+    function openMenu() {
+
+        sidebar.classList.add("mobile-open");
+
+        backdrop.classList.add("active");
+
+        document.body.classList.add(
+            "mobile-menu-open"
+        );
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+    }
+
+
+    function closeMenu() {
+
+        sidebar.classList.remove("mobile-open");
+
+        backdrop.classList.remove("active");
+
+        document.body.classList.remove(
+            "mobile-menu-open"
+        );
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+
+    menuButton.addEventListener(
+        "click",
+        function () {
+
+            if (
+                sidebar.classList.contains(
+                    "mobile-open"
+                )
+            ) {
+
+                closeMenu();
+
+            } else {
+
+                openMenu();
+
+            }
+
+        }
+    );
+
+
+    backdrop.addEventListener(
+        "click",
+        closeMenu
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                sidebar.classList.contains(
+                    "mobile-open"
+                )
+            ) {
+
+                closeMenu();
+
+            }
+
+        }
+    );
+
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            if (window.innerWidth > 800) {
+
+                closeMenu();
+
+            }
+
+        }
+    );
+
+
+    window.ChemLabMobileMenu = {
+
+        open: openMenu,
+
+        close: closeMenu
+
+    };
+}
 
     /* =====================================================
        CLOSE MOBILE MENU AFTER NAVIGATION
