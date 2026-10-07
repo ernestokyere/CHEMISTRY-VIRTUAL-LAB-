@@ -1200,6 +1200,408 @@ function setupNotifications() {
 
 }
 
+   /* =========================================================
+   CHEMLAB MODAL SYSTEM
+   ========================================================= */
+
+function createModalSystem() {
+
+    if (document.querySelector("#chemLabModal")) {
+        return;
+    }
+
+
+    const modal =
+        document.createElement("div");
+
+    modal.id =
+        "chemLabModal";
+
+    modal.className =
+        "chem-modal";
+
+
+    modal.innerHTML = `
+
+        <div
+            class="chem-modal-backdrop"
+            data-modal-close
+        ></div>
+
+
+        <div
+            class="chem-modal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="chemModalTitle"
+        >
+
+            <div class="chem-modal-header">
+
+                <div>
+
+                    <span
+                        class="chem-modal-eyebrow"
+                        id="chemModalEyebrow"
+                    >
+                        CHEMLAB
+                    </span>
+
+                    <h2 id="chemModalTitle">
+                        ChemLab
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="chem-modal-close"
+                    aria-label="Close dialog"
+                    data-modal-close
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div
+                class="chem-modal-body"
+                id="chemModalBody"
+            ></div>
+
+
+            <div
+                class="chem-modal-footer"
+                id="chemModalFooter"
+            ></div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(modal);
+
+
+    setupModalEvents();
+
+}
+
+
+/* =========================================================
+   MODAL EVENTS
+   ========================================================= */
+
+function setupModalEvents() {
+
+    const modal =
+        document.querySelector(
+            "#chemLabModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target.closest(
+                    "[data-modal-close]"
+                )
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                modal.classList.contains("active")
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   OPEN MODAL
+   ========================================================= */
+
+function openModal(options) {
+
+    createModalSystem();
+
+
+    const modal =
+        document.querySelector(
+            "#chemLabModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    const eyebrow =
+        document.querySelector(
+            "#chemModalEyebrow"
+        );
+
+
+    const title =
+        document.querySelector(
+            "#chemModalTitle"
+        );
+
+
+    const body =
+        document.querySelector(
+            "#chemModalBody"
+        );
+
+
+    const footer =
+        document.querySelector(
+            "#chemModalFooter"
+        );
+
+
+    options =
+        options || {};
+
+
+    if (eyebrow) {
+
+        eyebrow.textContent =
+            options.eyebrow ||
+            "CHEMLAB";
+
+    }
+
+
+    if (title) {
+
+        title.textContent =
+            options.title ||
+            "ChemLab";
+
+    }
+
+
+    if (body) {
+
+        body.innerHTML =
+            options.content ||
+            "";
+
+    }
+
+
+    if (footer) {
+
+        footer.innerHTML =
+            options.footer ||
+            "";
+
+    }
+
+
+    modal.classList.add(
+        "active"
+    );
+
+
+    document.body.classList.add(
+        "modal-open"
+    );
+
+
+    /*
+     * Focus the first usable element.
+     */
+
+    setTimeout(
+        function () {
+
+            const firstInput =
+                modal.querySelector(
+                    "input, select, textarea, button:not(.chem-modal-close)"
+                );
+
+
+            if (firstInput) {
+                firstInput.focus();
+            }
+
+        },
+        50
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+   ========================================================= */
+
+function closeModal() {
+
+    const modal =
+        document.querySelector(
+            "#chemLabModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.remove(
+        "active"
+    );
+
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+}
+
+
+/* =========================================================
+   CONFIRMATION DIALOG
+   ========================================================= */
+
+function showConfirmation(options) {
+
+    options =
+        options || {};
+
+
+    openModal({
+
+        eyebrow:
+            options.eyebrow ||
+            "CONFIRM ACTION",
+
+        title:
+            options.title ||
+            "Are you sure?",
+
+        content: `
+
+            <div class="chem-confirmation">
+
+                <div class="chem-confirmation-icon">
+                    !
+                </div>
+
+                <p>
+                    ${
+                        options.message ||
+                        "Please confirm this action."
+                    }
+                </p>
+
+            </div>
+
+        `,
+
+        footer: `
+
+            <button
+                type="button"
+                class="toolbar-button chem-modal-secondary"
+                data-modal-close
+            >
+                Cancel
+            </button>
+
+
+            <button
+                type="button"
+                class="toolbar-button chem-modal-primary"
+                id="chemConfirmAction"
+            >
+                ${
+                    options.confirmText ||
+                    "Confirm"
+                }
+            </button>
+
+        `
+
+    });
+
+
+    const confirmButton =
+        document.querySelector(
+            "#chemConfirmAction"
+        );
+
+
+    if (confirmButton) {
+
+        confirmButton.addEventListener(
+            "click",
+            function () {
+
+                closeModal();
+
+
+                if (
+                    typeof options.onConfirm ===
+                    "function"
+                ) {
+
+                    options.onConfirm();
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EXPOSE MODAL API
+   ========================================================= */
+
+window.ChemLabModal = {
+
+    open: openModal,
+
+    close: closeModal,
+
+    confirm: showConfirmation
+
+};
     /* =====================================================
        TOAST SYSTEM
        ===================================================== */
@@ -1317,8 +1719,10 @@ function setupNotifications() {
 
         setupSearch();
        
-       setupNotifications();
+       setupNotifications()
 
+       createModalSystem();
+       
         setupRouteTracking();
 
 
