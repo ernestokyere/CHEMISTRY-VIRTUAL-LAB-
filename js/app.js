@@ -1974,3 +1974,1298 @@ setupRouteTracking();
 
 
 })();
+
+/* =========================================================
+   CHEMLAB
+   STAGE 4.2 — INTERACTIVE LABORATORY LIBRARY
+   Chemical + Apparatus Selection Engine
+   ========================================================= */
+
+(function () {
+    "use strict";
+
+    /* =====================================================
+       STATE
+       ===================================================== */
+
+    const LAB_STATE = {
+        chemicals: [],
+        apparatus: [],
+        chemicalFilter: "all",
+        apparatusFilter: "all",
+        chemicalSearch: "",
+        apparatusSearch: ""
+    };
+
+
+    /* =====================================================
+       STORAGE
+       ===================================================== */
+
+    const STORAGE_KEY = "chemlab-laboratory-workspace";
+
+
+    function saveLabState() {
+        try {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({
+                    chemicals: LAB_STATE.chemicals,
+                    apparatus: LAB_STATE.apparatus
+                })
+            );
+        } catch (error) {
+            console.warn("ChemLab: unable to save laboratory state.", error);
+        }
+    }
+
+
+    function loadLabState() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+
+            if (!saved) {
+                return;
+            }
+
+            const parsed = JSON.parse(saved);
+
+            LAB_STATE.chemicals =
+                Array.isArray(parsed.chemicals)
+                    ? parsed.chemicals
+                    : [];
+
+            LAB_STATE.apparatus =
+                Array.isArray(parsed.apparatus)
+                    ? parsed.apparatus
+                    : [];
+
+        } catch (error) {
+            console.warn("ChemLab: unable to restore laboratory state.", error);
+
+            LAB_STATE.chemicals = [];
+            LAB_STATE.apparatus = [];
+        }
+    }
+
+
+    /* =====================================================
+       HELPERS
+       ===================================================== */
+
+    function escapeHTML(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function getLabView() {
+        return document.querySelector(".laboratory-view");
+    }
+
+
+    function getChemicalLibrary() {
+        return document.querySelector(".laboratory-library-list");
+    }
+
+
+    function getApparatusLibrary() {
+        return document.querySelector(
+            ".laboratory-apparatus-card"
+        )
+            ? document.querySelector(
+                ".laboratory-apparatus-card"
+            ).parentElement
+            : null;
+    }
+
+
+    /* =====================================================
+       CHEMICAL DATA
+       ===================================================== */
+
+    const CHEMICALS = [
+        {
+            id: "hcl",
+            name: "Hydrochloric Acid",
+            formula: "HCl",
+            category: "acid",
+            icon: "A"
+        },
+        {
+            id: "h2so4",
+            name: "Sulfuric Acid",
+            formula: "H₂SO₄",
+            category: "acid",
+            icon: "A"
+        },
+        {
+            id: "naoh",
+            name: "Sodium Hydroxide",
+            formula: "NaOH",
+            category: "base",
+            icon: "B"
+        },
+        {
+            id: "koh",
+            name: "Potassium Hydroxide",
+            formula: "KOH",
+            category: "base",
+            icon: "B"
+        },
+        {
+            id: "nacl",
+            name: "Sodium Chloride",
+            formula: "NaCl",
+            category: "salt",
+            icon: "S"
+        },
+        {
+            id: "phenolphthalein",
+            name: "Phenolphthalein",
+            formula: "C₂₀H₁₄O₄",
+            category: "indicator",
+            icon: "I"
+        },
+        {
+            id: "methyl-orange",
+            name: "Methyl Orange",
+            formula: "C₁₄H₁₄N₃NaO₃S",
+            category: "indicator",
+            icon: "I"
+        },
+        {
+            id: "water",
+            name: "Distilled Water",
+            formula: "H₂O",
+            category: "solvent",
+            icon: "W"
+        }
+    ];
+
+
+    /* =====================================================
+       APPARATUS DATA
+       ===================================================== */
+
+    const APPARATUS = [
+        {
+            id: "beaker",
+            name: "Beaker",
+            type: "glassware",
+            icon: "B"
+        },
+        {
+            id: "conical-flask",
+            name: "Conical Flask",
+            type: "glassware",
+            icon: "F"
+        },
+        {
+            id: "test-tube",
+            name: "Test Tube",
+            type: "glassware",
+            icon: "T"
+        },
+        {
+            id: "burette",
+            name: "Burette",
+            type: "measurement",
+            icon: "U"
+        },
+        {
+            id: "pipette",
+            name: "Pipette",
+            type: "measurement",
+            icon: "P"
+        },
+        {
+            id: "measuring-cylinder",
+            name: "Measuring Cylinder",
+            type: "measurement",
+            icon: "C"
+        },
+        {
+            id: "electronic-balance",
+            name: "Electronic Balance",
+            type: "measurement",
+            icon: "E"
+        },
+        {
+            id: "tripod-stand",
+            name: "Tripod Stand",
+            type: "support",
+            icon: "S"
+        }
+    ];
+
+
+    /* =====================================================
+       FIND ITEMS
+       ===================================================== */
+
+    function findChemical(id) {
+        return CHEMICALS.find(function (item) {
+            return item.id === id;
+        });
+    }
+
+
+    function findApparatus(id) {
+        return APPARATUS.find(function (item) {
+            return item.id === id;
+        });
+    }
+
+
+    /* =====================================================
+       SELECTION CHECKS
+       ===================================================== */
+
+    function isChemicalSelected(id) {
+        return LAB_STATE.chemicals.some(function (item) {
+            return item.id === id;
+        });
+    }
+
+
+    function isApparatusSelected(id) {
+        return LAB_STATE.apparatus.some(function (item) {
+            return item.id === id;
+        });
+    }
+
+
+    /* =====================================================
+       ADD CHEMICAL
+       ===================================================== */
+
+    function addChemical(id) {
+        const chemical = findChemical(id);
+
+        if (!chemical) {
+            return;
+        }
+
+        if (isChemicalSelected(id)) {
+            showLabToast(
+                chemical.name + " is already on the laboratory bench."
+            );
+            return;
+        }
+
+        LAB_STATE.chemicals.push({
+            id: chemical.id,
+            name: chemical.name,
+            formula: chemical.formula,
+            category: chemical.category
+        });
+
+        saveLabState();
+        renderLaboratoryState();
+
+        showLabToast(
+            chemical.name + " added to the laboratory."
+        );
+    }
+
+
+    /* =====================================================
+       REMOVE CHEMICAL
+       ===================================================== */
+
+    function removeChemical(id) {
+        const chemical = findChemical(id);
+
+        LAB_STATE.chemicals =
+            LAB_STATE.chemicals.filter(function (item) {
+                return item.id !== id;
+            });
+
+        saveLabState();
+        renderLaboratoryState();
+
+        if (chemical) {
+            showLabToast(
+                chemical.name + " removed from the laboratory."
+            );
+        }
+    }
+
+
+    /* =====================================================
+       ADD APPARATUS
+       ===================================================== */
+
+    function addApparatus(id) {
+        const apparatus = findApparatus(id);
+
+        if (!apparatus) {
+            return;
+        }
+
+        if (isApparatusSelected(id)) {
+            showLabToast(
+                apparatus.name + " is already on the laboratory bench."
+            );
+            return;
+        }
+
+        LAB_STATE.apparatus.push({
+            id: apparatus.id,
+            name: apparatus.name,
+            type: apparatus.type
+        });
+
+        saveLabState();
+        renderLaboratoryState();
+
+        showLabToast(
+            apparatus.name + " added to the laboratory."
+        );
+    }
+
+
+    /* =====================================================
+       REMOVE APPARATUS
+       ===================================================== */
+
+    function removeApparatus(id) {
+        const apparatus = findApparatus(id);
+
+        LAB_STATE.apparatus =
+            LAB_STATE.apparatus.filter(function (item) {
+                return item.id !== id;
+            });
+
+        saveLabState();
+        renderLaboratoryState();
+
+        if (apparatus) {
+            showLabToast(
+                apparatus.name + " removed from the laboratory."
+            );
+        }
+    }
+
+
+    /* =====================================================
+       CLEAR WORKSPACE
+       ===================================================== */
+
+    function clearWorkspace() {
+        if (
+            LAB_STATE.chemicals.length === 0 &&
+            LAB_STATE.apparatus.length === 0
+        ) {
+            showLabToast("The laboratory workspace is already empty.");
+            return;
+        }
+
+        LAB_STATE.chemicals = [];
+        LAB_STATE.apparatus = [];
+
+        saveLabState();
+        renderLaboratoryState();
+
+        showLabToast("Laboratory workspace cleared.");
+    }
+
+
+    /* =====================================================
+       TOAST
+       ===================================================== */
+
+    function showLabToast(message) {
+        if (
+            window.ChemLab &&
+            typeof window.ChemLab.showToast === "function"
+        ) {
+            window.ChemLab.showToast(message);
+            return;
+        }
+
+        let toast = document.querySelector("#chemLabLabToast");
+
+        if (!toast) {
+            toast = document.createElement("div");
+            toast.id = "chemLabLabToast";
+            toast.className = "chem-toast";
+            document.body.appendChild(toast);
+        }
+
+        toast.textContent = message;
+        toast.classList.add("active");
+
+        clearTimeout(toast._timeout);
+
+        toast._timeout = setTimeout(function () {
+            toast.classList.remove("active");
+        }, 2500);
+    }
+
+
+    /* =====================================================
+       CHEMICAL LIBRARY RENDERING
+       ===================================================== */
+
+    function renderChemicalLibrary() {
+        const container = getChemicalLibrary();
+
+        if (!container) {
+            return;
+        }
+
+        const search =
+            LAB_STATE.chemicalSearch.trim().toLowerCase();
+
+        const filtered = CHEMICALS.filter(function (chemical) {
+
+            const matchesCategory =
+                LAB_STATE.chemicalFilter === "all" ||
+                chemical.category === LAB_STATE.chemicalFilter;
+
+            const matchesSearch =
+                !search ||
+                chemical.name.toLowerCase().includes(search) ||
+                chemical.formula.toLowerCase().includes(search);
+
+            return matchesCategory && matchesSearch;
+        });
+
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="laboratory-library-empty">
+                    <div class="laboratory-library-empty-icon">⌕</div>
+                    <strong>No chemicals found</strong>
+                    <span>Try another search or category.</span>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = filtered.map(function (chemical) {
+
+            const selected = isChemicalSelected(chemical.id);
+
+            return `
+                <article
+                    class="laboratory-material-card ${
+                        selected ? "is-selected" : ""
+                    }"
+                    data-chemical-id="${escapeHTML(chemical.id)}"
+                >
+
+                    <div class="material-icon ${escapeHTML(chemical.category)}">
+                        ${escapeHTML(chemical.icon)}
+                    </div>
+
+                    <div class="material-information">
+
+                        <strong>
+                            ${escapeHTML(chemical.name)}
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(chemical.formula)}
+                        </span>
+
+                        <small>
+                            ${escapeHTML(chemical.category)}
+                        </small>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="material-add ${
+                            selected ? "is-added" : ""
+                        }"
+                        data-add-chemical="${escapeHTML(chemical.id)}"
+                        ${selected ? "disabled" : ""}
+                    >
+                        ${selected ? "Added" : "Add"}
+                    </button>
+
+                </article>
+            `;
+        }).join("");
+    }
+
+
+    /* =====================================================
+       APPARATUS LIBRARY RENDERING
+       ===================================================== */
+
+    function renderApparatusLibrary() {
+        const cards = document.querySelectorAll(
+            ".laboratory-apparatus-card"
+        );
+
+        if (!cards.length) {
+            return;
+        }
+
+        cards.forEach(function (card) {
+
+            const id =
+                card.getAttribute("data-apparatus-id");
+
+            if (!id) {
+                return;
+            }
+
+            const apparatus = findApparatus(id);
+
+            if (!apparatus) {
+                return;
+            }
+
+            const selected =
+                isApparatusSelected(apparatus.id);
+
+            card.classList.toggle("is-selected", selected);
+
+            const button =
+                card.querySelector("[data-add-apparatus]");
+
+            if (button) {
+                button.disabled = selected;
+                button.textContent =
+                    selected ? "Added" : "Add";
+                button.classList.toggle(
+                    "is-added",
+                    selected
+                );
+            }
+        });
+
+
+        const apparatusContainer =
+            document.querySelector(
+                ".laboratory-apparatus-library"
+            );
+
+        if (apparatusContainer) {
+
+            const search =
+                LAB_STATE.apparatusSearch
+                    .trim()
+                    .toLowerCase();
+
+            const cardsToDisplay =
+                APPARATUS.filter(function (apparatus) {
+
+                    const categoryMatch =
+                        LAB_STATE.apparatusFilter === "all" ||
+                        apparatus.type === LAB_STATE.apparatusFilter;
+
+                    const searchMatch =
+                        !search ||
+                        apparatus.name
+                            .toLowerCase()
+                            .includes(search);
+
+                    return categoryMatch && searchMatch;
+                });
+
+            const allowedIds =
+                cardsToDisplay.map(function (item) {
+                    return item.id;
+                });
+
+            cards.forEach(function (card) {
+                const id =
+                    card.getAttribute("data-apparatus-id");
+
+                card.style.display =
+                    allowedIds.includes(id)
+                        ? ""
+                        : "none";
+            });
+        }
+    }
+
+
+    /* =====================================================
+       SELECTED MATERIALS
+       ===================================================== */
+
+    function renderSelectedMaterials() {
+        const container =
+            document.querySelector(
+                ".selection-summary-list"
+            );
+
+        if (!container) {
+            return;
+        }
+
+
+        if (
+            LAB_STATE.chemicals.length === 0 &&
+            LAB_STATE.apparatus.length === 0
+        ) {
+            container.innerHTML = `
+                <div class="selection-empty">
+                    <div class="selection-empty-icon">＋</div>
+                    <strong>No items selected</strong>
+                    <span>
+                        Add chemicals or apparatus from the libraries.
+                    </span>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const chemicalHTML =
+            LAB_STATE.chemicals.map(function (chemical) {
+                return `
+                    <div class="selection-item">
+
+                        <div>
+                            <strong>
+                                ${escapeHTML(chemical.name)}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(chemical.formula)}
+                            </span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="selection-remove"
+                            data-remove-chemical="${escapeHTML(
+                                chemical.id
+                            )}"
+                            aria-label="Remove ${escapeHTML(
+                                chemical.name
+                            )}"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+                `;
+            }).join("");
+
+
+        const apparatusHTML =
+            LAB_STATE.apparatus.map(function (apparatus) {
+                return `
+                    <div class="selection-item">
+
+                        <div>
+                            <strong>
+                                ${escapeHTML(apparatus.name)}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(apparatus.type)}
+                            </span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="selection-remove"
+                            data-remove-apparatus="${escapeHTML(
+                                apparatus.id
+                            )}"
+                            aria-label="Remove ${escapeHTML(
+                                apparatus.name
+                            )}"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+                `;
+            }).join("");
+
+
+        container.innerHTML =
+            chemicalHTML + apparatusHTML;
+    }
+
+
+    /* =====================================================
+       BENCH
+       ===================================================== */
+
+    function renderBench() {
+        const bench =
+            document.querySelector(".digital-lab-bench");
+
+        if (!bench) {
+            return;
+        }
+
+        const emptyState =
+            bench.querySelector(".lab-empty-workspace");
+
+        const selectedContainer =
+            bench.querySelector(".lab-selected-materials");
+
+        const total =
+            LAB_STATE.chemicals.length +
+            LAB_STATE.apparatus.length;
+
+
+        if (total === 0) {
+
+            if (emptyState) {
+                emptyState.style.display = "";
+            }
+
+            if (selectedContainer) {
+                selectedContainer.innerHTML = "";
+                selectedContainer.style.display = "none";
+            }
+
+            return;
+        }
+
+
+        if (emptyState) {
+            emptyState.style.display = "none";
+        }
+
+
+        if (!selectedContainer) {
+            return;
+        }
+
+
+        selectedContainer.style.display = "grid";
+
+
+        selectedContainer.innerHTML = `
+
+            ${LAB_STATE.chemicals.map(function (chemical) {
+                return `
+                    <div
+                        class="bench-item bench-chemical"
+                        data-bench-chemical="${escapeHTML(
+                            chemical.id
+                        )}"
+                    >
+                        <span class="bench-item-type">
+                            CHEMICAL
+                        </span>
+
+                        <strong>
+                            ${escapeHTML(chemical.name)}
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(chemical.formula)}
+                        </span>
+
+                        <button
+                            type="button"
+                            data-remove-chemical="${escapeHTML(
+                                chemical.id
+                            )}"
+                            aria-label="Remove chemical"
+                        >
+                            ×
+                        </button>
+                    </div>
+                `;
+            }).join("")}
+
+            ${LAB_STATE.apparatus.map(function (apparatus) {
+                return `
+                    <div
+                        class="bench-item bench-apparatus"
+                        data-bench-apparatus="${escapeHTML(
+                            apparatus.id
+                        )}"
+                    >
+                        <span class="bench-item-type">
+                            APPARATUS
+                        </span>
+
+                        <strong>
+                            ${escapeHTML(apparatus.name)}
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(apparatus.type)}
+                        </span>
+
+                        <button
+                            type="button"
+                            data-remove-apparatus="${escapeHTML(
+                                apparatus.id
+                            )}"
+                            aria-label="Remove apparatus"
+                        >
+                            ×
+                        </button>
+                    </div>
+                `;
+            }).join("")}
+        `;
+    }
+
+
+    /* =====================================================
+       COUNTERS
+       ===================================================== */
+
+    function updateCounters() {
+
+        const materialCount =
+            document.querySelector(
+                ".laboratory-status-item[data-status='materials']"
+            );
+
+        const apparatusCount =
+            document.querySelector(
+                ".laboratory-status-item[data-status='apparatus']"
+            );
+
+
+        if (materialCount) {
+            const value =
+                materialCount.querySelector(
+                    ".laboratory-status-value"
+                );
+
+            if (value) {
+                value.textContent =
+                    LAB_STATE.chemicals.length;
+            }
+        }
+
+
+        if (apparatusCount) {
+            const value =
+                apparatusCount.querySelector(
+                    ".laboratory-status-value"
+                );
+
+            if (value) {
+                value.textContent =
+                    LAB_STATE.apparatus.length;
+            }
+        }
+
+
+        const genericValues =
+            document.querySelectorAll(
+                "[data-lab-material-count]"
+            );
+
+        genericValues.forEach(function (element) {
+            element.textContent =
+                LAB_STATE.chemicals.length;
+        });
+
+
+        const genericApparatus =
+            document.querySelectorAll(
+                "[data-lab-apparatus-count]"
+            );
+
+        genericApparatus.forEach(function (element) {
+            element.textContent =
+                LAB_STATE.apparatus.length;
+        });
+    }
+
+
+    /* =====================================================
+       COMPLETE LAB RENDER
+       ===================================================== */
+
+    function renderLaboratoryState() {
+
+        if (!getLabView()) {
+            return;
+        }
+
+        renderChemicalLibrary();
+        renderApparatusLibrary();
+        renderSelectedMaterials();
+        renderBench();
+        updateCounters();
+        updateNextStep();
+    }
+
+
+    /* =====================================================
+       NEXT STEP
+       ===================================================== */
+
+    function updateNextStep() {
+
+        const nextStep =
+            document.querySelector(
+                ".laboratory-next-step"
+            );
+
+        if (!nextStep) {
+            return;
+        }
+
+
+        const chemicalCount =
+            LAB_STATE.chemicals.length;
+
+        const apparatusCount =
+            LAB_STATE.apparatus.length;
+
+
+        const description =
+            nextStep.querySelector(
+                ".laboratory-next-step-description"
+            );
+
+        const button =
+            nextStep.querySelector(
+                ".laboratory-next-step-button"
+            );
+
+
+        if (chemicalCount === 0 && apparatusCount === 0) {
+
+            if (description) {
+                description.textContent =
+                    "Select chemicals and apparatus to begin building your digital laboratory setup.";
+            }
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Add Laboratory Items";
+            }
+
+            return;
+        }
+
+
+        if (description) {
+            description.textContent =
+                `${chemicalCount} chemical${
+                    chemicalCount === 1 ? "" : "s"
+                } and ${apparatusCount} apparatus item${
+                    apparatusCount === 1 ? "" : "s"
+                } selected. Your digital bench is ready for the next stage.`;
+        }
+
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Continue to Experiment Setup";
+        }
+    }
+
+
+    /* =====================================================
+       FILTERS
+       ===================================================== */
+
+    function setChemicalFilter(filter) {
+
+        LAB_STATE.chemicalFilter = filter;
+
+        document
+            .querySelectorAll(
+                "[data-chemical-filter]"
+            )
+            .forEach(function (button) {
+
+                button.classList.toggle(
+                    "active",
+                    button.getAttribute(
+                        "data-chemical-filter"
+                    ) === filter
+                );
+            });
+
+        renderChemicalLibrary();
+    }
+
+
+    function setApparatusFilter(filter) {
+
+        LAB_STATE.apparatusFilter = filter;
+
+        document
+            .querySelectorAll(
+                "[data-apparatus-filter]"
+            )
+            .forEach(function (button) {
+
+                button.classList.toggle(
+                    "active",
+                    button.getAttribute(
+                        "data-apparatus-filter"
+                    ) === filter
+                );
+            });
+
+        renderApparatusLibrary();
+    }
+
+
+    /* =====================================================
+       EVENT DELEGATION
+       ===================================================== */
+
+    function setupLaboratoryEvents() {
+
+        if (window.ChemLabStage42Ready) {
+            return;
+        }
+
+        window.ChemLabStage42Ready = true;
+
+
+        document.addEventListener(
+            "click",
+            function (event) {
+
+                const addChemicalButton =
+                    event.target.closest(
+                        "[data-add-chemical]"
+                    );
+
+                if (addChemicalButton) {
+
+                    addChemical(
+                        addChemicalButton.getAttribute(
+                            "data-add-chemical"
+                        )
+                    );
+
+                    return;
+                }
+
+
+                const removeChemicalButton =
+                    event.target.closest(
+                        "[data-remove-chemical]"
+                    );
+
+                if (removeChemicalButton) {
+
+                    removeChemical(
+                        removeChemicalButton.getAttribute(
+                            "data-remove-chemical"
+                        )
+                    );
+
+                    return;
+                }
+
+
+                const addApparatusButton =
+                    event.target.closest(
+                        "[data-add-apparatus]"
+                    );
+
+                if (addApparatusButton) {
+
+                    addApparatus(
+                        addApparatusButton.getAttribute(
+                            "data-add-apparatus"
+                        )
+                    );
+
+                    return;
+                }
+
+
+                const removeApparatusButton =
+                    event.target.closest(
+                        "[data-remove-apparatus]"
+                    );
+
+                if (removeApparatusButton) {
+
+                    removeApparatus(
+                        removeApparatusButton.getAttribute(
+                            "data-remove-apparatus"
+                        )
+                    );
+
+                    return;
+                }
+
+
+                const chemicalFilter =
+                    event.target.closest(
+                        "[data-chemical-filter]"
+                    );
+
+                if (chemicalFilter) {
+
+                    setChemicalFilter(
+                        chemicalFilter.getAttribute(
+                            "data-chemical-filter"
+                        )
+                    );
+
+                    return;
+                }
+
+
+                const apparatusFilter =
+                    event.target.closest(
+                        "[data-apparatus-filter]"
+                    );
+
+                if (apparatusFilter) {
+
+                    setApparatusFilter(
+                        apparatusFilter.getAttribute(
+                            "data-apparatus-filter"
+                        )
+                    );
+
+                    return;
+                }
+
+
+                const clearButton =
+                    event.target.closest(
+                        "[data-lab-clear]"
+                    );
+
+                if (clearButton) {
+
+                    clearWorkspace();
+
+                    return;
+                }
+            }
+        );
+
+
+        document.addEventListener(
+            "input",
+            function (event) {
+
+                if (
+                    event.target.matches(
+                        "[data-chemical-search]"
+                    )
+                ) {
+
+                    LAB_STATE.chemicalSearch =
+                        event.target.value;
+
+                    renderChemicalLibrary();
+
+                    return;
+                }
+
+
+                if (
+                    event.target.matches(
+                        "[data-apparatus-search]"
+                    )
+                ) {
+
+                    LAB_STATE.apparatusSearch =
+                        event.target.value;
+
+                    renderApparatusLibrary();
+
+                    return;
+                }
+            }
+        );
+
+
+        window.addEventListener(
+            "hashchange",
+            function () {
+
+                setTimeout(function () {
+
+                    if (
+                        window.location.hash ===
+                        "#laboratory"
+                    ) {
+                        renderLaboratoryState();
+                    }
+
+                }, 50);
+            }
+        );
+    }
+
+
+    /* =====================================================
+       PUBLIC API
+       ===================================================== */
+
+    window.ChemLabLaboratory = {
+
+        getState: function () {
+            return {
+                chemicals: LAB_STATE.chemicals,
+                apparatus: LAB_STATE.apparatus
+            };
+        },
+
+        addChemical: addChemical,
+
+        removeChemical: removeChemical,
+
+        addApparatus: addApparatus,
+
+        removeApparatus: removeApparatus,
+
+        clearWorkspace: clearWorkspace,
+
+        render: renderLaboratoryState
+    };
+
+
+    /* =====================================================
+       INITIALIZATION
+       ===================================================== */
+
+    function initializeStage42() {
+
+        loadLabState();
+        setupLaboratoryEvents();
+
+        if (
+            window.location.hash === "#laboratory"
+        ) {
+            setTimeout(
+                renderLaboratoryState,
+                100
+            );
+        }
+    }
+
+
+    if (document.readyState === "loading") {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initializeStage42
+        );
+
+    } else {
+
+        initializeStage42();
+    }
+
+})();
