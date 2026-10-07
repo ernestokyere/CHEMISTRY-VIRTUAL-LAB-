@@ -2103,3 +2103,413 @@ body.search-open {
     }
 
 }
+
+/* =========================================================
+   CHEMLAB MODAL SYSTEM
+   ========================================================= */
+
+.chem-modal {
+    position: fixed;
+    inset: 0;
+
+    z-index: 11000;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px;
+}
+
+.chem-modal.active {
+    display: flex;
+}
+
+
+.chem-modal-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background:
+        rgba(15, 23, 42, 0.52);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+
+.chem-modal-dialog {
+    position: relative;
+
+    width: min(620px, 100%);
+
+    max-height:
+        calc(100vh - 50px);
+
+    display: flex;
+    flex-direction: column;
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        18px;
+
+    box-shadow:
+        0 28px 80px
+        rgba(15, 23, 42, 0.25);
+
+    overflow: hidden;
+
+    animation:
+        chemModalOpen
+        0.2s
+        ease;
+}
+
+
+@keyframes chemModalOpen {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(12px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.chem-modal-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding:
+        20px 22px;
+
+    border-bottom:
+        1px solid
+        var(--border-light);
+}
+
+
+.chem-modal-eyebrow {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        var(--primary);
+
+    font-size:
+        10px;
+
+    font-weight:
+        750;
+
+    letter-spacing:
+        0.08em;
+}
+
+
+.chem-modal-header h2 {
+
+    margin: 0;
+
+    color:
+        var(--text);
+
+    font-size:
+        20px;
+
+    line-height:
+        1.25;
+}
+
+
+.chem-modal-close {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex:
+        0 0 38px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+    background:
+        var(--surface);
+
+    color:
+        var(--text-secondary);
+
+    font-size:
+        23px;
+
+    line-height:
+        1;
+
+    cursor:
+        pointer;
+
+    transition:
+        var(--transition);
+}
+
+
+.chem-modal-close:hover {
+
+    background:
+        var(--surface-soft);
+
+    color:
+        var(--text);
+
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+.chem-modal-body {
+
+    padding:
+        22px;
+
+    overflow-y:
+        auto;
+
+    color:
+        var(--text-secondary);
+
+    font-size:
+        14px;
+
+    line-height:
+        1.6;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.chem-modal-footer {
+
+    display: flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        10px;
+
+    padding:
+        15px 22px;
+
+    border-top:
+        1px solid
+        var(--border-light);
+}
+
+
+/* =========================================================
+   CONFIRMATION
+   ========================================================= */
+
+.chem-confirmation {
+
+    text-align:
+        center;
+
+    padding:
+        10px 5px;
+}
+
+
+.chem-confirmation-icon {
+
+    width:
+        54px;
+
+    height:
+        54px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    margin:
+        0 auto 15px;
+
+    border-radius:
+        15px;
+
+    background:
+        var(--primary-light);
+
+    color:
+        var(--primary);
+
+    font-size:
+        23px;
+
+    font-weight:
+        700;
+}
+
+
+.chem-confirmation p {
+
+    max-width:
+        450px;
+
+    margin:
+        0 auto;
+
+    color:
+        var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   MODAL BUTTONS
+   ========================================================= */
+
+.chem-modal-primary {
+
+    background:
+        var(--primary);
+
+    color:
+        white;
+
+    border-color:
+        var(--primary);
+}
+
+
+.chem-modal-primary:hover {
+
+    background:
+        var(--primary-dark);
+
+}
+
+
+.chem-modal-secondary {
+
+    background:
+        var(--surface);
+
+    color:
+        var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   BODY LOCK
+   ========================================================= */
+
+body.modal-open {
+
+    overflow:
+        hidden;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .chem-modal {
+
+        padding:
+            12px;
+
+        align-items:
+            flex-end;
+
+    }
+
+
+    .chem-modal-dialog {
+
+        width:
+            100%;
+
+        max-height:
+            calc(100vh - 24px);
+
+        border-radius:
+            16px;
+
+    }
+
+
+    .chem-modal-header {
+
+        padding:
+            17px;
+
+    }
+
+
+    .chem-modal-body {
+
+        padding:
+            18px;
+
+    }
+
+
+    .chem-modal-footer {
+
+        padding:
+            13px 17px;
+
+    }
+
+}
