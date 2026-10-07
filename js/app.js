@@ -1602,6 +1602,118 @@ window.ChemLabModal = {
     confirm: showConfirmation
 
 };
+
+   /* =========================================================
+   CHEMLAB LOADING SYSTEM
+   ========================================================= */
+
+function createLoadingSystem() {
+
+    if (document.querySelector("#chemLabLoader")) {
+        return;
+    }
+
+    const loader = document.createElement("div");
+
+    loader.id = "chemLabLoader";
+    loader.className = "chem-loader";
+
+    loader.innerHTML = `
+        <div class="chem-loader-backdrop"></div>
+
+        <div class="chem-loader-card">
+
+            <div class="chem-loader-spinner">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="chem-loader-content">
+
+                <strong id="chemLoaderTitle">
+                    Loading ChemLab
+                </strong>
+
+                <span id="chemLoaderMessage">
+                    Preparing your laboratory workspace...
+                </span>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(loader);
+}
+
+
+/* =========================================================
+   SHOW LOADER
+   ========================================================= */
+
+function showLoader(options) {
+
+    createLoadingSystem();
+
+    const loader = document.querySelector("#chemLabLoader");
+
+    if (!loader) {
+        return;
+    }
+
+    options = options || {};
+
+    const title = document.querySelector("#chemLoaderTitle");
+    const message = document.querySelector("#chemLoaderMessage");
+
+    if (title) {
+        title.textContent =
+            options.title || "Loading ChemLab";
+    }
+
+    if (message) {
+        message.textContent =
+            options.message ||
+            "Preparing your laboratory workspace...";
+    }
+
+    loader.classList.add("active");
+
+    document.body.classList.add("loader-open");
+}
+
+
+/* =========================================================
+   HIDE LOADER
+   ========================================================= */
+
+function hideLoader() {
+
+    const loader = document.querySelector("#chemLabLoader");
+
+    if (!loader) {
+        return;
+    }
+
+    loader.classList.remove("active");
+
+    document.body.classList.remove("loader-open");
+}
+
+
+/* =========================================================
+   PUBLIC LOADER API
+   ========================================================= */
+
+window.ChemLabLoader = {
+
+    show: showLoader,
+
+    hide: hideLoader
+
+};
+   
     /* =====================================================
        TOAST SYSTEM
        ===================================================== */
@@ -1712,20 +1824,14 @@ window.ChemLabModal = {
 
 
         setupMobileMenu();
-
-        setupNavigationClosing();
-
-        setupSignInButton();
-
-        setupSearch();
+setupNavigationClosing();
+setupSignInButton();
+setupSearch();
+setupNotifications();
+createModalSystem();
+createLoadingSystem();
+setupRouteTracking();
        
-       setupNotifications()
-
-       createModalSystem();
-       
-        setupRouteTracking();
-
-
         /*
          * Start router AFTER application
          * systems are available.
