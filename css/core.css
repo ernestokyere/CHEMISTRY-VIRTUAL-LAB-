@@ -1800,3 +1800,306 @@ body.search-open {
     }
 
 }
+
+/* =========================================================
+   CHEMLAB NOTIFICATIONS
+   ========================================================= */
+
+.chem-notification-panel {
+    position: fixed;
+    top: 76px;
+    right: 22px;
+    width: 380px;
+    max-width: calc(100vw - 30px);
+    max-height: 560px;
+    z-index: 9998;
+
+    display: none;
+    flex-direction: column;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 60px rgba(15, 23, 42, 0.18);
+
+    overflow: hidden;
+
+    animation: chemNotificationOpen 0.18s ease;
+}
+
+.chem-notification-panel.active {
+    display: flex;
+}
+
+@keyframes chemNotificationOpen {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* Header */
+
+.chem-notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 16px 18px;
+
+    border-bottom: 1px solid var(--border-light);
+}
+
+.chem-notification-header > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chem-notification-header strong {
+    color: var(--text);
+    font-size: 15px;
+}
+
+.chem-notification-count {
+    min-width: 20px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    background: var(--primary);
+    color: white;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.chem-notification-mark {
+    border: 0;
+    background: transparent;
+
+    color: var(--primary);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.chem-notification-mark:hover {
+    text-decoration: underline;
+}
+
+
+/* List */
+
+.chem-notification-list {
+    overflow-y: auto;
+    max-height: 450px;
+}
+
+
+/* Item */
+
+.chem-notification-item {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    position: relative;
+
+    padding: 15px 18px;
+
+    border: 0;
+    border-bottom: 1px solid var(--border-light);
+
+    background: var(--surface);
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.chem-notification-item:hover {
+    background: var(--surface-soft);
+}
+
+.chem-notification-item.unread {
+    background: var(--primary-light);
+}
+
+.chem-notification-item.unread:hover {
+    background: #e2eaff;
+}
+
+
+/* Icon */
+
+.chem-notification-icon {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+
+    color: var(--primary);
+
+    font-size: 17px;
+}
+
+.chem-notification-icon.learning {
+    color: var(--secondary);
+}
+
+.chem-notification-icon.laboratory {
+    color: var(--success);
+}
+
+
+/* Content */
+
+.chem-notification-content {
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chem-notification-content strong {
+    color: var(--text);
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.chem-notification-content small {
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.chem-notification-content time {
+    color: var(--text-muted);
+
+    font-size: 10px;
+    margin-top: 2px;
+}
+
+
+/* Unread indicator */
+
+.chem-notification-unread-dot {
+    width: 7px;
+    height: 7px;
+
+    flex: 0 0 7px;
+
+    margin-top: 6px;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+}
+
+
+/* Empty */
+
+.chem-notification-empty {
+    padding: 55px 25px;
+
+    text-align: center;
+
+    color: var(--text-secondary);
+}
+
+.chem-notification-empty-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 13px;
+
+    border-radius: 14px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    font-size: 20px;
+}
+
+.chem-notification-empty strong {
+    display: block;
+
+    color: var(--text);
+
+    margin-bottom: 6px;
+}
+
+.chem-notification-empty p {
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* Footer */
+
+.chem-notification-footer {
+    padding: 11px 18px;
+
+    border-top: 1px solid var(--border-light);
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 520px) {
+
+    .chem-notification-panel {
+        top: 68px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: none;
+    }
+
+}
