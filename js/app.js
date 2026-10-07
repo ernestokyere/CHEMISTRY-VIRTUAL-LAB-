@@ -3269,3 +3269,986 @@ setupRouteTracking();
     }
 
 })();
+
+/* =========================================================
+   CHEMLAB STAGE 4.3
+   SAFE EXPERIMENT START ENGINE
+   ========================================================= */
+
+(function () {
+    "use strict";
+
+    function getLabState() {
+        if (
+            window.ChemLabLaboratory &&
+            typeof window.ChemLabLaboratory.getState === "function"
+        ) {
+            return window.ChemLabLaboratory.getState();
+        }
+
+        return {
+            chemicals: [],
+            apparatus: []
+        };
+    }
+
+    function showMessage(message) {
+        if (
+            window.ChemLabModal &&
+            typeof window.ChemLabModal.open === "function"
+        ) {
+            window.ChemLabModal.open({
+                eyebrow: "CHEMLAB LABORATORY",
+                title: "Experiment Setup",
+                content: `
+                    <div style="
+                        padding:20px;
+                        background:#f8faff;
+                        border:1px solid #e4e7ec;
+                        border-radius:12px;
+                    ">
+                        <p style="
+                            margin:0;
+                            color:#667085;
+                            line-height:1.6;
+                        ">
+                            ${message}
+                        </p>
+                    </div>
+                `,
+                footer: `
+                    <button
+                        type="button"
+                        class="toolbar-button chem-modal-primary"
+                        data-modal-close
+                    >
+                        Continue
+                    </button>
+                `
+            });
+
+            return;
+        }
+
+        alert(message);
+    }
+
+
+    function beginExperiment() {
+
+        const state = getLabState();
+
+        const chemicals =
+            Array.isArray(state.chemicals)
+                ? state.chemicals
+                : [];
+
+        const apparatus =
+            Array.isArray(state.apparatus)
+                ? state.apparatus
+                : [];
+
+
+        if (
+            chemicals.length === 0 &&
+            apparatus.length === 0
+        ) {
+            showMessage(
+                "Your digital laboratory is currently empty. Select at least one chemical or apparatus before starting an experiment."
+            );
+
+            return;
+        }
+
+
+        const chemicalList =
+            chemicals.length
+                ? chemicals
+                    .map(function (item) {
+                        return `
+                            <li>
+                                <strong>
+                                    ${item.name || item.label || item.id}
+                                </strong>
+                                ${
+                                    item.formula
+                                        ? `<span>${item.formula}</span>`
+                                        : ""
+                                }
+                            </li>
+                        `;
+                    })
+                    .join("")
+                : `<li>No chemicals selected.</li>`;
+
+
+        const apparatusList =
+            apparatus.length
+                ? apparatus
+                    .map(function (item) {
+                        return `
+                            <li>
+                                <strong>
+                                    ${item.name || item.label || item.id}
+                                </strong>
+                            </li>
+                        `;
+                    })
+                    .join("")
+                : `<li>No apparatus selected.</li>`;
+
+
+        if (
+            !window.ChemLabModal ||
+            typeof window.ChemLabModal.open !== "function"
+        ) {
+            showMessage(
+                "The experiment interface is not ready yet."
+            );
+
+            return;
+        }
+
+
+        window.ChemLabModal.open({
+
+            eyebrow: "EXPERIMENT SETUP",
+
+            title: "Ready to Begin",
+
+            content: `
+
+                <div style="
+                    display:grid;
+                    gap:16px;
+                ">
+
+                    <div style="
+                        padding:16px;
+                        background:#f8faff;
+                        border:1px solid #e4e7ec;
+                        border-radius:12px;
+                    ">
+
+                        <strong style="
+                            display:block;
+                            color:#172033;
+                            margin-bottom:6px;
+                        ">
+                            Digital Chemistry Investigation
+                        </strong>
+
+                        <p style="
+                            margin:0;
+                            color:#667085;
+                            font-size:13px;
+                            line-height:1.6;
+                        ">
+                            Your selected laboratory resources are ready.
+                            The next stage will provide the interactive
+                            experiment workspace.
+                        </p>
+
+                    </div>
+
+
+                    <div style="
+                        display:grid;
+                        grid-template-columns:1fr 1fr;
+                        gap:12px;
+                    ">
+
+                        <div style="
+                            padding:14px;
+                            border:1px solid #e4e7ec;
+                            border-radius:10px;
+                        ">
+
+                            <small style="
+                                display:block;
+                                color:#98a2b3;
+                                margin-bottom:7px;
+                            ">
+                                MATERIALS
+                            </small>
+
+                            <strong style="
+                                color:#3157d5;
+                                font-size:20px;
+                            ">
+                                ${chemicals.length}
+                            </strong>
+
+                        </div>
+
+
+                        <div style="
+                            padding:14px;
+                            border:1px solid #e4e7ec;
+                            border-radius:10px;
+                        ">
+
+                            <small style="
+                                display:block;
+                                color:#98a2b3;
+                                margin-bottom:7px;
+                            ">
+                                APPARATUS
+                            </small>
+
+                            <strong style="
+                                color:#3157d5;
+                                font-size:20px;
+                            ">
+                                ${apparatus.length}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong style="
+                            display:block;
+                            color:#344054;
+                            margin-bottom:8px;
+                        ">
+                            Selected Materials
+                        </strong>
+
+                        <ul style="
+                            margin:0;
+                            padding-left:20px;
+                            color:#667085;
+                            font-size:12px;
+                            line-height:1.8;
+                        ">
+                            ${chemicalList}
+                        </ul>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong style="
+                            display:block;
+                            color:#344054;
+                            margin-bottom:8px;
+                        ">
+                            Selected Apparatus
+                        </strong>
+
+                        <ul style="
+                            margin:0;
+                            padding-left:20px;
+                            color:#667085;
+                            font-size:12px;
+                            line-height:1.8;
+                        ">
+                            ${apparatusList}
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            `,
+
+            footer: `
+
+                <button
+                    type="button"
+                    class="toolbar-button chem-modal-secondary"
+                    data-modal-close
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="toolbar-button chem-modal-primary"
+                    id="chemLabLaunchExperiment"
+                >
+                    Enter Experiment
+                </button>
+
+            `
+        });
+
+
+        setTimeout(function () {
+
+            const launch =
+                document.querySelector(
+                    "#chemLabLaunchExperiment"
+                );
+
+            if (!launch) return;
+
+
+            launch.addEventListener(
+                "click",
+                function () {
+
+                    window.ChemLabModal.close();
+
+                    openExperimentWorkspace();
+
+                }
+            );
+
+        }, 50);
+    }
+
+
+    function openExperimentWorkspace() {
+
+        let workspace =
+            document.querySelector(
+                "#chemLabExperimentWorkspace"
+            );
+
+
+        if (!workspace) {
+
+            workspace =
+                document.createElement("div");
+
+            workspace.id =
+                "chemLabExperimentWorkspace";
+
+            workspace.innerHTML = `
+
+                <div style="
+                    position:fixed;
+                    inset:0;
+                    z-index:99998;
+                    background:#f5f7fb;
+                    overflow:auto;
+                ">
+
+                    <div style="
+                        min-height:100%;
+                        display:flex;
+                        flex-direction:column;
+                    ">
+
+                        <header style="
+                            height:72px;
+                            background:#ffffff;
+                            border-bottom:1px solid #e4e7ec;
+                            display:flex;
+                            align-items:center;
+                            justify-content:space-between;
+                            padding:0 24px;
+                            position:sticky;
+                            top:0;
+                            z-index:2;
+                        ">
+
+                            <div>
+
+                                <div style="
+                                    color:#98a2b3;
+                                    font-size:9px;
+                                    font-weight:800;
+                                    letter-spacing:.12em;
+                                ">
+                                    CHEMLAB DIGITAL LABORATORY
+                                </div>
+
+                                <h1 style="
+                                    margin:4px 0 0;
+                                    color:#172033;
+                                    font-size:20px;
+                                ">
+                                    Experiment Workspace
+                                </h1>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                id="chemLabExitExperiment"
+                                style="
+                                    border:1px solid #e4e7ec;
+                                    background:#ffffff;
+                                    color:#667085;
+                                    border-radius:9px;
+                                    padding:9px 14px;
+                                    cursor:pointer;
+                                    font-weight:700;
+                                "
+                            >
+                                Exit Experiment
+                            </button>
+
+                        </header>
+
+
+                        <main style="
+                            flex:1;
+                            padding:24px;
+                        ">
+
+                            <div style="
+                                max-width:1200px;
+                                margin:0 auto;
+                                display:grid;
+                                grid-template-columns:260px minmax(0,1fr) 280px;
+                                gap:18px;
+                            ">
+
+
+                                <section style="
+                                    background:#ffffff;
+                                    border:1px solid #e4e7ec;
+                                    border-radius:14px;
+                                    padding:18px;
+                                ">
+
+                                    <div style="
+                                        color:#98a2b3;
+                                        font-size:9px;
+                                        font-weight:800;
+                                        letter-spacing:.12em;
+                                        margin-bottom:12px;
+                                    ">
+                                        RESOURCES
+                                    </div>
+
+                                    <div id="chemLabExperimentResources"></div>
+
+                                </section>
+
+
+                                <section style="
+                                    background:#ffffff;
+                                    border:1px solid #e4e7ec;
+                                    border-radius:14px;
+                                    padding:20px;
+                                    min-height:500px;
+                                ">
+
+                                    <div style="
+                                        display:flex;
+                                        justify-content:space-between;
+                                        align-items:center;
+                                        margin-bottom:20px;
+                                    ">
+
+                                        <div>
+
+                                            <div style="
+                                                color:#98a2b3;
+                                                font-size:9px;
+                                                font-weight:800;
+                                                letter-spacing:.12em;
+                                            ">
+                                                DIGITAL BENCH
+                                            </div>
+
+                                            <h2 style="
+                                                margin:5px 0 0;
+                                                color:#172033;
+                                                font-size:18px;
+                                            ">
+                                                Laboratory Workspace
+                                            </h2>
+
+                                        </div>
+
+                                        <span style="
+                                            color:#12b76a;
+                                            font-size:11px;
+                                            font-weight:700;
+                                        ">
+                                            ● READY
+                                        </span>
+
+                                    </div>
+
+
+                                    <div style="
+                                        min-height:360px;
+                                        border:1px solid #e4e7ec;
+                                        border-radius:12px;
+                                        background:#f8faff;
+                                        display:flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                        text-align:center;
+                                        padding:20px;
+                                    ">
+
+                                        <div>
+
+                                            <div style="
+                                                font-size:50px;
+                                                margin-bottom:14px;
+                                            ">
+                                                ⚗
+                                            </div>
+
+                                            <h3 style="
+                                                margin:0;
+                                                color:#172033;
+                                            ">
+                                                Experiment Ready
+                                            </h3>
+
+                                            <p style="
+                                                max-width:380px;
+                                                color:#667085;
+                                                font-size:12px;
+                                                line-height:1.6;
+                                                margin:8px auto 0;
+                                            ">
+                                                This is your digital experiment
+                                                bench. Interactive laboratory
+                                                actions will be added here as
+                                                the experiment engine develops.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div style="
+                                        display:flex;
+                                        gap:10px;
+                                        flex-wrap:wrap;
+                                        margin-top:16px;
+                                    ">
+
+                                        <button
+                                            type="button"
+                                            class="toolbar-button chem-modal-primary"
+                                            id="chemLabMeasureAction"
+                                        >
+                                            Measure
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="toolbar-button"
+                                            id="chemLabObserveAction"
+                                        >
+                                            Record Observation
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="toolbar-button"
+                                            id="chemLabActionButton"
+                                        >
+                                            Perform Digital Action
+                                        </button>
+
+                                    </div>
+
+                                </section>
+
+
+                                <section style="
+                                    background:#ffffff;
+                                    border:1px solid #e4e7ec;
+                                    border-radius:14px;
+                                    padding:18px;
+                                ">
+
+                                    <div style="
+                                        color:#98a2b3;
+                                        font-size:9px;
+                                        font-weight:800;
+                                        letter-spacing:.12em;
+                                        margin-bottom:12px;
+                                    ">
+                                        EXPERIMENT LOG
+                                    </div>
+
+                                    <div
+                                        id="chemLabExperimentLog"
+                                        style="
+                                            color:#667085;
+                                            font-size:12px;
+                                            line-height:1.7;
+                                        "
+                                    >
+                                        Experiment started.
+                                    </div>
+
+                                </section>
+
+                            </div>
+
+                        </main>
+
+                    </div>
+
+                </div>
+
+            `;
+
+            document.body.appendChild(workspace);
+
+        }
+
+
+        renderExperimentResources();
+
+        document.body.classList.add(
+            "experiment-workspace-open"
+        );
+
+
+        const exit =
+            document.querySelector(
+                "#chemLabExitExperiment"
+            );
+
+        if (exit) {
+
+            exit.onclick =
+                function () {
+
+                    workspace.remove();
+
+                    document.body.classList.remove(
+                        "experiment-workspace-open"
+                    );
+
+                };
+
+        }
+
+
+        setupExperimentActions();
+    }
+
+
+    function renderExperimentResources() {
+
+        const container =
+            document.querySelector(
+                "#chemLabExperimentResources"
+            );
+
+        if (!container) return;
+
+
+        const state = getLabState();
+
+
+        const chemicals =
+            Array.isArray(state.chemicals)
+                ? state.chemicals
+                : [];
+
+
+        const apparatus =
+            Array.isArray(state.apparatus)
+                ? state.apparatus
+                : [];
+
+
+        let html = "";
+
+
+        chemicals.forEach(function (item) {
+
+            html += `
+                <div style="
+                    padding:10px;
+                    background:#f8faff;
+                    border:1px solid #eef1f5;
+                    border-radius:9px;
+                    margin-bottom:8px;
+                ">
+                    <strong style="
+                        display:block;
+                        color:#172033;
+                        font-size:11px;
+                    ">
+                        ${item.name || item.label || item.id}
+                    </strong>
+
+                    <small style="
+                        color:#98a2b3;
+                        font-size:9px;
+                    ">
+                        ${item.formula || "Chemical"}
+                    </small>
+                </div>
+            `;
+
+        });
+
+
+        apparatus.forEach(function (item) {
+
+            html += `
+                <div style="
+                    padding:10px;
+                    background:#f8faff;
+                    border:1px solid #eef1f5;
+                    border-radius:9px;
+                    margin-bottom:8px;
+                ">
+                    <strong style="
+                        color:#172033;
+                        font-size:11px;
+                    ">
+                        ${item.name || item.label || item.id}
+                    </strong>
+                </div>
+            `;
+
+        });
+
+
+        container.innerHTML =
+            html ||
+            `
+                <p style="
+                    color:#98a2b3;
+                    font-size:11px;
+                ">
+                    No resources selected.
+                </p>
+            `;
+    }
+
+
+    function addExperimentLog(message) {
+
+        const log =
+            document.querySelector(
+                "#chemLabExperimentLog"
+            );
+
+        if (!log) return;
+
+
+        const item =
+            document.createElement("div");
+
+
+        item.style.cssText =
+            "padding:8px 0;border-bottom:1px solid #eef1f5;";
+
+
+        item.textContent =
+            new Date().toLocaleTimeString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            ) +
+            " — " +
+            message;
+
+
+        log.appendChild(item);
+
+    }
+
+
+    function setupExperimentActions() {
+
+        const measure =
+            document.querySelector(
+                "#chemLabMeasureAction"
+            );
+
+        const observe =
+            document.querySelector(
+                "#chemLabObserveAction"
+            );
+
+        const action =
+            document.querySelector(
+                "#chemLabActionButton"
+            );
+
+
+        if (measure) {
+
+            measure.onclick =
+                function () {
+
+                    const value =
+                        prompt(
+                            "Enter a simulated measurement value:"
+                        );
+
+                    if (
+                        value === null ||
+                        value.trim() === ""
+                    ) {
+                        return;
+                    }
+
+                    addExperimentLog(
+                        "Measurement recorded: " +
+                        value
+                    );
+
+                };
+
+        }
+
+
+        if (observe) {
+
+            observe.onclick =
+                function () {
+
+                    const observation =
+                        prompt(
+                            "Enter your observation:"
+                        );
+
+                    if (
+                        observation === null ||
+                        observation.trim() === ""
+                    ) {
+                        return;
+                    }
+
+                    addExperimentLog(
+                        "Observation recorded."
+                    );
+
+                };
+
+        }
+
+
+        if (action) {
+
+            action.onclick =
+                function () {
+
+                    addExperimentLog(
+                        "Digital laboratory action performed."
+                    );
+
+                };
+
+        }
+
+    }
+
+
+    function findBeginExperimentButton() {
+
+        const buttons =
+            document.querySelectorAll(
+                "button"
+            );
+
+
+        buttons.forEach(function (button) {
+
+            const text =
+                button.textContent
+                    .trim()
+                    .toLowerCase();
+
+
+            if (
+                text === "begin experiment"
+            ) {
+
+                button.setAttribute(
+                    "data-chemlab-begin-experiment",
+                    "true"
+                );
+
+            }
+
+        });
+
+    }
+
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    "[data-chemlab-begin-experiment]"
+                );
+
+
+            if (!button) return;
+
+
+            event.preventDefault();
+
+            beginExperiment();
+
+        }
+    );
+
+
+    function initialize() {
+
+        findBeginExperimentButton();
+
+
+        const appView =
+            document.querySelector(
+                "#appView"
+            );
+
+
+        if (appView) {
+
+            const observer =
+                new MutationObserver(
+                    function () {
+
+                        findBeginExperimentButton();
+
+                    }
+                );
+
+
+            observer.observe(
+                appView,
+                {
+                    childList: true,
+                    subtree: true
+                }
+            );
+
+        }
+
+    }
+
+
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initialize
+        );
+
+    } else {
+
+        initialize();
+
+    }
+
+})();
