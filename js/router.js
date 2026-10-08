@@ -1,7 +1,7 @@
 /* =========================================================
    CHEMLAB
    PROFESSIONAL ROUTER
-   Version 3.1
+   Version 3.2
    Stage 4.1 — Digital Laboratory Workspace
    ========================================================= */
 
@@ -181,7 +181,10 @@
                             Materials
                         </span>
 
-                        <strong id="labMaterialCount">
+                        <strong
+                            id="labMaterialCount"
+                            data-status="materials"
+                        >
                             0
                         </strong>
 
@@ -197,7 +200,10 @@
                             Apparatus
                         </span>
 
-                        <strong id="labApparatusCount">
+                        <strong
+                            id="labApparatusCount"
+                            data-status="apparatus"
+                        >
                             0
                         </strong>
 
@@ -668,6 +674,7 @@
                                 <button
                                     type="button"
                                     class="toolbar-button"
+                                    id="labResetView"
                                 >
                                     Reset View
                                 </button>
@@ -675,6 +682,7 @@
                                 <button
                                     type="button"
                                     class="toolbar-button laboratory-primary-button"
+                                    id="labBeginExperiment"
                                 >
                                     Begin Experiment
                                 </button>
@@ -707,7 +715,10 @@
 
                             </div>
 
-                            <span class="laboratory-panel-count">
+                            <span
+                                class="laboratory-panel-count"
+                                id="apparatusLibraryCount"
+                            >
                                 8
                             </span>
 
@@ -765,11 +776,17 @@
                         >
 
 
+                            <!-- =============================
+                                 BEAKER
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="beaker"
                                 data-apparatus-name="Beaker"
                                 data-apparatus-type="glassware"
+                                aria-label="Select Beaker"
                             >
 
                                 <span class="apparatus-icon">
@@ -795,11 +812,17 @@
                             </button>
 
 
+                            <!-- =============================
+                                 CONICAL FLASK
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="conical-flask"
                                 data-apparatus-name="Conical Flask"
                                 data-apparatus-type="glassware"
+                                aria-label="Select Conical Flask"
                             >
 
                                 <span class="apparatus-icon">
@@ -825,11 +848,17 @@
                             </button>
 
 
+                            <!-- =============================
+                                 TEST TUBE
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="test-tube"
                                 data-apparatus-name="Test Tube"
                                 data-apparatus-type="glassware"
+                                aria-label="Select Test Tube"
                             >
 
                                 <span class="apparatus-icon">
@@ -855,11 +884,17 @@
                             </button>
 
 
+                            <!-- =============================
+                                 BURETTE
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="burette"
                                 data-apparatus-name="Burette"
                                 data-apparatus-type="measurement"
+                                aria-label="Select Burette"
                             >
 
                                 <span class="apparatus-icon">
@@ -885,11 +920,17 @@
                             </button>
 
 
+                            <!-- =============================
+                                 PIPETTE
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="pipette"
                                 data-apparatus-name="Pipette"
                                 data-apparatus-type="measurement"
+                                aria-label="Select Pipette"
                             >
 
                                 <span class="apparatus-icon">
@@ -915,11 +956,17 @@
                             </button>
 
 
+                            <!-- =============================
+                                 MEASURING CYLINDER
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="measuring-cylinder"
                                 data-apparatus-name="Measuring Cylinder"
                                 data-apparatus-type="measurement"
+                                aria-label="Select Measuring Cylinder"
                             >
 
                                 <span class="apparatus-icon">
@@ -945,11 +992,17 @@
                             </button>
 
 
+                            <!-- =============================
+                                 ELECTRONIC BALANCE
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="electronic-balance"
                                 data-apparatus-name="Electronic Balance"
                                 data-apparatus-type="measurement"
+                                aria-label="Select Electronic Balance"
                             >
 
                                 <span class="apparatus-icon">
@@ -975,11 +1028,17 @@
                             </button>
 
 
+                            <!-- =============================
+                                 TRIPOD STAND
+                                 ============================= -->
+
                             <button
                                 type="button"
                                 class="laboratory-apparatus-card"
+                                data-apparatus-id="tripod-stand"
                                 data-apparatus-name="Tripod Stand"
-                                data-apparatus-type="glassware"
+                                data-apparatus-type="support"
+                                aria-label="Select Tripod Stand"
                             >
 
                                 <span class="apparatus-icon">
@@ -1003,6 +1062,7 @@
                                 </span>
 
                             </button>
+
 
                         </div>
 
