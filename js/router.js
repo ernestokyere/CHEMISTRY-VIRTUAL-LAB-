@@ -2004,56 +2004,35 @@ laboratory: `
            INITIALIZE
            ================================================= */
 
-        initialize: function () {
+      
+initialize() {
+    const appView = document.getElementById("appView");
 
-            const self = this;
+    if (!appView) {
+        console.error(
+            "ChemLab Router: #appView was not found."
+        );
+        return;
+    }
 
-            const appView =
-                document.querySelector("#appView");
+    // Preserve the original dashboard before rendering other pages.
+    this.dashboardHTML = appView.innerHTML;
 
+    // Prevent duplicate event listeners if initialization runs again.
+    if (!this.isInitialized) {
+        window.addEventListener(
+            "hashchange",
+            () => this.handleRouteChange()
+        );
 
-            /*
-             * Save the original dashboard
-             * BEFORE replacing its content.
-             */
+        this.isInitialized = true;
+    }
 
-            if (
-                appView &&
-                !this.dashboardHTML
-            ) {
+    // Render the page represented by the current URL.
+    this.handleRouteChange();
 
-                this.dashboardHTML =
-                    appView.innerHTML;
-            }
-
-
-            /*
-             * Listen for URL changes.
-             */
-
-            window.addEventListener(
-                "hashchange",
-                function () {
-
-                    self.handleRouteChange();
-
-                }
-            );
-
-
-            /*
-             * Handle initial page.
-             */
-
-            this.handleRouteChange();
-
-
-            console.log(
-                "ChemLab Router initialized."
-            );
-        }
-    };
-
+    console.log("ChemLab Router initialized.");
+}
 
     /* =====================================================
        GLOBAL ACCESS
