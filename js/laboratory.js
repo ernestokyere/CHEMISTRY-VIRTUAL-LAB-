@@ -1,7 +1,10 @@
 /* =====================================================
    CHEMLAB — DIGITAL LABORATORY WORKSPACE
-   Additive module: keeps the existing router intact.
+   White and blue tabbed interface.
+   Preserves the existing laboratory item IDs and
+   saved setup key.
    ===================================================== */
+
 (function () {
   "use strict";
 
@@ -27,9 +30,12 @@
     { id: "thermometer", name: "Thermometer", icon: "🌡" }
   ];
 
+  const STORAGE_KEY = "chemlab-lab-setup";
+
   let selectedChemicals = [];
   let selectedApparatus = [];
   let experimentStarted = false;
+  let activeTab = "chemicals";
 
   const escapeHTML = value =>
     String(value).replace(/[&<>"']/g, char => ({
@@ -39,6 +45,39 @@
       '"': "&quot;",
       "'": "&#39;"
     })[char]);
+
+  function restoreSavedSetup() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+
+      const saved = JSON.parse(raw);
+      if (!saved || typeof saved !== "object") return;
+
+      const validChemicalIds = new Set(chemicals.map(item => item.id));
+      const validApparatusIds = new Set(apparatus.map(item => item.id));
+
+      if (Array.isArray(saved.chemicals)) {
+        selectedChemicals = [...new Set(
+          saved.chemicals.filter(id =>
+            typeof id === "string" && validChemicalIds.has(id)
+          )
+        )];
+      }
+
+      if (Array.isArray(saved.apparatus)) {
+        selectedApparatus = [...new Set(
+          saved.apparatus.filter(id =>
+            typeof id === "string" && validApparatusIds.has(id)
+          )
+        )];
+      }
+    } catch (error) {
+      console.warn("ChemLab: Could not restore the saved laboratory setup.");
+    }
+  }
+
+  restoreSavedSetup();
 
   function renderCards(items, selected, kind) {
     if (!items.length) {
@@ -54,15 +93,16 @@
       return `
         <button type="button"
           class="cl-library-item ${active ? "is-selected" : ""}"
-          data-cl-add="${kind}" data-cl-id="${item.id}"
+          data-cl-add="${kind}"
+          data-cl-id="${escapeHTML(item.id)}"
           aria-pressed="${active}">
-          <span class="cl-item-icon">${kind === "chemical"
-            ? "⚗" : item.icon}</span>
+          <span class="cl-item-icon" aria-hidden="true">${kind === "chemical"
+            ? "⚗" : escapeHTML(item.icon)}</span>
           <span class="cl-item-copy">
             <strong>${escapeHTML(item.name)}</strong>
             <small>${escapeHTML(subtitle)}</small>
           </span>
-          <span class="cl-add-mark">${active ? "✓" : "+"}</span>
+          <span class="cl-add-mark" aria-hidden="true">${active ? "✓" : "+"}</span>
         </button>`;
     }).join("");
   }
@@ -70,7 +110,7 @@
   function renderBenchItems(items, kind) {
     if (!items.length) {
       return `<div class="cl-bench-empty">
-        <span>＋</span>
+        <span aria-hidden="true">＋</span>
         <strong>Your bench is empty</strong>
         <p>Select items from the libraries to build your workspace.</p>
       </div>`;
@@ -78,7 +118,8 @@
 
     return items.map(item => `
       <div class="cl-bench-item">
-        <span>${kind === "chemical" ? "⚗" : item.icon}</span>
+        <span aria-hidden="true">${kind === "chemical"
+          ? "⚗" : escapeHTML(item.icon)}</span>
         <div>
           <strong>${escapeHTML(item.name)}</strong>
           <small>${kind === "chemical"
@@ -86,7 +127,8 @@
             : "Apparatus"}</small>
         </div>
         <button type="button" class="cl-remove"
-          data-cl-remove="${kind}" data-cl-id="${item.id}"
+          data-cl-remove="${kind}"
+          data-cl-id="${escapeHTML(item.id)}"
           aria-label="Remove ${escapeHTML(item.name)}">×</button>
       </div>`).join("");
   }
@@ -99,344 +141,286 @@
     host.classList.add("route-view");
 
     host.innerHTML = `
-      <style>
-        .cl-lab {
-          padding: 24px;
-          max-width: 1500px;
-          margin: auto;
-          color: var(--text, #edf2ff);
-        }
-
-        .cl-lab * { box-sizing: border-box; }
-
-        .cl-lab-head {
-          display: flex;
-          justify-content: space-between;
-          gap: 16px;
-          align-items: flex-start;
-          flex-wrap: wrap;
-          margin-bottom: 22px;
-        }
-
-        .cl-lab h1 {
-          font-size: clamp(25px, 4vw, 34px);
-          margin: 5px 0 8px;
-        }
-
-        .cl-lab p {
-          color: var(--muted, #9eabc3);
-          line-height: 1.6;
-        }
-
-        .cl-lab .cl-eyebrow {
-          font-size: 11px;
-          letter-spacing: 1.5px;
-          color: #65c9df;
-          font-weight: 800;
-        }
-
-        .cl-status {
-          padding: 9px 12px;
-          border-radius: 20px;
-          background: #163c32;
-          color: #7ce5b5;
-          font-size: 12px;
-        }
-
-        .cl-lab-grid {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-          gap: 18px;
-          align-items: start;
-        }
-
-        .cl-panel {
-          min-width: 0;
-          border: 1px solid var(--border, #26334a);
-          background: var(--panel, #111b2c);
-          border-radius: 16px;
-          padding: 18px;
-          margin-bottom: 18px;
-        }
-
-        .cl-panel h2 { font-size: 17px; margin: 0 0 6px; }
-        .cl-panel-intro { font-size: 13px; margin: 0 0 15px; }
-
-        .cl-library-list { display: grid; gap: 8px; }
-
-        .cl-library-item {
-          display: flex;
-          align-items: center;
-          gap: 11px;
-          width: 100%;
-          text-align: left;
-          padding: 12px;
-          border: 1px solid var(--border, #26334a);
-          border-radius: 11px;
-          background: transparent;
-          color: inherit;
-          cursor: pointer;
-        }
-
-        .cl-library-item:hover,
-        .cl-library-item.is-selected {
-          border-color: #5b8cff;
-          background: rgba(91, 140, 255, .09);
-        }
-
-        .cl-item-icon {
-          width: 37px;
-          height: 37px;
-          display: grid;
-          place-items: center;
-          border-radius: 10px;
-          background: rgba(91, 140, 255, .12);
-          font-size: 19px;
-          flex-shrink: 0;
-        }
-
-        .cl-item-copy {
-          display: grid;
-          gap: 4px;
-          min-width: 0;
-          flex: 1;
-        }
-
-        .cl-item-copy strong,
-        .cl-bench-item strong { font-size: 13px; }
-
-        .cl-item-copy small,
-        .cl-bench-item small {
-          font-size: 11px;
-          color: var(--muted, #9eabc3);
-        }
-
-        .cl-add-mark { font-size: 19px; color: #76a0ff; }
-
-        .cl-search {
-          width: 100%;
-          padding: 11px 12px;
-          margin: 0 0 12px;
-          border: 1px solid var(--border, #26334a);
-          border-radius: 10px;
-          background: var(--bg, #080d18);
-          color: inherit;
-          font: inherit;
-        }
-
-        .cl-bench { min-height: 160px; display: grid; gap: 9px; }
-
-        .cl-bench-empty {
-          text-align: center;
-          padding: 22px 12px;
-          border: 1px dashed var(--border, #35435c);
-          border-radius: 12px;
-        }
-
-        .cl-bench-empty span { font-size: 26px; color: #7fa5ff; }
-        .cl-bench-empty strong { display: block; margin-top: 8px; }
-        .cl-bench-empty p { font-size: 12px; margin-bottom: 0; }
-
-        .cl-bench-item {
-          display: flex;
-          align-items: center;
-          gap: 11px;
-          padding: 12px;
-          border-radius: 10px;
-          background: var(--bg, #080d18);
-        }
-
-        .cl-bench-item > span { font-size: 20px; }
-
-        .cl-bench-item > div {
-          display: grid;
-          gap: 4px;
-          flex: 1;
-        }
-
-        .cl-remove {
-          border: 0;
-          background: transparent;
-          color: #ff8997;
-          font-size: 22px;
-          cursor: pointer;
-          padding: 4px 8px;
-        }
-
-        .cl-actions {
-          display: flex;
-          gap: 9px;
-          flex-wrap: wrap;
-          margin-top: 16px;
-        }
-
-        .cl-btn {
-          padding: 11px 14px;
-          border-radius: 10px;
-          border: 1px solid var(--border, #35435c);
-          background: transparent;
-          color: inherit;
-          cursor: pointer;
-          font: inherit;
-          font-size: 13px;
-        }
-
-        .cl-btn-primary {
-          background: #315edb;
-          border-color: #315edb;
-          color: white;
-        }
-
-        .cl-btn:disabled { opacity: .45; cursor: not-allowed; }
-
-        .cl-message {
-          margin-top: 13px;
-          padding: 12px;
-          border-radius: 10px;
-          background: rgba(91, 140, 255, .10);
-          font-size: 13px;
-        }
-
-        .cl-counts { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
-
-        .cl-count {
-          padding: 8px 11px;
-          border-radius: 9px;
-          background: var(--bg, #080d18);
-          font-size: 12px;
-        }
-
-        .cl-empty { font-size: 13px; }
-
-        @media (max-width: 760px) {
-          .cl-lab { padding: 14px; }
-          .cl-lab-grid { grid-template-columns: minmax(0, 1fr); }
-          .cl-panel { padding: 14px; }
-        }
-      </style>
-
       <div class="cl-lab">
         <header class="cl-lab-head">
           <div>
             <div class="cl-eyebrow">CHEMLAB · DIGITAL LABORATORY</div>
             <h1>Open Laboratory</h1>
-            <p>Build a virtual workspace by choosing chemicals and apparatus.</p>
+            <p class="cl-description">
+              Choose laboratory materials, assemble your workspace,
+              and prepare for a guided investigation.
+            </p>
           </div>
           <span class="cl-status" id="clStatus">● Workspace ready</span>
         </header>
 
-        <div class="cl-lab-grid">
-          <section>
-            <div class="cl-panel">
-              <h2>Chemical library</h2>
-              <p class="cl-panel-intro">Select a chemical to add it to your bench.</p>
-              <input class="cl-search" id="clChemicalSearch"
-                type="search" placeholder="Search chemicals..."
-                aria-label="Search chemicals">
-              <div class="cl-library-list" id="clChemicalList"></div>
+        <div class="cl-summary">
+          <div class="cl-summary-card">
+            <span class="cl-summary-icon" aria-hidden="true">⚗</span>
+            <div class="cl-summary-copy">
+              <span>Chemicals selected</span>
+              <strong id="clChemicalTotal">0</strong>
             </div>
-
-            <div class="cl-panel">
-              <h2>Apparatus library</h2>
-              <p class="cl-panel-intro">Choose equipment for your setup.</p>
-              <input class="cl-search" id="clApparatusSearch"
-                type="search" placeholder="Search apparatus..."
-                aria-label="Search apparatus">
-              <div class="cl-library-list" id="clApparatusList"></div>
+          </div>
+          <div class="cl-summary-card">
+            <span class="cl-summary-icon" aria-hidden="true">▥</span>
+            <div class="cl-summary-copy">
+              <span>Apparatus selected</span>
+              <strong id="clApparatusTotal">0</strong>
             </div>
-          </section>
-
-          <section>
-            <div class="cl-panel">
-              <h2>Digital laboratory bench</h2>
-              <p class="cl-panel-intro">Your selected materials appear here.</p>
-
-              <div class="cl-counts">
-                <span class="cl-count" id="clChemicalCount">Chemicals: 0</span>
-                <span class="cl-count" id="clApparatusCount">Apparatus: 0</span>
-              </div>
-
-              <h3 style="font-size:13px">Selected chemicals</h3>
-              <div class="cl-bench" id="clChemicalBench"></div>
-
-              <h3 style="font-size:13px;margin-top:22px">Selected apparatus</h3>
-              <div class="cl-bench" id="clApparatusBench"></div>
-
-              <div class="cl-actions">
-                <button class="cl-btn" id="clClear">Clear Workspace</button>
-                <button class="cl-btn" id="clReset">Reset View</button>
-                <button class="cl-btn" id="clSave">Save Setup</button>
-                <button class="cl-btn cl-btn-primary" id="clBegin">
-                  Begin Experiment
-                </button>
-              </div>
-
-              <div class="cl-message" id="clMessage" role="status" aria-live="polite">
-                Select materials to prepare your workspace.
-              </div>
-            </div>
-
-            <div class="cl-panel">
-              <h2>Experiment status</h2>
-              <p class="cl-panel-intro" id="clExperimentStatus">
-                No experiment started.
-              </p>
-              <p style="font-size:12px">
-                This workspace is a learning simulation. It does not perform
-                real chemical reactions or replace laboratory safety guidance.
-              </p>
-            </div>
-          </section>
+          </div>
         </div>
+
+        <nav class="cl-tabs" role="tablist" aria-label="Laboratory views">
+          <button type="button" class="cl-tab is-active"
+            id="clTabChemicals" role="tab"
+            aria-selected="true" aria-controls="clPanelChemicals"
+            data-cl-tab="chemicals">
+            <span aria-hidden="true">⚗</span>
+            Chemicals
+            <span class="cl-tab-count" id="clChemicalTabCount">0</span>
+          </button>
+
+          <button type="button" class="cl-tab"
+            id="clTabApparatus" role="tab"
+            aria-selected="false" aria-controls="clPanelApparatus"
+            tabindex="-1" data-cl-tab="apparatus">
+            <span aria-hidden="true">▥</span>
+            Apparatus
+            <span class="cl-tab-count" id="clApparatusTabCount">0</span>
+          </button>
+
+          <button type="button" class="cl-tab"
+            id="clTabWorkspace" role="tab"
+            aria-selected="false" aria-controls="clPanelWorkspace"
+            tabindex="-1" data-cl-tab="workspace">
+            <span aria-hidden="true">▦</span>
+            Workspace
+          </button>
+        </nav>
+
+        <section class="cl-tab-panel" id="clPanelChemicals"
+          role="tabpanel" aria-labelledby="clTabChemicals"
+          data-cl-panel="chemicals">
+          <div class="cl-panel">
+            <div class="cl-panel-heading">
+              <div>
+                <h2>Chemical library</h2>
+                <p class="cl-panel-intro">
+                  Select a chemical to add or remove it from your setup.
+                </p>
+              </div>
+            </div>
+            <div class="cl-search-wrap">
+              <input class="cl-search" id="clChemicalSearch"
+                type="search" placeholder="Search chemicals by name, formula, or type..."
+                aria-label="Search chemicals">
+            </div>
+            <div class="cl-library-list" id="clChemicalList"></div>
+          </div>
+          <div class="cl-actions">
+            <button type="button" class="cl-btn cl-btn-primary"
+              data-cl-go="apparatus">Continue to Apparatus →</button>
+          </div>
+        </section>
+
+        <section class="cl-tab-panel" id="clPanelApparatus"
+          role="tabpanel" aria-labelledby="clTabApparatus"
+          data-cl-panel="apparatus" hidden>
+          <div class="cl-panel">
+            <div class="cl-panel-heading">
+              <div>
+                <h2>Apparatus library</h2>
+                <p class="cl-panel-intro">
+                  Select the equipment for your laboratory setup.
+                </p>
+              </div>
+            </div>
+            <div class="cl-search-wrap">
+              <input class="cl-search" id="clApparatusSearch"
+                type="search" placeholder="Search laboratory apparatus..."
+                aria-label="Search apparatus">
+            </div>
+            <div class="cl-library-list" id="clApparatusList"></div>
+          </div>
+          <div class="cl-actions">
+            <button type="button" class="cl-btn"
+              data-cl-go="chemicals">← Back to Chemicals</button>
+            <button type="button" class="cl-btn cl-btn-primary"
+              data-cl-go="workspace">Review Workspace →</button>
+          </div>
+        </section>
+
+        <section class="cl-tab-panel" id="clPanelWorkspace"
+          role="tabpanel" aria-labelledby="clTabWorkspace"
+          data-cl-panel="workspace" hidden>
+          <div class="cl-panel">
+            <div class="cl-panel-heading">
+              <div>
+                <h2>Digital laboratory bench</h2>
+                <p class="cl-panel-intro">
+                  Review and manage the items selected for your setup.
+                </p>
+              </div>
+            </div>
+
+            <div class="cl-counts">
+              <div class="cl-count">
+                <span>Chemicals</span>
+                <strong id="clChemicalCount">0</strong>
+              </div>
+              <div class="cl-count">
+                <span>Apparatus</span>
+                <strong id="clApparatusCount">0</strong>
+              </div>
+            </div>
+
+            <h3>Selected chemicals</h3>
+            <div class="cl-bench" id="clChemicalBench"></div>
+
+            <h3>Selected apparatus</h3>
+            <div class="cl-bench" id="clApparatusBench"></div>
+
+            <div class="cl-actions">
+              <button type="button" class="cl-btn" id="clClear">
+                Clear Workspace
+              </button>
+              <button type="button" class="cl-btn" id="clReset">
+                Reset Searches
+              </button>
+              <button type="button" class="cl-btn" id="clSave">
+                Save Setup
+              </button>
+              <button type="button" class="cl-btn cl-btn-primary" id="clBegin">
+                Begin Experiment
+              </button>
+            </div>
+
+            <div class="cl-message" id="clMessage"
+              role="status" aria-live="polite">
+              Select materials to prepare your workspace.
+            </div>
+          </div>
+
+          <div class="cl-panel">
+            <div class="cl-panel-heading">
+              <div>
+                <h2>Experiment status</h2>
+                <p class="cl-panel-intro" id="clExperimentStatus">
+                  No experiment started.
+                </p>
+              </div>
+            </div>
+            <p class="cl-experiment-note">
+              This workspace is a learning simulation. Selecting materials
+              does not perform real chemical reactions. Follow appropriate
+              laboratory safety guidance for any real-world practical work.
+            </p>
+          </div>
+
+          <div class="cl-actions">
+            <button type="button" class="cl-btn"
+              data-cl-go="chemicals">← Back to Chemicals</button>
+            <button type="button" class="cl-btn"
+              data-cl-go="apparatus">← Back to Apparatus</button>
+          </div>
+        </section>
       </div>`;
 
+    setActiveTab(activeTab, false);
     updateLaboratory();
+  }
+
+  function setActiveTab(tab, focusTab) {
+    const allowed = ["chemicals", "apparatus", "workspace"];
+    if (!allowed.includes(tab)) return;
+
+    activeTab = tab;
+
+    document.querySelectorAll("[data-cl-tab]").forEach(button => {
+      const active = button.dataset.clTab === tab;
+
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-selected", String(active));
+      button.tabIndex = active ? 0 : -1;
+
+      if (active && focusTab) button.focus();
+    });
+
+    document.querySelectorAll("[data-cl-panel]").forEach(panel => {
+      panel.hidden = panel.dataset.clPanel !== tab;
+    });
   }
 
   function updateLaboratory() {
     const chemicalSearch = document.getElementById("clChemicalSearch");
     const apparatusSearch = document.getElementById("clApparatusSearch");
+
     if (!chemicalSearch || !apparatusSearch) return;
 
     const cq = chemicalSearch.value.trim().toLowerCase();
     const aq = apparatusSearch.value.trim().toLowerCase();
 
-    document.getElementById("clChemicalList").innerHTML = renderCards(
-      chemicals.filter(x =>
-        (x.name + x.formula + x.type).toLowerCase().includes(cq)
-      ),
-      selectedChemicals,
-      "chemical"
-    );
+    const chemicalList = document.getElementById("clChemicalList");
+    const apparatusList = document.getElementById("clApparatusList");
 
-    document.getElementById("clApparatusList").innerHTML = renderCards(
-      apparatus.filter(x =>
-        (x.name + " apparatus").toLowerCase().includes(aq)
-      ),
-      selectedApparatus,
-      "apparatus"
-    );
+    if (chemicalList) {
+      chemicalList.innerHTML = renderCards(
+        chemicals.filter(item =>
+          (item.name + item.formula + item.type).toLowerCase().includes(cq)
+        ),
+        selectedChemicals,
+        "chemical"
+      );
+    }
 
-    document.getElementById("clChemicalBench").innerHTML = renderBenchItems(
-      chemicals.filter(x => selectedChemicals.includes(x.id)),
-      "chemical"
-    );
+    if (apparatusList) {
+      apparatusList.innerHTML = renderCards(
+        apparatus.filter(item =>
+          (item.name + " apparatus").toLowerCase().includes(aq)
+        ),
+        selectedApparatus,
+        "apparatus"
+      );
+    }
 
-    document.getElementById("clApparatusBench").innerHTML = renderBenchItems(
-      apparatus.filter(x => selectedApparatus.includes(x.id)),
-      "apparatus"
-    );
+    const chemicalBench = document.getElementById("clChemicalBench");
+    const apparatusBench = document.getElementById("clApparatusBench");
 
-    document.getElementById("clChemicalCount").textContent =
-      "Chemicals: " + selectedChemicals.length;
+    if (chemicalBench) {
+      chemicalBench.innerHTML = renderBenchItems(
+        chemicals.filter(item => selectedChemicals.includes(item.id)),
+        "chemical"
+      );
+    }
 
-    document.getElementById("clApparatusCount").textContent =
-      "Apparatus: " + selectedApparatus.length;
+    if (apparatusBench) {
+      apparatusBench.innerHTML = renderBenchItems(
+        apparatus.filter(item => selectedApparatus.includes(item.id)),
+        "apparatus"
+      );
+    }
+
+    setText("clChemicalCount", selectedChemicals.length);
+    setText("clApparatusCount", selectedApparatus.length);
+    setText("clChemicalTotal", selectedChemicals.length);
+    setText("clApparatusTotal", selectedApparatus.length);
+    setText("clChemicalTabCount", selectedChemicals.length);
+    setText("clApparatusTabCount", selectedApparatus.length);
+  }
+
+  function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = String(value);
   }
 
   function message(text) {
     const box = document.getElementById("clMessage");
     if (box) box.textContent = text;
+  }
+
+  function setStatus(text) {
+    setText("clStatus", text);
   }
 
   function clearWorkspace() {
@@ -445,13 +429,8 @@
     experimentStarted = false;
 
     updateLaboratory();
-
-    const status = document.getElementById("clStatus");
-    const experimentStatus = document.getElementById("clExperimentStatus");
-
-    if (status) status.textContent = "● Workspace ready";
-    if (experimentStatus) experimentStatus.textContent = "No experiment started.";
-
+    setStatus("● Workspace ready");
+    setText("clExperimentStatus", "No experiment started.");
     message("Workspace cleared. Select items to build a new setup.");
   }
 
@@ -463,7 +442,7 @@
     if (apparatusSearch) apparatusSearch.value = "";
 
     updateLaboratory();
-    message("Library view reset. Your selected items have been kept.");
+    message("Searches reset. Your selected items have been kept.");
   }
 
   function saveSetup() {
@@ -474,8 +453,8 @@
     };
 
     try {
-      localStorage.setItem("chemlab-lab-setup", JSON.stringify(setup));
-      message("Setup saved on this device.");
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(setup));
+      message("Setup saved on this device. You can restore it after reloading.");
     } catch (error) {
       message("Could not save this setup in the browser.");
     }
@@ -488,16 +467,12 @@
     }
 
     experimentStarted = true;
+    setStatus("● Simulation active");
 
-    const status = document.getElementById("clStatus");
-    const experimentStatus = document.getElementById("clExperimentStatus");
-
-    if (status) status.textContent = "● Simulation active";
-
-    if (experimentStatus) {
-      experimentStatus.textContent =
-        "Workspace simulation started. No real chemical reaction has been simulated yet.";
-    }
+    setText(
+      "clExperimentStatus",
+      "Workspace simulation started. No chemical reaction or experimental result has been simulated."
+    );
 
     message("Your workspace is ready for the next guided-experiment stage.");
   }
@@ -511,12 +486,44 @@
     }
   });
 
+  document.addEventListener("keydown", event => {
+    const tab = event.target.closest("[data-cl-tab]");
+    if (!tab) return;
+
+    const tabs = ["chemicals", "apparatus", "workspace"];
+    const current = tabs.indexOf(tab.dataset.clTab);
+    let next = current;
+
+    if (event.key === "ArrowRight") {
+      next = (current + 1) % tabs.length;
+    } else if (event.key === "ArrowLeft") {
+      next = (current - 1 + tabs.length) % tabs.length;
+    } else if (event.key === "Home") {
+      next = 0;
+    } else if (event.key === "End") {
+      next = tabs.length - 1;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    setActiveTab(tabs[next], true);
+  });
+
   document.addEventListener("click", event => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
+    const tab = event.target.closest("[data-cl-tab]");
+    if (tab) {
+      setActiveTab(tab.dataset.clTab, false);
+      return;
+    }
 
-    const add = target.closest("[data-cl-add]");
+    const go = event.target.closest("[data-cl-go]");
+    if (go) {
+      setActiveTab(go.dataset.clGo, false);
+      return;
+    }
 
+    const add = event.target.closest("[data-cl-add]");
     if (add) {
       const id = add.dataset.clId;
       const list = add.dataset.clAdd === "chemical"
@@ -535,8 +542,7 @@
       return;
     }
 
-    const remove = target.closest("[data-cl-remove]");
-
+    const remove = event.target.closest("[data-cl-remove]");
     if (remove) {
       const list = remove.dataset.clRemove === "chemical"
         ? selectedChemicals
@@ -545,15 +551,16 @@
       const index = list.indexOf(remove.dataset.clId);
       if (index !== -1) list.splice(index, 1);
 
+      experimentStarted = false;
       updateLaboratory();
       message("Item removed from the bench.");
       return;
     }
 
-    if (target.closest("#clClear")) clearWorkspace();
-    if (target.closest("#clReset")) resetView();
-    if (target.closest("#clSave")) saveSetup();
-    if (target.closest("#clBegin")) beginExperiment();
+    if (event.target.closest("#clClear")) clearWorkspace();
+    if (event.target.closest("#clReset")) resetView();
+    if (event.target.closest("#clSave")) saveSetup();
+    if (event.target.closest("#clBegin")) beginExperiment();
   });
 
   function syncWithRoute() {
@@ -571,4 +578,21 @@
   } else {
     syncWithRoute();
   }
+
+  // Public interface for optional future laboratory modules.
+  window.ChemLabDigitalLaboratory = {
+    getState() {
+      return {
+        chemicals: [...selectedChemicals],
+        apparatus: [...selectedApparatus],
+        experimentStarted,
+        activeTab
+      };
+    },
+    openTab(tab) {
+      setActiveTab(tab, false);
+    },
+    render: renderLaboratory
+  };
 })();
+
