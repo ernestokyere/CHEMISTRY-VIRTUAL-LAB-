@@ -1,25 +1,26 @@
 /* ============================================================
    CHEMLAB — APPLICATION CORE
-   Version 4.0
+   Version 4.1
    Compatible with js/router.js Version 5.1
 
    Includes:
    - Application initialization
    - Existing router integration
    - Mobile navigation
-   - Search
-   - Notifications
+   - Search and notifications
    - Modal and toast systems
    - Chemical and apparatus libraries
+   - Visible Add to Bench buttons
    - Persistent laboratory workspace
    - Experiment workspace and activity log
    - Save, clear and restore setup
+   - Responsive laboratory library styling
    ============================================================ */
 
 (function () {
   "use strict";
 
-  if (window.ChemLab && window.ChemLab.__appV4Loaded) {
+  if (window.ChemLab && window.ChemLab.__appV41Loaded) {
     console.warn("ChemLab application is already initialized.");
     return;
   }
@@ -29,6 +30,10 @@
     experiments: "chemlab-experiment-records",
     notifications: "chemlab-notifications"
   };
+
+  /* ==========================================================
+     CHEMICAL LIBRARY
+     ========================================================== */
 
   const CHEMICALS = [
     {
@@ -97,6 +102,10 @@
     }
   ];
 
+  /* ==========================================================
+     APPARATUS LIBRARY
+     ========================================================== */
+
   const APPARATUS = [
     {
       id: "beaker",
@@ -155,12 +164,19 @@
     savedAt: null
   };
 
+  /* ==========================================================
+     GENERAL UTILITIES
+     ========================================================== */
+
   function readStorage(key, fallback) {
     try {
       const value = localStorage.getItem(key);
       return value ? JSON.parse(value) : fallback;
     } catch (error) {
-      console.warn("ChemLab: Could not read local storage.", error);
+      console.warn(
+        "ChemLab: Could not read local storage.",
+        error
+      );
       return fallback;
     }
   }
@@ -170,7 +186,10 @@
       localStorage.setItem(key, JSON.stringify(value));
       return true;
     } catch (error) {
-      console.warn("ChemLab: Could not save local data.", error);
+      console.warn(
+        "ChemLab: Could not save local data.",
+        error
+      );
       return false;
     }
   }
@@ -189,7 +208,9 @@
   }
 
   function getElements(selector, root) {
-    return Array.from((root || document).querySelectorAll(selector));
+    return Array.from(
+      (root || document).querySelectorAll(selector)
+    );
   }
 
   /* ==========================================================
@@ -198,7 +219,7 @@
 
   const ChemLab = window.ChemLab || {};
 
-  ChemLab.__appV4Loaded = true;
+  ChemLab.__appV41Loaded = true;
 
   ChemLab.showToast = function (message, type) {
     let container = getElement("#chemlabToastContainer");
@@ -221,6 +242,7 @@
     }
 
     const toast = document.createElement("div");
+
     const colors = {
       success: "#18875d",
       error: "#bd354b",
@@ -280,7 +302,10 @@
     dialog.className = "chemlab-modal-dialog";
     dialog.setAttribute("role", "dialog");
     dialog.setAttribute("aria-modal", "true");
-    dialog.setAttribute("aria-labelledby", "chemlabModalTitle");
+    dialog.setAttribute(
+      "aria-labelledby",
+      "chemlabModalTitle"
+    );
 
     Object.assign(dialog.style, {
       width: "min(620px, 100%)",
@@ -302,14 +327,17 @@
             style="margin:0;font-size:21px">
           ${escapeHTML(title)}
         </h2>
+
         <button type="button"
                 data-modal-close
                 aria-label="Close dialog"
-                style="font-size:24px;border:0;background:transparent;
+                style="font-size:24px;border:0;
+                       background:transparent;
                        color:inherit;cursor:pointer">
           ×
         </button>
       </div>
+
       <div class="chemlab-modal-content">${content}</div>
     `;
 
@@ -317,13 +345,19 @@
     document.body.appendChild(overlay);
 
     overlay.addEventListener("click", function (event) {
-      if (event.target === overlay ||
-          event.target.closest("[data-modal-close]")) {
+      if (
+        event.target === overlay ||
+        event.target.closest("[data-modal-close]")
+      ) {
         closeModal();
       }
     });
 
-    const firstInput = getElement("input, textarea, button", dialog);
+    const firstInput = getElement(
+      "input, textarea, button",
+      dialog
+    );
+
     if (firstInput) firstInput.focus();
 
     return overlay;
@@ -345,7 +379,9 @@
       return;
     }
 
-    const authModal = getElement("#authModal, .auth-modal");
+    const authModal = getElement(
+      "#authModal, .auth-modal"
+    );
 
     if (authModal) {
       authModal.classList.add("open", "active");
@@ -382,7 +418,10 @@
       sidebar.classList.toggle("mobile-open", opening);
       sidebar.classList.toggle("open", opening);
 
-      menuButton.setAttribute("aria-expanded", String(opening));
+      menuButton.setAttribute(
+        "aria-expanded",
+        String(opening)
+      );
     });
 
     document.addEventListener("click", function (event) {
@@ -405,11 +444,11 @@
   }
 
   /* ==========================================================
-     SEARCH
+     GLOBAL SEARCH
      ========================================================== */
 
   function getSearchableItems() {
-    const routes = [
+    return [
       ["Dashboard", "dashboard", "Your ChemLab home page"],
       ["Laboratory", "laboratory", "Chemicals and apparatus"],
       ["Experiments", "experiments", "Guided investigations"],
@@ -422,36 +461,45 @@
       ["ChemLab Premium", "premium", "Advanced features"],
       ["Settings", "settings", "Workspace preferences"]
     ];
-
-    return routes;
   }
 
   function openSearch() {
     ChemLab.showModal(
       "Search ChemLab",
       `
-        <label for="chemlabGlobalSearch">Search pages and tools</label>
+        <label for="chemlabGlobalSearch">
+          Search pages and tools
+        </label>
+
         <input id="chemlabGlobalSearch"
                type="search"
                placeholder="Try Laboratory, notebook, or assessments..."
                autocomplete="off"
-               style="display:block;width:100%;box-sizing:border-box;
-                      margin:10px 0 16px;padding:13px;border-radius:10px;
+               style="display:block;width:100%;
+                      box-sizing:border-box;margin:10px 0 16px;
+                      padding:13px;border-radius:10px;
                       border:1px solid var(--border,#334155);
-                      background:var(--bg,#080d18);color:inherit">
-        <div id="chemlabSearchResults" aria-live="polite"></div>
+                      background:var(--bg,#080d18);
+                      color:inherit">
+
+        <div id="chemlabSearchResults"
+             aria-live="polite"></div>
       `
     );
 
     const input = getElement("#chemlabGlobalSearch");
     const results = getElement("#chemlabSearchResults");
 
+    if (!input || !results) return;
+
     function renderResults() {
       const query = input.value.trim().toLowerCase();
 
       const matches = getSearchableItems().filter(function (item) {
         return !query ||
-          (item[0] + " " + item[2]).toLowerCase().includes(query);
+          (item[0] + " " + item[2])
+            .toLowerCase()
+            .includes(query);
       });
 
       results.innerHTML = matches.length
@@ -459,29 +507,39 @@
             return `
               <button type="button"
                       data-search-route="${escapeHTML(item[1])}"
-                      style="display:block;width:100%;text-align:left;
-                             padding:12px;margin:5px 0;border-radius:10px;
+                      style="display:block;width:100%;
+                             text-align:left;padding:12px;
+                             margin:5px 0;border-radius:10px;
                              border:1px solid var(--border,#334155);
-                             background:transparent;color:inherit;cursor:pointer">
+                             background:transparent;color:inherit;
+                             cursor:pointer">
                 <strong>${escapeHTML(item[0])}</strong>
-                <div style="font-size:12px;opacity:.7;margin-top:4px">
+
+                <div style="font-size:12px;opacity:.7;
+                            margin-top:4px">
                   ${escapeHTML(item[2])}
                 </div>
               </button>
             `;
           }).join("")
-        : '<p>No matching pages found.</p>';
+        : "<p>No matching pages found.</p>";
     }
 
     input.addEventListener("input", renderResults);
 
     results.addEventListener("click", function (event) {
-      const button = event.target.closest("[data-search-route]");
+      const button = event.target.closest(
+        "[data-search-route]"
+      );
+
       if (!button) return;
 
       const route = button.dataset.searchRoute;
 
-      if (window.ChemLabRouter) {
+      if (
+        window.ChemLabRouter &&
+        typeof window.ChemLabRouter.navigate === "function"
+      ) {
         window.ChemLabRouter.navigate(route);
       } else {
         window.location.hash = "#" + route;
@@ -507,13 +565,17 @@
     });
 
     document.addEventListener("keydown", function (event) {
-      const tag = event.target && event.target.tagName;
+      const target = event.target;
+      const tag = target && target.tagName;
+
       const typing = tag === "INPUT" ||
         tag === "TEXTAREA" ||
-        event.target.isContentEditable;
+        Boolean(target && target.isContentEditable);
 
-      if ((event.ctrlKey || event.metaKey) &&
-          event.key.toLowerCase() === "k") {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "k"
+      ) {
         event.preventDefault();
         openSearch();
       } else if (event.key === "/" && !typing) {
@@ -557,11 +619,16 @@
           ? notifications.map(function (item) {
               return `
                 <article style="padding:12px 0;
-                                border-bottom:1px solid var(--border,#334155)">
-                  <strong>${escapeHTML(item.title || "Notification")}</strong>
+                                border-bottom:1px solid
+                                var(--border,#334155)">
+                  <strong>
+                    ${escapeHTML(item.title || "Notification")}
+                  </strong>
+
                   <p style="margin:6px 0">
                     ${escapeHTML(item.message || "")}
                   </p>
+
                   <small style="opacity:.7">
                     ${escapeHTML(item.time || "")}
                   </small>
@@ -587,7 +654,7 @@
   }
 
   /* ==========================================================
-     GENERAL MODALS AND AUTHENTICATION CONNECTION
+     GENERAL MODALS AND AUTHENTICATION
      ========================================================== */
 
   function setupGeneralActions() {
@@ -605,7 +672,10 @@
         if (action === "signin" || action === "login") {
           event.preventDefault();
           ChemLab.openSignIn("login");
-        } else if (action === "signup" || action === "register") {
+        } else if (
+          action === "signup" ||
+          action === "register"
+        ) {
           event.preventDefault();
           ChemLab.openSignIn("signup");
         }
@@ -651,21 +721,31 @@
 
     return {
       chemicals: Array.isArray(state.chemicals)
-        ? Array.from(new Set(state.chemicals.map(function (id) {
-            if (id === "balance") return "electronic-balance";
-            return id;
-          }))).filter(function (id) {
+        ? Array.from(
+            new Set(
+              state.chemicals.map(function (id) {
+                return id;
+              })
+            )
+          ).filter(function (id) {
             return validChemicalIds.includes(id);
           })
         : [],
+
       apparatus: Array.isArray(state.apparatus)
-        ? Array.from(new Set(state.apparatus.map(function (id) {
-            if (id === "balance") return "electronic-balance";
-            return id;
-          }))).filter(function (id) {
+        ? Array.from(
+            new Set(
+              state.apparatus.map(function (id) {
+                return id === "balance"
+                  ? "electronic-balance"
+                  : id;
+              })
+            )
+          ).filter(function (id) {
             return validApparatusIds.includes(id);
           })
         : [],
+
       savedAt: state.savedAt || null
     };
   }
@@ -675,7 +755,7 @@
   );
 
   function persistLaboratoryState() {
-    writeStorage(STORAGE.laboratory, laboratoryState);
+    return writeStorage(STORAGE.laboratory, laboratoryState);
   }
 
   function getChemical(id) {
@@ -691,12 +771,18 @@
     });
   }
 
+  /* ==========================================================
+     CHEMICAL LIBRARY RENDERING
+     ========================================================== */
+
   function renderChemicalLibrary() {
     const list = getElement(".laboratory-library-list");
     if (!list) return;
 
     const search = getElement("#labChemicalSearch");
-    const query = search ? search.value.trim().toLowerCase() : "";
+    const query = search
+      ? search.value.trim().toLowerCase()
+      : "";
 
     const filtered = CHEMICALS.filter(function (chemical) {
       return (
@@ -716,27 +802,33 @@
     }
 
     list.innerHTML = filtered.map(function (chemical) {
-      const selected = laboratoryState.chemicals.includes(chemical.id);
+      const selected = laboratoryState.chemicals.includes(
+        chemical.id
+      );
 
       return `
-        <article class="laboratory-chemical-card
-                        ${selected ? "selected" : ""}"
-                 data-chemical-card="${escapeHTML(chemical.id)}"
-                 style="--chemical-color:${escapeHTML(chemical.color)}">
+        <article
+          class="laboratory-chemical-card ${selected ? "selected" : ""}"
+          data-chemical-card="${escapeHTML(chemical.id)}"
+          style="--chemical-color:${escapeHTML(chemical.color)}">
+
           <div class="chemical-card-main">
             <span class="chemical-formula">
               ${escapeHTML(chemical.formula)}
             </span>
+
             <div class="chemical-card-details">
               <strong>${escapeHTML(chemical.name)}</strong>
               <span>${escapeHTML(chemical.category)}</span>
               <small>${escapeHTML(chemical.description)}</small>
             </div>
           </div>
-          <button type="button"
-                  class="button ${selected ? "button-secondary" : "button-primary"}"
-                  data-toggle-chemical="${escapeHTML(chemical.id)}"
-                  aria-pressed="${selected}">
+
+          <button
+            type="button"
+            class="button ${selected ? "button-secondary" : "button-primary"}"
+            data-toggle-chemical="${escapeHTML(chemical.id)}"
+            aria-pressed="${selected}">
             ${selected ? "Remove" : "Add"}
           </button>
         </article>
@@ -744,74 +836,91 @@
     }).join("");
   }
 
-function renderApparatusLibrary() {
-  const container = getElement(".laboratory-apparatus-library");
-  if (!container) return;
+  /* ==========================================================
+     APPARATUS LIBRARY RENDERING — FIXED
+     Every apparatus has a visible Add to Bench button.
+     ========================================================== */
 
-  APPARATUS.forEach(function (apparatus) {
-    let card = container.querySelector(
-      '[data-apparatus-id="' + apparatus.id + '"]'
+  function renderApparatusLibrary() {
+    const container = getElement(
+      ".laboratory-apparatus-library"
     );
 
-    if (!card && apparatus.aliases) {
-      card = container.querySelector(
-        '[data-apparatus-id="' + apparatus.aliases[0] + '"]'
+    if (!container) return;
+
+    APPARATUS.forEach(function (apparatus) {
+      let card = container.querySelector(
+        '[data-apparatus-id="' + apparatus.id + '"]'
       );
-    }
 
-    if (!card) {
-      card = document.createElement("article");
-      container.appendChild(card);
-    }
-
-    const selected = laboratoryState.apparatus.includes(
-      apparatus.id
-    );
-
-    card.className = "laboratory-apparatus-card";
-    card.dataset.apparatusId = apparatus.id;
-    card.removeAttribute("role");
-    card.removeAttribute("tabindex");
-
-    card.classList.toggle("selected", selected);
-
-    card.innerHTML = `
-      <div class="apparatus-card-icon">
-        ${escapeHTML(apparatus.symbol)}
-      </div>
-
-      <div class="apparatus-card-info">
-        <strong>${escapeHTML(apparatus.name)}</strong>
-        <p>${escapeHTML(apparatus.description)}</p>
-      </div>
-
-      <button
-        type="button"
-        class="apparatus-add-button ${
-          selected ? "is-selected" : ""
-        }"
-        data-toggle-apparatus="${escapeHTML(apparatus.id)}"
-        aria-pressed="${selected}">
-        ${selected ? "✓ Added" : "+ Add to Bench"}
-      </button>
-    `;
-  });
-}
-
-    getElements(".laboratory-apparatus-card", container).forEach(
-      function (card) {
-        const id = card.dataset.apparatusId;
-        const item = getApparatus(id);
-
-        if (!item) return;
-
-        const selected = laboratoryState.apparatus.includes(item.id);
-
-        card.classList.toggle("selected", selected);
-        card.setAttribute("aria-pressed", String(selected));
+      // Support the older "balance" identifier.
+      if (!card && apparatus.aliases) {
+        card = container.querySelector(
+          '[data-apparatus-id="' + apparatus.aliases[0] + '"]'
+        );
       }
-    );
+
+      // Create the card if the router did not provide one.
+      if (!card) {
+        card = document.createElement("article");
+        container.appendChild(card);
+      }
+
+      const selected = laboratoryState.apparatus.includes(
+        apparatus.id
+      );
+
+      card.className = "laboratory-apparatus-card";
+      card.dataset.apparatusId = apparatus.id;
+
+      // The button handles interaction; the card itself
+      // must not behave like a second button.
+      card.removeAttribute("role");
+      card.removeAttribute("tabindex");
+      card.removeAttribute("aria-pressed");
+
+      card.classList.toggle("selected", selected);
+
+      card.innerHTML = `
+        <div class="apparatus-card-icon" aria-hidden="true">
+          ${escapeHTML(apparatus.symbol)}
+        </div>
+
+        <div class="apparatus-card-info">
+          <strong>${escapeHTML(apparatus.name)}</strong>
+          <p>${escapeHTML(apparatus.description)}</p>
+        </div>
+
+        <button
+          type="button"
+          class="apparatus-add-button ${selected ? "is-selected" : ""}"
+          data-toggle-apparatus="${escapeHTML(apparatus.id)}"
+          aria-pressed="${selected}">
+          ${selected ? "✓ Added" : "+ Add to Bench"}
+        </button>
+      `;
+    });
+
+    // Remove obsolete/duplicate apparatus cards.
+    getElements(
+      ".laboratory-apparatus-card",
+      container
+    ).forEach(function (card) {
+      const item = getApparatus(card.dataset.apparatusId);
+
+      if (!item) {
+        card.remove();
+        return;
+      }
+
+      // Normalize old aliases and identifiers.
+      card.dataset.apparatusId = item.id;
+    });
   }
+
+  /* ==========================================================
+     DIGITAL LAB BENCH
+     ========================================================== */
 
   function renderBench() {
     const bench = getElement(".digital-lab-bench");
@@ -825,11 +934,16 @@ function renderApparatusLibrary() {
       .map(getApparatus)
       .filter(Boolean);
 
-    if (!selectedChemicals.length && !selectedApparatus.length) {
+    if (
+      !selectedChemicals.length &&
+      !selectedApparatus.length
+    ) {
       bench.innerHTML = `
         <div class="laboratory-bench-placeholder">
           <span class="bench-placeholder-icon">⚗</span>
+
           <h3>Your laboratory bench is ready</h3>
+
           <p>
             Select chemicals and apparatus from the libraries
             to prepare your workspace.
@@ -841,17 +955,23 @@ function renderApparatusLibrary() {
 
     bench.innerHTML = `
       <div class="laboratory-bench-items">
+
         ${selectedApparatus.map(function (item) {
           return `
-            <div class="bench-apparatus-item"
-                 data-bench-apparatus="${escapeHTML(item.id)}">
+            <div
+              class="bench-apparatus-item"
+              data-bench-apparatus="${escapeHTML(item.id)}">
+
               <span class="apparatus-symbol">
                 ${escapeHTML(item.symbol)}
               </span>
+
               <strong>${escapeHTML(item.name)}</strong>
-              <button type="button"
-                      data-remove-apparatus="${escapeHTML(item.id)}"
-                      aria-label="Remove ${escapeHTML(item.name)}">
+
+              <button
+                type="button"
+                data-remove-apparatus="${escapeHTML(item.id)}"
+                aria-label="Remove ${escapeHTML(item.name)}">
                 Remove
               </button>
             </div>
@@ -860,23 +980,33 @@ function renderApparatusLibrary() {
 
         ${selectedChemicals.map(function (item) {
           return `
-            <div class="bench-chemical-item"
-                 data-bench-chemical="${escapeHTML(item.id)}">
+            <div
+              class="bench-chemical-item"
+              data-bench-chemical="${escapeHTML(item.id)}">
+
               <span class="chemical-formula">
                 ${escapeHTML(item.formula)}
               </span>
+
               <strong>${escapeHTML(item.name)}</strong>
-              <button type="button"
-                      data-remove-chemical="${escapeHTML(item.id)}"
-                      aria-label="Remove ${escapeHTML(item.name)}">
+
+              <button
+                type="button"
+                data-remove-chemical="${escapeHTML(item.id)}"
+                aria-label="Remove ${escapeHTML(item.name)}">
                 Remove
               </button>
             </div>
           `;
         }).join("")}
+
       </div>
     `;
   }
+
+  /* ==========================================================
+     SELECTION SUMMARY
+     ========================================================== */
 
   function renderSelectionSummary() {
     const summary = getElement(".selection-summary-list");
@@ -890,7 +1020,10 @@ function renderApparatusLibrary() {
       .map(getApparatus)
       .filter(Boolean);
 
-    if (!selectedChemicals.length && !selectedApparatus.length) {
+    if (
+      !selectedChemicals.length &&
+      !selectedApparatus.length
+    ) {
       summary.innerHTML = `
         <p>No materials or apparatus selected yet.</p>
       `;
@@ -900,23 +1033,36 @@ function renderApparatusLibrary() {
     summary.innerHTML = `
       <div class="selection-summary-group">
         <strong>Chemicals (${selectedChemicals.length})</strong>
+
         <ul>
           ${selectedChemicals.map(function (item) {
-            return `<li>${escapeHTML(item.name)}
-              (${escapeHTML(item.formula)})</li>`;
+            return `
+              <li>
+                ${escapeHTML(item.name)}
+                (${escapeHTML(item.formula)})
+              </li>
+            `;
           }).join("") || "<li>None selected</li>"}
         </ul>
       </div>
+
       <div class="selection-summary-group">
         <strong>Apparatus (${selectedApparatus.length})</strong>
+
         <ul>
           ${selectedApparatus.map(function (item) {
-            return `<li>${escapeHTML(item.name)}</li>`;
+            return `
+              <li>${escapeHTML(item.name)}</li>
+            `;
           }).join("") || "<li>None selected</li>"}
         </ul>
       </div>
     `;
   }
+
+  /* ==========================================================
+     LABORATORY STATE RENDERING
+     ========================================================== */
 
   function renderLaboratoryState() {
     const view = getElement(".laboratory-view");
@@ -927,16 +1073,24 @@ function renderApparatusLibrary() {
     renderBench();
     renderSelectionSummary();
 
-    const chemicalCount = getElement("[data-lab-material-count]");
-    const apparatusCount = getElement("[data-lab-apparatus-count]");
+    const chemicalCount = getElement(
+      "[data-lab-material-count]"
+    );
+
+    const apparatusCount = getElement(
+      "[data-lab-apparatus-count]"
+    );
+
     const status = getElement("[data-lab-status]");
 
     if (chemicalCount) {
-      chemicalCount.textContent = laboratoryState.chemicals.length;
+      chemicalCount.textContent =
+        laboratoryState.chemicals.length;
     }
 
     if (apparatusCount) {
-      apparatusCount.textContent = laboratoryState.apparatus.length;
+      apparatusCount.textContent =
+        laboratoryState.apparatus.length;
     }
 
     if (status) {
@@ -969,6 +1123,10 @@ function renderApparatusLibrary() {
       );
     }
   }
+
+  /* ==========================================================
+     LABORATORY ACTIONS
+     ========================================================== */
 
   function toggleChemical(id) {
     if (!getChemical(id)) return;
@@ -1013,7 +1171,10 @@ function renderApparatusLibrary() {
     persistLaboratoryState();
     renderLaboratoryState();
 
-    ChemLab.showToast("Laboratory workspace cleared.", "success");
+    ChemLab.showToast(
+      "Laboratory workspace cleared.",
+      "success"
+    );
   }
 
   function saveLaboratory() {
@@ -1086,54 +1247,77 @@ function renderApparatusLibrary() {
       "Experiment Workspace",
       `
         <p>
-          Record your observations and measurements for this
+          Record observations and measurements for this
           digital learning activity.
         </p>
 
         <div style="padding:12px;border-radius:10px;
-                    background:rgba(49,87,213,.12);margin:12px 0">
+                    background:rgba(49,87,213,.12);
+                    margin:12px 0">
+
           <strong>Investigation materials</strong>
-          <p>${chemicals.map(function (item) {
-            return escapeHTML(item.name) + " (" +
-              escapeHTML(item.formula) + ")";
-          }).join(", ") || "No chemicals selected"}</p>
+
+          <p>
+            ${chemicals.map(function (item) {
+              return escapeHTML(item.name) + " (" +
+                escapeHTML(item.formula) + ")";
+            }).join(", ") || "No chemicals selected"}
+          </p>
 
           <strong>Apparatus</strong>
-          <p>${apparatus.map(function (item) {
-            return escapeHTML(item.name);
-          }).join(", ") || "No apparatus selected"}</p>
+
+          <p>
+            ${apparatus.map(function (item) {
+              return escapeHTML(item.name);
+            }).join(", ") || "No apparatus selected"}
+          </p>
         </div>
 
         <form id="chemlabObservationForm">
-          <label for="chemlabObservation">Observation</label>
-          <textarea id="chemlabObservation"
-                    name="observation"
-                    rows="3"
-                    required
-                    placeholder="Describe what you observed..."
-                    style="display:block;box-sizing:border-box;width:100%;
-                           margin:8px 0 14px;padding:12px;border-radius:10px;
-                           background:var(--bg,#080d18);color:inherit;
-                           border:1px solid var(--border,#334155)"></textarea>
+          <label for="chemlabObservation">
+            Observation
+          </label>
 
-          <label for="chemlabMeasurement">Measurement (optional)</label>
-          <input id="chemlabMeasurement"
-                 name="measurement"
-                 placeholder="e.g. 25 mL or 28 °C"
-                 style="display:block;box-sizing:border-box;width:100%;
-                        margin:8px 0 14px;padding:12px;border-radius:10px;
-                        background:var(--bg,#080d18);color:inherit;
-                        border:1px solid var(--border,#334155)">
+          <textarea
+            id="chemlabObservation"
+            name="observation"
+            rows="3"
+            required
+            placeholder="Describe what you observed..."
+            style="display:block;box-sizing:border-box;
+                   width:100%;margin:8px 0 14px;
+                   padding:12px;border-radius:10px;
+                   background:var(--bg,#080d18);
+                   color:inherit;
+                   border:1px solid var(--border,#334155)">
+          </textarea>
 
-          <button type="submit"
-                  class="button button-primary"
-                  style="padding:11px 16px;cursor:pointer">
+          <label for="chemlabMeasurement">
+            Measurement (optional)
+          </label>
+
+          <input
+            id="chemlabMeasurement"
+            name="measurement"
+            placeholder="e.g. 25 mL or 28 °C"
+            style="display:block;box-sizing:border-box;
+                   width:100%;margin:8px 0 14px;
+                   padding:12px;border-radius:10px;
+                   background:var(--bg,#080d18);
+                   color:inherit;
+                   border:1px solid var(--border,#334155)">
+
+          <button
+            type="submit"
+            class="button button-primary"
+            style="padding:11px 16px;cursor:pointer">
             Record Entry
           </button>
         </form>
 
         <div style="margin-top:20px">
           <h3>Experiment log</h3>
+
           <div id="chemlabExperimentLog">
             ${renderExperimentLog()}
           </div>
@@ -1141,15 +1325,17 @@ function renderApparatusLibrary() {
 
         <div style="margin-top:18px">
           <p style="font-size:12px;opacity:.8">
-            Educational simulation only. This workspace does not
-            simulate chemical reactions or certify experimental safety.
-            Do not use it as instructions for handling hazardous chemicals.
+            Educational workspace only. This does not simulate
+            chemical reactions or certify experimental safety.
+            Do not use it as instructions for handling hazardous
+            chemicals.
           </p>
 
-          <button type="button"
-                  id="chemlabFinishExperiment"
-                  class="button button-secondary"
-                  style="padding:11px 16px;cursor:pointer">
+          <button
+            type="button"
+            id="chemlabFinishExperiment"
+            class="button button-secondary"
+            style="padding:11px 16px;cursor:pointer">
             Finish and Save Record
           </button>
         </div>
@@ -1157,45 +1343,67 @@ function renderApparatusLibrary() {
     );
 
     const form = getElement("#chemlabObservationForm");
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      const observation = getElement("#chemlabObservation").value.trim();
-      const measurement = getElement("#chemlabMeasurement").value.trim();
-
-      if (!observation) {
-        ChemLab.showToast(
-          "Enter an observation before recording the entry.",
-          "warning"
-        );
-        return;
-      }
-
-      activeExperiment.observations.push({
-        text: observation,
-        time: new Date().toISOString()
-      });
-
-      if (measurement) {
-        activeExperiment.measurements.push({
-          value: measurement,
-          time: new Date().toISOString()
-        });
-      }
-
-      renderExperimentModal();
-      ChemLab.showToast("Experiment entry recorded.", "success");
-    });
-
-    getElement("#chemlabFinishExperiment").addEventListener(
-      "click",
-      finishExperiment
+    const finishButton = getElement(
+      "#chemlabFinishExperiment"
     );
+
+    if (form) {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        if (!activeExperiment) return;
+
+        const observation = getElement(
+          "#chemlabObservation"
+        ).value.trim();
+
+        const measurement = getElement(
+          "#chemlabMeasurement"
+        ).value.trim();
+
+        if (!observation) {
+          ChemLab.showToast(
+            "Enter an observation before recording the entry.",
+            "warning"
+          );
+          return;
+        }
+
+        const now = new Date().toISOString();
+
+        activeExperiment.observations.push({
+          text: observation,
+          time: now
+        });
+
+        if (measurement) {
+          activeExperiment.measurements.push({
+            value: measurement,
+            time: now
+          });
+        }
+
+        renderExperimentModal();
+
+        ChemLab.showToast(
+          "Experiment entry recorded.",
+          "success"
+        );
+      });
+    }
+
+    if (finishButton) {
+      finishButton.addEventListener(
+        "click",
+        finishExperiment
+      );
+    }
   }
 
   function renderExperimentLog() {
-    if (!activeExperiment) return "<p>No entries yet.</p>";
+    if (!activeExperiment) {
+      return "<p>No entries yet.</p>";
+    }
 
     const entries = [];
 
@@ -1219,16 +1427,23 @@ function renderApparatusLibrary() {
       return a.time.localeCompare(b.time);
     });
 
-    if (!entries.length) return "<p>No entries recorded yet.</p>";
+    if (!entries.length) {
+      return "<p>No entries recorded yet.</p>";
+    }
 
     return entries.map(function (item) {
       return `
         <article style="padding:10px 0;
-                        border-bottom:1px solid var(--border,#334155)">
+                        border-bottom:1px solid
+                        var(--border,#334155)">
           <strong>${escapeHTML(item.label)}</strong>
+
           <p>${escapeHTML(item.value)}</p>
+
           <small style="opacity:.7">
-            ${escapeHTML(new Date(item.time).toLocaleString())}
+            ${escapeHTML(
+              new Date(item.time).toLocaleString()
+            )}
           </small>
         </article>
       `;
@@ -1262,11 +1477,13 @@ function renderApparatusLibrary() {
   }
 
   /* ==========================================================
-     LABORATORY EVENT DELEGATION
+     LABORATORY EVENT DELEGATION — FIXED
      ========================================================== */
 
   function setupLaboratoryEvents() {
-    if (document.documentElement.dataset.labEventsReady) return;
+    if (document.documentElement.dataset.labEventsReady) {
+      return;
+    }
 
     document.documentElement.dataset.labEventsReady = "true";
 
@@ -1277,37 +1494,34 @@ function renderApparatusLibrary() {
     });
 
     document.addEventListener("click", function (event) {
+      // Apparatus Add/Remove button.
+      // Handle this before any other apparatus action.
+      const apparatusButton = event.target.closest(
+        "[data-toggle-apparatus]"
+      );
+
+      if (apparatusButton) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        toggleApparatus(
+          apparatusButton.dataset.toggleApparatus
+        );
+
+        return;
+      }
+
       const chemicalButton = event.target.closest(
         "[data-toggle-chemical]"
       );
 
       if (chemicalButton) {
-        toggleChemical(chemicalButton.dataset.toggleChemical);
-        return;
-      }
+        event.preventDefault();
 
-       
-const apparatusButton = event.target.closest(
-  "[data-toggle-apparatus]"
-);
+        toggleChemical(
+          chemicalButton.dataset.toggleChemical
+        );
 
-if (apparatusButton) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  toggleApparatus(
-    apparatusButton.dataset.toggleApparatus
-  );
-
-  return;
-}
-
-      const apparatusCard = event.target.closest(
-        ".laboratory-apparatus-card[data-apparatus-id]"
-      );
-
-      if (apparatusCard) {
-        toggleApparatus(apparatusCard.dataset.apparatusId);
         return;
       }
 
@@ -1316,7 +1530,10 @@ if (apparatusButton) {
       );
 
       if (removeChemical) {
-        toggleChemical(removeChemical.dataset.removeChemical);
+        toggleChemical(
+          removeChemical.dataset.removeChemical
+        );
+
         return;
       }
 
@@ -1325,43 +1542,209 @@ if (apparatusButton) {
       );
 
       if (removeApparatus) {
-        toggleApparatus(removeApparatus.dataset.removeApparatus);
+        toggleApparatus(
+          removeApparatus.dataset.removeApparatus
+        );
+
         return;
       }
 
-      const clearButton = event.target.closest("#labClearWorkspace");
+      const clearButton = event.target.closest(
+        "#labClearWorkspace"
+      );
 
       if (clearButton) {
         clearLaboratory();
         return;
       }
 
-      const saveButton = event.target.closest("#labSaveSetup");
+      const saveButton = event.target.closest(
+        "#labSaveSetup"
+      );
 
       if (saveButton) {
         saveLaboratory();
         return;
       }
 
-      const beginButton = event.target.closest("#labBeginExperiment");
+      const beginButton = event.target.closest(
+        "#labBeginExperiment"
+      );
 
       if (beginButton) {
         startExperiment();
       }
     });
 
-    document.addEventListener("keydown", function (event) {
-      const card = event.target.closest(
-        ".laboratory-apparatus-card[data-apparatus-id]"
-      );
+    // No card-level Enter/Space handler is required:
+    // the Add to Bench button is a native accessible button.
+  }
 
-      if (!card || (event.key !== "Enter" && event.key !== " ")) {
-        return;
+  /* ==========================================================
+     LABORATORY STYLES
+     ========================================================== */
+
+  function injectLaboratoryStyles() {
+    if (getElement("#chemlabLaboratoryAppStyles")) return;
+
+    const style = document.createElement("style");
+    style.id = "chemlabLaboratoryAppStyles";
+
+    style.textContent = `
+      .laboratory-apparatus-library {
+        display: grid;
+        grid-template-columns:
+          repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 14px;
+        align-items: stretch;
       }
 
-      event.preventDefault();
-      toggleApparatus(card.dataset.apparatusId);
-    });
+      .laboratory-apparatus-card {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 10px 12px;
+        align-content: start;
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--border, #29364d);
+        border-radius: 14px;
+        background: var(--panel, #111b2c);
+        color: var(--text, #f4f7ff);
+        transition:
+          border-color .18s ease,
+          background .18s ease,
+          transform .18s ease;
+      }
+
+      .laboratory-apparatus-card:hover {
+        border-color: var(--primary, #5b8cff);
+        transform: translateY(-2px);
+      }
+
+      .laboratory-apparatus-card.selected {
+        border-color: var(--primary, #5b8cff);
+        background:
+          color-mix(
+            in srgb,
+            var(--primary, #5b8cff) 10%,
+            var(--panel, #111b2c)
+          );
+      }
+
+      .apparatus-card-icon {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(91, 140, 255, .13);
+        color: var(--primary, #5b8cff);
+        font-size: 27px;
+        grid-row: span 2;
+      }
+
+      .apparatus-card-info {
+        min-width: 0;
+        align-self: center;
+      }
+
+      .apparatus-card-info strong {
+        display: block;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+      }
+
+      .apparatus-card-info p {
+        margin: 5px 0 0;
+        font-size: 13px;
+        line-height: 1.5;
+        opacity: .75;
+        overflow-wrap: anywhere;
+      }
+
+      .apparatus-add-button {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 40px;
+        padding: 10px 12px;
+        border: 1px solid var(--primary, #5b8cff);
+        border-radius: 9px;
+        background: var(--primary, #5b8cff);
+        color: #fff;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          background .18s ease,
+          border-color .18s ease,
+          opacity .18s ease;
+      }
+
+      .apparatus-add-button:hover {
+        opacity: .9;
+      }
+
+      .apparatus-add-button:focus-visible {
+        outline: 3px solid var(--cyan, #47d7e8);
+        outline-offset: 3px;
+      }
+
+      .apparatus-add-button.is-selected {
+        background: transparent;
+        border-color: var(--success, #4cdb9a);
+        color: var(--success, #4cdb9a);
+      }
+
+      .laboratory-bench-items {
+        display: grid;
+        grid-template-columns:
+          repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        gap: 12px;
+      }
+
+      .bench-apparatus-item,
+      .bench-chemical-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        padding: 12px;
+        border: 1px solid var(--border, #29364d);
+        border-radius: 12px;
+        background: var(--panel, #111b2c);
+      }
+
+      .bench-apparatus-item strong,
+      .bench-chemical-item strong {
+        flex: 1 1 90px;
+        overflow-wrap: anywhere;
+      }
+
+      .bench-apparatus-item button,
+      .bench-chemical-item button {
+        padding: 7px 10px;
+        border: 1px solid var(--border, #29364d);
+        border-radius: 8px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+      }
+
+      @media (max-width: 480px) {
+        .laboratory-apparatus-card {
+          padding: 12px;
+        }
+
+        .apparatus-card-icon {
+          width: 42px;
+          height: 42px;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
   }
 
   /* ==========================================================
@@ -1369,14 +1752,19 @@ if (apparatusButton) {
      ========================================================== */
 
   function onRouteRendered(event) {
-    if (!event.detail) return;
-
-    if (event.detail.route === "laboratory") {
-      renderLaboratoryState();
+    if (
+      !event.detail ||
+      event.detail.route !== "laboratory"
+    ) {
+      return;
     }
+
+    renderLaboratoryState();
   }
 
   function initialize() {
+    injectLaboratoryStyles();
+
     setupMobileMenu();
     setupSearch();
     setupNotifications();
@@ -1399,7 +1787,9 @@ if (apparatusButton) {
       window.ChemLabRouter.initialize();
     }
 
-    console.log("ChemLab application core initialized.");
+    console.log(
+      "ChemLab application core Version 4.1 initialized."
+    );
   }
 
   /* ==========================================================
@@ -1408,15 +1798,21 @@ if (apparatusButton) {
 
   window.ChemLabLaboratory = {
     getState: function () {
-      return JSON.parse(JSON.stringify(laboratoryState));
+      return JSON.parse(
+        JSON.stringify(laboratoryState)
+      );
     },
 
     getChemicals: function () {
-      return CHEMICALS.slice();
+      return CHEMICALS.map(function (item) {
+        return Object.assign({}, item);
+      });
     },
 
     getApparatus: function () {
-      return APPARATUS.slice();
+      return APPARATUS.map(function (item) {
+        return Object.assign({}, item);
+      });
     },
 
     getExperimentRecords: function () {
@@ -1435,9 +1831,11 @@ if (apparatusButton) {
   window.ChemLab = ChemLab;
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initialize, {
-      once: true
-    });
+    document.addEventListener(
+      "DOMContentLoaded",
+      initialize,
+      { once: true }
+    );
   } else {
     initialize();
   }
