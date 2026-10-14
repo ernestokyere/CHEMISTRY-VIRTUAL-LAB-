@@ -744,42 +744,59 @@
     }).join("");
   }
 
-  function renderApparatusLibrary() {
-    const container = getElement(".laboratory-apparatus-library");
-    if (!container) return;
+function renderApparatusLibrary() {
+  const container = getElement(".laboratory-apparatus-library");
+  if (!container) return;
 
-    APPARATUS.forEach(function (apparatus) {
-      const selected = laboratoryState.apparatus.includes(apparatus.id);
+  APPARATUS.forEach(function (apparatus) {
+    let card = container.querySelector(
+      '[data-apparatus-id="' + apparatus.id + '"]'
+    );
 
-      let card = container.querySelector(
-        '[data-apparatus-id="' + apparatus.id + '"]'
+    if (!card && apparatus.aliases) {
+      card = container.querySelector(
+        '[data-apparatus-id="' + apparatus.aliases[0] + '"]'
       );
+    }
 
-      if (!card && apparatus.aliases) {
-        card = container.querySelector(
-          '[data-apparatus-id="' + apparatus.aliases[0] + '"]'
-        );
-      }
+    if (!card) {
+      card = document.createElement("article");
+      container.appendChild(card);
+    }
 
-      if (!card) {
-        card = document.createElement("div");
-        card.className = "laboratory-apparatus-card";
-        card.dataset.apparatusId = apparatus.id;
-        card.tabIndex = 0;
-        card.setAttribute("role", "button");
-        container.appendChild(card);
-      }
+    const selected = laboratoryState.apparatus.includes(
+      apparatus.id
+    );
 
-      card.dataset.apparatusId = apparatus.id;
-      card.classList.toggle("selected", selected);
-      card.setAttribute("aria-pressed", String(selected));
+    card.className = "laboratory-apparatus-card";
+    card.dataset.apparatusId = apparatus.id;
+    card.removeAttribute("role");
+    card.removeAttribute("tabindex");
 
-      card.innerHTML = `
-        <span class="apparatus-symbol">${escapeHTML(apparatus.symbol)}</span>
+    card.classList.toggle("selected", selected);
+
+    card.innerHTML = `
+      <div class="apparatus-card-icon">
+        ${escapeHTML(apparatus.symbol)}
+      </div>
+
+      <div class="apparatus-card-info">
         <strong>${escapeHTML(apparatus.name)}</strong>
-        <span>${escapeHTML(apparatus.description)}</span>
-      `;
-    });
+        <p>${escapeHTML(apparatus.description)}</p>
+      </div>
+
+      <button
+        type="button"
+        class="apparatus-add-button ${
+          selected ? "is-selected" : ""
+        }"
+        data-toggle-apparatus="${escapeHTML(apparatus.id)}"
+        aria-pressed="${selected}">
+        ${selected ? "✓ Added" : "+ Add to Bench"}
+      </button>
+    `;
+  });
+}
 
     getElements(".laboratory-apparatus-card", container).forEach(
       function (card) {
@@ -1268,6 +1285,22 @@
         toggleChemical(chemicalButton.dataset.toggleChemical);
         return;
       }
+
+       
+const apparatusButton = event.target.closest(
+  "[data-toggle-apparatus]"
+);
+
+if (apparatusButton) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  toggleApparatus(
+    apparatusButton.dataset.toggleApparatus
+  );
+
+  return;
+}
 
       const apparatusCard = event.target.closest(
         ".laboratory-apparatus-card[data-apparatus-id]"
