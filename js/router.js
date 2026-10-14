@@ -1,101 +1,151 @@
 
-/* =====================================================
-   CHEMLAB — ROUTER RECOVERY
-   Version 4.0
-   ===================================================== */
+/* =========================================================
+   CHEMLAB — APPLICATION ROUTER
+   Version 5.0
+   Hash navigation, direct links, back/forward support
+   ========================================================= */
 
 (function () {
   "use strict";
 
   const ROUTES = {
-    dashboard: "Dashboard",
-    laboratory: "Laboratory",
-    experiments: "Experiments",
-    analysis: "Scientific Analysis",
-    academy: "Chemistry Academy",
-    "ai-tutor": "AI Chemistry Tutor",
-    assessments: "Assessments",
-    notebook: "Lab Notebook",
-    progress: "My Progress",
-    premium: "ChemLab Premium",
-    settings: "Settings"
-  };
-
-  const pageDescriptions = {
-    laboratory: "Prepare your workspace and explore laboratory equipment.",
-    experiments: "Explore guided experiments and design your own investigations.",
-    analysis: "Organize measurements and analyze scientific data.",
-    academy: "Study chemistry concepts, lessons, and scientific principles.",
-    "ai-tutor": "Get help understanding chemistry concepts and calculations.",
-    assessments: "Test your understanding of chemistry.",
-    notebook: "Record observations, measurements, and conclusions.",
-    progress: "Review your learning progress and completed activities.",
-    premium: "Explore advanced ChemLab learning features.",
-    settings: "Manage your ChemLab preferences."
+    dashboard: {
+      title: "Dashboard",
+      description: "Your chemistry learning workspace."
+    },
+    laboratory: {
+      title: "Laboratory",
+      description: "Explore the virtual laboratory workspace."
+    },
+    experiments: {
+      title: "Experiments",
+      description: "Explore guided investigations and experimental procedures."
+    },
+    analysis: {
+      title: "Scientific Analysis",
+      description: "Organize measurements and interpret scientific data."
+    },
+    academy: {
+      title: "Chemistry Academy",
+      description: "Study chemistry concepts, lessons, and principles."
+    },
+    "ai-tutor": {
+      title: "AI Chemistry Tutor",
+      description: "Get help understanding chemistry concepts and calculations."
+    },
+    assessments: {
+      title: "Assessments",
+      description: "Check your chemistry knowledge and understanding."
+    },
+    notebook: {
+      title: "Lab Notebook",
+      description: "Record experimental methods, observations, and conclusions."
+    },
+    progress: {
+      title: "My Progress",
+      description: "Review your learning activities and progress."
+    },
+    premium: {
+      title: "ChemLab Premium",
+      description: "Explore advanced learning tools and features."
+    },
+    settings: {
+      title: "Settings",
+      description: "Manage your ChemLab workspace preferences."
+    }
   };
 
   const Router = {
     dashboardHTML: "",
     initialized: false,
+    dashboardCaptured: false,
 
     getRoute() {
-      const route = window.location.hash
+      const rawHash = window.location.hash
         .replace(/^#\/?/, "")
         .trim()
         .toLowerCase();
 
-      return Object.prototype.hasOwnProperty.call(ROUTES, route)
-        ? route
+      if (!rawHash) return "dashboard";
+
+      return Object.prototype.hasOwnProperty.call(ROUTES, rawHash)
+        ? rawHash
         : "dashboard";
     },
 
     navigate(route) {
       if (!Object.prototype.hasOwnProperty.call(ROUTES, route)) {
-        console.error("ChemLab: Unknown route:", route);
+        console.error("ChemLab Router: Unknown route:", route);
         return;
       }
 
-      if (this.getRoute() === route) {
-        this.renderView(route);
-      } else {
-        window.location.hash = route;
+      const targetHash = "#" + route;
+
+      if (window.location.hash === targetHash) {
+        this.render(route);
+        return;
       }
+
+      window.location.hash = targetHash;
     },
 
-    updateNavigation(route) {
-      document.querySelectorAll(
-        '.navigation-item, .navigation-item a, [data-route]'
-      ).forEach((element) => {
-        const href = element.getAttribute("href") || "";
-        const dataRoute = element.getAttribute("data-route") || "";
-        const active =
-          href === "#" + route || dataRoute === route;
-
-        element.classList.toggle("active", active);
-
-        if (element.matches("a")) {
-          if (active) {
-            element.setAttribute("aria-current", "page");
-          } else {
-            element.removeAttribute("aria-current");
-          }
-        }
-      });
-    },
-
-    renderView(route) {
+    captureDashboard() {
       const appView = document.getElementById("appView");
 
       if (!appView) {
         console.error(
-          "ChemLab Router: Element #appView is missing from index.html."
+          "ChemLab Router: #appView was not found in index.html."
+        );
+        return false;
+      }
+
+      if (!this.dashboardCaptured) {
+        this.dashboardHTML = appView.innerHTML;
+        this.dashboardCaptured = true;
+      }
+
+      return true;
+    },
+
+    updateNavigation(route) {
+      document.querySelectorAll(".navigation-item").forEach((link) => {
+        const href = link.getAttribute("href") || "";
+        const active = href === "#" + route;
+
+        link.classList.toggle("active", active);
+
+        if (active) {
+          link.setAttribute("aria-current", "page");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    },
+
+    updateTitle(route) {
+      const page = ROUTES[route];
+      const titleElement = document.getElementById("pageTitle");
+
+      if (titleElement) {
+        titleElement.textContent = page.title;
+      }
+
+      document.title = page.title + " | ChemLab";
+    },
+
+    render(route) {
+      const appView = document.getElementById("appView");
+
+      if (!appView) {
+        console.error(
+          "ChemLab Router: Cannot render because #appView is missing."
         );
         return;
       }
 
       if (route === "dashboard") {
-        if (!this.dashboardHTML) {
-          console.error("ChemLab Router: Dashboard template is missing.");
+        if (!this.dashboardCaptured) {
+          console.error("ChemLab Router: Dashboard was not captured.");
           return;
         }
 
@@ -103,105 +153,120 @@
         appView.classList.add("dashboard");
         appView.classList.remove("route-view");
       } else {
+        const page = ROUTES[route];
+
         appView.classList.remove("dashboard");
         appView.classList.add("route-view");
 
         appView.innerHTML = `
-          <section class="page-content">
+          <div class="page-content">
             <header class="page-header">
-              <p class="eyebrow">CHEMLAB WORKSPACE</p>
-              <h1>${ROUTES[route]}</h1>
-              <p>${pageDescriptions[route] || "Explore ChemLab."}</p>
+              <div class="eyebrow">
+                <span class="status-dot"></span>
+                CHEMLAB WORKSPACE
+              </div>
+
+              <h1>${page.title}</h1>
+              <p>${page.description}</p>
             </header>
 
-            <div class="panel">
-              <h2>${ROUTES[route]}</h2>
-              <p>${pageDescriptions[route] || ""}</p>
-              <p class="page-status">
-                Workspace loaded successfully. Detailed features
-                will be connected in the next development steps.
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <div class="eyebrow">WORKSPACE STATUS</div>
+                  <h2>${page.title}</h2>
+                </div>
+                <span class="panel-icon" aria-hidden="true">⚗</span>
+              </div>
+
+              <p>
+                This page is connected to ChemLab navigation.
+                Its full features will be implemented in the
+                corresponding development stage.
               </p>
-              <button type="button"
-                      class="button button-primary"
-                      data-router-home>
-                Return to Dashboard
+
+              <p class="page-status">
+                Navigation test passed: the ${page.title} page
+                has been rendered.
+              </p>
+
+              <button
+                type="button"
+                class="button button-primary"
+                data-router-home
+              >
+                ← Return to Dashboard
               </button>
-            </div>
-          </section>
+            </section>
+          </div>
         `;
-
-        const homeButton = appView.querySelector("[data-router-home]");
-
-        if (homeButton) {
-          homeButton.addEventListener("click", () => {
-            this.navigate("dashboard");
-          });
-        }
       }
 
       this.updateNavigation(route);
+      this.updateTitle(route);
 
-      const title = document.getElementById("pageTitle");
-      if (title) {
-        title.textContent = ROUTES[route];
-      }
-
-      document.title = ROUTES[route] + " | ChemLab";
-
-      console.log("ChemLab: Rendered route:", route);
+      console.log("ChemLab Router: Rendered", route);
     },
 
     handleRouteChange() {
       const route = this.getRoute();
-      this.renderView(route);
+      this.render(route);
     },
 
     initialize() {
-      const appView = document.getElementById("appView");
+      if (!this.captureDashboard()) return;
 
-      if (!appView) {
-        console.error("ChemLab: #appView was not found.");
+      if (this.initialized) {
+        this.handleRouteChange();
         return;
       }
 
-      // Capture the dashboard only once, before replacing its content.
-      if (!this.dashboardHTML) {
-        this.dashboardHTML = appView.innerHTML;
-      }
+      window.addEventListener("hashchange", () => {
+        this.handleRouteChange();
+      });
 
-      if (!this.initialized) {
-        window.addEventListener("hashchange", () => {
-          this.handleRouteChange();
-        });
+      // Handle navigation links and the dashboard's home button.
+      document.addEventListener("click", (event) => {
+        const homeButton = event.target.closest("[data-router-home]");
 
-        // Support clicks on normal hash navigation links.
-        document.addEventListener("click", (event) => {
-          const link = event.target.closest('a[href^="#"]');
+        if (homeButton) {
+          event.preventDefault();
+          this.navigate("dashboard");
+          return;
+        }
 
-          if (!link) return;
+        const link = event.target.closest(
+          'a.navigation-item, a.quick-action, a.button, a.brand, a.premium-link, a.text-link'
+        );
 
-          const route = link.getAttribute("href").slice(1);
+        if (!link) return;
 
-          if (Object.prototype.hasOwnProperty.call(ROUTES, route)) {
-            event.preventDefault();
-            this.navigate(route);
-          }
-        });
+        const href = link.getAttribute("href") || "";
 
-        this.initialized = true;
-      }
+        if (!href.startsWith("#")) return;
 
+        const route = href.slice(1).replace(/^\/+/, "").toLowerCase();
+
+        if (!Object.prototype.hasOwnProperty.call(ROUTES, route)) {
+          return;
+        }
+
+        event.preventDefault();
+        this.navigate(route);
+      });
+
+      this.initialized = true;
       this.handleRouteChange();
-      console.log("ChemLab: Router ready.");
+
+      console.log("ChemLab Router: Initialized successfully.");
     }
   };
 
+  // Make the router available to app.js and other scripts.
   window.ChemLabRouter = Router;
 
   function startRouter() {
-    if (window.ChemLabRouter) {
-      window.ChemLabRouter.initialize();
-    }
+    window.ChemLabRouter.initialize();
   }
 
   if (document.readyState === "loading") {
