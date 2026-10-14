@@ -1,4 +1,3 @@
-
 /* =====================================================
    CHEMLAB — DIGITAL LABORATORY WORKSPACE
    Additive module: keeps the existing router intact.
@@ -101,68 +100,218 @@
 
     host.innerHTML = `
       <style>
-        .cl-lab{padding:24px;max-width:1500px;margin:auto;color:var(--text,#edf2ff)}
-        .cl-lab *{box-sizing:border-box}
-        .cl-lab-head{display:flex;justify-content:space-between;gap:16px;
-          align-items:flex-start;flex-wrap:wrap;margin-bottom:22px}
-        .cl-lab h1{font-size:clamp(25px,4vw,34px);margin:5px 0 8px}
-        .cl-lab p{color:var(--muted,#9eabc3);line-height:1.6}
-        .cl-lab .cl-eyebrow{font-size:11px;letter-spacing:1.5px;
-          color:#65c9df;font-weight:800}
-        .cl-status{padding:9px 12px;border-radius:20px;
-          background:#163c32;color:#7ce5b5;font-size:12px}
-        .cl-lab-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-          gap:18px;align-items:start}
-        .cl-panel{min-width:0;border:1px solid var(--border,#26334a);
-          background:var(--panel,#111b2c);border-radius:16px;padding:18px;
-          margin-bottom:18px}
-        .cl-panel h2{font-size:17px;margin:0 0 6px}
-        .cl-panel-intro{font-size:13px;margin:0 0 15px}
-        .cl-library-list{display:grid;gap:8px}
-        .cl-library-item{display:flex;align-items:center;gap:11px;width:100%;
-          text-align:left;padding:12px;border:1px solid var(--border,#26334a);
-          border-radius:11px;background:transparent;color:inherit;cursor:pointer}
-        .cl-library-item:hover,.cl-library-item.is-selected{
-          border-color:#5b8cff;background:rgba(91,140,255,.09)}
-        .cl-item-icon{width:37px;height:37px;display:grid;place-items:center;
-          border-radius:10px;background:rgba(91,140,255,.12);font-size:19px;
-          flex-shrink:0}
-        .cl-item-copy{display:grid;gap:4px;min-width:0;flex:1}
-        .cl-item-copy strong,.cl-bench-item strong{font-size:13px}
-        .cl-item-copy small,.cl-bench-item small{font-size:11px;
-          color:var(--muted,#9eabc3)}
-        .cl-add-mark{font-size:19px;color:#76a0ff}
-        .cl-search{width:100%;padding:11px 12px;margin:0 0 12px;
-          border:1px solid var(--border,#26334a);border-radius:10px;
-          background:var(--bg,#080d18);color:inherit;font:inherit}
-        .cl-bench{min-height:160px;display:grid;gap:9px}
-        .cl-bench-empty{text-align:center;padding:22px 12px;
-          border:1px dashed var(--border,#35435c);border-radius:12px}
-        .cl-bench-empty span{font-size:26px;color:#7fa5ff}
-        .cl-bench-empty strong{display:block;margin-top:8px}
-        .cl-bench-empty p{font-size:12px;margin-bottom:0}
-        .cl-bench-item{display:flex;align-items:center;gap:11px;padding:12px;
-          border-radius:10px;background:var(--bg,#080d18)}
-        .cl-bench-item>span{font-size:20px}
-        .cl-bench-item>div{display:grid;gap:4px;flex:1}
-        .cl-remove{border:0;background:transparent;color:#ff8997;
-          font-size:22px;cursor:pointer;padding:4px 8px}
-        .cl-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
-        .cl-btn{padding:11px 14px;border-radius:10px;border:1px solid
-          var(--border,#35435c);background:transparent;color:inherit;
-          cursor:pointer;font:inherit;font-size:13px}
-        .cl-btn-primary{background:#315edb;border-color:#315edb;color:white}
-        .cl-btn:disabled{opacity:.45;cursor:not-allowed}
-        .cl-message{margin-top:13px;padding:12px;border-radius:10px;
-          background:rgba(91,140,255,.10);font-size:13px}
-        .cl-counts{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-        .cl-count{padding:8px 11px;border-radius:9px;
-          background:var(--bg,#080d18);font-size:12px}
-        .cl-empty{font-size:13px}
-        @media(max-width:760px){
-          .cl-lab{padding:14px}
-          .cl-lab-grid{grid-template-columns:minmax(0,1fr)}
-          .cl-panel{padding:14px}
+        .cl-lab {
+          padding: 24px;
+          max-width: 1500px;
+          margin: auto;
+          color: var(--text, #edf2ff);
+        }
+
+        .cl-lab * { box-sizing: border-box; }
+
+        .cl-lab-head {
+          display: flex;
+          justify-content: space-between;
+          gap: 16px;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          margin-bottom: 22px;
+        }
+
+        .cl-lab h1 {
+          font-size: clamp(25px, 4vw, 34px);
+          margin: 5px 0 8px;
+        }
+
+        .cl-lab p {
+          color: var(--muted, #9eabc3);
+          line-height: 1.6;
+        }
+
+        .cl-lab .cl-eyebrow {
+          font-size: 11px;
+          letter-spacing: 1.5px;
+          color: #65c9df;
+          font-weight: 800;
+        }
+
+        .cl-status {
+          padding: 9px 12px;
+          border-radius: 20px;
+          background: #163c32;
+          color: #7ce5b5;
+          font-size: 12px;
+        }
+
+        .cl-lab-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          gap: 18px;
+          align-items: start;
+        }
+
+        .cl-panel {
+          min-width: 0;
+          border: 1px solid var(--border, #26334a);
+          background: var(--panel, #111b2c);
+          border-radius: 16px;
+          padding: 18px;
+          margin-bottom: 18px;
+        }
+
+        .cl-panel h2 { font-size: 17px; margin: 0 0 6px; }
+        .cl-panel-intro { font-size: 13px; margin: 0 0 15px; }
+
+        .cl-library-list { display: grid; gap: 8px; }
+
+        .cl-library-item {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          width: 100%;
+          text-align: left;
+          padding: 12px;
+          border: 1px solid var(--border, #26334a);
+          border-radius: 11px;
+          background: transparent;
+          color: inherit;
+          cursor: pointer;
+        }
+
+        .cl-library-item:hover,
+        .cl-library-item.is-selected {
+          border-color: #5b8cff;
+          background: rgba(91, 140, 255, .09);
+        }
+
+        .cl-item-icon {
+          width: 37px;
+          height: 37px;
+          display: grid;
+          place-items: center;
+          border-radius: 10px;
+          background: rgba(91, 140, 255, .12);
+          font-size: 19px;
+          flex-shrink: 0;
+        }
+
+        .cl-item-copy {
+          display: grid;
+          gap: 4px;
+          min-width: 0;
+          flex: 1;
+        }
+
+        .cl-item-copy strong,
+        .cl-bench-item strong { font-size: 13px; }
+
+        .cl-item-copy small,
+        .cl-bench-item small {
+          font-size: 11px;
+          color: var(--muted, #9eabc3);
+        }
+
+        .cl-add-mark { font-size: 19px; color: #76a0ff; }
+
+        .cl-search {
+          width: 100%;
+          padding: 11px 12px;
+          margin: 0 0 12px;
+          border: 1px solid var(--border, #26334a);
+          border-radius: 10px;
+          background: var(--bg, #080d18);
+          color: inherit;
+          font: inherit;
+        }
+
+        .cl-bench { min-height: 160px; display: grid; gap: 9px; }
+
+        .cl-bench-empty {
+          text-align: center;
+          padding: 22px 12px;
+          border: 1px dashed var(--border, #35435c);
+          border-radius: 12px;
+        }
+
+        .cl-bench-empty span { font-size: 26px; color: #7fa5ff; }
+        .cl-bench-empty strong { display: block; margin-top: 8px; }
+        .cl-bench-empty p { font-size: 12px; margin-bottom: 0; }
+
+        .cl-bench-item {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          padding: 12px;
+          border-radius: 10px;
+          background: var(--bg, #080d18);
+        }
+
+        .cl-bench-item > span { font-size: 20px; }
+
+        .cl-bench-item > div {
+          display: grid;
+          gap: 4px;
+          flex: 1;
+        }
+
+        .cl-remove {
+          border: 0;
+          background: transparent;
+          color: #ff8997;
+          font-size: 22px;
+          cursor: pointer;
+          padding: 4px 8px;
+        }
+
+        .cl-actions {
+          display: flex;
+          gap: 9px;
+          flex-wrap: wrap;
+          margin-top: 16px;
+        }
+
+        .cl-btn {
+          padding: 11px 14px;
+          border-radius: 10px;
+          border: 1px solid var(--border, #35435c);
+          background: transparent;
+          color: inherit;
+          cursor: pointer;
+          font: inherit;
+          font-size: 13px;
+        }
+
+        .cl-btn-primary {
+          background: #315edb;
+          border-color: #315edb;
+          color: white;
+        }
+
+        .cl-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+        .cl-message {
+          margin-top: 13px;
+          padding: 12px;
+          border-radius: 10px;
+          background: rgba(91, 140, 255, .10);
+          font-size: 13px;
+        }
+
+        .cl-counts { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+
+        .cl-count {
+          padding: 8px 11px;
+          border-radius: 9px;
+          background: var(--bg, #080d18);
+          font-size: 12px;
+        }
+
+        .cl-empty { font-size: 13px; }
+
+        @media (max-width: 760px) {
+          .cl-lab { padding: 14px; }
+          .cl-lab-grid { grid-template-columns: minmax(0, 1fr); }
+          .cl-panel { padding: 14px; }
         }
       </style>
 
@@ -201,14 +350,18 @@
             <div class="cl-panel">
               <h2>Digital laboratory bench</h2>
               <p class="cl-panel-intro">Your selected materials appear here.</p>
+
               <div class="cl-counts">
                 <span class="cl-count" id="clChemicalCount">Chemicals: 0</span>
                 <span class="cl-count" id="clApparatusCount">Apparatus: 0</span>
               </div>
+
               <h3 style="font-size:13px">Selected chemicals</h3>
               <div class="cl-bench" id="clChemicalBench"></div>
+
               <h3 style="font-size:13px;margin-top:22px">Selected apparatus</h3>
               <div class="cl-bench" id="clApparatusBench"></div>
+
               <div class="cl-actions">
                 <button class="cl-btn" id="clClear">Clear Workspace</button>
                 <button class="cl-btn" id="clReset">Reset View</button>
@@ -217,6 +370,7 @@
                   Begin Experiment
                 </button>
               </div>
+
               <div class="cl-message" id="clMessage" role="status" aria-live="polite">
                 Select materials to prepare your workspace.
               </div>
@@ -248,23 +402,34 @@
     const aq = apparatusSearch.value.trim().toLowerCase();
 
     document.getElementById("clChemicalList").innerHTML = renderCards(
-      chemicals.filter(x => (x.name + x.formula + x.type).toLowerCase().includes(cq)),
-      selectedChemicals, "chemical"
+      chemicals.filter(x =>
+        (x.name + x.formula + x.type).toLowerCase().includes(cq)
+      ),
+      selectedChemicals,
+      "chemical"
     );
+
     document.getElementById("clApparatusList").innerHTML = renderCards(
-      apparatus.filter(x => (x.name + " apparatus").toLowerCase().includes(aq)),
-      selectedApparatus, "apparatus"
+      apparatus.filter(x =>
+        (x.name + " apparatus").toLowerCase().includes(aq)
+      ),
+      selectedApparatus,
+      "apparatus"
     );
 
     document.getElementById("clChemicalBench").innerHTML = renderBenchItems(
-      chemicals.filter(x => selectedChemicals.includes(x.id)), "chemical"
+      chemicals.filter(x => selectedChemicals.includes(x.id)),
+      "chemical"
     );
+
     document.getElementById("clApparatusBench").innerHTML = renderBenchItems(
-      apparatus.filter(x => selectedApparatus.includes(x.id)), "apparatus"
+      apparatus.filter(x => selectedApparatus.includes(x.id)),
+      "apparatus"
     );
 
     document.getElementById("clChemicalCount").textContent =
       "Chemicals: " + selectedChemicals.length;
+
     document.getElementById("clApparatusCount").textContent =
       "Apparatus: " + selectedApparatus.length;
   }
@@ -278,18 +443,25 @@
     selectedChemicals = [];
     selectedApparatus = [];
     experimentStarted = false;
+
     updateLaboratory();
-    document.getElementById("clStatus").textContent = "● Workspace ready";
-    document.getElementById("clExperimentStatus").textContent =
-      "No experiment started.";
+
+    const status = document.getElementById("clStatus");
+    const experimentStatus = document.getElementById("clExperimentStatus");
+
+    if (status) status.textContent = "● Workspace ready";
+    if (experimentStatus) experimentStatus.textContent = "No experiment started.";
+
     message("Workspace cleared. Select items to build a new setup.");
   }
 
   function resetView() {
-    const c = document.getElementById("clChemicalSearch");
-    const a = document.getElementById("clApparatusSearch");
-    if (c) c.value = "";
-    if (a) a.value = "";
+    const chemicalSearch = document.getElementById("clChemicalSearch");
+    const apparatusSearch = document.getElementById("clApparatusSearch");
+
+    if (chemicalSearch) chemicalSearch.value = "";
+    if (apparatusSearch) apparatusSearch.value = "";
+
     updateLaboratory();
     message("Library view reset. Your selected items have been kept.");
   }
@@ -316,56 +488,80 @@
     }
 
     experimentStarted = true;
-    document.getElementById("clStatus").textContent = "● Simulation active";
-    document.getElementById("clExperimentStatus").textContent =
-      "Workspace simulation started. No real chemical reaction has been simulated yet.";
+
+    const status = document.getElementById("clStatus");
+    const experimentStatus = document.getElementById("clExperimentStatus");
+
+    if (status) status.textContent = "● Simulation active";
+
+    if (experimentStatus) {
+      experimentStatus.textContent =
+        "Workspace simulation started. No real chemical reaction has been simulated yet.";
+    }
+
     message("Your workspace is ready for the next guided-experiment stage.");
   }
 
   document.addEventListener("input", event => {
-    if (event.target.id === "clChemicalSearch" ||
-        event.target.id === "clApparatusSearch") {
+    if (
+      event.target.id === "clChemicalSearch" ||
+      event.target.id === "clApparatusSearch"
+    ) {
       updateLaboratory();
     }
   });
 
   document.addEventListener("click", event => {
-    const add = event.target.closest("[data-cl-add]");
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const add = target.closest("[data-cl-add]");
+
     if (add) {
       const id = add.dataset.clId;
       const list = add.dataset.clAdd === "chemical"
-        ? selectedChemicals : selectedApparatus;
+        ? selectedChemicals
+        : selectedApparatus;
+
       if (list.includes(id)) {
         list.splice(list.indexOf(id), 1);
       } else {
         list.push(id);
       }
+
       experimentStarted = false;
       updateLaboratory();
       message("Workspace selection updated.");
       return;
     }
 
-    const remove = event.target.closest("[data-cl-remove]");
+    const remove = target.closest("[data-cl-remove]");
+
     if (remove) {
       const list = remove.dataset.clRemove === "chemical"
-        ? selectedChemicals : selectedApparatus;
+        ? selectedChemicals
+        : selectedApparatus;
+
       const index = list.indexOf(remove.dataset.clId);
       if (index !== -1) list.splice(index, 1);
+
       updateLaboratory();
       message("Item removed from the bench.");
       return;
     }
 
-    if (event.target.closest("#clClear")) clearWorkspace();
-    if (event.target.closest("#clReset")) resetView();
-    if (event.target.closest("#clSave")) saveSetup();
-    if (event.target.closest("#clBegin")) beginExperiment();
+    if (target.closest("#clClear")) clearWorkspace();
+    if (target.closest("#clReset")) resetView();
+    if (target.closest("#clSave")) saveSetup();
+    if (target.closest("#clBegin")) beginExperiment();
   });
 
   function syncWithRoute() {
     const route = location.hash.replace(/^#\/?/, "").toLowerCase();
-    if (route === "laboratory") renderLaboratory();
+
+    if (route === "laboratory") {
+      renderLaboratory();
+    }
   }
 
   window.addEventListener("hashchange", syncWithRoute);
