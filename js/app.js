@@ -1,0 +1,20 @@
+
+"use strict";
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (!window.ChemLab) {
+    console.error("ChemLab core failed to load.");
+    return;
+  }
+
+  ChemLab.init();
+
+  const yearElement =
+    document.getElementById("current-year");
+
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
+
+  document.documentElement.dataset.theme = "light";
+});
