@@ -1,4 +1,3 @@
-
 /* =========================================
    CHEMLAB STAGE 04.1
    DIGITAL LABORATORY WORKSPACE
@@ -385,5 +384,63 @@
 
   .lab-heading-actions button {
     flex: 1;
+  }
+}
+
+/* =====================================
+   STAGE 04.3: ADVANCED BENCH CONTROLS
+===================================== */
+
+.lab-bench-category {
+  margin-bottom: 24px;
+}
+
+.lab-bench-category h3 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.lab-quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lab-quantity-button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lab-quantity-button:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.lab-quantity-value {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text);
+}
+
+@media (max-width: 520px) {
+  .lab-bench-item {
+    gap: 10px;
+  }
+
+  .lab-quantity-controls {
+    gap: 6px;
   }
 }
