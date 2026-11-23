@@ -2,6 +2,7 @@
 "use strict";
 
 (function (window) {
+
   const routes = {
     dashboard: {
       title: "Dashboard",
@@ -67,6 +68,10 @@
   let dashboardContent = "";
   let started = false;
 
+  /* =====================================
+     1. ROUTE MANAGEMENT
+  ===================================== */
+
   function getRoute() {
     const route = window.location.hash
       .replace(/^#\/?/, "")
@@ -75,6 +80,10 @@
 
     return routes[route] ? route : "dashboard";
   }
+
+  /* =====================================
+     2. STANDARD PAGE GENERATOR
+  ===================================== */
 
   function createPage(route) {
     const page = routes[route];
@@ -134,9 +143,16 @@
     `;
   }
 
+  /* =====================================
+     3. NAVIGATION ACTIVE STATE
+  ===================================== */
+
   function updateNavigation(route) {
     document.querySelectorAll(".nav-item").forEach(link => {
-      const target = link.getAttribute("href")
+
+      const href = link.getAttribute("href") || "";
+
+      const target = href
         .replace(/^#\/?/, "")
         .toLowerCase();
 
@@ -149,20 +165,33 @@
       } else {
         link.removeAttribute("aria-current");
       }
+
     });
   }
 
+  /* =====================================
+     4. MAIN ROUTE RENDERER
+  ===================================== */
+
   function render() {
+
     const main = document.getElementById("main-content");
 
     if (!main) return;
 
     let route = getRoute();
 
-    if (!routes[window.location.hash.replace(/^#\/?/, "").toLowerCase()]) {
+    const requestedRoute = window.location.hash
+      .replace(/^#\/?/, "")
+      .trim()
+      .toLowerCase();
+
+    if (!routes[requestedRoute]) {
+
       route = "dashboard";
 
       if (window.location.hash !== "#dashboard") {
+
         window.history.replaceState(
           null,
           "",
@@ -170,32 +199,79 @@
           window.location.search +
           "#dashboard"
         );
+
       }
     }
 
+    /* Dashboard */
+
     if (route === "dashboard") {
+
       main.innerHTML = dashboardContent;
-    } else {
-      main.innerHTML = createPage(route);
+
     }
 
-    window.ChemLab.state.currentRoute = route;
+    /* Stage 04: Digital Laboratory */
+
+    else if (
+      route === "laboratory" &&
+      window.ChemLabLaboratory
+    ) {
+
+      main.innerHTML =
+        window.ChemLabLaboratory.render();
+
+      window.ChemLabLaboratory.initialize();
+
+    }
+
+    /* Other application pages */
+
+    else {
+
+      main.innerHTML = createPage(route);
+
+    }
+
+    /* Update application state */
+
+    if (window.ChemLab && window.ChemLab.state) {
+      window.ChemLab.state.currentRoute = route;
+    }
+
+    /* Update navigation */
 
     updateNavigation(route);
+
+    /* Update browser title */
 
     document.title =
       routes[route].title + " | ChemLab";
 
+    /* Scroll to page beginning */
+
     main.scrollTop = 0;
+
+    window.scrollTo(0, 0);
+
   }
 
+  /* =====================================
+     5. ROUTER INITIALIZATION
+  ===================================== */
+
   function start() {
+
     if (started) return;
 
     const main = document.getElementById("main-content");
 
     if (!main) {
-      console.error("ChemLab: Main content container not found.");
+
+      console.error(
+        "ChemLab: Main content container not found."
+      );
+
       return;
     }
 
@@ -203,7 +279,10 @@
 
     started = true;
 
+    /* Handle internal navigation */
+
     document.addEventListener("click", event => {
+
       const link = event.target.closest(
         ".nav-item, .brand"
       );
@@ -214,22 +293,34 @@
 
       if (!href || !href.startsWith("#")) return;
 
-      const target = href.replace(/^#\/?/, "").toLowerCase();
+      const target = href
+        .replace(/^#\/?/, "")
+        .toLowerCase();
 
       if (!routes[target]) return;
 
       event.preventDefault();
 
       if (window.location.hash === "#" + target) {
+
         render();
+
       } else {
+
         window.location.hash = target;
+
       }
+
     });
+
+    /* Browser back and forward support */
 
     window.addEventListener("hashchange", render);
 
+    /* Default route */
+
     if (!window.location.hash) {
+
       window.history.replaceState(
         null,
         "",
@@ -237,12 +328,20 @@
         window.location.search +
         "#dashboard"
       );
+
     }
 
     render();
 
-    console.info("ChemLab Router initialized.");
+    console.info(
+      "ChemLab Router initialized successfully."
+    );
+
   }
+
+  /* =====================================
+     6. PUBLIC ROUTER INTERFACE
+  ===================================== */
 
   window.ChemLabRouter = {
     start,
