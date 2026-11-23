@@ -491,6 +491,7 @@
     container.appendChild(list);
   }
 
+  
   /* =====================================
      6. WORKSPACE ACTIONS
   ===================================== */
@@ -501,6 +502,19 @@
     } else {
       window.alert(title + "\n\n" + message);
     }
+  }
+
+  function autoSaveBench() {
+    const successful = saveBench();
+
+    if (!successful) {
+      showMessage(
+        "Automatic save failed",
+        "Your changes could not be saved on this device. Check your browser storage."
+      );
+    }
+
+    return successful;
   }
 
   function addItem(id) {
@@ -528,6 +542,7 @@
       });
     }
 
+    autoSaveBench();
     renderBench();
   }
 
@@ -542,12 +557,13 @@
       bench = bench.filter(entry => entry.id !== id);
     }
 
+    autoSaveBench();
     renderBench();
   }
 
   function clearWorkspace() {
     bench = [];
-    saveBench();
+    autoSaveBench();
     renderBench();
 
     showMessage(
@@ -566,6 +582,7 @@
         : "Your browser could not save the setup. Check available device storage."
     );
   }
+
 
   /* =====================================
      7. EVENT HANDLING
