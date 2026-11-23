@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +19,7 @@
 
   <div id="app">
     <header class="topbar">
+
       <a href="#dashboard" class="brand">
         <span class="brand-mark">CL</span>
         <span>
@@ -29,10 +29,34 @@
       </a>
 
       <div class="topbar-actions">
+
+        <button
+          class="header-action"
+          id="search-toggle"
+          type="button"
+          aria-label="Open search"
+          title="Search ChemLab"
+        >
+          <span>⌕</span>
+          <span class="action-label">Search</span>
+        </button>
+
+        <button
+          class="header-action notification-toggle"
+          id="notification-toggle"
+          type="button"
+          aria-label="Open notifications"
+          aria-expanded="false"
+        >
+          <span>♧</span>
+          <span class="notification-indicator" id="notification-indicator"></span>
+        </button>
+
         <span class="system-status">
           <span class="status-dot"></span>
           System Ready
         </span>
+
       </div>
     </header>
 
@@ -42,15 +66,19 @@
         <div class="sidebar-heading">WORKSPACE</div>
 
         <nav class="main-navigation">
+
           <a href="#dashboard" class="nav-item active">
             <span>▦</span> Dashboard
           </a>
+
           <a href="#laboratory" class="nav-item">
             <span>⚗</span> Laboratory
           </a>
+
           <a href="#experiments" class="nav-item">
             <span>◈</span> Experiments
           </a>
+
           <a href="#analysis" class="nav-item">
             <span>▥</span> Analysis
           </a>
@@ -60,9 +88,11 @@
           <a href="#academy" class="nav-item">
             <span>▤</span> Chemistry Academy
           </a>
+
           <a href="#tutor" class="nav-item">
             <span>✧</span> AI Chemistry Tutor
           </a>
+
           <a href="#assessments" class="nav-item">
             <span>☷</span> Assessments
           </a>
@@ -72,12 +102,15 @@
           <a href="#notebook" class="nav-item">
             <span>▧</span> Lab Notebook
           </a>
+
           <a href="#progress" class="nav-item">
             <span>◷</span> My Progress
           </a>
+
           <a href="#settings" class="nav-item">
             <span>⚙</span> Settings
           </a>
+
         </nav>
 
         <div class="sidebar-footer">
@@ -92,8 +125,10 @@
           <div>
             <span class="eyebrow">CHEMLAB WORKSPACE</span>
             <h1>Welcome to ChemLab</h1>
-            <p>Your digital environment for chemistry learning,
-              experimentation and scientific discovery.</p>
+            <p>
+              Your digital environment for chemistry learning,
+              experimentation and scientific discovery.
+            </p>
           </div>
 
           <div class="academic-badge">
@@ -138,8 +173,10 @@
           <div>
             <span class="eyebrow">LEARNING FRAMEWORK</span>
             <h2>Learn. Predict. Experiment. Discover.</h2>
-            <p>ChemLab brings theoretical chemistry and practical
-              scientific exploration into one learning environment.</p>
+            <p>
+              ChemLab brings theoretical chemistry and practical
+              scientific exploration into one learning environment.
+            </p>
           </div>
 
           <div class="learning-steps">
@@ -160,8 +197,87 @@
     </div>
   </div>
 
+  <!-- GLOBAL SEARCH -->
+  <div
+    class="overlay"
+    id="search-overlay"
+    aria-hidden="true"
+  >
+    <section
+      class="search-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="search-heading"
+    >
+      <div class="dialog-heading">
+        <h2 id="search-heading">Search ChemLab</h2>
+        <button class="icon-button" type="button" data-close-overlay="search-overlay" aria-label="Close search">×</button>
+      </div>
+
+      <input
+        type="search"
+        id="global-search-input"
+        class="input-field"
+        placeholder="Search pages and chemistry topics..."
+        autocomplete="off"
+      >
+
+      <div id="search-results" class="search-results" aria-live="polite">
+        <p>Start typing to search ChemLab.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div
+    class="notification-panel"
+    id="notification-panel"
+    aria-hidden="true"
+  >
+    <div class="dialog-heading">
+      <h2>Notifications</h2>
+      <button class="icon-button" type="button" data-close-notifications aria-label="Close notifications">×</button>
+    </div>
+
+    <div id="notification-list" class="notification-list">
+      <p class="empty-state">No new notifications.</p>
+    </div>
+
+    <button
+      type="button"
+      class="secondary-button"
+      id="mark-all-read"
+    >
+      Mark all as read
+    </button>
+  </div>
+
+  <!-- REUSABLE MODAL -->
+  <div
+    class="overlay"
+    id="modal-overlay"
+    aria-hidden="true"
+  >
+    <section
+      class="modal-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="dialog-heading">
+        <h2 id="modal-title">ChemLab</h2>
+        <button class="icon-button" type="button" data-close-modal aria-label="Close modal">×</button>
+      </div>
+
+      <div id="modal-body"></div>
+
+      <div class="modal-actions" id="modal-actions"></div>
+    </section>
+  </div>
+
   <script src="js/core.js"></script>
-<script src="js/router.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+
 </body>
 </html>
