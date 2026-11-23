@@ -135,6 +135,8 @@
       return parsed
         .filter(item => {
           return (
+            item &&
+            typeof item.id === "string" &&
             inventoryMap.has(item.id) &&
             Number.isInteger(item.quantity) &&
             item.quantity > 0 &&
@@ -409,7 +411,7 @@
   }
 
   /* =====================================
-     5. BENCH DISPLAY
+     5. ADVANCED BENCH DISPLAY
   ===================================== */
 
   function renderBench() {
@@ -450,48 +452,96 @@
       return;
     }
 
-    const list = document.createElement("div");
-    list.className = "lab-bench-list";
+    const categories = [
+      {
+        type: "chemical",
+        title: "Chemicals"
+      },
+      {
+        type: "apparatus",
+        title: "Laboratory Apparatus"
+      }
+    ];
 
-    bench.forEach(selected => {
-      const item = inventoryMap.get(selected.id);
+    categories.forEach(category => {
 
-      if (!item) return;
+      const selectedItems = bench.filter(selected => {
+        const item = inventoryMap.get(selected.id);
 
-      const card = document.createElement("article");
-      card.className = "lab-bench-item";
+        return item && item.type === category.type;
+      });
 
-      const details = document.createElement("div");
+      if (selectedItems.length === 0) return;
 
-      const title = document.createElement("strong");
-      title.textContent = item.icon + " " + item.name;
+      const section = document.createElement("section");
+      section.className = "lab-bench-category";
 
-      const quantity = document.createElement("small");
-      quantity.textContent =
-        item.type + " · Quantity: " + selected.quantity;
+      const heading = document.createElement("h3");
+      heading.textContent = category.title;
 
-      details.append(title, quantity);
+      const list = document.createElement("div");
+      list.className = "lab-bench-list";
 
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "lab-remove-button";
-      remove.textContent = "−";
-      remove.title = "Remove one item";
-      remove.setAttribute(
-        "aria-label",
-        "Remove one " + item.name
-      );
-      remove.dataset.labAction = "remove";
-      remove.dataset.itemId = item.id;
+      selectedItems.forEach(selected => {
 
-      card.append(details, remove);
-      list.appendChild(card);
+        const item = inventoryMap.get(selected.id);
+
+        const card = document.createElement("article");
+        card.className = "lab-bench-item";
+
+        const details = document.createElement("div");
+
+        const title = document.createElement("strong");
+        title.textContent = item.icon + " " + item.name;
+
+        const quantity = document.createElement("small");
+        quantity.textContent =
+          "Quantity: " + selected.quantity;
+
+        details.append(title, quantity);
+
+        const controls = document.createElement("div");
+        controls.className = "lab-quantity-controls";
+
+        const decrease = document.createElement("button");
+        decrease.type = "button";
+        decrease.className = "lab-quantity-button";
+        decrease.textContent = "−";
+        decrease.title = "Decrease quantity";
+        decrease.setAttribute(
+          "aria-label",
+          "Decrease " + item.name + " quantity"
+        );
+        decrease.dataset.labAction = "decrease";
+        decrease.dataset.itemId = item.id;
+
+        const amount = document.createElement("span");
+        amount.className = "lab-quantity-value";
+        amount.textContent = selected.quantity;
+
+        const increase = document.createElement("button");
+        increase.type = "button";
+        increase.className = "lab-quantity-button";
+        increase.textContent = "+";
+        increase.title = "Increase quantity";
+        increase.setAttribute(
+          "aria-label",
+          "Increase " + item.name + " quantity"
+        );
+        increase.dataset.labAction = "increase";
+        increase.dataset.itemId = item.id;
+
+        controls.append(decrease, amount, increase);
+
+        card.append(details, controls);
+        list.appendChild(card);
+      });
+
+      section.append(heading, list);
+      container.appendChild(section);
     });
-
-    container.appendChild(list);
   }
 
-  
   /* =====================================
      6. WORKSPACE ACTIONS
   ===================================== */
@@ -525,6 +575,7 @@
     const existing = bench.find(entry => entry.id === id);
 
     if (existing) {
+
       if (existing.quantity >= 99) {
         showMessage(
           "Quantity limit reached",
@@ -536,10 +587,12 @@
       existing.quantity += 1;
 
     } else {
+
       bench.push({
         id,
         quantity: 1
       });
+
     }
 
     autoSaveBench();
@@ -563,6 +616,7 @@
 
   function clearWorkspace() {
     bench = [];
+
     autoSaveBench();
     renderBench();
 
@@ -583,18 +637,22 @@
     );
   }
 
-
   /* =====================================
      7. EVENT HANDLING
   ===================================== */
 
   document.addEventListener("click", event => {
 
-    const filterButton = event.target.closest(
+    const target = event.target;
+
+    if (!(target instanceof Element)) return;
+
+    const filterButton = target.closest(
       "[data-lab-filter]"
     );
 
     if (filterButton) {
+
       activeFilter =
         filterButton.dataset.labFilter;
 
@@ -610,7 +668,7 @@
       return;
     }
 
-    const actionButton = event.target.closest(
+    const actionButton = target.closest(
       "[data-lab-action]"
     );
 
@@ -619,16 +677,19 @@
     const action = actionButton.dataset.labAction;
     const id = actionButton.dataset.itemId;
 
-    if (action === "add") {
+    if (action === "add" || action === "increase") {
       addItem(id);
+      return;
     }
 
-    if (action === "remove") {
+    if (action === "remove" || action === "decrease") {
       removeItem(id);
+      return;
     }
 
     if (action === "clear") {
       clearWorkspace();
+      return;
     }
 
     if (action === "save") {
@@ -637,9 +698,13 @@
   });
 
   document.addEventListener("input", event => {
-    if (event.target.id !== "lab-search") return;
 
-    searchQuery = event.target.value.trim().toLowerCase();
+    if (!event.target || event.target.id !== "lab-search") {
+      return;
+    }
+
+    searchQuery =
+      event.target.value.trim().toLowerCase();
 
     renderCatalog();
   });
