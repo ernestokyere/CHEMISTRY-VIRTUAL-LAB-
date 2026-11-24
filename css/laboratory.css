@@ -444,3 +444,32 @@
     gap: 6px;
   }
 }
+
+/* =====================================
+   STAGE 04.4: RESOURCE DETAILS
+===================================== */
+
+.lab-details-button {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.lab-details-button:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.lab-details-button:focus-visible,
+.lab-add-button:focus-visible {
+  outline: 3px solid rgba(49, 87, 213, 0.25);
+  outline-offset: 2px;
+}
