@@ -235,12 +235,52 @@
   };
 
   /* =====================================
-     3. LABORATORY STATE
+     3. STAGE 04.5: EDUCATIONAL ACTIVITIES
+  ===================================== */
+
+  const activities = {
+
+    measurement: {
+      name: "Measurement and Observation",
+      description: "Learn about laboratory measurement and observation instruments.",
+      required: [
+        "beaker",
+        "measuring-cylinder",
+        "thermometer"
+      ]
+    },
+
+    equipment: {
+      name: "Laboratory Equipment Identification",
+      description: "Identify common laboratory apparatus and protective equipment.",
+      required: [
+        "beaker",
+        "conical-flask",
+        "test-tube",
+        "goggles"
+      ]
+    },
+
+    indicators: {
+      name: "Indicator Concepts Simulation",
+      description: "Explore the educational role of indicators and related laboratory resources.",
+      required: [
+        "litmus",
+        "dropper",
+        "water"
+      ]
+    }
+
+  };
+
+  /* =====================================
+     4. LABORATORY STATE
   ===================================== */
 
   let bench = [];
   let activeFilter = "all";
   let searchQuery = "";
+  let activeActivity = "measurement";
 
   function loadBench() {
     try {
@@ -290,7 +330,7 @@
   }
 
   /* =====================================
-     4. LABORATORY PAGE
+     5. LABORATORY PAGE
   ===================================== */
 
   function render() {
@@ -457,6 +497,58 @@
               protective equipment.
             </div>
 
+            <!-- STAGE 04.5: ACTIVITY PREPARATION -->
+
+            <div class="lab-preparation-panel">
+
+              <div class="lab-panel-header">
+                <div>
+                  <h2>Activity Preparation</h2>
+                  <p>Prepare your virtual laboratory workspace.</p>
+                </div>
+              </div>
+
+              <label for="lab-activity-select">
+                Select Educational Activity
+              </label>
+
+              <select
+                id="lab-activity-select"
+                class="lab-activity-select">
+
+                <option value="measurement">
+                  Measurement and Observation
+                </option>
+
+                <option value="equipment">
+                  Laboratory Equipment Identification
+                </option>
+
+                <option value="indicators">
+                  Indicator Concepts Simulation
+                </option>
+
+              </select>
+
+              <p id="lab-activity-description"></p>
+
+              <h3>Required Resources</h3>
+
+              <div id="lab-required-resources"></div>
+
+              <div id="lab-preparation-status">
+                Your preparation status will appear here.
+              </div>
+
+              <button
+                type="button"
+                class="primary-button lab-validate-button"
+                data-lab-action="validate">
+                Check Preparation
+              </button>
+
+            </div>
+
           </aside>
 
         </div>
@@ -466,7 +558,7 @@
   }
 
   /* =====================================
-     5. INVENTORY DISPLAY
+     6. INVENTORY DISPLAY
   ===================================== */
 
   function renderCatalog() {
@@ -553,7 +645,7 @@
   }
 
   /* =====================================
-     6. ADVANCED BENCH DISPLAY
+     7. ADVANCED BENCH DISPLAY
   ===================================== */
 
   function renderBench() {
@@ -591,6 +683,8 @@
 
       empty.append(icon, title, description);
       container.appendChild(empty);
+
+      renderPreparation();
       return;
     }
 
@@ -628,6 +722,8 @@
 
         const item = inventoryMap.get(selected.id);
 
+        if (!item) return;
+
         const card = document.createElement("article");
         card.className = "lab-bench-item";
 
@@ -641,6 +737,17 @@
           "Quantity: " + selected.quantity;
 
         details.append(title, quantity);
+
+        /* RESOURCE INSPECTION */
+
+        const inspectButton = document.createElement("button");
+        inspectButton.type = "button";
+        inspectButton.className = "lab-details-button";
+        inspectButton.textContent = "Inspect Resource";
+        inspectButton.dataset.labAction = "inspect";
+        inspectButton.dataset.itemId = item.id;
+
+        details.appendChild(inspectButton);
 
         const controls = document.createElement("div");
         controls.className = "lab-quantity-controls";
@@ -682,10 +789,12 @@
       section.append(heading, list);
       container.appendChild(section);
     });
+
+    renderPreparation();
   }
 
   /* =====================================
-     7. WORKSPACE ACTIONS
+     8. WORKSPACE ACTIONS
   ===================================== */
 
   function showMessage(title, message) {
@@ -725,6 +834,115 @@
 
     showMessage("Resource Information", message);
   }
+
+  /* =====================================
+     STAGE 04.5: PREPARATION ENGINE
+  ===================================== */
+
+  function renderPreparation() {
+    const select =
+      document.getElementById("lab-activity-select");
+
+    const description =
+      document.getElementById("lab-activity-description");
+
+    const requirements =
+      document.getElementById("lab-required-resources");
+
+    const status =
+      document.getElementById("lab-preparation-status");
+
+    if (!select || !description || !requirements || !status) {
+      return;
+    }
+
+    const activity = activities[activeActivity];
+
+    if (!activity) return;
+
+    select.value = activeActivity;
+    description.textContent = activity.description;
+
+    requirements.replaceChildren();
+
+    const selectedIds = bench.map(item => item.id);
+
+    activity.required.forEach(id => {
+
+      const resource = inventoryMap.get(id);
+
+      if (!resource) return;
+
+      const available = selectedIds.includes(id);
+
+      const row = document.createElement("div");
+      row.className = "lab-requirement-item";
+
+      const name = document.createElement("span");
+      name.textContent = resource.icon + " " + resource.name;
+
+      const result = document.createElement("span");
+
+      result.className = available
+        ? "lab-requirement-ready"
+        : "lab-requirement-missing";
+
+      result.textContent = available
+        ? "Available"
+        : "Missing";
+
+      row.append(name, result);
+      requirements.appendChild(row);
+    });
+
+    const missing = activity.required.filter(
+      id => !selectedIds.includes(id)
+    );
+
+    status.textContent = missing.length === 0
+      ? "All required virtual resources are available."
+      : missing.length + " required resource(s) still missing.";
+
+    status.className = missing.length === 0
+      ? "lab-preparation-complete"
+      : "lab-preparation-incomplete";
+  }
+
+  function validatePreparation() {
+    const activity = activities[activeActivity];
+
+    if (!activity) return;
+
+    const selectedIds = bench.map(item => item.id);
+
+    const missing = activity.required
+      .filter(id => !selectedIds.includes(id))
+      .map(id => inventoryMap.get(id))
+      .filter(Boolean)
+      .map(item => item.name);
+
+    if (missing.length > 0) {
+      showMessage(
+        "Preparation Incomplete",
+        "The following virtual resources are missing:\n\n" +
+        missing.map(name => "• " + name).join("\n") +
+        "\n\nAdd the missing resources to your virtual bench."
+      );
+
+      return;
+    }
+
+    showMessage(
+      "Virtual Preparation Complete",
+      "All required resources for " + activity.name +
+      " are available on your virtual bench.\n\n" +
+      "This confirms resource availability only. It does not provide instructions for conducting a practical experiment. Practical activities require qualified supervision."
+    );
+  }
+
+  /* =====================================
+     9. AUTOMATIC AND MANUAL SAVING
+  ===================================== */
 
   function autoSaveBench() {
     const successful = saveBench();
@@ -810,7 +1028,7 @@
   }
 
   /* =====================================
-     8. EVENT HANDLING
+     10. EVENT HANDLING
   ===================================== */
 
   document.addEventListener("click", event => {
@@ -849,8 +1067,13 @@
     const action = actionButton.dataset.labAction;
     const id = actionButton.dataset.itemId;
 
-    if (action === "details") {
+    if (action === "details" || action === "inspect") {
       showResourceDetails(id);
+      return;
+    }
+
+    if (action === "validate") {
+      validatePreparation();
       return;
     }
 
@@ -874,6 +1097,8 @@
     }
   });
 
+  /* INVENTORY SEARCH */
+
   document.addEventListener("input", event => {
 
     if (!event.target || event.target.id !== "lab-search") {
@@ -886,8 +1111,28 @@
     renderCatalog();
   });
 
+  /* EDUCATIONAL ACTIVITY SELECTION */
+
+  document.addEventListener("change", event => {
+
+    if (
+      !event.target ||
+      event.target.id !== "lab-activity-select"
+    ) {
+      return;
+    }
+
+    const selected = event.target.value;
+
+    if (!activities[selected]) return;
+
+    activeActivity = selected;
+
+    renderPreparation();
+  });
+
   /* =====================================
-     9. PUBLIC LABORATORY MODULE
+     11. PUBLIC LABORATORY MODULE
   ===================================== */
 
   window.ChemLabLaboratory = {
@@ -899,6 +1144,7 @@
 
       renderCatalog();
       renderBench();
+      renderPreparation();
     },
 
     inventory
