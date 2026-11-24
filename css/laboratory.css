@@ -473,3 +473,112 @@
   outline: 3px solid rgba(49, 87, 213, 0.25);
   outline-offset: 2px;
 }
+
+/* =====================================
+   STAGE 04.5: VIRTUAL LAB INTERACTION
+===================================== */
+
+.lab-preparation-panel {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.lab-preparation-panel label {
+  display: block;
+  margin: 16px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.lab-activity-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+#lab-activity-description {
+  margin: 12px 0 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.lab-preparation-panel h3 {
+  margin: 16px 0 12px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.lab-requirement-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 13px;
+}
+
+.lab-requirement-ready {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.lab-requirement-missing {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+#lab-preparation-status {
+  padding: 12px;
+  margin-top: 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.lab-preparation-complete {
+  background: rgba(22, 163, 106, 0.09);
+  color: var(--success);
+}
+
+.lab-preparation-incomplete {
+  background: rgba(224, 82, 82, 0.08);
+  color: var(--danger);
+}
+
+.lab-validate-button {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.lab-bench-item .lab-details-button {
+  max-width: 150px;
+  margin-top: 8px;
+}
+
+@media (max-width: 520px) {
+
+  .lab-preparation-panel {
+    padding: 14px;
+  }
+
+  .lab-requirement-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+}
