@@ -115,7 +115,127 @@
   );
 
   /* =====================================
-     2. LABORATORY STATE
+     2. STAGE 04.4: RESOURCE INFORMATION
+  ===================================== */
+
+  const resourceDetails = {
+
+    "water": {
+      formula: "H₂O",
+      classification: "Inorganic compound",
+      properties: "Pure distilled water is a colourless, odourless liquid.",
+      educationalUse: "Studied in chemistry when learning about solutions, solubility and the physical properties of water.",
+      safety: "Use laboratory-labelled materials. Do not assume laboratory water is suitable for drinking."
+    },
+
+    "nacl": {
+      formula: "NaCl",
+      classification: "Ionic compound (salt)",
+      properties: "Sodium chloride is commonly found as a white crystalline solid.",
+      educationalUse: "Used to study ionic bonding, crystal structures and aqueous solutions.",
+      safety: "Avoid unnecessary contact with eyes. Follow laboratory supervision requirements."
+    },
+
+    "bicarbonate": {
+      formula: "NaHCO₃",
+      classification: "Ionic compound; hydrogen carbonate",
+      properties: "Sodium bicarbonate is commonly found as a white crystalline solid.",
+      educationalUse: "Studied when learning about salts, acid-base concepts and chemical properties.",
+      safety: "Avoid creating or inhaling dust. Follow the product safety information."
+    },
+
+    "citric-acid": {
+      formula: "C₆H₈O₇",
+      classification: "Weak organic acid",
+      properties: "Citric acid is a naturally occurring organic acid found in citrus fruits.",
+      educationalUse: "Used to study organic acids, molecular structures and acidity.",
+      safety: "Avoid eye contact and unnecessary exposure. Use only under appropriate supervision."
+    },
+
+    "glucose": {
+      formula: "C₆H₁₂O₆",
+      classification: "Monosaccharide (simple carbohydrate)",
+      properties: "Glucose is a simple sugar and an important energy source in living organisms.",
+      educationalUse: "Studied in organic chemistry and biology, particularly carbohydrate structure.",
+      safety: "Do not consume laboratory samples. Follow laboratory material-handling rules."
+    },
+
+    "litmus": {
+      formula: "No single molecular formula",
+      classification: "Acid-base indicator mixture",
+      properties: "Litmus is a coloured indicator material used to identify acidic and alkaline conditions.",
+      educationalUse: "Helps students understand indicators and the properties of acids and bases.",
+      safety: "Follow the manufacturer's instructions. Do not taste or consume indicator materials."
+    },
+
+    "beaker": {
+      formula: "Not applicable",
+      classification: "Laboratory glassware",
+      properties: "A wide-mouthed cylindrical container, commonly marked with approximate volume graduations.",
+      educationalUse: "Used in laboratory demonstrations involving liquid containers, volume estimation and observations.",
+      safety: "Check for damage before supervised use. Handle glassware carefully."
+    },
+
+    "conical-flask": {
+      formula: "Not applicable",
+      classification: "Laboratory glassware",
+      properties: "A flask with a broad conical body and a narrow neck.",
+      educationalUse: "Commonly studied in laboratory equipment identification and analytical chemistry.",
+      safety: "Check for cracks and use only under qualified supervision."
+    },
+
+    "test-tube": {
+      formula: "Not applicable",
+      classification: "Laboratory glassware",
+      properties: "A narrow cylindrical tube with a rounded bottom.",
+      educationalUse: "Used in educational demonstrations and small-scale laboratory observations.",
+      safety: "Handle carefully. Never point an open test tube towards anyone during a supervised demonstration."
+    },
+
+    "measuring-cylinder": {
+      formula: "Not applicable",
+      classification: "Volumetric measuring apparatus",
+      properties: "A graduated cylindrical vessel designed for measuring liquid volumes.",
+      educationalUse: "Helps students learn measurement, scale reading and experimental accuracy.",
+      safety: "Use an appropriate measuring cylinder and handle it carefully."
+    },
+
+    "dropper": {
+      formula: "Not applicable",
+      classification: "Liquid-transfer apparatus",
+      properties: "A small instrument designed to transfer liquid in drops.",
+      educationalUse: "Introduces students to controlled liquid transfer and laboratory equipment.",
+      safety: "Avoid cross-contamination. Follow appropriate laboratory procedures."
+    },
+
+    "thermometer": {
+      formula: "Not applicable",
+      classification: "Temperature-measuring instrument",
+      properties: "An instrument designed to measure temperature.",
+      educationalUse: "Used when studying temperature, thermal energy and changes in physical conditions.",
+      safety: "Use an appropriate laboratory thermometer and avoid damaging it."
+    },
+
+    "balance": {
+      formula: "Not applicable",
+      classification: "Mass-measuring instrument",
+      properties: "An instrument used to determine the mass of an object or sample.",
+      educationalUse: "Helps students understand mass measurement, precision and experimental data.",
+      safety: "Follow the instrument's instructions and protect it from damage."
+    },
+
+    "goggles": {
+      formula: "Not applicable",
+      classification: "Personal protective equipment",
+      properties: "Protective eyewear designed to help shield the eyes from laboratory hazards.",
+      educationalUse: "Introduces students to laboratory safety and personal protective equipment.",
+      safety: "Use suitable, properly fitted protective eyewear during supervised practical activities."
+    }
+
+  };
+
+  /* =====================================
+     3. LABORATORY STATE
   ===================================== */
 
   let bench = [];
@@ -170,7 +290,7 @@
   }
 
   /* =====================================
-     3. LABORATORY PAGE
+     4. LABORATORY PAGE
   ===================================== */
 
   function render() {
@@ -346,7 +466,7 @@
   }
 
   /* =====================================
-     4. INVENTORY DISPLAY
+     5. INVENTORY DISPLAY
   ===================================== */
 
   function renderCatalog() {
@@ -356,12 +476,18 @@
 
     const matches = inventory.filter(item => {
 
+      const details = resourceDetails[item.id];
+
       const matchesFilter =
         activeFilter === "all" ||
         item.type === activeFilter;
 
-      const searchText =
-        (item.name + " " + item.description).toLowerCase();
+      const searchText = (
+        item.name + " " +
+        item.description + " " +
+        (details ? details.formula : "") + " " +
+        (details ? details.classification : "")
+      ).toLowerCase();
 
       const matchesSearch =
         searchText.includes(searchQuery);
@@ -381,6 +507,7 @@
     }
 
     matches.forEach(item => {
+
       const card = document.createElement("article");
       card.className = "lab-catalog-card";
 
@@ -398,6 +525,13 @@
       type.className = "lab-item-type";
       type.textContent = item.type;
 
+      const detailsButton = document.createElement("button");
+      detailsButton.type = "button";
+      detailsButton.className = "lab-details-button";
+      detailsButton.dataset.labAction = "details";
+      detailsButton.dataset.itemId = item.id;
+      detailsButton.textContent = "View Details";
+
       const button = document.createElement("button");
       button.type = "button";
       button.className = "lab-add-button";
@@ -405,13 +539,21 @@
       button.dataset.itemId = item.id;
       button.textContent = "＋ Add to Bench";
 
-      card.append(icon, title, description, type, button);
+      card.append(
+        icon,
+        title,
+        description,
+        type,
+        detailsButton,
+        button
+      );
+
       catalog.appendChild(card);
     });
   }
 
   /* =====================================
-     5. ADVANCED BENCH DISPLAY
+     6. ADVANCED BENCH DISPLAY
   ===================================== */
 
   function renderBench() {
@@ -543,7 +685,7 @@
   }
 
   /* =====================================
-     6. WORKSPACE ACTIONS
+     7. WORKSPACE ACTIONS
   ===================================== */
 
   function showMessage(title, message) {
@@ -552,6 +694,36 @@
     } else {
       window.alert(title + "\n\n" + message);
     }
+  }
+
+  /* STAGE 04.4: RESOURCE DETAILS */
+
+  function showResourceDetails(id) {
+    const item = inventoryMap.get(id);
+    const details = resourceDetails[id];
+
+    if (!item || !details) return;
+
+    const message = [
+      "Name: " + item.name,
+      "Category: " + item.type,
+      "Formula: " + details.formula,
+      "Classification: " + details.classification,
+      "",
+      "DESCRIPTION",
+      item.description,
+      "",
+      "PROPERTIES",
+      details.properties,
+      "",
+      "EDUCATIONAL USE",
+      details.educationalUse,
+      "",
+      "SAFETY INFORMATION",
+      details.safety
+    ].join("\n");
+
+    showMessage("Resource Information", message);
   }
 
   function autoSaveBench() {
@@ -638,7 +810,7 @@
   }
 
   /* =====================================
-     7. EVENT HANDLING
+     8. EVENT HANDLING
   ===================================== */
 
   document.addEventListener("click", event => {
@@ -677,6 +849,11 @@
     const action = actionButton.dataset.labAction;
     const id = actionButton.dataset.itemId;
 
+    if (action === "details") {
+      showResourceDetails(id);
+      return;
+    }
+
     if (action === "add" || action === "increase") {
       addItem(id);
       return;
@@ -710,7 +887,7 @@
   });
 
   /* =====================================
-     8. PUBLIC LABORATORY MODULE
+     9. PUBLIC LABORATORY MODULE
   ===================================== */
 
   window.ChemLabLaboratory = {
